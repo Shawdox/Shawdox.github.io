@@ -210,78 +210,85 @@
 
             <!-- Post Main Content -->
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <h1 id="书籍阅读统计学习方法">【书籍阅读】《统计学习方法》</h1>
-<h3 id="一.-统计学习方法概论">一. 统计学习方法概论：</h3>
-<p>​ 首先，要明确计算机科学中存在三个维度：系统，计算，与信息。统计学习方法（机器学习）主要属于信息这一维度，并在其中扮演者核心角色。</p>
-<h4 id="监督学习概念">1. 监督学习概念：</h4>
-<p>​ 监督学习，Supervised learning，指在已经做好标注的训练集上学习，为了叙述方便，定义以下基本概念：</p>
+                <h1 id="【书籍阅读】《统计学习方法》"><a href="#【书籍阅读】《统计学习方法》" class="headerlink" title="【书籍阅读】《统计学习方法》"></a>【书籍阅读】《统计学习方法》</h1><h3 id="一-统计学习方法概论："><a href="#一-统计学习方法概论：" class="headerlink" title="一. 统计学习方法概论："></a>一. 统计学习方法概论：</h3><p>​    首先，要明确计算机科学中存在三个维度：系统，计算，与信息。统计学习方法（机器学习）主要属于信息这一维度，并在其中扮演者核心角色。</p>
+<h4 id="1-监督学习概念："><a href="#1-监督学习概念：" class="headerlink" title="1. 监督学习概念："></a>1. 监督学习概念：</h4><p>​    监督学习，Supervised learning，指在已经做好标注的训练集上学习，为了叙述方便，定义以下基本概念：</p>
 <blockquote>
-<ol type="1">
+<ol>
 <li><strong>输入空间（X），输出空间（Y）：</strong>输入所有可能取值，输出所有可能取值；</li>
 <li><strong>特征空间：</strong>输入一般由特征向量表示，所有特征向量存在的空间称为特征空间，输入空间与特征空间并不完全等价，有时需要映射；</li>
-<li><strong>上标 x<sup>i</sup></strong> :表示一个输入的第 i 个特征；</li>
-<li><strong>下标 x<sub>j</sub>：</strong>表示第 j 个输入。</li>
+<li><strong>上标  x^i^</strong> :表示一个输入的第  i 个特征；</li>
+<li><strong>下标  x~j~：</strong>表示第 j 个输入。</li>
 <li><strong>回归问题：</strong>输入输出都为连续型变量；</li>
 <li><strong>分类问题：</strong>输出变量为有限个离散型变量；</li>
 <li><strong>标注问题：</strong>输入与输出变量都为变量序列。</li>
 <li><strong>假设空间：</strong>所有可能的模型的集合，也就是学习的范围。</li>
 </ol>
 </blockquote>
-<p>​ 使用训练集学习----&gt;对未知数据进行预测</p>
-<p>​</p>
-<h4 id="统计学习三要素">2. 统计学习三要素：</h4>
-<p>​ 统计学习三要素为：<strong>模型，策略，算法</strong>；</p>
-<p>​ 模型是决定学习的预测函数的类型；</p>
-<p>​ 策略是判定什么样的模型是好的，用于度量当前的模型好坏；</p>
-<p>​ 算法是训练过程中的具体做法，例如如何回归，如何计算，如何调整等。</p>
-<h4 id="模型的衡量方法">3. 模型的衡量方法：</h4>
-<ul>
+<p>​    使用训练集学习——&gt;对未知数据进行预测</p>
+<p>​    </p>
+<h4 id="2-统计学习三要素："><a href="#2-统计学习三要素：" class="headerlink" title="2. 统计学习三要素："></a>2. 统计学习三要素：</h4><p>​    统计学习三要素为：<strong>模型，策略，算法</strong>；</p>
+<p>​    模型是决定学习的预测函数的类型；</p>
+<p>​    策略是判定什么样的模型是好的，用于度量当前的模型好坏；</p>
+<p>​    算法是训练过程中的具体做法，例如如何回归，如何计算，如何调整等。</p>
+<h4 id="3-模型的衡量方法："><a href="#3-模型的衡量方法：" class="headerlink" title="3. 模型的衡量方法："></a>3. 模型的衡量方法：</h4><ul>
 <li><p><strong>损失函数与风险函数：</strong></p>
-<p>​ 损失函数，Loss Function，用于模型一次预测的错误程度，例如：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902154618.png" /></p>
-<p>​ 损失函数的数值越小，模型就越好。如果计算损失函数的期望，得到的就是风险函数，Risk Function:</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902154745.png" /></p>
-<p>​ 可以看出，损失函数用于某次预测的估计，风险函数用于总体平均估计。我们当然希望训练出的模型的风险函数越小越好。</p>
-<p>​ <strong>但是，观察上式，理想化的概率分布P(x，y)是未知的，我们进行学习就是要通过模型来模拟它，故这个式子理论存在，实际不能计算，不能用作评估模型的直接方法。</strong></p>
-<p>​</p></li>
+<p>​    损失函数，Loss Function，用于模型一次预测的错误程度，例如：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902154618.png" alt=""></p>
+<p>​    损失函数的数值越小，模型就越好。如果计算损失函数的期望，得到的就是风险函数，Risk Function:</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902154745.png" alt=""></p>
+<p>​    可以看出，损失函数用于某次预测的估计，风险函数用于总体平均估计。我们当然希望训练出的模型的风险函数越小越好。</p>
+<p>​    <strong>但是，观察上式，理想化的概率分布P(x，y)是未知的，我们进行学习就是要通过模型来模拟它，故这个式子理论存在，实际不能计算，不能用作评估模型的直接方法。</strong></p>
+<p>​    </p>
+</li>
 <li><p><strong>经验风险与结构风险：</strong></p>
-<p>​ 为了解决上述问题，我们引入经验风险：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902155212.png" /></p>
-<p>​ 可以看到，经验风险将每个样本视作等概率出现，是模型对于训练集的平均损失，那么其与风险函数的误差在哪？</p>
-<p>​ 根据大数定律，当训练集足够大时，二者是近似相等的。但实际情况下，很多时候训练样本数目有限，甚至很小，故用经验风险效估计风险函数并不理想，故需要进行修正，这就是监督学习中的<strong>两个基本策略：</strong>经验风险最小化和结构风险最小化。</p>
-<p>​ 如果训练样本容量较大，使用经验风险最小化没什么问题。</p>
-<p>​ 当样本容量很小时，仅仅使用经验风险最小化容易导致过拟合，故这里使用<strong>结构风险（就是正则化）</strong>最小化方法，对模型复杂度进行惩罚，后续介绍。</p></li>
+<p>​    为了解决上述问题，我们引入经验风险：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902155212.png" alt=""></p>
+<p>​    可以看到，经验风险将每个样本视作等概率出现，是模型对于训练集的平均损失，那么其与风险函数的误差在哪？</p>
+<p>​    根据大数定律，当训练集足够大时，二者是近似相等的。但实际情况下，很多时候训练样本数目有限，甚至很小，故用经验风险效估计风险函数并不理想，故需要进行修正，这就是监督学习中的<strong>两个基本策略：</strong>经验风险最小化和结构风险最小化。</p>
+<p>​    如果训练样本容量较大，使用经验风险最小化没什么问题。</p>
+<p>​    当样本容量很小时，仅仅使用经验风险最小化容易导致过拟合，故这里使用<strong>结构风险（就是正则化）</strong>最小化方法，对模型复杂度进行惩罚，后续介绍。</p>
+</li>
+</ul>
+<ul>
 <li><p><strong>训练误差与测试误差：</strong></p>
-<p>​ 训练误差本质上不重要，它可以反应一个问题是不是容易学习，但要衡量模型的预测能力，主要是看测试误差。</p></li>
+<p>​    训练误差本质上不重要，它可以反应一个问题是不是容易学习，但要衡量模型的预测能力，主要是看测试误差。</p>
+</li>
+</ul>
+<ul>
 <li><p><strong>正则化与交叉验证：</strong></p>
-<p>​ 正则化是在经验风险项后再增加一个正则化项（Regularizer），其与模型的复杂度成正相关，一般使用模型参数向量的范数：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902161201.png" /></p>
-<p>​ 交叉验证的基本思想是重复使用数据：</p>
-<ol type="1">
+<p>​    正则化是在经验风险项后再增加一个正则化项（Regularizer），其与模型的复杂度成正相关，一般使用模型参数向量的范数：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902161201.png" alt=""></p>
+<p>​    交叉验证的基本思想是重复使用数据：</p>
+<ol>
 <li><p><strong>简单交叉验证：</strong></p>
-<p>将训练集随机分为两部分，一部分训练，一部分测试，然后在各种条件下训练出不同的模型，用测试集进行横向对比，选出最好的。</p></li>
-<li><p><strong>S折交叉验证：</strong></p></li>
+<p>将训练集随机分为两部分，一部分训练，一部分测试，然后在各种条件下训练出不同的模型，用测试集进行横向对比，选出最好的。</p>
+<ol>
+<li><strong>S折交叉验证：</strong></li>
 </ol>
-<pre><code>S-fold cross validation，随机地将已给数据切分为S个互不相交的大小相同的子集，选取S-1个用于训练，剩下一个用于测试。
-
-这样总共测试集有S种选法，将这S种全部试一遍，评选S次测评中平均误差最小的模型。</code></pre>
-<ol start="3" type="1">
+<p>S-fold cross validation，随机地将已给数据切分为S个互不相交的大小相同的子集，选取S-1个用于训练，剩下一个用于测试。</p>
+<p>这样总共测试集有S种选法，将这S种全部试一遍，评选S次测评中平均误差最小的模型。</p>
+<ol>
 <li><strong>留一交叉验证：</strong></li>
 </ol>
-<pre><code>令S=N（训练集大小）即可，这种方法往往是在数据集特别缺乏的情况下使用。</code></pre></li>
+<p>令S=N（训练集大小）即可，这种方法往往是在数据集特别缺乏的情况下使用。</p>
+</li>
+</ol>
+</li>
 <li><p><strong>泛化误差与泛化上界：</strong></p>
-<p>​ 泛化能力指模型对位置数据的预测能力，就是模型的好坏。如何量化这个能力？</p>
-<p>​ 根据定义，其就是模型在测试集上的测试表现：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902162814.png" /></p>
-<p>​ 同时可以用以下式子衡量泛化误差的上界：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902162851.png" /></p></li>
+<p>​    泛化能力指模型对位置数据的预测能力，就是模型的好坏。如何量化这个能力？</p>
+<p>​    根据定义，其就是模型在测试集上的测试表现：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902162814.png" alt=""></p>
+<p>​    同时可以用以下式子衡量泛化误差的上界：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902162851.png" alt=""></p>
+</li>
 <li><p><strong>生成模型与判别模型：</strong></p>
-<p>​ 监督学习方法又可以分为两种方法：生成方法（Generatice Approach）和判别方法（Discriminative Approach）。</p>
-<p>​ 如果以概率论的角度来看待，模型的作用是根据P（x）来求P（y | x），故下面有两种方法求</p>
-<p>P（y | x），直接模拟P（y | x）和通过求 <span class="math inline">\(P(\frac{y}{x}) = \frac{P(x,y)}{P(x)}\)</span> 来求P（y | x）。</p>
-<p>​ 前者就是判别模型，后者是生成模型。</p>
-<p>​ 生成模型可以还原出联合概率分布P（x , y），学习收敛速度更快，可以适应存在隐含变量的情况；</p>
-<p>​ 判别模型直接学习条件概率,直接面对预测，准确率更高，并且简化了学习问题。</p></li>
+<p>​    监督学习方法又可以分为两种方法：生成方法（Generatice Approach）和判别方法（Discriminative Approach）。</p>
+<p>​    如果以概率论的角度来看待，模型的作用是根据P（x）来求P（y | x），故下面有两种方法求</p>
+<p>P（y | x），直接模拟P（y | x）和通过求  $P(\frac{y}{x}) = \frac{P(x,y)}{P(x)}$  来求P（y | x）。</p>
+<p>​    前者就是判别模型，后者是生成模型。</p>
+<p>​    生成模型可以还原出联合概率分布P（x , y），学习收敛速度更快，可以适应存在隐含变量的情况；</p>
+<p>​    判别模型直接学习条件概率,直接面对预测，准确率更高，并且简化了学习问题。</p>
+</li>
 </ul>
 
 
@@ -354,21 +361,6 @@
 
 
 
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 
 </html>
