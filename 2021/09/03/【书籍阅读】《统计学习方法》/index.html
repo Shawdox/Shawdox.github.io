@@ -23,7 +23,7 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="A Benchmark API Call Dataset For Windows PE Malware Classification"/>
+        <meta property="og:title" content="【书籍阅读】《统计学习方法》"/>
     
 
     <!--Open Graph Description-->
@@ -55,7 +55,7 @@
 
     <!-- Title -->
     
-    <title>A Benchmark API Call Dataset For Windows PE Malware Classification - Shaw</title>
+    <title>【书籍阅读】《统计学习方法》 - Shaw</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
@@ -161,7 +161,7 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="post-heading">
-                    <h1>A Benchmark API Call Dataset For Windows PE Malware Classification</h1>
+                    <h1>【书籍阅读】《统计学习方法》</h1>
                     
                     <span class="meta">
                         <!-- Date and Author -->
@@ -190,7 +190,7 @@
                         
 
 
-<a href="/tags/AD/">#AD</a> <a href="/tags/Malware-Classifiers/">#Malware Classifiers</a>
+<a href="/tags/Machine-Learning/">#Machine Learning</a>
 
 
                     
@@ -199,7 +199,7 @@
                     
                         
 
-<a href="/categories/Paper/">Paper</a>
+<a href="/categories/Book/">Book</a>
 
                     
                 </div>
@@ -210,58 +210,79 @@
 
             <!-- Post Main Content -->
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <h1 id="论文阅读a-benchmark-api-call-dataset-for-windows-pe-malware-classification">【论文阅读】A Benchmark API Call Dataset For Windows PE Malware Classification</h1>
+                <h1 id="书籍阅读统计学习方法">【书籍阅读】《统计学习方法》</h1>
+<h3 id="一.-统计学习方法概论">一. 统计学习方法概论：</h3>
+<p>​ 首先，要明确计算机科学中存在三个维度：系统，计算，与信息。统计学习方法（机器学习）主要属于信息这一维度，并在其中扮演者核心角色。</p>
+<h4 id="监督学习概念">1. 监督学习概念：</h4>
+<p>​ 监督学习，Supervised learning，指在已经做好标注的训练集上学习，为了叙述方便，定义以下基本概念：</p>
 <blockquote>
-<p><strong>作者：Ferhat Ozgur Catak（土耳其）</strong></p>
-<p>​ <strong>Ahmet Faruk Yazi（土耳其）</strong></p>
-<p><strong>时间：2021.2.23</strong></p>
-<p><strong>关键词：恶意软件分析，网络空间安全，数据集，沙箱环境，恶意软件分类</strong></p>
+<ol type="1">
+<li><strong>输入空间（X），输出空间（Y）：</strong>输入所有可能取值，输出所有可能取值；</li>
+<li><strong>特征空间：</strong>输入一般由特征向量表示，所有特征向量存在的空间称为特征空间，输入空间与特征空间并不完全等价，有时需要映射；</li>
+<li><strong>上标 x<sup>i</sup></strong> :表示一个输入的第 i 个特征；</li>
+<li><strong>下标 x<sub>j</sub>：</strong>表示第 j 个输入。</li>
+<li><strong>回归问题：</strong>输入输出都为连续型变量；</li>
+<li><strong>分类问题：</strong>输出变量为有限个离散型变量；</li>
+<li><strong>标注问题：</strong>输入与输出变量都为变量序列。</li>
+<li><strong>假设空间：</strong>所有可能的模型的集合，也就是学习的范围。</li>
+</ol>
 </blockquote>
-<h3 id="abstract">1. Abstract</h3>
-<p>​ 在Windows操作系统中，系统API调用的使用在监控恶意PE程序中是一个很有前途的方法。这个方法被定义为在安全隔离的沙箱环境中运行恶意软件，记录其调用的Windows系统API，再顺序分析这些调用。 ​ 在这里，我们在隔离沙箱中分析了7107个属于不同家族（病毒，后门，木马等）的恶意软件，并把这些分析结果转化为了不同分类算法和方法可以使用的形式。 ​ <strong>首先</strong>，我们会解释如何得到这些恶意软件；<strong>其次</strong>，我们会解释如何将这些软件捆绑至家族中；<strong>最后，</strong>我们会描述如何使用这些数据集来通过不同的方法实现恶意软件的分类。</p>
-<hr />
-<h3 id="introduction">2. Introduction</h3>
-<h4 id="简单介绍了恶意软件">2.1 简单介绍了恶意软件</h4>
-<h4 id="恶意软件与恶意软件识别之间的竞争">2.2 恶意软件与恶意软件识别之间的竞争</h4>
-<p>​ 相互促进</p>
-<h4 id="变形恶意软件metamorphic-malware">2.3 变形恶意软件（Metamorphic malware）</h4>
-<p>​ 恶意软件家族里很先进的一种，这种软件可以持续不断的改变自身源代码以此改变自身结构，通过这种方式来改变自身代码特征。还有，这种软件可能还可以通过强度反算（counter-analysis）来识别自身运行的环境，以此来隐藏自身的恶意功能。</p>
-<p>​ 变形恶意软件很难识别。</p>
-<h4 id="恶意软件的识别">2.4 恶意软件的识别：</h4>
-<p>​ 所有恶意软件都会有恶意行为以达成其目的，如果可以很好的分析恶意行为，就可以做成恶意软件的识别与分类。 ​ 恶意软件的识别包括了很多需要解决的问题，例如在汇编中不正确的跳转操作码，PE文本段代码隐藏，代码加密。本研究收集了现有的恶意软件及其变式，例如WannaCry，Zeus，特别是在Github上。</p>
-<p>​ 我们通过在VirusTotal网站上寻找每个恶意软件的哈希值，从而获得了得到了其家族类。</p>
-<p>​ 最后，所有我们记录的行为都是在Cuckoo沙盒环境中运行的。</p>
-<p>​ 我们发现几乎所有恶意软件都会使用很多方法改变其行为，但即使这样，恶意软件还是有一个目标，有一个确定的模式来达到此目标。还有，恶意软件会做出一些不必要的API调用，但其还是可以被一个训练好的分析器识别，因为其行为模式是相同的。</p>
-<p>​ 恶意软件分析被视为网络空间安全的一个分支，其由两方面组成：</p>
-<h5 id="静态分析"><strong>1. 静态分析 </strong>：</h5>
-<p>​ 静态分析可以可以定义为通过执行一个孤立的环境检查可执行文件而不查看实际指令。例如MD5校验和，其通过反病毒检测攻击识别，查找字符串。</p>
-<h5 id="动态分析">2. 动态分析</h5>
-<p>​ 动态分析指运行恶意程序来理解其功能，观察其表现，识别其技术指标。几乎所有的重要行为都包含API调用序列。</p>
-<p>​ <strong>大多数动态分析领域的研究都只关注分类算法，有个基本问题是没有标准的数据集来检查所提出模型的效率。</strong></p>
-<p>​ <strong>我们在Github上分享了我们的数据集：https://github.com/ocatak/malware_api_class ，该数据集包含了基于Cuckoo沙箱的已知恶意软件执行和基于VirusTotal的文件MD5特征分类的原始数据。</strong></p>
-<hr />
-<h3 id="methods">3. Methods</h3>
-<h4 id="windows-api-calls">3.1 Windows API Calls：</h4>
-<p>​ 软件安全知识，略</p>
-<h4 id="cuckoo-sandbox">3.2 Cuckoo SandBox</h4>
-<p>​ 免费软件，高度集成，开源，可以自动分析Winodws,OS X,Linux,Android系统下的恶意文件。</p>
-<h4 id="virustotal">3.3 VirusTotal</h4>
-<p>​ 可以在线免费分析文件或者URL。其提供了一个API，可以不通过浏览器来提供分析结果，可以自动分析。其以JSON文件的形式提供分析结果，不同反病毒应用引擎和浏览器的分析结果会分开存放。</p>
-<h4 id="数据集生成">3.4 数据集生成</h4>
-<p>​ 本文的数据集有着简单明了的结构。数据集以CVS格式文件提供来提高互操作性，而且并不需要特定的软件或者库来读取他们。数据由来自不同Github页面的Git命令实施收集，数据集中的每一行都是在沙箱中分析的Windows操作系统的API调用序列。</p>
-<p>​ 数据集的生成过程如下：</p>
-<p>​ <strong>1. 沙箱环境准备：</strong></p>
-<p>​ 分析机器使用Ubuntu系统，将Cuckoo沙箱安装在其中，分析机运行虚拟服务，Windows操作系统就运行在虚拟服务上，同时关掉防火墙，系统升级。</p>
-<p>​ <strong>2. 分析恶意软件:</strong></p>
-<p>​ 虚拟机中同时运行超过20000个恶意软件，应用程序会将每个恶意软件的分析结果写入MongoDB数据库，分析结果中包含恶意软件的行为数据，这些数据都是恶意软件在Win7上的API调用请求。</p>
-<p>​ <strong>3. 处理API调用：</strong></p>
-<p>​ 我们在数据集中收集到了342种API调用，这些调用会被以0-341来标记，以此生成一个新数据集。我们使用了该数据集中至少有10个不同API调用的恶意软件的分析结果。</p>
-<p>​ <strong>4. 使用Virus Total公用API分析恶意软件：</strong></p>
-<p>​ 作为分析的补充，所有在数据集中的恶意软件也会被Virus Total所分析，通过这种方式，每个恶意软件都会被不同的反病毒引擎所分析，结果会被记录。</p>
-<p>​ <strong>5. 处理分析结果：</strong></p>
-<p>​ Virus Total服务使用大约66个不同的防病毒应用程序进行文件分析。利用我们利用这个服务得到的每个研究结果，我们识别了每个恶意软件的家族。通过观察，我们发现对于同一恶意软件，不同的防病毒应用程序给出了不同的结果。此外，观察到并非每一个防病毒应用程序都能检测到一些恶意软件。因此，在检测每一个恶意软件类时，认为它属于所有分析中的大多数类。</p>
-<p><img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210716172418.png" /></p>
-<p><img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210716172518.png" /></p>
+<p>​ 使用训练集学习----&gt;对未知数据进行预测</p>
+<p>​</p>
+<h4 id="统计学习三要素">2. 统计学习三要素：</h4>
+<p>​ 统计学习三要素为：<strong>模型，策略，算法</strong>；</p>
+<p>​ 模型是决定学习的预测函数的类型；</p>
+<p>​ 策略是判定什么样的模型是好的，用于度量当前的模型好坏；</p>
+<p>​ 算法是训练过程中的具体做法，例如如何回归，如何计算，如何调整等。</p>
+<h4 id="模型的衡量方法">3. 模型的衡量方法：</h4>
+<ul>
+<li><p><strong>损失函数与风险函数：</strong></p>
+<p>​ 损失函数，Loss Function，用于模型一次预测的错误程度，例如：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902154618.png" /></p>
+<p>​ 损失函数的数值越小，模型就越好。如果计算损失函数的期望，得到的就是风险函数，Risk Function:</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902154745.png" /></p>
+<p>​ 可以看出，损失函数用于某次预测的估计，风险函数用于总体平均估计。我们当然希望训练出的模型的风险函数越小越好。</p>
+<p>​ <strong>但是，观察上式，理想化的概率分布P(x，y)是未知的，我们进行学习就是要通过模型来模拟它，故这个式子理论存在，实际不能计算，不能用作评估模型的直接方法。</strong></p>
+<p>​</p></li>
+<li><p><strong>经验风险与结构风险：</strong></p>
+<p>​ 为了解决上述问题，我们引入经验风险：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902155212.png" /></p>
+<p>​ 可以看到，经验风险将每个样本视作等概率出现，是模型对于训练集的平均损失，那么其与风险函数的误差在哪？</p>
+<p>​ 根据大数定律，当训练集足够大时，二者是近似相等的。但实际情况下，很多时候训练样本数目有限，甚至很小，故用经验风险效估计风险函数并不理想，故需要进行修正，这就是监督学习中的<strong>两个基本策略：</strong>经验风险最小化和结构风险最小化。</p>
+<p>​ 如果训练样本容量较大，使用经验风险最小化没什么问题。</p>
+<p>​ 当样本容量很小时，仅仅使用经验风险最小化容易导致过拟合，故这里使用<strong>结构风险（就是正则化）</strong>最小化方法，对模型复杂度进行惩罚，后续介绍。</p></li>
+<li><p><strong>训练误差与测试误差：</strong></p>
+<p>​ 训练误差本质上不重要，它可以反应一个问题是不是容易学习，但要衡量模型的预测能力，主要是看测试误差。</p></li>
+<li><p><strong>正则化与交叉验证：</strong></p>
+<p>​ 正则化是在经验风险项后再增加一个正则化项（Regularizer），其与模型的复杂度成正相关，一般使用模型参数向量的范数：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902161201.png" /></p>
+<p>​ 交叉验证的基本思想是重复使用数据：</p>
+<ol type="1">
+<li><p><strong>简单交叉验证：</strong></p>
+<p>将训练集随机分为两部分，一部分训练，一部分测试，然后在各种条件下训练出不同的模型，用测试集进行横向对比，选出最好的。</p></li>
+<li><p><strong>S折交叉验证：</strong></p></li>
+</ol>
+<pre><code>S-fold cross validation，随机地将已给数据切分为S个互不相交的大小相同的子集，选取S-1个用于训练，剩下一个用于测试。
+
+这样总共测试集有S种选法，将这S种全部试一遍，评选S次测评中平均误差最小的模型。</code></pre>
+<ol start="3" type="1">
+<li><strong>留一交叉验证：</strong></li>
+</ol>
+<pre><code>令S=N（训练集大小）即可，这种方法往往是在数据集特别缺乏的情况下使用。</code></pre></li>
+<li><p><strong>泛化误差与泛化上界：</strong></p>
+<p>​ 泛化能力指模型对位置数据的预测能力，就是模型的好坏。如何量化这个能力？</p>
+<p>​ 根据定义，其就是模型在测试集上的测试表现：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902162814.png" /></p>
+<p>​ 同时可以用以下式子衡量泛化误差的上界：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902162851.png" /></p></li>
+<li><p><strong>生成模型与判别模型：</strong></p>
+<p>​ 监督学习方法又可以分为两种方法：生成方法（Generatice Approach）和判别方法（Discriminative Approach）。</p>
+<p>​ 如果以概率论的角度来看待，模型的作用是根据P（x）来求P（y | x），故下面有两种方法求</p>
+<p>P（y | x），直接模拟P（y | x）和通过求 <span class="math inline">\(P(\frac{y}{x}) = \frac{P(x,y)}{P(x)}\)</span> 来求P（y | x）。</p>
+<p>​ 前者就是判别模型，后者是生成模型。</p>
+<p>​ 生成模型可以还原出联合概率分布P（x , y），学习收敛速度更快，可以适应存在隐含变量的情况；</p>
+<p>​ 判别模型直接学习条件概率,直接面对预测，准确率更高，并且简化了学习问题。</p></li>
+</ul>
 
 
                 
