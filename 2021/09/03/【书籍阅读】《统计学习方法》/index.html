@@ -242,8 +242,7 @@
 <p>​ 损失函数的数值越小，模型就越好。如果计算损失函数的期望，得到的就是风险函数，Risk Function:</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902154745.png" /></p>
 <p>​ 可以看出，损失函数用于某次预测的估计，风险函数用于总体平均估计。我们当然希望训练出的模型的风险函数越小越好。</p>
-<p>​ <strong>但是，观察上式，理想化的概率分布P(x，y)是未知的，我们进行学习就是要通过模型来模拟它，故这个式子理论存在，实际不能计算，不能用作评估模型的直接方法。</strong></p>
-<p>​</p></li>
+<p>​ <strong>但是，观察上式，理想化的概率分布P(x，y)是未知的，我们进行学习就是要通过模型来模拟它，故这个式子理论存在，实际不能计算，不能用作评估模型的直接方法。</strong></p></li>
 <li><p><strong>经验风险与结构风险：</strong></p>
 <p>​ 为了解决上述问题，我们引入经验风险：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902155212.png" /></p>
@@ -354,6 +353,21 @@
 
 
 
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 
 </html>
