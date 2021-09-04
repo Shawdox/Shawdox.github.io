@@ -282,6 +282,9 @@
 <p>​ 生成模型可以还原出联合概率分布P（x , y），学习收敛速度更快，可以适应存在隐含变量的情况；</p>
 <p>​ 判别模型直接学习条件概率,直接面对预测，准确率更高，并且简化了学习问题。</p></li>
 </ul>
+<hr />
+<h3 id="二.-感知机">二. 感知机</h3>
+<p>​ 感知机，perceptron，是二分类的线性分类模型，输入为特征向量，输出为类别，取1和-1两种。</p>
 
 
                 
@@ -353,6 +356,21 @@
 
 
 
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 
 </html>
