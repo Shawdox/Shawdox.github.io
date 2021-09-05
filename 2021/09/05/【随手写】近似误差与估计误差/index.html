@@ -210,11 +210,12 @@
 
             <!-- Post Main Content -->
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <h1 id="【随手写】近似误差与估计误差"><a href="#【随手写】近似误差与估计误差" class="headerlink" title="【随手写】近似误差与估计误差"></a>【随手写】近似误差与估计误差</h1><p>​    在读《统计学习方法》中关于k-邻近算法的介绍时，发现了这么一段话：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905153525.png" alt=""></p>
-<p>​        <strong>近似误差（<em>Approximation Error</em>）:</strong> 训练时，训练集与当前模型的误差；</p>
-<p>​        <strong>估计误差（<em>Estimation Error</em>）：</strong> 训练完成后，所选择的模型已经固定，模型对未知数据拟合时的误差。</p>
-<p>​        近似误差与估计误差二者不可兼得，此消彼长，需要取其平衡。</p>
+                <h1 id="随手写近似误差与估计误差">【随手写】近似误差与估计误差</h1>
+<p>​ 在读《统计学习方法》中关于k-邻近算法的介绍时，发现了这么一段话：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905153525.png" /></p>
+<p>​ <strong>近似误差（<em>Approximation Error</em>）:</strong> 训练时，训练集与当前模型的误差；</p>
+<p>​ <strong>估计误差（<em>Estimation Error</em>）：</strong> 训练完成后，所选择的模型已经固定，模型对未知数据拟合时的误差。</p>
+<p>​ 近似误差与估计误差二者不可兼得，此消彼长，需要取其平衡。</p>
 
 
                 
@@ -286,6 +287,21 @@
 
 
 
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 
 </html>
