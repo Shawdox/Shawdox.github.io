@@ -286,6 +286,41 @@
 <h3 id="二.-感知机">二. 感知机</h3>
 <p>​ 感知机，perceptron，是二分类的线性分类模型，输入为特征向量，输出为类别，取1和-1两种。</p>
 <p>​ 感知机属于判别模型。</p>
+<p>​</p>
+<p>​ 对于一个给定数据集，T = {（x<sub>1</sub>，y<sub>1</sub>）……（x<sub>n</sub>，y<sub>n</sub>）}，如果存在某个超平面S，w·x + b = 0（这里w是超平面的法向量，b是截距），使得所有 y<sub>i</sub> = 1 的实例i，有 w·x<sub>i</sub> + b &gt; 0，y<sub>i</sub> = -1则相反，则称数据集T为<strong>线性可分数据集（<em>Linealy separable data set</em>）</strong>，否则，称数据集T为线性不可分数据集。</p>
+<h4 id="感知机损失函数">2.1 感知机损失函数：</h4>
+<p>​ 感知机的目的就是对于一个线性可分的数据集，通过找出w和b，来确定一个超平面用于分类。</p>
+<p>​ 这里，我们选取某错误分类点到超平面S的<strong>总距离</strong>来当做损失函数，某一点到超平面S的距离如下：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904182025.png" /></p>
+<p>​ ‖w‖是w的L<sub>2</sub>范数。</p>
+<p>​ 故，某个误分类点到超平面S的距离是：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904182154.png" /></p>
+<p>​ 将所有误分类点求和，忽略L<sub>2</sub>范数，即可得到<strong>感知机的损失函数</strong>（M为误分类点集合）：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904182339.png" /></p>
+<p>​ 对于一个特定样本点的损失函数，在误分类时是参数w,b的线性函数，在正确分类时是0，故给定训练数据集T，损失函数L是w，b的连续可导函数。</p>
+<h4 id="训练过程">2.2 训练过程：</h4>
+<p>​ 感知机训练采用随机梯度下降的方法：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904183233.png" /></p>
+<p>​ 当找到一个误分类点时，不断梯度下降直至该点被正确分类为止。</p>
+<p>​ <strong>数学证明其收敛性：</strong></p>
+<p>​ 具体见书本，这里略过。</p>
+<h4 id="感知机的对偶形式">2.3 感知机的对偶形式：</h4>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905112734.png" /></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905112750.png" /></p>
+<p>​ 由图可以看到，对于每个测试集中的x<sub>i</sub>，都有一个与之对应的α<sub>i</sub>，对偶形式中就是调整其对应的α。</p>
+<p>​ 关于gram矩阵的作用，如果手算一遍简单的训练过程，就可以得到答案。</p>
+<hr />
+<h3 id="三.-k近邻法">三. k近邻法</h3>
+<p>​ k近邻法是一种基本的分类与回归方法，这里只讨论分类方法。</p>
+<p>​ 其输入为特征向量，输出为实例的类别，可以取<strong>多类</strong>。</p>
+<h4 id="算法描述">3.1 算法描述：</h4>
+<p>​ 给定一个训练集，对于新的数据实例，在训练数据集中找到与其最邻近的k个实例，这k个实例多数属于某个类，就把该输入实例分为这个类。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905113440.png" /></p>
+<p>​ <u>k近邻法没有显式的学习过程。</u>可以理解为，k近邻算法将特征空间划分为了一些子空间，每个点所属的空间是确定的。</p>
+<p>​</p>
+<p>​ <strong>如何度量两个特征之间的距离？</strong></p>
+<p>​ k邻近模型的特征空间一般是n维实空间R<sup>n</sup>，使用欧氏距离或者L<sub>p</sub>距离（<em>L<sub>p</sub> distance</em>），Minkowski距离（<em>Minkowski distance</em>）；</p>
+<p>​</p>
 
 
                 
