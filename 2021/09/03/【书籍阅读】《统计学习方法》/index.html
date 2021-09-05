@@ -318,7 +318,9 @@
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905113440.png" /></p>
 <p>​ <u>k近邻法没有显式的学习过程。</u>可以理解为，k近邻算法将特征空间划分为了一些子空间，每个点所属的空间是确定的。</p>
 <p>​</p>
-<p>​ <strong>如何度量两个特征之间的距离？</strong></p>
+<ul>
+<li><strong>如何度量两个特征之间的距离？</strong></li>
+</ul>
 <p>​ k邻近模型的特征空间一般是n维实空间R<sup>n</sup>，使用欧氏距离或者L<sub>p</sub>距离（<em>L<sub>p</sub> distance</em>），Minkowski距离（<em>Minkowski distance</em>）；</p>
 <p>​ <strong>L<sub>p</sub>距离：</strong></p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905143250.png" /></p>
@@ -326,7 +328,15 @@
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905143332.png" /></p>
 <p>​ <strong>曼哈顿距离：</strong></p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905143356.png" /></p>
-<p>​</p>
+<p>​ <strong>无穷距离：</strong></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905143648.png" /></p>
+<p>​ 由下图可以看出，p取值不同时到原点距离为1的图形是不同的：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905143741.png" /></p>
+<ul>
+<li><p><strong>如何选择k的值？</strong></p>
+<p>​ k值越小，模型学习时的近似误差越小，但模型会越复杂，抗干扰性越小（例如，最邻近的点是噪声），模型会非常敏感，容易过拟合；</p>
+<p>​ k值越大，估计误差会很小，近似误差会很大，</p></li>
+</ul>
 
 
                 
