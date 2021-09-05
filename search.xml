@@ -9,6 +9,99 @@
 ]]></content>
   </entry>
   <entry>
+    <title>【安全攻防实验】电子数据取</title>
+    <url>/2021/06/14/%5B%E5%AE%89%E5%85%A8%E6%94%BB%E9%98%B2%E5%AE%9E%E9%AA%8C%5D%20%E7%94%B5%E5%AD%90%E6%95%B0%E6%8D%AE%E5%8F%96%E8%AF%81/</url>
+    <content><![CDATA[<h1 id="安全攻防实验电子数据取证">【安全攻防实验】电子数据取证</h1>
+<h3 id="磁盘镜像和证据固定">1. 磁盘镜像和证据固定</h3>
+<h5 id="在磁盘上创建一个文本文件">1.1 在磁盘上创建一个文本文件：</h5>
+<ul>
+<li>以‘abcdefgh’开头，后续随机填充一些字串。</li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194142.png" /></p>
+<ul>
+<li>把文本文件的拓展名改成学号：</li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194319.png" /></p>
+<h5 id="在x-ways-forensics中创建一个案件添加目标存储器">1.2 在X-Ways Forensics中创建一个案件，添加目标存储器：</h5>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194404.png" /></p>
+<h5 id="对该u盘存储器创建磁盘镜像">1.3 对该U盘存储器创建磁盘镜像：</h5>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194429.png" /></p>
+<h3 id="判断文件类型">2. 判断文件类型</h3>
+<h5 id="在案件中去除原来的存储器添加上一步的镜像文件">2.1 在案件中去除原来的存储器，添加上一步的镜像文件:</h5>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194448.png" /></p>
+<h5 id="用表格软件打开file-type-signatures-search.txt">2.2 /2.3 用表格软件打开File Type Signatures Search.txt：</h5>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194450.png" /></p>
+<ul>
+<li>添加一个文件类型：</li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194456.png" /></p>
+<ul>
+<li>在专业工具中选择‘进行磁盘快照’，对磁盘进行快照操作：</li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194500.png" /></p>
+<ul>
+<li>在选项中开启目录浏览器；</li>
+<li>在X-Ways中查看新类型的文件添加是否成功：</li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194503.png" /></p>
+<p>​ 可以看出，新文件类型添加成功，成功识别了拓展名，文件类型与签名状态。</p>
+<h5 id="修改文件签名数据库中的内容再次分析">2.4 修改文件签名数据库中的内容，再次分析：</h5>
+<ul>
+<li><p>​ 修改文件签名数据库中的文件头签名内容，再次使用 文件快照对指定存储器进行分析，查看3中文件的文件类型、扩展名、签名状态等信息的变化。</p></li>
+<li><p>更改文件头签名为‘zzzzz’：</p></li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609195832.png" /></p>
+<ul>
+<li>重新进行快照，检查：</li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609195711.png" /></p>
+<p>​ 可以发现，在更改文件头签名内容后，签名状态变为了“未确认”。</p>
+<h5 id="删除添加到文件签名数据库中新的文件类型签名再次使用文件快照对指定存储器进行分析">2.5 删除添加到文件签名数据库中新的文件类型签名，再次使用文件快照对指定存储器进行分析：</h5>
+<p>​ 具体步骤同2.4，结果如下：</p>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609200431.png" /></p>
+<h3 id="文件搜索">3. 文件搜索：</h3>
+<h5 id="搜索华中科技大学word文档">3.1 搜索“华中科技大学”word文档：</h5>
+<ul>
+<li>去除上一个任务的存储器，添加自己电脑的C盘：</li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609202255.png" /></p>
+<ul>
+<li>提前验证C盘是否存在包含“华中科技大学“的文档：</li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609202623.png" /></p>
+<ul>
+<li>设置搜索：</li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609205543.png" /></p>
+<ul>
+<li><p>搜索结果：</p></li>
+<li><p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609205439.png" /></p></li>
+</ul>
+<h5 id="搜索web邮件">3.2 搜索WEB邮件：</h5>
+<ul>
+<li><p>首先发一封邮件给别人（用的是QQ邮箱，edge浏览器）</p></li>
+<li><p>直接搜索"mail"字串：</p>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609221822.png" /></p></li>
+<li><p>搜索结果：</p></li>
+</ul>
+<p><img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210614201318.png" /></p>
+<p>可以看出，成功找到了发送邮件的记录。</p>
+<h5 id="搜索电话号码">3.3 搜索电话号码：</h5>
+<ul>
+<li><p>电话号码有11位，故使用grep表达式： <strong>189[0-9]{8}</strong>：</p></li>
+<li><p>设置搜索如下：</p></li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609215841.png" /></p>
+<ul>
+<li>搜索结果如下：</li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609215920.png" /></p>
+]]></content>
+      <categories>
+        <category>●	课内</category>
+      </categories>
+  </entry>
+  <entry>
     <title>【组原实验】全相联Cache设计</title>
     <url>/2021/06/14/%5B%E7%BB%84%E5%8E%9F%E5%AE%9E%E9%AA%8C%5D%20%E5%85%A8%E7%9B%B8%E8%81%94Cache%E8%AE%BE%E8%AE%A1/</url>
     <content><![CDATA[<h1 id="组原实验全相联cache设计">【组原实验】全相联Cache设计</h1>
@@ -99,99 +192,6 @@
 <figure>
 <img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612174946.png" alt="image-20210612174945662" /><figcaption aria-hidden="true">image-20210612174945662</figcaption>
 </figure>
-]]></content>
-      <categories>
-        <category>●	课内</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>【安全攻防实验】电子数据取</title>
-    <url>/2021/06/14/%5B%E5%AE%89%E5%85%A8%E6%94%BB%E9%98%B2%E5%AE%9E%E9%AA%8C%5D%20%E7%94%B5%E5%AD%90%E6%95%B0%E6%8D%AE%E5%8F%96%E8%AF%81/</url>
-    <content><![CDATA[<h1 id="安全攻防实验电子数据取证">【安全攻防实验】电子数据取证</h1>
-<h3 id="磁盘镜像和证据固定">1. 磁盘镜像和证据固定</h3>
-<h5 id="在磁盘上创建一个文本文件">1.1 在磁盘上创建一个文本文件：</h5>
-<ul>
-<li>以‘abcdefgh’开头，后续随机填充一些字串。</li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194142.png" /></p>
-<ul>
-<li>把文本文件的拓展名改成学号：</li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194319.png" /></p>
-<h5 id="在x-ways-forensics中创建一个案件添加目标存储器">1.2 在X-Ways Forensics中创建一个案件，添加目标存储器：</h5>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194404.png" /></p>
-<h5 id="对该u盘存储器创建磁盘镜像">1.3 对该U盘存储器创建磁盘镜像：</h5>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194429.png" /></p>
-<h3 id="判断文件类型">2. 判断文件类型</h3>
-<h5 id="在案件中去除原来的存储器添加上一步的镜像文件">2.1 在案件中去除原来的存储器，添加上一步的镜像文件:</h5>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194448.png" /></p>
-<h5 id="用表格软件打开file-type-signatures-search.txt">2.2 /2.3 用表格软件打开File Type Signatures Search.txt：</h5>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194450.png" /></p>
-<ul>
-<li>添加一个文件类型：</li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194456.png" /></p>
-<ul>
-<li>在专业工具中选择‘进行磁盘快照’，对磁盘进行快照操作：</li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194500.png" /></p>
-<ul>
-<li>在选项中开启目录浏览器；</li>
-<li>在X-Ways中查看新类型的文件添加是否成功：</li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194503.png" /></p>
-<p>​ 可以看出，新文件类型添加成功，成功识别了拓展名，文件类型与签名状态。</p>
-<h5 id="修改文件签名数据库中的内容再次分析">2.4 修改文件签名数据库中的内容，再次分析：</h5>
-<ul>
-<li><p>​ 修改文件签名数据库中的文件头签名内容，再次使用 文件快照对指定存储器进行分析，查看3中文件的文件类型、扩展名、签名状态等信息的变化。</p></li>
-<li><p>更改文件头签名为‘zzzzz’：</p></li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609195832.png" /></p>
-<ul>
-<li>重新进行快照，检查：</li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609195711.png" /></p>
-<p>​ 可以发现，在更改文件头签名内容后，签名状态变为了“未确认”。</p>
-<h5 id="删除添加到文件签名数据库中新的文件类型签名再次使用文件快照对指定存储器进行分析">2.5 删除添加到文件签名数据库中新的文件类型签名，再次使用文件快照对指定存储器进行分析：</h5>
-<p>​ 具体步骤同2.4，结果如下：</p>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609200431.png" /></p>
-<h3 id="文件搜索">3. 文件搜索：</h3>
-<h5 id="搜索华中科技大学word文档">3.1 搜索“华中科技大学”word文档：</h5>
-<ul>
-<li>去除上一个任务的存储器，添加自己电脑的C盘：</li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609202255.png" /></p>
-<ul>
-<li>提前验证C盘是否存在包含“华中科技大学“的文档：</li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609202623.png" /></p>
-<ul>
-<li>设置搜索：</li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609205543.png" /></p>
-<ul>
-<li><p>搜索结果：</p></li>
-<li><p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609205439.png" /></p></li>
-</ul>
-<h5 id="搜索web邮件">3.2 搜索WEB邮件：</h5>
-<ul>
-<li><p>首先发一封邮件给别人（用的是QQ邮箱，edge浏览器）</p></li>
-<li><p>直接搜索"mail"字串：</p>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609221822.png" /></p></li>
-<li><p>搜索结果：</p></li>
-</ul>
-<p><img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210614201318.png" /></p>
-<p>可以看出，成功找到了发送邮件的记录。</p>
-<h5 id="搜索电话号码">3.3 搜索电话号码：</h5>
-<ul>
-<li><p>电话号码有11位，故使用grep表达式： <strong>189[0-9]{8}</strong>：</p></li>
-<li><p>设置搜索如下：</p></li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609215841.png" /></p>
-<ul>
-<li>搜索结果如下：</li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609215920.png" /></p>
 ]]></content>
       <categories>
         <category>●	课内</category>
@@ -329,8 +329,9 @@
 <p>​ k一般的取值并不大，使用交叉验证的方法来选取最佳的k值。</p></li>
 <li><p><strong>如何决策？</strong></p>
 <p>​ 在得到k个最相似的实例后，采用何种规则判断测试样本属于哪一类呢？</p>
-<p>​</p></li>
+<p>​ k邻近算法使用多数表决的方法：</p></li>
 </ul>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905154943.png" /></p>
 ]]></content>
       <categories>
         <category>Book</category>
@@ -401,72 +402,6 @@
       <tags>
         <tag>AD</tag>
         <tag>Malware Classifiers</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Automatically Evading Classififiers----A Case Study on PDF Malware Classififiers</title>
-    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Automatically%20Evading%20Classififiers----A%20Case%20Study%20on%20PDF%20Malware%20Classififiers/</url>
-    <content><![CDATA[<h1 id="论文阅读automatically-evading-classififiers----a-case-study-on-pdf-malware-classififiers">【论文阅读】Automatically Evading Classififiers----A Case Study on PDF Malware Classififiers</h1>
-<blockquote>
-<p><strong>时间：2016</strong></p>
-<p><strong>作者：Weilin Xu, Yanjun Qi, and David Evans 弗吉尼亚大学</strong></p>
-<p><strong>会议：NDSS（ccf_B类）</strong></p>
-</blockquote>
-<h3 id="总结">总结：</h3>
-<ol type="1">
-<li><p><strong>白盒黑盒？</strong></p>
-<p><strong>黑盒攻击</strong>，需要知道生成样本在目标模型中的输出（分类分数）和目标模型所使用的特征（粗略知道）；</p></li>
-<li><p><strong>针对什么目标？</strong></p>
-<p>仅仅使用表层特征的分类器；</p></li>
-<li><p><strong>攻击方法？</strong></p>
-<p>3.1 <strong>如何制造对抗样本？</strong></p>
-<p>​ 使用<strong>遗传算法（GP-BASED）</strong>进行随机扰动</p>
-<p>3.2 <strong>如何判别对抗样本的恶意能力？</strong></p>
-<p>​ 使用<strong><em>oracle</em></strong></p></li>
-</ol>
-<h3 id="abstract">Abstract:</h3>
-<p>​ 在本文，我们提出了一个一般化的方法来检验分类器的鲁棒性，通过在两个PDF恶意样本分类器，PDFrate和Hidost上来检验。其关键就是随机控制一个恶意样本来找到一个对抗样本。</p>
-<p>​ 我们的方法可以自动地对500个恶意样本种子中找到对于两个PDF分类器的对抗样本，我们的结果提出了一个严重的疑问，基于表面特征的分类器在面对对抗样本时是否还有效？</p>
-<hr />
-<h3 id="introduction">1. Introduction:</h3>
-<p>​ 主要贡献：</p>
-<pre><code>1. 提出了一个一般化的方法用于自动寻找分类器的对抗样本；
-2. 制作了一个原型系统用于自动生成对抗样本；
-3. 我们的系统在对500个恶意样本种子寻找对抗样本的过程中，达到了100%的准确率。</code></pre>
-<hr />
-<h3 id="overview">2. Overview：</h3>
-<h4 id="finding-evasive-samples"><em>2.1 Finding Evasive Samples</em>：</h4>
-<p>​ <strong>整体思路：</strong></p>
-<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901185852.png" /></p>
-<p>​ <strong><em>oracle</em></strong>用于判断一个样本是否具有恶意行为；</p>
-<hr />
-<h3 id="pdf-malware-and-classifiers">3. PDF Malware and Classifiers</h3>
-<h4 id="pdfmalware"><em>3.1 PDFmalware:</em></h4>
-<p>​ PDF文件的整体结构：</p>
-<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901191527.png" /></p>
-<p>​ 早些的PDF恶意样本一般使用JavaScript嵌入，用户双击打开时出发执行恶意脚本。</p>
-<p>​ 因为不是所有的PDF恶意样本都是嵌入了JavaScript代码，最近的一些PDF恶意分类器就着重于PDF文件的结构化特征。在本文，我们的目标就是攻击这些有代表性的基于文件结构化特征的分类器。</p>
-<h4 id="target-classififiers"><em>3.2 Target Classififiers：</em></h4>
-<p>​ <strong>PDFrate：</strong>一个使用随机森林算法的分类器。</p>
-<p>​ <strong>Hidost:</strong>一个SVM分类器。</p>
-<p>​</p>
-<hr />
-<h3 id="evading-pdf-malware-classifiers">4. Evading PDF Malware Classifiers：</h3>
-<hr />
-<h3 id="experiment">5. Experiment:</h3>
-<h4 id="dataset"><em>5.1 Dataset:</em></h4>
-<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194138.png" /></p>
-<h4 id="test"><em>5.2 Test：</em></h4>
-<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194328.png" /></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194448.png" /></p>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>AD</tag>
-        <tag>Malware Classifiers</tag>
-        <tag>PDF</tag>
       </tags>
   </entry>
   <entry>
@@ -564,87 +499,69 @@
       </tags>
   </entry>
   <entry>
-    <title>Deep Text Classifification Can be Fooled</title>
-    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/</url>
-    <content><![CDATA[<h1 id="论文阅读deep-text-classifification-can-be-fooled">【论文阅读】<strong>Deep Text Classifification Can be Fooled</strong></h1>
+    <title>Automatically Evading Classififiers----A Case Study on PDF Malware Classififiers</title>
+    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Automatically%20Evading%20Classififiers----A%20Case%20Study%20on%20PDF%20Malware%20Classififiers/</url>
+    <content><![CDATA[<h1 id="论文阅读automatically-evading-classififiers----a-case-study-on-pdf-malware-classififiers">【论文阅读】Automatically Evading Classififiers----A Case Study on PDF Malware Classififiers</h1>
 <blockquote>
-<p><strong>时间：</strong>2017</p>
-<p><strong>作者：</strong>Bin Liang, Hongcheng Li, Miaoqiang Su, Pan Bian, Xirong Li and Wenchang Shi 中国人民大学</p>
+<p><strong>时间：2016</strong></p>
+<p><strong>作者：Weilin Xu, Yanjun Qi, and David Evans 弗吉尼亚大学</strong></p>
+<p><strong>会议：NDSS（ccf_B类）</strong></p>
 </blockquote>
+<h3 id="总结">总结：</h3>
+<ol type="1">
+<li><p><strong>白盒黑盒？</strong></p>
+<p><strong>黑盒攻击</strong>，需要知道生成样本在目标模型中的输出（分类分数）和目标模型所使用的特征（粗略知道）；</p></li>
+<li><p><strong>针对什么目标？</strong></p>
+<p>仅仅使用表层特征的分类器；</p></li>
+<li><p><strong>攻击方法？</strong></p>
+<p>3.1 <strong>如何制造对抗样本？</strong></p>
+<p>​ 使用<strong>遗传算法（GP-BASED）</strong>进行随机扰动</p>
+<p>3.2 <strong>如何判别对抗样本的恶意能力？</strong></p>
+<p>​ 使用<strong><em>oracle</em></strong></p></li>
+</ol>
 <h3 id="abstract">Abstract:</h3>
-<p>​ 在这篇文章，我们提出了一种有效的生成文本对抗样本的方法，并且揭示了一个很重要但被低估的事实：基于DNN的文本分类器很容易被对抗样本攻击。</p>
-<p>​ 具体来说，面对不同的对抗场景，通过计算输入的代价梯度(白盒攻击)或生成一系列被遮挡的测试样本(黑盒攻击)来识别对分类重要的文本项。（<u>这句不是很懂，什么叫’ the text items that are important for classifification‘？</u>）</p>
-<p>​ 基于这些项目，我们设计了三种扰动策略，insertion，modification，removal，用于生成对抗样本。实验结果表明基于我们的方法生成的对抗样本可以成功地欺骗主流的在字符等级和单词等级的DNN文本分类器。</p>
-<p>​ 对抗样本可以被扰动到任意理想的类中而不降低其效率。（？）同时，被引入的扰动很难被察觉。</p>
-<p>​</p>
+<p>​ 在本文，我们提出了一个一般化的方法来检验分类器的鲁棒性，通过在两个PDF恶意样本分类器，PDFrate和Hidost上来检验。其关键就是随机控制一个恶意样本来找到一个对抗样本。</p>
+<p>​ 我们的方法可以自动地对500个恶意样本种子中找到对于两个PDF分类器的对抗样本，我们的结果提出了一个严重的疑问，基于表面特征的分类器在面对对抗样本时是否还有效？</p>
+<hr />
 <h3 id="introduction">1. Introduction:</h3>
-<p>​ 在文本中，即使很小的扰动也会使一个字母或者单词完全变化，这会导致句子不能被辨识。故如果直接将应用于多媒体（图片，音频）的算法应用到文本上，得到的对抗样本的原意就会改变，而且很大程度上变成人类无法理解的句子。</p>
-<p>​ 在这片论文里，我们提出了一种生成对抗样本的有效方法。与直接简单插入扰动相比，我们设计了三种扰动策略：<em>insertion</em>, <em>modifification</em>, and <em>removal</em>，并且引入了自然语言文本水印（<em>natural language watermarking</em>）技术用于生成对抗样本。</p>
-<p>​ 理论上，生成一个好的对抗样本很大程度上依赖于对目标分类模型的信息。在这里我们根据不同情形，使用了白盒攻击和黑盒攻击。</p>
-<p>​ 为了普遍性，我们使用了字符等级的模型和单词等级的模型作为受害者。我们的实验结果证明基于DNN的文本分类器在面对对抗样本攻击时是脆弱的。</p>
-<h3 id="target-models-and-datasets">2. Target Models and Datasets:</h3>
-<p>​ 这里使用的文本分类器是Zhang et al. 2015《Character-level Convolutional Networks foe Text Classification》，数据集是Lehmann et al.2014的DBpedia ontology dataset（一个多语言知识库），里面包括560000个训练样本和70000个测试样本，涵盖14个high-level 类，比如公司类、建筑类、电影类等。</p>
-<p>​ 在把样本送进网络前，需要用独热编码法（one-hot representation）对每个字母编码成一个向量。通过网络的六个卷积层、三个全连接层，最终会被分到14个类中。</p>
-<h3 id="white-box-attacks"><u>3. White-Box-Attacks:</u></h3>
-<h4 id="fgsm算法">3.1 FGSM算法：</h4>
-<p>​ FGSM是Goodfellow在2015年提出的对图片生成对抗样本的经典算法。使用类似的思路来在文本领域生成对抗样本结果并不好：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830214227.png" /></p>
-<h4 id="idenfitying-classification-important-items">3.2 Idenfitying Classification-important Items:</h4>
-<p>​ 在白盒攻击中，我们需要定位文本中对于分类器的分类结果起到很大作用的文本段（通过计算代价梯度）。在这里，我们使用<strong><em>Hot Training Phrases</em> (HTPs)</strong>代表最常使用的短语：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831150703.png" /></p>
-<p>​ HTPS表明了用什么短语/词去做扰动，但是没有说在哪里做。在这里使用<strong><em>Hot Sample Phrases</em> (HSPs)</strong>来表明在哪里做扰动。</p>
-<h4 id="attacking-character-level-dnn">3.3 Attacking Character-level DNN:</h4>
-<p>​ 我们的方法是一种targeted攻击，可以指定对抗样本的误导类型。</p>
-<h5 id="insertion-strategy插入策略">3.3.1 Insertion Strategy（插入策略）:</h5>
-<p>​ 在某个HSP前插入一个HTP，就可以达到效果：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831151929.png" /></p>
-<p>​ 由上图可以看到，将某个<strong>HTP</strong>（<em>historic</em>）插入到<strong>HSP</strong>（<em>principal stock exchange of Uganda. It was founded</em>）之前，就可以使一个公司的分类文本变为对建筑的分类。</p>
-<p>​ 实际上，我们通常需要进行多次插入，但插入次数过多会影响样本的效用和可读性，为了解决这个问题，这里引入NL水印技术（<em>Natural Language watermarking technique</em>）。该技术可以通过语义或句法操作将所有权水印隐形地嵌入到普通文本中,虽然我们的攻击目标与NL水印有本质的不同，但我们可以借用它的思想来构造对抗样本。实际上，扰动可以看作是一种水印，并以类似的方式嵌入到样本中。</p>
-<p>​ 在这里，我们拓展这个思路，在样本中插入<strong>Presupposition</strong>(读者熟知的模糊短语)和 <strong>semantically empty phrases</strong>（可有可无的短语），有没有他们，在读者看来，原文的意思不会改变。</p>
-<p>​ 总的来说，我们考虑将各种HTPS组合成一个语法单元后再嵌入到文本中，新的单元可以是生成的可有可无的资料，或者甚至是不会改变文本原意的伪造的资料。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831154859.png" /></p>
-<p>​ <strong>特别的，通过互联网搜索或者查找一些数据集，我们可以找到与插入点很相关的资料，包括一些期望的目标分类的HTPs。</strong></p>
-<p>​ 由于我们不能总是找到合适的HTPs，所以提出一个新概念——伪造的事实（forged fact），也就是插入很难证伪的HTPs。例如：</p>
-<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/20210831154910.png" /></p>
-<p>​ 此外，我们排除了伪造的事实，这些事实可以通过检索他们在网上的相反证据而被否认。</p>
-<h5 id="modification-strategy修改策略">3.3.2 Modification Strategy（修改策略）：</h5>
-<p>​ Moidfication就是轻微修改一些HSP。</p>
-<p>​ 为了让修改不被人类观察者发现，我们采用了typo-based watermarking 技术。具体的说，一个HSP可以通过两种方式来被修改：</p>
-<p>​ 1. 从相关的语料库中选择常见的拼写错误来替换它；</p>
-<p>​ 2. 把它的一些字符修改成类似的外观（例如小写字母'l'与阿拉伯数字‘1’很像）。</p>
-<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831160407.png" /></p>
-<p>​ 由上图可以看出，这种方式对分类结果的扰动是巨大的。</p>
-<h5 id="removal-strategy移除策略">3.3.3 Removal Strategy（移除策略）:</h5>
-<p>​ 移除策略单独使用也许并不能足够有效地影响预测结果，但是可以很大程度上降低原始预测类型的置信度。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831161007.png" /></p>
-<p>​ 由上图可以看出，移除'<strong><em>British</em></strong>'可以导致原始预测类型的置信度下降了35%。</p>
-<h5 id="combination-of-three-strategies">3.3.4 Combination of Three Strategies:</h5>
-<p>​ 如图6所示，单靠去除策略改变输出分类往往是困难的。但是，通过与其他策略相结合，可以避免对原文进行过多的修改或插入。在实践中，我们常常结合以上三种策略来制作微妙的对抗样本。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831161638.png" /></p>
-<p>​ 以图7为例，通过去除一个HSP、插入一个伪造事实和修改一个HSP，可以成功地改变输出分类，但单独应用上述任何扰动都失败。具体来说，删除、插入和修改仅使置信度分别下降27.3 %、17.5 %和10.1 %，保持预测类不变。</p>
-<h3 id="black-box-attack">4. Black-Box-Attack:</h3>
-<p>暂略</p>
-<h3 id="evaluation">5. Evaluation：</h3>
-<h4 id="我们的方法能否执行有效的源目标误分类攻击">5.1 我们的方法能否执行有效的源/目标误分类攻击?</h4>
-<p>​ <strong><em>答：</em></strong>在众多测试集中，只有DBpedia ontology数据集是一个多分类数据集，故我们在其中随机选取了一些样本：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831165135.png" /></p>
-<h4 id="所生成的对抗样本能否避免被人类观察者认出来并同时保持其功能性">5.2 所生成的对抗样本能否避免被人类观察者认出来，并同时保持其功能性？</h4>
-<p><strong><em>答：</em></strong>我们找了23个学生。他们对项目不了解，然后每个人给20个文本，其中一半是加扰的。让他们分到14个类中，如果他们觉得哪个文本不对劲，让他们指出来。</p>
-<p>​ 他们总的分类正确率是94.2%，10个对抗样本的正确率是94.8%。所以实用性还是有的。</p>
-<p>​ 他们标注出了240项修改处，其中12项符合真实的修改。但实际上我们做了594处修改。</p>
-<h4 id="我们的方法足够有效吗">5.3 我们的方法足够有效吗？</h4>
-<p><strong><em>答：</em></strong>实验中计算梯度和找HTPs花了116小时。14个类的HTPs每个类花了8.29小时。对所有的adversarial示例只执行一次计算。制作一个对抗性的样品大约需要10到20分钟。对于对手来说，获得理想的对抗样本是可以接受的。实际上，她或他愿意花更多的时间来做这件事。</p>
-<h3 id="realted-works">6. Realted Works:</h3>
-<p>​ <strong>可以做的方向：</strong>1.自动生成对抗样本；（然而，Papernot等人(Papernot et al. 2016a)提出了一种基于雅可比矩阵的数据集增强技术，该技术可以在不访问其模型、参数或训练数据的情况下，在有限对输入输出的基础上，为目标dnn提供替代模型。作者还表明，使用替代模型也可以有效地制作对抗样本，以攻击目标DNN。）2.迁移、黑盒攻击；</p>
+<p>​ 主要贡献：</p>
+<pre><code>1. 提出了一个一般化的方法用于自动寻找分类器的对抗样本；
+2. 制作了一个原型系统用于自动生成对抗样本；
+3. 我们的系统在对500个恶意样本种子寻找对抗样本的过程中，达到了100%的准确率。</code></pre>
+<hr />
+<h3 id="overview">2. Overview：</h3>
+<h4 id="finding-evasive-samples"><em>2.1 Finding Evasive Samples</em>：</h4>
+<p>​ <strong>整体思路：</strong></p>
+<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901185852.png" /></p>
+<p>​ <strong><em>oracle</em></strong>用于判断一个样本是否具有恶意行为；</p>
+<hr />
+<h3 id="pdf-malware-and-classifiers">3. PDF Malware and Classifiers</h3>
+<h4 id="pdfmalware"><em>3.1 PDFmalware:</em></h4>
+<p>​ PDF文件的整体结构：</p>
+<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901191527.png" /></p>
+<p>​ 早些的PDF恶意样本一般使用JavaScript嵌入，用户双击打开时出发执行恶意脚本。</p>
+<p>​ 因为不是所有的PDF恶意样本都是嵌入了JavaScript代码，最近的一些PDF恶意分类器就着重于PDF文件的结构化特征。在本文，我们的目标就是攻击这些有代表性的基于文件结构化特征的分类器。</p>
+<h4 id="target-classififiers"><em>3.2 Target Classififiers：</em></h4>
+<p>​ <strong>PDFrate：</strong>一个使用随机森林算法的分类器。</p>
+<p>​ <strong>Hidost:</strong>一个SVM分类器。</p>
 <p>​</p>
+<hr />
+<h3 id="evading-pdf-malware-classifiers">4. Evading PDF Malware Classifiers：</h3>
+<hr />
+<h3 id="experiment">5. Experiment:</h3>
+<h4 id="dataset"><em>5.1 Dataset:</em></h4>
+<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194138.png" /></p>
+<h4 id="test"><em>5.2 Test：</em></h4>
+<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194328.png" /></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194448.png" /></p>
 ]]></content>
       <categories>
         <category>Paper</category>
       </categories>
       <tags>
         <tag>AD</tag>
-        <tag>NLP</tag>
-        <tag>DNN</tag>
+        <tag>Malware Classifiers</tag>
+        <tag>PDF</tag>
       </tags>
   </entry>
   <entry>
@@ -727,6 +644,90 @@
         <tag>AD</tag>
         <tag>Malware Classifiers</tag>
         <tag>RNN</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Deep Text Classifification Can be Fooled</title>
+    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/</url>
+    <content><![CDATA[<h1 id="论文阅读deep-text-classifification-can-be-fooled">【论文阅读】<strong>Deep Text Classifification Can be Fooled</strong></h1>
+<blockquote>
+<p><strong>时间：</strong>2017</p>
+<p><strong>作者：</strong>Bin Liang, Hongcheng Li, Miaoqiang Su, Pan Bian, Xirong Li and Wenchang Shi 中国人民大学</p>
+</blockquote>
+<h3 id="abstract">Abstract:</h3>
+<p>​ 在这篇文章，我们提出了一种有效的生成文本对抗样本的方法，并且揭示了一个很重要但被低估的事实：基于DNN的文本分类器很容易被对抗样本攻击。</p>
+<p>​ 具体来说，面对不同的对抗场景，通过计算输入的代价梯度(白盒攻击)或生成一系列被遮挡的测试样本(黑盒攻击)来识别对分类重要的文本项。（<u>这句不是很懂，什么叫’ the text items that are important for classifification‘？</u>）</p>
+<p>​ 基于这些项目，我们设计了三种扰动策略，insertion，modification，removal，用于生成对抗样本。实验结果表明基于我们的方法生成的对抗样本可以成功地欺骗主流的在字符等级和单词等级的DNN文本分类器。</p>
+<p>​ 对抗样本可以被扰动到任意理想的类中而不降低其效率。（？）同时，被引入的扰动很难被察觉。</p>
+<p>​</p>
+<h3 id="introduction">1. Introduction:</h3>
+<p>​ 在文本中，即使很小的扰动也会使一个字母或者单词完全变化，这会导致句子不能被辨识。故如果直接将应用于多媒体（图片，音频）的算法应用到文本上，得到的对抗样本的原意就会改变，而且很大程度上变成人类无法理解的句子。</p>
+<p>​ 在这片论文里，我们提出了一种生成对抗样本的有效方法。与直接简单插入扰动相比，我们设计了三种扰动策略：<em>insertion</em>, <em>modifification</em>, and <em>removal</em>，并且引入了自然语言文本水印（<em>natural language watermarking</em>）技术用于生成对抗样本。</p>
+<p>​ 理论上，生成一个好的对抗样本很大程度上依赖于对目标分类模型的信息。在这里我们根据不同情形，使用了白盒攻击和黑盒攻击。</p>
+<p>​ 为了普遍性，我们使用了字符等级的模型和单词等级的模型作为受害者。我们的实验结果证明基于DNN的文本分类器在面对对抗样本攻击时是脆弱的。</p>
+<h3 id="target-models-and-datasets">2. Target Models and Datasets:</h3>
+<p>​ 这里使用的文本分类器是Zhang et al. 2015《Character-level Convolutional Networks foe Text Classification》，数据集是Lehmann et al.2014的DBpedia ontology dataset（一个多语言知识库），里面包括560000个训练样本和70000个测试样本，涵盖14个high-level 类，比如公司类、建筑类、电影类等。</p>
+<p>​ 在把样本送进网络前，需要用独热编码法（one-hot representation）对每个字母编码成一个向量。通过网络的六个卷积层、三个全连接层，最终会被分到14个类中。</p>
+<h3 id="white-box-attacks"><u>3. White-Box-Attacks:</u></h3>
+<h4 id="fgsm算法">3.1 FGSM算法：</h4>
+<p>​ FGSM是Goodfellow在2015年提出的对图片生成对抗样本的经典算法。使用类似的思路来在文本领域生成对抗样本结果并不好：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830214227.png" /></p>
+<h4 id="idenfitying-classification-important-items">3.2 Idenfitying Classification-important Items:</h4>
+<p>​ 在白盒攻击中，我们需要定位文本中对于分类器的分类结果起到很大作用的文本段（通过计算代价梯度）。在这里，我们使用<strong><em>Hot Training Phrases</em> (HTPs)</strong>代表最常使用的短语：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831150703.png" /></p>
+<p>​ HTPS表明了用什么短语/词去做扰动，但是没有说在哪里做。在这里使用<strong><em>Hot Sample Phrases</em> (HSPs)</strong>来表明在哪里做扰动。</p>
+<h4 id="attacking-character-level-dnn">3.3 Attacking Character-level DNN:</h4>
+<p>​ 我们的方法是一种targeted攻击，可以指定对抗样本的误导类型。</p>
+<h5 id="insertion-strategy插入策略">3.3.1 Insertion Strategy（插入策略）:</h5>
+<p>​ 在某个HSP前插入一个HTP，就可以达到效果：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831151929.png" /></p>
+<p>​ 由上图可以看到，将某个<strong>HTP</strong>（<em>historic</em>）插入到<strong>HSP</strong>（<em>principal stock exchange of Uganda. It was founded</em>）之前，就可以使一个公司的分类文本变为对建筑的分类。</p>
+<p>​ 实际上，我们通常需要进行多次插入，但插入次数过多会影响样本的效用和可读性，为了解决这个问题，这里引入NL水印技术（<em>Natural Language watermarking technique</em>）。该技术可以通过语义或句法操作将所有权水印隐形地嵌入到普通文本中,虽然我们的攻击目标与NL水印有本质的不同，但我们可以借用它的思想来构造对抗样本。实际上，扰动可以看作是一种水印，并以类似的方式嵌入到样本中。</p>
+<p>​ 在这里，我们拓展这个思路，在样本中插入<strong>Presupposition</strong>(读者熟知的模糊短语)和 <strong>semantically empty phrases</strong>（可有可无的短语），有没有他们，在读者看来，原文的意思不会改变。</p>
+<p>​ 总的来说，我们考虑将各种HTPS组合成一个语法单元后再嵌入到文本中，新的单元可以是生成的可有可无的资料，或者甚至是不会改变文本原意的伪造的资料。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831154859.png" /></p>
+<p>​ <strong>特别的，通过互联网搜索或者查找一些数据集，我们可以找到与插入点很相关的资料，包括一些期望的目标分类的HTPs。</strong></p>
+<p>​ 由于我们不能总是找到合适的HTPs，所以提出一个新概念——伪造的事实（forged fact），也就是插入很难证伪的HTPs。例如：</p>
+<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/20210831154910.png" /></p>
+<p>​ 此外，我们排除了伪造的事实，这些事实可以通过检索他们在网上的相反证据而被否认。</p>
+<h5 id="modification-strategy修改策略">3.3.2 Modification Strategy（修改策略）：</h5>
+<p>​ Moidfication就是轻微修改一些HSP。</p>
+<p>​ 为了让修改不被人类观察者发现，我们采用了typo-based watermarking 技术。具体的说，一个HSP可以通过两种方式来被修改：</p>
+<p>​ 1. 从相关的语料库中选择常见的拼写错误来替换它；</p>
+<p>​ 2. 把它的一些字符修改成类似的外观（例如小写字母'l'与阿拉伯数字‘1’很像）。</p>
+<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831160407.png" /></p>
+<p>​ 由上图可以看出，这种方式对分类结果的扰动是巨大的。</p>
+<h5 id="removal-strategy移除策略">3.3.3 Removal Strategy（移除策略）:</h5>
+<p>​ 移除策略单独使用也许并不能足够有效地影响预测结果，但是可以很大程度上降低原始预测类型的置信度。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831161007.png" /></p>
+<p>​ 由上图可以看出，移除'<strong><em>British</em></strong>'可以导致原始预测类型的置信度下降了35%。</p>
+<h5 id="combination-of-three-strategies">3.3.4 Combination of Three Strategies:</h5>
+<p>​ 如图6所示，单靠去除策略改变输出分类往往是困难的。但是，通过与其他策略相结合，可以避免对原文进行过多的修改或插入。在实践中，我们常常结合以上三种策略来制作微妙的对抗样本。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831161638.png" /></p>
+<p>​ 以图7为例，通过去除一个HSP、插入一个伪造事实和修改一个HSP，可以成功地改变输出分类，但单独应用上述任何扰动都失败。具体来说，删除、插入和修改仅使置信度分别下降27.3 %、17.5 %和10.1 %，保持预测类不变。</p>
+<h3 id="black-box-attack">4. Black-Box-Attack:</h3>
+<p>暂略</p>
+<h3 id="evaluation">5. Evaluation：</h3>
+<h4 id="我们的方法能否执行有效的源目标误分类攻击">5.1 我们的方法能否执行有效的源/目标误分类攻击?</h4>
+<p>​ <strong><em>答：</em></strong>在众多测试集中，只有DBpedia ontology数据集是一个多分类数据集，故我们在其中随机选取了一些样本：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831165135.png" /></p>
+<h4 id="所生成的对抗样本能否避免被人类观察者认出来并同时保持其功能性">5.2 所生成的对抗样本能否避免被人类观察者认出来，并同时保持其功能性？</h4>
+<p><strong><em>答：</em></strong>我们找了23个学生。他们对项目不了解，然后每个人给20个文本，其中一半是加扰的。让他们分到14个类中，如果他们觉得哪个文本不对劲，让他们指出来。</p>
+<p>​ 他们总的分类正确率是94.2%，10个对抗样本的正确率是94.8%。所以实用性还是有的。</p>
+<p>​ 他们标注出了240项修改处，其中12项符合真实的修改。但实际上我们做了594处修改。</p>
+<h4 id="我们的方法足够有效吗">5.3 我们的方法足够有效吗？</h4>
+<p><strong><em>答：</em></strong>实验中计算梯度和找HTPs花了116小时。14个类的HTPs每个类花了8.29小时。对所有的adversarial示例只执行一次计算。制作一个对抗性的样品大约需要10到20分钟。对于对手来说，获得理想的对抗样本是可以接受的。实际上，她或他愿意花更多的时间来做这件事。</p>
+<h3 id="realted-works">6. Realted Works:</h3>
+<p>​ <strong>可以做的方向：</strong>1.自动生成对抗样本；（然而，Papernot等人(Papernot et al. 2016a)提出了一种基于雅可比矩阵的数据集增强技术，该技术可以在不访问其模型、参数或训练数据的情况下，在有限对输入输出的基础上，为目标dnn提供替代模型。作者还表明，使用替代模型也可以有效地制作对抗样本，以攻击目标DNN。）2.迁移、黑盒攻击；</p>
+<p>​</p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>AD</tag>
+        <tag>NLP</tag>
+        <tag>DNN</tag>
       </tags>
   </entry>
   <entry>
@@ -841,6 +842,23 @@
       </tags>
   </entry>
   <entry>
+    <title>近似误差与估计误差</title>
+    <url>/2021/09/05/%E3%80%90%E9%9A%8F%E6%89%8B%E5%86%99%E3%80%91%E8%BF%91%E4%BC%BC%E8%AF%AF%E5%B7%AE%E4%B8%8E%E4%BC%B0%E8%AE%A1%E8%AF%AF%E5%B7%AE/</url>
+    <content><![CDATA[<h1 id="随手写近似误差与估计误差">【随手写】近似误差与估计误差</h1>
+<p>​ 在读《统计学习方法》中关于k-邻近算法的介绍时，发现了这么一段话：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905153525.png" /></p>
+<p>​ <strong>近似误差（<em>Approximation Error</em>）:</strong> 训练时，训练集与当前模型的误差；</p>
+<p>​ <strong>估计误差（<em>Estimation Error</em>）：</strong> 训练完成后，所选择的模型已经固定，模型对未知数据拟合时的误差。</p>
+<p>​ 近似误差与估计误差二者不可兼得，此消彼长，需要取其平衡。</p>
+]]></content>
+      <categories>
+        <category>Something</category>
+      </categories>
+      <tags>
+        <tag>Machine Learning</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>极大似然估计</title>
     <url>/2021/09/04/%E3%80%90%E9%9A%8F%E5%86%99%E3%80%91%E6%9E%81%E5%A4%A7%E4%BC%BC%E7%84%B6%E4%BC%B0%E8%AE%A1/</url>
     <content><![CDATA[<h1 id="随写极大似然估计maximum-likelihood-estimatemle">【随写】极大似然估计（<em>Maximum Likelihood Estimate，MLE</em>）</h1>
@@ -859,23 +877,6 @@
       </categories>
       <tags>
         <tag>Math</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>近似误差与估计误差</title>
-    <url>/2021/09/05/%E3%80%90%E9%9A%8F%E6%89%8B%E5%86%99%E3%80%91%E8%BF%91%E4%BC%BC%E8%AF%AF%E5%B7%AE%E4%B8%8E%E4%BC%B0%E8%AE%A1%E8%AF%AF%E5%B7%AE/</url>
-    <content><![CDATA[<h1 id="随手写近似误差与估计误差">【随手写】近似误差与估计误差</h1>
-<p>​ 在读《统计学习方法》中关于k-邻近算法的介绍时，发现了这么一段话：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905153525.png" /></p>
-<p>​ <strong>近似误差（<em>Approximation Error</em>）:</strong> 训练时，训练集与当前模型的误差；</p>
-<p>​ <strong>估计误差（<em>Estimation Error</em>）：</strong> 训练完成后，所选择的模型已经固定，模型对未知数据拟合时的误差。</p>
-<p>​ 近似误差与估计误差二者不可兼得，此消彼长，需要取其平衡。</p>
-]]></content>
-      <categories>
-        <category>Something</category>
-      </categories>
-      <tags>
-        <tag>Machine Learning</tag>
       </tags>
   </entry>
   <entry>
