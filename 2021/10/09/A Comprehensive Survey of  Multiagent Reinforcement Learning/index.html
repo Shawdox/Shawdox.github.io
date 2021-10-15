@@ -23,7 +23,7 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers"/>
+        <meta property="og:title" content="A Comprehensive Survey of Multiagent Reinforcement Learning"/>
     
 
     <!--Open Graph Description-->
@@ -55,7 +55,7 @@
 
     <!-- Title -->
     
-    <title>Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers - Shaw</title>
+    <title>A Comprehensive Survey of Multiagent Reinforcement Learning - Shaw</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
@@ -161,7 +161,7 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="post-heading">
-                    <h1>Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers</h1>
+                    <h1>A Comprehensive Survey of Multiagent Reinforcement Learning</h1>
                     
                     <span class="meta">
                         <!-- Date and Author -->
@@ -169,7 +169,7 @@
                             Posted by Shaw on
                         
                         
-                            2021-09-03
+                            2021-10-09
                         
                     </span>
                 </div>
@@ -190,7 +190,7 @@
                         
 
 
-<a href="/tags/AD/">#AD</a> <a href="/tags/Malware-Classifiers/">#Malware Classifiers</a>
+<a href="/tags/RL/">#RL</a>
 
 
                     
@@ -210,105 +210,64 @@
 
             <!-- Post Main Content -->
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <h1 id="论文阅读generic-black-box-end-to-end-attack-against-state-of-the-art-api-call-based-malware-classifiers">【论文阅读】Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers</h1>
+                <h1 id="a-comprehensive-survey-of-multiagent-reinforcement-learning">A Comprehensive Survey of Multiagent Reinforcement Learning</h1>
 <blockquote>
-<p><strong>作者：Ishai Rosenberg </strong></p>
-<p><strong>大学：Ben-Gurion University of the Negev</strong></p>
-<p><strong>时间：2018.6.4</strong></p>
+<p>作者：Lucian Bus¸oniu, Robert Babuska, and Bart De Schutter</p>
+<p>时间：2008</p>
 </blockquote>
-<h3 id="做了什么">1. 做了什么？</h3>
-<ul>
-<li><p>​ 对一个通过机器学习训练的，通过API调用来分类恶意软件的分类器的攻击。</p>
-<p>​ 这个攻击可以使分类器不能成功识别恶意软件，并且不改变原有软件的功能。</p></li>
-<li><p>​ 实现了<strong>GADGET</strong>，一个可以直接将二进制恶意软件文件转换为分类器无法检测的二进制文件，<strong>并不需要访问文件源代码。</strong></p></li>
-</ul>
-<h3 id="一些概念">2. 一些概念：</h3>
-<h4 id="machine-learning-malware-classififiers基于机器学习的恶意软件分类器">2.1 Machine learning malware classififiers（基于机器学习的恶意软件分类器）</h4>
-<p>​ 优点：1. 可以自动训练，节省时间；</p>
-<p>​ 2. 只要分类器并不是基于指纹特征或者某个特定的特征（如Hash值）来分类，面对不可见威胁时泛化能力较强。</p>
-<h4 id="adversarial-examples对抗样本">2.2 Adversarial Examples（对抗样本）</h4>
-<p><strong>对输入样本故意添加一些人无法察觉的细微的干扰，导致模型以高置信度给出一个错误的输出。</strong></p>
+<h3 id="abstract">Abstract</h3>
+<p>​ <u><em>一篇对Multiagent reinforcement learning(MARL)的综述。</em></u></p>
+<p>​ 一个首要的问题：多智能体学习目的的正式陈述是什么？不同观点引出了不同的目标，智能体动态学习的稳定性和对其它智能体行为变化的适应性。文献中描述的MARL算法都是在完全合作、完全竞争或更一般的环境中，明确或含蓄地表明这两个目标之一或两者结合。</p>
+<p>​ <strong>本文接下来描述了:</strong></p>
 <ol type="1">
-<li><strong>可以针对一张已经有正确分类的image，对其进行细微的像素修改，可以在DNN下被错分为其他label。</strong></li>
+<li>详细讨论了这些算法的一个具有代表性的选择，以及每一类算法中出现的具体问题；</li>
+<li>MARL算法的好处和遇到的挑战；</li>
+<li>对该领域的展望。</li>
 </ol>
-<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-ed60089ae25c81ba2677ec34ffa2a47f_720w.jpg" /></p>
-<p>​ 样本x的label为熊猫，在对x添加部分干扰后，在人眼中仍然分为熊猫，但对深度模型，却将其错分为长臂猿，且给出了高达99.3%的置信度。</p>
-<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-59a3afcc069df94927ffe1efd62822e9_720w.jpg" /></p>
-<p>像素攻击：改动图片上的一个像素，就能让神经网络认错图，甚至还可以诱导它返回特定的结果。</p>
-<p>改动图片上的一个像素，就能让神经网络认错图，甚至还可以诱导它返回特定的结果</p>
-<p><strong>2. 同样，根据DNN，很容易产生一张在人眼下毫无意义的image，但是在DNN中能够获得高confidence的label。</strong></p>
-<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-0390bba1f2c35220c8b099b8ab0f4ebc_720w.jpg" /></p>
-<p>两种EA算法生成的样本，这些样本人类完全无法识别，但深度学习模型会以高置信度对它们进行分类，例如将噪声识别为狮子。</p>
-<h5 id="adversarial-examples-for-api-sequences生成api序列对抗样本与生成图像对抗样本并不同">2.2.1： Adversarial examples for API sequences(生成API序列对抗样本与生成图像对抗样本并不同):</h5>
+<p>​</p>
+<hr />
+<h3 id="introduction">1. Introduction</h3>
+<h4 id="背景">1.1 背景</h4>
+<p>​ 一个多智能体系统可以被定义为：一群<strong>独立的，互相影响的</strong>实体在同一个环境中。</p>
+<p>​ 多智能体系统在机器人团队，分散控制，资源管理，合作决定系统，数据处理等多方面领域有广泛的应用。在机器人团队中，很自然，控制权是分散在机器人之中的；在资源管理中，尽管资源可以被一个中心权威机构管理，但用一个Agent来识别每个资源可能会对系统提供一个有用的、分布式的视角。</p>
+<p>​ 尽管每个智能体可以被预编程，为在面对复杂环境时提前给智能体设计好的行为准则是十分困难的，甚至可以说是不可能的。所以，让他们在线学习自己的行为准则是十分有必要的，这可以使个体与整体的表现都逐渐提升。</p>
+<p>​ 并且考虑到环境可能随时变化，一个硬布线的（<em>hardwired</em>，组原概念，硬布线是提前定死的，不能对其编程）行为可能不是那么合适。</p>
+<p>​ 考虑到强化学习的简单性和普遍性，其对于多智能体学习是十分合适的。<strong>但强化学习在多智能体系统中也有一些挑战：</strong></p>
 <ol type="1">
-<li>API序列由长度可变的离散符号组成，但图像可以用固定维度的矩阵表示为矩阵，且矩阵的值是连续的。</li>
-<li>对于对抗API序列，其必须验证原始的恶意功能是完整的。</li>
-<li><strong>对抗样本的迁移性</strong>：针对一种模型的对抗样本通常对另一种模型也奏效，即使这两个模型不是用同一数据集训练的。</li>
-</ol>
-<h4 id="几种攻击方法">2.3 几种攻击方法：</h4>
+<li><p>很难给定RL多智能体一个好的学习目标；</p></li>
+<li><p>大多数情况下，每个智能体必须跟踪其他正在学习的智能体（因此，整个过程并不平稳，也使大多数单智能体RL算法的收敛性质失效），只有这样，才有可能使其行为与他们的行为相协调，从而产生连贯的联合行为结果；</p></li>
+<li><p>算法对现实问题规模的可伸缩性，在单Agent RL中已经是有问题的，在多Agent强化学习( MARL )中更是引起关注的一个更大的原因。</p>
 <blockquote>
-<p><strong>White-box attack</strong>：白盒攻击，对模型和训练集完全了解。</p>
-<p><strong>Black-box attack</strong>：黑盒攻击：对模型不了解，对训练集不了解或了解很少。</p>
-<p><strong>Real-word attack</strong>：在真实世界攻击。如将对抗样本打印出来，用手机拍照识别。</p>
-<p><strong>targeted attack</strong>：使得图像都被错分到给定类别上。</p>
-<p><strong>non-target attack</strong>：事先不知道需要攻击的网络细节，也不指定预测的类别，生成对抗样本来欺骗防守方的网络。</p>
-<p><strong>mimicry attack</strong>: 编写恶意的exploit，该exp模拟良性代码系统调用的痕迹，因为能够逃逸检测。</p>
-<p><strong>disguise attack:</strong> 仅修改系统调用的参数使良性系统调用生成恶意行为 。</p>
-<p><strong>No-op attack</strong>: 添加语义的no-ops-系统调用，其没有影响，或者是不相干的影响，即，打开一个不存在的文件。</p>
-<p><strong>Equivalence attack</strong>: 使用一个不同的系统调用来达到恶意的目的.</p>
-</blockquote>
-<h4 id="decision-boundary决策界限">2.4 decision boundary(决策界限)</h4>
-<h4 id="end-to-end">2.5 end-to-end:</h4>
-<h4 id="结果分类">2.6 结果分类：</h4>
-<p>虑一个二分问题，即将实例分成正类（positive）或负类（negative）。对一个二分问题来说，会出现四种情况。如果一个实例是正类并且也被 预测成正类，即为真正类（True positive）,如果实例是负类被预测成正类，称之为假正类（False positive）。相应地，如果实例是负类被预测成负类，称之为真负类（True negative）,正类被预测成负类则为假负类（false negative）。</p>
-<p>列联表如下表所示，1代表正类，0代表负类。（预测正确：true，预测是正类：positive）</p>
-<table>
-<thead>
-<tr class="header">
-<th></th>
-<th></th>
-<th>预测</th>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td></td>
-<td></td>
-<td>1</td>
-<td>0</td>
-<td>合计</td>
-</tr>
-<tr class="even">
-<td>实际</td>
-<td>1</td>
-<td>True Positive（TP）</td>
-<td>False Negative（FN）</td>
-<td>Actual Positive(TP+FN)</td>
-</tr>
-<tr class="odd">
-<td></td>
-<td>0</td>
-<td>False Positive（FP)</td>
-<td>True Negative(TN)</td>
-<td>Actual Negative(FP+TN)</td>
-</tr>
-<tr class="even">
-<td>合计</td>
-<td></td>
-<td>Predicted Positive(TP+FP)</td>
-<td>Predicted Negative(FN+TN)</td>
-<td>TP+FP+FN+TN</td>
-</tr>
-</tbody>
-</table>
-<p>从列联表引入两个新名词。</p>
-<p>其一是真正类率(true positive rate ,TPR), 计算公式为 <em>TPR=TP</em>/ ( <em>TP</em>+ <em>FN</em>)，刻画的是分类器所识别出的 正实例占所有正实例的比例。</p>
-<p>另外一个是负正类率(false positive rate, FPR),计算公式为 <em>FPR= FP / (FP + TN)，</em>计算的是分类器错认为负类的正实例占所有负实例的比例。</p>
-<p>还有一个真负类率（True Negative Rate，TNR），也称为specificity,计算公式为TNR= <em>TN</em>/ ( <em>FP</em>+ <em>TN</em>) = 1 - <em>FPR</em>。</p>
-<h3 id="如何实现">3. 如何实现？</h3>
-<p>一些问题：程序调用API的过程；</p>
+<p><strong>可伸缩性（scalability）：</strong>算法在处理各种规模的数据时都有很好的性能。随着数据的增大，效率不会下降很快。</p>
+</blockquote></li>
+</ol>
+<p><strong>多智能体强化学习通常有四种设定：</strong></p>
+<ol type="1">
+<li><strong>Fully cooperative</strong> 完全合作关系，这种设定里面，Agents的利益一致，获得的奖励相同，有共同的目标。</li>
+<li><strong>Fully competitive</strong> 完全竞争关系，一方的收益是另一方的损失。典型的代表就是0和博弈，双方获得的奖励的总和为0.</li>
+<li><strong>Mixed Cooperative &amp; comepetitive</strong> 既有竞争也有合作。例如：足球机器人踢球，两支球队，一方获得的奖励就是另一方的损失，但是球队内部成员是合作关系。</li>
+<li><strong>Self-interested</strong> 利己主义。系统中有多个Agents，一个Agent的动作会改变环境的状态，可能让别人受益或者受损。每个Agent只想最大化自身利益，至于让别人受损还是受益它不管。</li>
+</ol>
+<p>​ MARL与博弈论，进化计算，优化理论等有着强烈联系：</p>
+<p>​ 1. <strong>Game theory（博弈论）:</strong> 一个探究多智能体互动来最大化奖励的研究。在这里我们专注于对解决动态多智能体任务的算法，虽然大多数博弈论的研究结果与静态一次性或者多次重复任务相关。</p>
+<p>​ 【13】<strong>Bowling</strong>和<strong>Veloso</strong> 讨论了几种MARL算法，将这些算法用RL与博弈论相结合，用于动态环境中每个状态产生的静态博弈。</p>
+<p>​ 【14】<strong>Shoham</strong>对MARL的研究提供了批判性的评价，并研究了一小撮方法。</p>
+<ol start="2" type="1">
+<li><p><strong>Evolutionary computation（进化计算）：</strong>进化计算使用生物进化的准则来寻找解决问题的方法，这里不做回顾。进化学习总体上并不能轻易的从RL任务结构中获益。</p>
+<p>【17】<strong>Panait and Luke</strong>提供了只针对cooperative agent teams的进化学习（也有MARL）综述研究。</p>
+<p>【18-20】有兴趣的读者可以在这里找到协同进化技术的例子，在这里智能体是平行进化的。</p>
+<p>【21-23】团队学习技术，通过单个演化过程发现agent的学习行为。</p>
+<ol start="3" type="1">
+<li><strong>optimization theory（优化理论）</strong>进化多智能体学习（Evolutionary multiagent learning ）是一类源于优化理论的更大规模技术的特例，它直接探索智能体行为的空间。</li>
+</ol></li>
+<li><p><strong>Evolutionary game theory（进化博弈论）</strong>是进化学习和博弈论的结合。</p>
+<p>【28】<strong>Tuyls and Now´e</strong>更细节地调查了MARL与进化博弈论之间的关系（针对静态任务）。</p></li>
+</ol>
+<hr />
+<h3 id="background">2. Background</h3>
+<p>​ 介绍了必要的single-agent与multiagent RL算法。</p>
+<h4 id="single-agent">2.1 single-agent</h4>
+<h4 id="multiagent">2.2 multiagent</h4>
 
 
                 
