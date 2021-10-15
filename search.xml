@@ -1,11 +1,1382 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>A Comprehensive Survey of Multiagent Reinforcement Learning</title>
+    <url>/2021/10/09/A%20Comprehensive%20Survey%20of%20%20Multiagent%20Reinforcement%20Learning/</url>
+    <content><![CDATA[<h1 id="a-comprehensive-survey-of-multiagent-reinforcement-learning">A Comprehensive Survey of Multiagent Reinforcement Learning</h1>
+<blockquote>
+<p>作者：Lucian Bus¸oniu, Robert Babuska, and Bart De Schutter</p>
+<p>时间：2008</p>
+</blockquote>
+<h3 id="abstract">Abstract</h3>
+<p>​ <u><em>一篇对Multiagent reinforcement learning(MARL)的综述。</em></u></p>
+<p>​ 一个首要的问题：多智能体学习目的的正式陈述是什么？不同观点引出了不同的目标，智能体动态学习的稳定性和对其它智能体行为变化的适应性。文献中描述的MARL算法都是在完全合作、完全竞争或更一般的环境中，明确或含蓄地表明这两个目标之一或两者结合。</p>
+<p>​ <strong>本文接下来描述了:</strong></p>
+<ol type="1">
+<li>详细讨论了这些算法的一个具有代表性的选择，以及每一类算法中出现的具体问题；</li>
+<li>MARL算法的好处和遇到的挑战；</li>
+<li>对该领域的展望。</li>
+</ol>
+<p>​</p>
+<hr />
+<h3 id="introduction">1. Introduction</h3>
+<h4 id="背景">1.1 背景</h4>
+<p>​ 一个多智能体系统可以被定义为：一群<strong>独立的，互相影响的</strong>实体在同一个环境中。</p>
+<p>​ 多智能体系统在机器人团队，分散控制，资源管理，合作决定系统，数据处理等多方面领域有广泛的应用。在机器人团队中，很自然，控制权是分散在机器人之中的；在资源管理中，尽管资源可以被一个中心权威机构管理，但用一个Agent来识别每个资源可能会对系统提供一个有用的、分布式的视角。</p>
+<p>​ 尽管每个智能体可以被预编程，为在面对复杂环境时提前给智能体设计好的行为准则是十分困难的，甚至可以说是不可能的。所以，让他们在线学习自己的行为准则是十分有必要的，这可以使个体与整体的表现都逐渐提升。</p>
+<p>​ 并且考虑到环境可能随时变化，一个硬布线的（<em>hardwired</em>，组原概念，硬布线是提前定死的，不能对其编程）行为可能不是那么合适。</p>
+<p>​ 考虑到强化学习的简单性和普遍性，其对于多智能体学习是十分合适的。<strong>但强化学习在多智能体系统中也有一些挑战：</strong></p>
+<ol type="1">
+<li><p>很难给定RL多智能体一个好的学习目标；</p></li>
+<li><p>大多数情况下，每个智能体必须跟踪其他正在学习的智能体（因此，整个过程并不平稳，也使大多数单智能体RL算法的收敛性质失效），只有这样，才有可能使其行为与他们的行为相协调，从而产生连贯的联合行为结果；</p></li>
+<li><p>算法对现实问题规模的可伸缩性，在单Agent RL中已经是有问题的，在多Agent强化学习( MARL )中更是引起关注的一个更大的原因。</p>
+<blockquote>
+<p><strong>可伸缩性（scalability）：</strong>算法在处理各种规模的数据时都有很好的性能。随着数据的增大，效率不会下降很快。</p>
+</blockquote></li>
+</ol>
+<p><strong>多智能体强化学习通常有四种设定：</strong></p>
+<ol type="1">
+<li><strong>Fully cooperative</strong> 完全合作关系，这种设定里面，Agents的利益一致，获得的奖励相同，有共同的目标。</li>
+<li><strong>Fully competitive</strong> 完全竞争关系，一方的收益是另一方的损失。典型的代表就是0和博弈，双方获得的奖励的总和为0.</li>
+<li><strong>Mixed Cooperative &amp; comepetitive</strong> 既有竞争也有合作。例如：足球机器人踢球，两支球队，一方获得的奖励就是另一方的损失，但是球队内部成员是合作关系。</li>
+<li><strong>Self-interested</strong> 利己主义。系统中有多个Agents，一个Agent的动作会改变环境的状态，可能让别人受益或者受损。每个Agent只想最大化自身利益，至于让别人受损还是受益它不管。</li>
+</ol>
+<p>​ MARL与博弈论，进化计算，优化理论等有着强烈联系：</p>
+<p>​ 1. <strong>Game theory（博弈论）:</strong> 一个探究多智能体互动来最大化奖励的研究。在这里我们专注于对解决动态多智能体任务的算法，虽然大多数博弈论的研究结果与静态一次性或者多次重复任务相关。</p>
+<p>​ 【13】<strong>Bowling</strong>和<strong>Veloso</strong> 讨论了几种MARL算法，将这些算法用RL与博弈论相结合，用于动态环境中每个状态产生的静态博弈。</p>
+<p>​ 【14】<strong>Shoham</strong>对MARL的研究提供了批判性的评价，并研究了一小撮方法。</p>
+<ol start="2" type="1">
+<li><p><strong>Evolutionary computation（进化计算）：</strong>进化计算使用生物进化的准则来寻找解决问题的方法，这里不做回顾。进化学习总体上并不能轻易的从RL任务结构中获益。</p>
+<p>【17】<strong>Panait and Luke</strong>提供了只针对cooperative agent teams的进化学习（也有MARL）综述研究。</p>
+<p>【18-20】有兴趣的读者可以在这里找到协同进化技术的例子，在这里智能体是平行进化的。</p>
+<p>【21-23】团队学习技术，通过单个演化过程发现agent的学习行为。</p>
+<ol start="3" type="1">
+<li><strong>optimization theory（优化理论）</strong>进化多智能体学习（Evolutionary multiagent learning ）是一类源于优化理论的更大规模技术的特例，它直接探索智能体行为的空间。</li>
+</ol></li>
+<li><p><strong>Evolutionary game theory（进化博弈论）</strong>是进化学习和博弈论的结合。</p>
+<p>【28】<strong>Tuyls and Now´e</strong>更细节地调查了MARL与进化博弈论之间的关系（针对静态任务）。</p></li>
+</ol>
+<hr />
+<h3 id="background">2. Background</h3>
+<p>​ 介绍了必要的single-agent与multiagent RL算法。</p>
+<h4 id="single-agent">2.1 single-agent</h4>
+<h4 id="multiagent">2.2 multiagent</h4>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>RL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>A Benchmark API Call Dataset For Windows PE Malware Classification</title>
+    <url>/2021/09/06/Detours/</url>
+    <content><![CDATA[<h1 id="detours">Detours</h1>
+<p>​ Detours 是一个在<u>x86</u>平台上截获任意<u>Win32函数调用</u>的工具库。中断代码可以在运行时动态加载，也可以在静态执行文件处理。</p>
+<h3 id="detous库原理">1. Detous库原理：</h3>
+<p>​ 修改目标函数（一般为Windows API接口函数）：使用一个无条件转移指令来替换该目标函数的首部几条指令，<strong>将控制流直接转移到一个用户自己实现的截获函数（即Detour函数）。</strong></p>
+<p>​ 而原目标函数中被替换的指令被保存在一个被称为“Trampoline”函数中（译注：英文意为蹦床函数）。这些指令包括目标函数中被替换的代码以及一个重新跳转到目标函数正确位置的无条件分支。</p>
+<p>​ 截获函数可以替换目标函数，或者通过执行“Trampoline”函数时，将目标函数作为子程序来调用的办法，在保留原来目标函数功能基础上，来完成扩展功能。</p>
+<p>​ 因为截获函数（Detour函数）是执行时被插入到内存中目标函数的代码里，<strong>不是在硬盘上直接修改目标函数</strong>，所以，可以在一个很好的粒度上使得截获二进制函数的执行变得更容易。</p>
+<p>​ 例如，一个应用程序执行时加载的 DLL中的函数过程，可以被插入一段截获代码（detoured），与此同时，这个DLL还可以被其他应用程序按正常情况执行（译注：也就是按照不被截获的方式执行，因为DLL二进制文件没有被修改，所以发生截获时不会影响其他进程空间加载这个DLL）。</p>
+<p>​ 出于使用基本的函数截获功能的目的， Detours同样提供了编辑任何DLL导入表的功能，达到向已存在的二进制代码中添加任意数据节表的目的，向一个新进程或者一个已经运行着的进程中注入一个DLL。<strong>一旦向一个进程注入了DLL，这个动态库就可以截获任何Win32函数，不论它是在应用程序中或者在系统库中。</strong></p>
+]]></content>
+      <categories>
+        <category>●	课内</category>
+      </categories>
+      <tags>
+        <tag>软安课设</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/2021/10/07/RL%20Learning(%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0)/</url>
+    <content><![CDATA[<h1 id="rl-learning强化学习">RL Learning(强化学习)</h1>
+<blockquote>
+<p>参考资料：机器学习--周志华</p>
+</blockquote>
+<h3 id="什么是强化学习">1. 什么是强化学习？</h3>
+<h3 id="section"></h3>
+]]></content>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/2021/09/08/Log/</url>
+    <content><![CDATA[<h1 id="log">Log</h1>
+<blockquote>
+<p>软安课设日志</p>
+</blockquote>
+<h3 id="编译">1. 编译：</h3>
+<h4 id="使用vs2019自带的命令行界面进行编译提示没有nmake命令">1.1 使用VS2019自带的命令行界面进行编译，提示没有nmake命令：</h4>
+<p>​ 检查后发现VS2019只安装了桌面开发模块，没有安装C++开发模块，更新相应拓展包即可。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210906172501.png" /></p>
+<h3 id="尝试运行代码">2. 尝试运行代码：</h3>
+<h4 id="在testconsole.cpp文件中引入代码编译报错百余个标识符错误">2.1 在testconsole.cpp文件中引入代码，编译报错百余个标识符错误：</h4>
+<p>​ 在外网查询后发现，是因为引入引用windows.h在引用detours之前：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210906165008.png" /></p>
+<h4 id="在进行writefile函数的捕获时">2.2 在进行WriteFile函数的捕获时：</h4>
+<p>​ 首先，如果我们直接设置替换函数如下：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210909152145.png" /></p>
+<p>​ 会得到极其多的捕获信息：</p>
+<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210909152314.png" /></p>
+<p>​ 从图中可以看到，这是由于程序同时捕获了TestConsole(注射器)的写操作信息。</p>
+<p>​ <u>这就造成了典型的递归调用问题，NewWriteFile向控制台输出的信息又被捕获了</u>，故加入一个过滤器，使用GetStdHandle函数来获取当前控制台程序的句柄，与hFile句柄进行比较：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210910140215.png" /></p>
+<p>​ 使钩子忽略来自TestConsole.exe的写入操作。</p>
+<p>​ 但是，这样虽然避免了来自注射器程序的干扰，由于TextApp.exe(被注入程序)有时也可能存在像控制台打印信息的操作，以防后患，我们让dll排除此操作：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210910140549.png" /></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210909153514.png" /></p>
+<p>​ 成功排除该干扰。</p>
+<p>​</p>
+<h4 id="注册表创建操作">2.3 注册表创建操作：</h4>
+<p>​ 使用如下代码时会卡住：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210909221507.png" /></p>
+<p>​ 检查+查阅资料后发现，GetModuleFileName函数涉及到创建注册表操作，会导致递归调用，禁止后问题解决。</p>
+<h4 id="点击messagebox后文件读写钩子失效">2.3 点击MessageBox后文件读写钩子失效：</h4>
+<p>​ 在测试程序中如果测试了MessageBoxA/W,后续的文件读写操作虽然可以成功，但是钩子勾不住。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210910142705.png" /></p>
+<h4 id="在写ui界面文件读写问题">2.4 在写UI界面文件读写问题：</h4>
+<p>​ 本次实验所用的UI界面是django，由于JavaScript不提供内置的文件读写操作，同时，由于所使用的浏览器是Edge（基于Chrome内核），无法使用ActiveXObject操作来读取文件：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">//这段代码非IE内核浏览器无法使用</span>
+fp <span class="token operator">=</span> <span class="token function">ActiveXObject</span><span class="token punctuation">(</span><span class="token string">"Scripting.FileSystemObject"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> file <span class="token operator">=</span> fp<span class="token punctuation">.</span><span class="token function">OpenTextFile</span><span class="token punctuation">(</span><span class="token string">"C:\\Users\\Shaw\\Desktop\\S_s\\TestInitialNullForStudent\\TestConsole\\API_sequence.txt"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">var</span> str <span class="token operator">=</span> <span class="token string">""</span><span class="token punctuation">;</span>
+        <span class="token keyword">while</span><span class="token punctuation">(</span><span class="token operator">!</span>file<span class="token punctuation">.</span>AtEndOfStream<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+            <span class="token keyword">var</span> temp <span class="token operator">=</span> f<span class="token punctuation">.</span><span class="token function">ReadLine</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> temp<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                str <span class="token operator">+=</span> temp<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">+</span> <span class="token string">"&amp;nbsp;"</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            str <span class="token operator">+=</span> <span class="token string">"&lt;br>"</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">"console"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>innerHTML <span class="token operator">=</span> str<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 因为不想更换浏览器，并且考虑到使用此种动态显示方式需要使用异步线程，时间所限，故在这里尝试使用Django+Wsgi的socket连接方式进行前后端通信：</p>
+<ul>
+<li>​ References:</li>
+</ul>
+<p>​ <a href="http://www.ruanyifeng.com/blog/2017/05/websocket.html">WebSocket 教程 - 阮一峰的网络日志 (ruanyifeng.com)</a></p>
+<p>​ <a href="https://caojingyou.github.io/2017/11/15/C++与浏览器交互/">C++与浏览器交互 | 曹景游 (caojingyou.github.io)</a></p>
+<p>​ <a href="https://blog.csdn.net/byxdaz/article/details/84638249">(7条消息) Windows下使用websocketpp_深之JohnChen的专栏-CSDN博客</a></p>
+<p>​ <a href="https://web.dev/file-system-access/">The File System Access API: simplifying access to local files (web.dev)</a></p>
+]]></content>
+  </entry>
+  <entry>
     <title>More is different.</title>
     <url>/2021/09/03/Welcome/</url>
     <content><![CDATA[<h3 id="shaw的">Shaw的，</h3>
 <h3 id="一些记录一些随手写">一些记录，一些随手写。</h3>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210903135448.png" /></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>【安全攻防实验】电子数据取</title>
+    <url>/2021/06/14/%5B%E5%AE%89%E5%85%A8%E6%94%BB%E9%98%B2%E5%AE%9E%E9%AA%8C%5D%20%E7%94%B5%E5%AD%90%E6%95%B0%E6%8D%AE%E5%8F%96%E8%AF%81/</url>
+    <content><![CDATA[<h1 id="安全攻防实验电子数据取证">【安全攻防实验】电子数据取证</h1>
+<h3 id="磁盘镜像和证据固定">1. 磁盘镜像和证据固定</h3>
+<h5 id="在磁盘上创建一个文本文件">1.1 在磁盘上创建一个文本文件：</h5>
+<ul>
+<li>以‘abcdefgh’开头，后续随机填充一些字串。</li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194142.png" /></p>
+<ul>
+<li>把文本文件的拓展名改成学号：</li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194319.png" /></p>
+<h5 id="在x-ways-forensics中创建一个案件添加目标存储器">1.2 在X-Ways Forensics中创建一个案件，添加目标存储器：</h5>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194404.png" /></p>
+<h5 id="对该u盘存储器创建磁盘镜像">1.3 对该U盘存储器创建磁盘镜像：</h5>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194429.png" /></p>
+<h3 id="判断文件类型">2. 判断文件类型</h3>
+<h5 id="在案件中去除原来的存储器添加上一步的镜像文件">2.1 在案件中去除原来的存储器，添加上一步的镜像文件:</h5>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194448.png" /></p>
+<h5 id="用表格软件打开file-type-signatures-search.txt">2.2 /2.3 用表格软件打开File Type Signatures Search.txt：</h5>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194450.png" /></p>
+<ul>
+<li>添加一个文件类型：</li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194456.png" /></p>
+<ul>
+<li>在专业工具中选择‘进行磁盘快照’，对磁盘进行快照操作：</li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194500.png" /></p>
+<ul>
+<li>在选项中开启目录浏览器；</li>
+<li>在X-Ways中查看新类型的文件添加是否成功：</li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194503.png" /></p>
+<p>​ 可以看出，新文件类型添加成功，成功识别了拓展名，文件类型与签名状态。</p>
+<h5 id="修改文件签名数据库中的内容再次分析">2.4 修改文件签名数据库中的内容，再次分析：</h5>
+<ul>
+<li><p>​ 修改文件签名数据库中的文件头签名内容，再次使用 文件快照对指定存储器进行分析，查看3中文件的文件类型、扩展名、签名状态等信息的变化。</p></li>
+<li><p>更改文件头签名为‘zzzzz’：</p></li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609195832.png" /></p>
+<ul>
+<li>重新进行快照，检查：</li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609195711.png" /></p>
+<p>​ 可以发现，在更改文件头签名内容后，签名状态变为了“未确认”。</p>
+<h5 id="删除添加到文件签名数据库中新的文件类型签名再次使用文件快照对指定存储器进行分析">2.5 删除添加到文件签名数据库中新的文件类型签名，再次使用文件快照对指定存储器进行分析：</h5>
+<p>​ 具体步骤同2.4，结果如下：</p>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609200431.png" /></p>
+<h3 id="文件搜索">3. 文件搜索：</h3>
+<h5 id="搜索华中科技大学word文档">3.1 搜索“华中科技大学”word文档：</h5>
+<ul>
+<li>去除上一个任务的存储器，添加自己电脑的C盘：</li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609202255.png" /></p>
+<ul>
+<li>提前验证C盘是否存在包含“华中科技大学“的文档：</li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609202623.png" /></p>
+<ul>
+<li>设置搜索：</li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609205543.png" /></p>
+<ul>
+<li><p>搜索结果：</p></li>
+<li><p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609205439.png" /></p></li>
+</ul>
+<h5 id="搜索web邮件">3.2 搜索WEB邮件：</h5>
+<ul>
+<li><p>首先发一封邮件给别人（用的是QQ邮箱，edge浏览器）</p></li>
+<li><p>直接搜索"mail"字串：</p>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609221822.png" /></p></li>
+<li><p>搜索结果：</p></li>
+</ul>
+<p><img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210614201318.png" /></p>
+<p>可以看出，成功找到了发送邮件的记录。</p>
+<h5 id="搜索电话号码">3.3 搜索电话号码：</h5>
+<ul>
+<li><p>电话号码有11位，故使用grep表达式： <strong>189[0-9]{8}</strong>：</p></li>
+<li><p>设置搜索如下：</p></li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609215841.png" /></p>
+<ul>
+<li>搜索结果如下：</li>
+</ul>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609215920.png" /></p>
+]]></content>
+      <categories>
+        <category>●	课内</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>【组原实验】全相联Cache设计</title>
+    <url>/2021/06/14/%5B%E7%BB%84%E5%8E%9F%E5%AE%9E%E9%AA%8C%5D%20%E5%85%A8%E7%9B%B8%E8%81%94Cache%E8%AE%BE%E8%AE%A1/</url>
+    <content><![CDATA[<h1 id="组原实验全相联cache设计">【组原实验】全相联Cache设计</h1>
+<h3 id="实验要求">1. 实验要求：</h3>
+<p>"结合引脚功能说明，实现全相联 cache 模块，该 cache 模块共包括<strong>8个 cache 行</strong>，每个数据块包含包括<strong>4个字节共32位数据</strong>。"</p>
+<figure>
+<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612105210.png" alt="image-20210612105209418" /><figcaption aria-hidden="true">image-20210612105209418</figcaption>
+</figure>
+<h3 id="电路分析">2. 电路分析：</h3>
+<h4 id="读操作">2.1 读操作：</h4>
+<h5 id="cache行">2.1.1 Cache行：</h5>
+<p>​ 一个Cache行包括：==有效位（1）+Tag（？）+数据位（32）==</p>
+<p>​ 下面计算tag：</p>
+<p>​ 一个内存地址共有16位宽，由于一块有4字节，故<strong>块内地址</strong>需要2位，所以有：</p>
+<blockquote>
+<p>块号（14位）+ 块内地址（2位）</p>
+</blockquote>
+<p>​ 故Tag也应为14位，在实际应用中，由于要考虑替算法，故还要做一个<strong>淘汰计数器</strong>。这里的替换算法我们使用LRU，考虑到266次的测试数据，我们使用一个8位计数器即可。</p>
+<p>​ 所以一个Cache行包括：</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">1位有效位 + 14位Tag + 8位计数器 + 32位数据块</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>故Cache行的设计如下：</p>
+<figure>
+<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161048.png" alt="image-20210612161047398" /><figcaption aria-hidden="true">image-20210612161047398</figcaption>
+</figure>
+<h5 id="cache存储体">2.1.2 Cache存储体：</h5>
+<p>​ 将2.1的cache行拓展到8行即可：</p>
+<figure>
+<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161246.png" alt="image-20210612161245664" /><figcaption aria-hidden="true">image-20210612161245664</figcaption>
+</figure>
+<h5 id="多路并发比较电路">2.1.3 多路并发比较电路：</h5>
+<p>​ 多路并发比较使用8个比较器即可，加上V位，8路结果取或得到Hit信号，Hit去反得到Miss信号：</p>
+<figure>
+<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161515.png" alt="image-20210612161514214" /><figcaption aria-hidden="true">image-20210612161514214</figcaption>
+</figure>
+<h5 id="选择输出电路">2.1.4 选择输出电路：</h5>
+<p>​ 选择输出电路将slotdata的32位信息送入多选择器中，由Hit和Block共同控制选择：</p>
+<figure>
+<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161618.png" alt="image-20210612161617443" /><figcaption aria-hidden="true">image-20210612161617443</figcaption>
+</figure>
+<hr />
+<h4 id="写操作">2.2 写操作：</h4>
+<p>​ 只有在Miss=1时才会出发写操作，写操作主要涉及到两部分：<strong>替换算法</strong>，<strong>数据写入</strong>。</p>
+<h5 id="替换算法">2.2.1 替换算法：</h5>
+<p>​ 在cache写入时：</p>
+<ol type="1">
+<li><p><em>cache行未满：</em></p>
+<p>则直接使用优先编码器，按编码规则依次填充。</p></li>
+</ol>
+<figure>
+<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612163240.png" alt="image-20210612163238678" /><figcaption aria-hidden="true">image-20210612163238678</figcaption>
+</figure>
+<p>​ 其中，0-7个有效位取反输入，这样做的目的是可以得到一个full输出，full本来是多路选择器的Os位（使能端有效且输入全为0时输出1），当输入变量取反后则此位的含义表示当==使能信号有效==且==输入全1==时输出1。</p>
+<p>​ not_full是一个三位宽度的地址，其表示将要填充的空cache行的序号。</p>
+<ol start="2" type="1">
+<li><p><em>cache行已满：</em></p>
+<p>若cache行已满，full=1，此时应比较各行计数器的值，替换数字计数值最大的一行。</p>
+<p>这里，可以利用自带的归并比较电路MAX3：3</p>
+<figure>
+<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612165351.png" alt="image-20210612165350132" /><figcaption aria-hidden="true">image-20210612165350132</figcaption>
+</figure>
+<p>比较8个计数值，输出数值最大的序号Max_cnt：</p>
+<figure>
+<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612170621.png" alt="image-20210612170620445" /><figcaption aria-hidden="true">image-20210612170620445</figcaption>
+</figure></li>
+</ol>
+<ul>
+<li>至此，我们有两个写入选择组，full和not_full，故应使用一个二路选择器，在Miss和BlkReady同时为1时选择合适的写入信号组合：</li>
+</ul>
+<figure>
+<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612175012.png" alt="image-20210612175011066" /><figcaption aria-hidden="true">image-20210612175011066</figcaption>
+</figure>
+<hr />
+<p>​ BTW: ==由于每次写入对应行计数器值清零，其他行计数器的值加一，故计数器的清零信号连接在对应行的命中信号（Hi)上。==</p>
+<p>总：</p>
+<figure>
+<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612174946.png" alt="image-20210612174945662" /><figcaption aria-hidden="true">image-20210612174945662</figcaption>
+</figure>
+]]></content>
+      <categories>
+        <category>●	课内</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>《统计学习方法》</title>
+    <url>/2021/09/03/%E3%80%90%E4%B9%A6%E7%B1%8D%E9%98%85%E8%AF%BB%E3%80%91%E3%80%8A%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95%E3%80%8B/</url>
+    <content><![CDATA[<h1 id="书籍阅读统计学习方法">【书籍阅读】《统计学习方法》</h1>
+<h3 id="一.-统计学习方法概论">一. 统计学习方法概论：</h3>
+<p>​ 首先，要明确计算机科学中存在三个维度：系统，计算，与信息。统计学习方法（机器学习）主要属于信息这一维度，并在其中扮演者核心角色。</p>
+<h4 id="监督学习概念">1. 监督学习概念：</h4>
+<p>​ 监督学习，Supervised learning，指在已经做好标注的训练集上学习，为了叙述方便，定义以下基本概念：</p>
+<blockquote>
+<ol type="1">
+<li><strong>输入空间（X），输出空间（Y）：</strong>输入所有可能取值，输出所有可能取值；</li>
+<li><strong>特征空间：</strong>输入一般由特征向量表示，所有特征向量存在的空间称为特征空间，输入空间与特征空间并不完全等价，有时需要映射；</li>
+<li><strong>上标 x<sup>i</sup></strong> :表示一个输入的第 i 个特征；</li>
+<li><strong>下标 x<sub>j</sub>：</strong>表示第 j 个输入。</li>
+<li><strong>回归问题：</strong>输入输出都为连续型变量；</li>
+<li><strong>分类问题：</strong>输出变量为有限个离散型变量；</li>
+<li><strong>标注问题：</strong>输入与输出变量都为变量序列。</li>
+<li><strong>假设空间：</strong>所有可能的模型的集合，也就是学习的范围。</li>
+</ol>
+</blockquote>
+<p>​ 使用训练集学习----&gt;对未知数据进行预测</p>
+<p>​</p>
+<h4 id="统计学习三要素">2. 统计学习三要素：</h4>
+<p>​ 统计学习三要素为：<strong>模型，策略，算法</strong>；</p>
+<p>​ 模型是决定学习的预测函数的类型；</p>
+<p>​ 策略是判定什么样的模型是好的，用于度量当前的模型好坏；</p>
+<p>​ 算法是训练过程中的具体做法，例如如何回归，如何计算，如何调整等。</p>
+<h4 id="模型的衡量方法">3. 模型的衡量方法：</h4>
+<ul>
+<li><p><strong>损失函数与风险函数：</strong></p>
+<p>​ 损失函数，Loss Function，用于模型一次预测的错误程度，例如：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902154618.png" /></p>
+<p>​ 损失函数的数值越小，模型就越好。如果计算损失函数的期望，得到的就是风险函数，Risk Function:</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902154745.png" /></p>
+<p>​ 可以看出，损失函数用于某次预测的估计，风险函数用于总体平均估计。我们当然希望训练出的模型的风险函数越小越好。</p>
+<p>​ <strong>但是，观察上式，理想化的概率分布P(x，y)是未知的，我们进行学习就是要通过模型来模拟它，故这个式子理论存在，实际不能计算，不能用作评估模型的直接方法。</strong></p></li>
+<li><p><strong>经验风险与结构风险：</strong></p>
+<p>​ 为了解决上述问题，我们引入经验风险：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902155212.png" /></p>
+<p>​ 可以看到，经验风险将每个样本视作等概率出现，是模型对于训练集的平均损失，那么其与风险函数的误差在哪？</p>
+<p>​ 根据大数定律，当训练集足够大时，二者是近似相等的。但实际情况下，很多时候训练样本数目有限，甚至很小，故用经验风险效估计风险函数并不理想，故需要进行修正，这就是监督学习中的<strong>两个基本策略：</strong>经验风险最小化和结构风险最小化。</p>
+<p>​ 如果训练样本容量较大，使用经验风险最小化没什么问题。</p>
+<p>​ 当样本容量很小时，仅仅使用经验风险最小化容易导致过拟合，故这里使用<strong>结构风险（就是正则化）</strong>最小化方法，对模型复杂度进行惩罚，后续介绍。</p></li>
+<li><p><strong>训练误差与测试误差：</strong></p>
+<p>​ 训练误差本质上不重要，它可以反应一个问题是不是容易学习，但要衡量模型的预测能力，主要是看测试误差。</p></li>
+<li><p><strong>正则化与交叉验证：</strong></p>
+<p>​ 正则化是在经验风险项后再增加一个正则化项（Regularizer），其与模型的复杂度成正相关，一般使用模型参数向量的范数：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902161201.png" /></p>
+<p>​ 交叉验证的基本思想是重复使用数据：</p>
+<ol type="1">
+<li><p><strong>简单交叉验证：</strong></p>
+<p>将训练集随机分为两部分，一部分训练，一部分测试，然后在各种条件下训练出不同的模型，用测试集进行横向对比，选出最好的。</p></li>
+<li><p><strong>S折交叉验证：</strong></p></li>
+</ol>
+<pre><code>S-fold cross validation，随机地将已给数据切分为S个互不相交的大小相同的子集，选取S-1个用于训练，剩下一个用于测试。
+
+这样总共测试集有S种选法，将这S种全部试一遍，评选S次测评中平均误差最小的模型。</code></pre>
+<ol start="3" type="1">
+<li><strong>留一交叉验证：</strong></li>
+</ol>
+<pre><code>令S=N（训练集大小）即可，这种方法往往是在数据集特别缺乏的情况下使用。</code></pre></li>
+<li><p><strong>泛化误差与泛化上界：</strong></p>
+<p>​ 泛化能力指模型对位置数据的预测能力，就是模型的好坏。如何量化这个能力？</p>
+<p>​ 根据定义，其就是模型在测试集上的测试表现：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902162814.png" /></p>
+<p>​ 同时可以用以下式子衡量泛化误差的上界：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902162851.png" /></p></li>
+<li><p><strong>生成模型与判别模型：</strong></p>
+<p>​ 监督学习方法又可以分为两种方法：生成方法（Generatice Approach）和判别方法（Discriminative Approach）。</p>
+<p>​ 如果以概率论的角度来看待，模型的作用是根据P（x）来求P（y | x），故下面有两种方法求</p>
+<p>P（y | x），直接模拟P（y | x）和通过求 <span class="math inline">\(P(\frac{y}{x}) = \frac{P(x,y)}{P(x)}\)</span> 来求P（y | x）。</p>
+<p>​ 前者就是判别模型，后者是生成模型。</p>
+<p>​ 生成模型可以还原出联合概率分布P（x , y），学习收敛速度更快，可以适应存在隐含变量的情况；</p>
+<p>​ 判别模型直接学习条件概率,直接面对预测，准确率更高，并且简化了学习问题。</p></li>
+</ul>
+<hr />
+<h3 id="二.-感知机">二. 感知机</h3>
+<p>​ 感知机，perceptron，是二分类的线性分类模型，输入为特征向量，输出为类别，取1和-1两种。</p>
+<p>​ 感知机属于判别模型。</p>
+<p>​</p>
+<p>​ 对于一个给定数据集，T = {（x<sub>1</sub>，y<sub>1</sub>）……（x<sub>n</sub>，y<sub>n</sub>）}，如果存在某个超平面S，w·x + b = 0（这里w是超平面的法向量，b是截距），使得所有 y<sub>i</sub> = 1 的实例i，有 w·x<sub>i</sub> + b &gt; 0，y<sub>i</sub> = -1则相反，则称数据集T为<strong>线性可分数据集（<em>Linealy separable data set</em>）</strong>，否则，称数据集T为线性不可分数据集。</p>
+<h4 id="感知机损失函数">2.1 感知机损失函数：</h4>
+<p>​ 感知机的目的就是对于一个线性可分的数据集，通过找出w和b，来确定一个超平面用于分类。</p>
+<p>​ 这里，我们选取某错误分类点到超平面S的<strong>总距离</strong>来当做损失函数，某一点到超平面S的距离如下：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904182025.png" /></p>
+<p>​ ‖w‖是w的L<sub>2</sub>范数。</p>
+<p>​ 故，某个误分类点到超平面S的距离是：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904182154.png" /></p>
+<p>​ 将所有误分类点求和，忽略L<sub>2</sub>范数，即可得到<strong>感知机的损失函数</strong>（M为误分类点集合）：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904182339.png" /></p>
+<p>​ 对于一个特定样本点的损失函数，在误分类时是参数w,b的线性函数，在正确分类时是0，故给定训练数据集T，损失函数L是w，b的连续可导函数。</p>
+<h4 id="训练过程">2.2 训练过程：</h4>
+<p>​ 感知机训练采用随机梯度下降的方法：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904183233.png" /></p>
+<p>​ 当找到一个误分类点时，不断梯度下降直至该点被正确分类为止。</p>
+<p>​ <strong>数学证明其收敛性：</strong></p>
+<p>​ 具体见书本，这里略过。</p>
+<h4 id="感知机的对偶形式">2.3 感知机的对偶形式：</h4>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905112734.png" /></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905112750.png" /></p>
+<p>​ 由图可以看到，对于每个测试集中的x<sub>i</sub>，都有一个与之对应的α<sub>i</sub>，对偶形式中就是调整其对应的α。</p>
+<p>​ 关于gram矩阵的作用，如果手算一遍简单的训练过程，就可以得到答案。</p>
+<hr />
+<h3 id="三.-k近邻法">三. k近邻法</h3>
+<p>​ k近邻法是一种基本的分类与回归方法，这里只讨论分类方法。</p>
+<p>​ 其输入为特征向量，输出为实例的类别，可以取<strong>多类</strong>。</p>
+<h4 id="算法描述">3.1 算法描述：</h4>
+<p>​ 给定一个训练集，对于新的数据实例，在训练数据集中找到与其最邻近的k个实例，这k个实例多数属于某个类，就把该输入实例分为这个类。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905113440.png" /></p>
+<p>​ <u>k近邻法没有显式的学习过程。</u>可以理解为，k近邻算法将特征空间划分为了一些子空间，每个点所属的空间是确定的。</p>
+<p>​</p>
+<ul>
+<li><strong>如何度量两个特征之间的距离？</strong></li>
+</ul>
+<p>​ k邻近模型的特征空间一般是n维实空间R<sup>n</sup>，使用欧氏距离或者L<sub>p</sub>距离（<em>L<sub>p</sub> distance</em>），Minkowski距离（<em>Minkowski distance</em>）；</p>
+<p>​ <strong>L<sub>p</sub>距离：</strong></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905143250.png" /></p>
+<p>​ <strong>欧氏距离：</strong></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905143332.png" /></p>
+<p>​ <strong>曼哈顿距离：</strong></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905143356.png" /></p>
+<p>​ <strong>无穷距离：</strong></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905143648.png" /></p>
+<p>​ 由下图可以看出，p取值不同时到原点距离为1的图形是不同的：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905143741.png" /></p>
+<ul>
+<li><p><strong>如何选择k的值？</strong></p>
+<p>​ k值越小，模型学习时的近似误差越小，估计误差越大，模型会越复杂，抗干扰性越小（例如，最邻近的点是噪声），模型会非常敏感，容易过拟合；</p>
+<p>​ k值越大，估计误差会很小，近似误差会很大，整体模型变得简单。</p>
+<p>​ k一般的取值并不大，使用交叉验证的方法来选取最佳的k值。</p></li>
+<li><p><strong>如何决策？</strong></p>
+<p>​ 在得到k个最相似的实例后，采用何种规则判断测试样本属于哪一类呢？</p>
+<p>​ k邻近算法使用多数表决的方法：</p></li>
+</ul>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905154943.png" /></p>
+<blockquote>
+<p>ps: ci表示某种决策规则下一组测试用例的表决结果。经由以上推导可以得出，多数表决规则是合理的。</p>
+</blockquote>
+<p>​</p>
+<ul>
+<li><p><strong>如何快速找到某个用例的K近邻点？</strong></p>
+<p><strong>KD树：</strong> 具体算法见书。</p>
+<hr />
+<h3 id="四.-朴素贝叶斯法">四. 朴素贝叶斯法</h3>
+<p>​</p></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Book</category>
+      </categories>
+      <tags>
+        <tag>Machine Learning</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>A Benchmark API Call Dataset For Windows PE Malware Classification</title>
+    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91A%20Benchmark%20API%20Call%20Dataset%20For%20Windows%20PE%20Malware%20Classification/</url>
+    <content><![CDATA[<h1 id="论文阅读a-benchmark-api-call-dataset-for-windows-pe-malware-classification">【论文阅读】A Benchmark API Call Dataset For Windows PE Malware Classification</h1>
+<blockquote>
+<p><strong>作者：Ferhat Ozgur Catak（土耳其）</strong></p>
+<p>​ <strong>Ahmet Faruk Yazi（土耳其）</strong></p>
+<p><strong>时间：2021.2.23</strong></p>
+<p><strong>关键词：恶意软件分析，网络空间安全，数据集，沙箱环境，恶意软件分类</strong></p>
+</blockquote>
+<h3 id="abstract">1. Abstract</h3>
+<p>​ 在Windows操作系统中，系统API调用的使用在监控恶意PE程序中是一个很有前途的方法。这个方法被定义为在安全隔离的沙箱环境中运行恶意软件，记录其调用的Windows系统API，再顺序分析这些调用。 ​ 在这里，我们在隔离沙箱中分析了7107个属于不同家族（病毒，后门，木马等）的恶意软件，并把这些分析结果转化为了不同分类算法和方法可以使用的形式。 ​ <strong>首先</strong>，我们会解释如何得到这些恶意软件；<strong>其次</strong>，我们会解释如何将这些软件捆绑至家族中；<strong>最后，</strong>我们会描述如何使用这些数据集来通过不同的方法实现恶意软件的分类。</p>
+<hr />
+<h3 id="introduction">2. Introduction</h3>
+<h4 id="简单介绍了恶意软件">2.1 简单介绍了恶意软件</h4>
+<h4 id="恶意软件与恶意软件识别之间的竞争">2.2 恶意软件与恶意软件识别之间的竞争</h4>
+<p>​ 相互促进</p>
+<h4 id="变形恶意软件metamorphic-malware">2.3 变形恶意软件（Metamorphic malware）</h4>
+<p>​ 恶意软件家族里很先进的一种，这种软件可以持续不断的改变自身源代码以此改变自身结构，通过这种方式来改变自身代码特征。还有，这种软件可能还可以通过强度反算（counter-analysis）来识别自身运行的环境，以此来隐藏自身的恶意功能。</p>
+<p>​ 变形恶意软件很难识别。</p>
+<h4 id="恶意软件的识别">2.4 恶意软件的识别：</h4>
+<p>​ 所有恶意软件都会有恶意行为以达成其目的，如果可以很好的分析恶意行为，就可以做成恶意软件的识别与分类。 ​ 恶意软件的识别包括了很多需要解决的问题，例如在汇编中不正确的跳转操作码，PE文本段代码隐藏，代码加密。本研究收集了现有的恶意软件及其变式，例如WannaCry，Zeus，特别是在Github上。</p>
+<p>​ 我们通过在VirusTotal网站上寻找每个恶意软件的哈希值，从而获得了得到了其家族类。</p>
+<p>​ 最后，所有我们记录的行为都是在Cuckoo沙盒环境中运行的。</p>
+<p>​ 我们发现几乎所有恶意软件都会使用很多方法改变其行为，但即使这样，恶意软件还是有一个目标，有一个确定的模式来达到此目标。还有，恶意软件会做出一些不必要的API调用，但其还是可以被一个训练好的分析器识别，因为其行为模式是相同的。</p>
+<p>​ 恶意软件分析被视为网络空间安全的一个分支，其由两方面组成：</p>
+<h5 id="静态分析"><strong>1. 静态分析 </strong>：</h5>
+<p>​ 静态分析可以可以定义为通过执行一个孤立的环境检查可执行文件而不查看实际指令。例如MD5校验和，其通过反病毒检测攻击识别，查找字符串。</p>
+<h5 id="动态分析">2. 动态分析</h5>
+<p>​ 动态分析指运行恶意程序来理解其功能，观察其表现，识别其技术指标。几乎所有的重要行为都包含API调用序列。</p>
+<p>​ <strong>大多数动态分析领域的研究都只关注分类算法，有个基本问题是没有标准的数据集来检查所提出模型的效率。</strong></p>
+<p>​ <strong>我们在Github上分享了我们的数据集：https://github.com/ocatak/malware_api_class ，该数据集包含了基于Cuckoo沙箱的已知恶意软件执行和基于VirusTotal的文件MD5特征分类的原始数据。</strong></p>
+<hr />
+<h3 id="methods">3. Methods</h3>
+<h4 id="windows-api-calls">3.1 Windows API Calls：</h4>
+<p>​ 软件安全知识，略</p>
+<h4 id="cuckoo-sandbox">3.2 Cuckoo SandBox</h4>
+<p>​ 免费软件，高度集成，开源，可以自动分析Winodws,OS X,Linux,Android系统下的恶意文件。</p>
+<h4 id="virustotal">3.3 VirusTotal</h4>
+<p>​ 可以在线免费分析文件或者URL。其提供了一个API，可以不通过浏览器来提供分析结果，可以自动分析。其以JSON文件的形式提供分析结果，不同反病毒应用引擎和浏览器的分析结果会分开存放。</p>
+<h4 id="数据集生成">3.4 数据集生成</h4>
+<p>​ 本文的数据集有着简单明了的结构。数据集以CVS格式文件提供来提高互操作性，而且并不需要特定的软件或者库来读取他们。数据由来自不同Github页面的Git命令实施收集，数据集中的每一行都是在沙箱中分析的Windows操作系统的API调用序列。</p>
+<p>​ 数据集的生成过程如下：</p>
+<p>​ <strong>1. 沙箱环境准备：</strong></p>
+<p>​ 分析机器使用Ubuntu系统，将Cuckoo沙箱安装在其中，分析机运行虚拟服务，Windows操作系统就运行在虚拟服务上，同时关掉防火墙，系统升级。</p>
+<p>​ <strong>2. 分析恶意软件:</strong></p>
+<p>​ 虚拟机中同时运行超过20000个恶意软件，应用程序会将每个恶意软件的分析结果写入MongoDB数据库，分析结果中包含恶意软件的行为数据，这些数据都是恶意软件在Win7上的API调用请求。</p>
+<p>​ <strong>3. 处理API调用：</strong></p>
+<p>​ 我们在数据集中收集到了342种API调用，这些调用会被以0-341来标记，以此生成一个新数据集。我们使用了该数据集中至少有10个不同API调用的恶意软件的分析结果。</p>
+<p>​ <strong>4. 使用Virus Total公用API分析恶意软件：</strong></p>
+<p>​ 作为分析的补充，所有在数据集中的恶意软件也会被Virus Total所分析，通过这种方式，每个恶意软件都会被不同的反病毒引擎所分析，结果会被记录。</p>
+<p>​ <strong>5. 处理分析结果：</strong></p>
+<p>​ Virus Total服务使用大约66个不同的防病毒应用程序进行文件分析。利用我们利用这个服务得到的每个研究结果，我们识别了每个恶意软件的家族。通过观察，我们发现对于同一恶意软件，不同的防病毒应用程序给出了不同的结果。此外，观察到并非每一个防病毒应用程序都能检测到一些恶意软件。因此，在检测每一个恶意软件类时，认为它属于所有分析中的大多数类。</p>
+<p><img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210716172418.png" /></p>
+<p><img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210716172518.png" /></p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>AD</tag>
+        <tag>Malware Classifiers</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Adversarial Training with Fast Gradient Projection Method against Synonym Substitution Based Text Attacks</title>
+    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Adversarial%20Training%20with%20Fast%20Gradient%20Projection%20Method%20against%20Synonym%20Substitution%20Based%20Text%20Attacks/</url>
+    <content><![CDATA[<h1 id="论文阅读adversarial-training-with-fast-gradient-projection-method-against-synonym-substitution-based-text-attacks">【论文阅读】Adversarial Training with Fast Gradient Projection Method against Synonym Substitution Based Text Attacks</h1>
+<blockquote>
+<p><strong>时间：2020</strong></p>
+<p><strong>作者：王晓森，杨逸辰等 </strong>华中科技大学</p>
+<p><strong>会议：AAAI</strong></p>
+</blockquote>
+<h3 id="总结">总结：</h3>
+<ol type="1">
+<li><p><strong>做了什么？</strong></p>
+<ul>
+<li><p>提出了一种速度更快的，更容易应用在复杂神经网络和大数据集上的，基于同义词替换的NLP对抗样本生成方法，FGPM；</p></li>
+<li><p>将FGPM纳入对抗训练中，以提高深度神经网络的鲁棒性。</p></li>
+</ul></li>
+<li><p><strong>怎么做的？</strong></p></li>
+<li><p><strong>实验结果？</strong></p>
+<ul>
+<li>FGPM的效果不是最高的，但也跟最高的差不多，但生成对抗样本的时间对比同类方法，缩减了1-3个数量级。</li>
+<li>ATFL的对抗样本防御能力和抗转移能力很强。</li>
+</ul></li>
+</ol>
+<hr />
+<h3 id="abstract">Abstract:</h3>
+<p>​ 对抗训练是对于提升图像分类深度神经网络鲁棒性的，基于实验的最成功的进步所在。</p>
+<p>​ 然而，对于文本分类，现有的基于同义词替换的对抗样本攻击十分奏效，但却没有被很有效地合并入实际的文本对抗训练中。</p>
+<p>​ 基于梯度的攻击对于图像很有效，但因为文本的词汇，语法，语义结构的限制以及离散的文本输入空间，不能很好的应用于基于近义词替换的文本攻击中。</p>
+<p>​ 因此，我们提出了一个基于同义词的替换的快速的文本对抗抗攻击方法名为<strong><em>Fast Gradient Projection Method (FGPM)</em></strong>。它的速度是已有文本攻击方法的20余倍，攻击效果也跟这些方法差不多。</p>
+<p>​ 我们接着将FGPM合并入对抗训练中，提出了一个文本防御方法，<strong><em>Adversarial Training with FGPM enhanced by Logit pairing</em>(ATFL)</strong>。</p>
+<p>​ 实验结果表明ATFL可以显著提高模型的鲁棒性，破坏对抗样本的可转移性。</p>
+<hr />
+<h3 id="introduction">1 Introduction:</h3>
+<p>​ 现有的针对NLP的攻击方法包括了：字符等级攻击，单词等级攻击，句子等级攻击。</p>
+<p>​ 对于字符等级的攻击，最近的工作（<em>Pruthi, Dhingra, and Lipton 2019</em>）表明了拼写检查器很容易修正样本中的扰动；</p>
+<p>​ 对于句子等级的攻击，其一般需要基于改述，故需要更长的时间来生成对抗样本；</p>
+<p>​ 对于单词等级的攻击，基于嵌入扰动的替换（<em>replacing word based on embedding perturbation</em>），添加，删除单词都会很容易改变句子的语法语义结构与正确性，<strong>故同义词替换的方法可以更好的处理上述问题，同时保证对抗样本更难被人类观察者发现</strong>。</p>
+<p>​ 但不幸的是，基于同义词替换的攻击相较于如今对图像的攻击展现出了更低的功效。</p>
+<p>​</p>
+<p>​ 据我们所知，对抗训练，对图像数据最有效的防御方法之一，并没有在对抗基于同义词替换的攻击上很好的实施过。</p>
+<p>​ 一方面，现有的基于同义词替换的攻击方法通常效率要低得多，难以纳入对抗训练。另一方面，尽管对图像的方法很有效，但其并不能直接移植到文本数据上。</p>
+<p>​</p>
+<h4 id="adversarial-defense">1.1 Adversarial Defense:</h4>
+<p>​ 有一系列工作对词嵌入进行扰动，并将扰动作为正则化策略用于对抗训练(<em>Miyato, Dai, and Goodfellow</em></p>
+<p><em>2016; Sato et al. 2018; Barham and Feizi 2019</em>) 。这些工作目的是提高模型对于原始数据集的表现，并不是为了防御对抗样本攻击，因此，我们不会考虑这些工作。</p>
+<p>​ 不同于如今现有的防御方法，我们的工作聚焦于快速对抗样本生成，容易应用在复杂的神经网络和大数据集上的防御方法。</p>
+<hr />
+<h3 id="fast-gradient-projection-methodfgpm">2 Fast Gradient Projection Method（FGPM）:</h3>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904144444.png" /></p>
+<hr />
+<h3 id="adversarial-training-with-fgpm">3 Adversarial Training with FGPM：</h3>
+<p>​ 具体算法中文描述见：</p>
+<p><a href="https://zhuanlan.zhihu.com/p/248425749">《基于同义词替换的快速梯度映射（FGPM）文本对抗攻击方法》阅读笔记 - 知乎 (zhihu.com)</a></p>
+<hr />
+<h3 id="experimental-results">4 Experimental Results：</h3>
+<p>​ 我们衡量FGPM使用四种攻击准则，衡量ATFL使用两种防御准则。</p>
+<p>​ 我们在三个很受欢迎的基准数据集上，同时包括CNN和RNN模型上进行测试，代码开源：https://github.com/JHL-HUST/FGPM</p>
+<h4 id="baselines">4.1 Baselines:</h4>
+<p>​ 为了评估FGPM的攻击效能，我们将其与Papernot’、GSA ( Kuleshov等人的4种对抗性攻击进行了比较。2018 )、PWWS ( Ren et al . 2019 )和Iga ( Wang，jin，and he 2019 )。</p>
+<p>​ 此外，为了验证我们的ATFL的防御能力，我们采用了SEM ( Wang，Jin，He 2019 )和IBP ( Jia et al . 2019 )，针对上述Word-Level攻击。由于攻击基线的效率很低，我们在每个数据集上随机抽取200个示例，并在各种模型上生成对抗样本。</p>
+<h4 id="datasets">4.2 Datasets:</h4>
+<p>​ <em>AG’s News</em>, <em>DBPedia ontology</em> and <em>Yahoo! Answers</em> (Zhang,Zhao, and LeCun 2015).</p>
+<h4 id="models">4.3 Models:</h4>
+<p>​ 我们使用了CNNs,RNNs,来达到主流的文本分类表现，所有模型的嵌入维度均为300。</p>
+<h4 id="evaluation-on-attack-effectiveness">4.4 Evaluation on Attack Effectiveness：</h4>
+<p>​ 我们评估模型在攻击下的准确率和转移率：</p>
+<p>​ <strong>准确率：</strong></p>
+<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904134852.png" /></p>
+<p>​ <strong>转移率：</strong></p>
+<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904135419.png" /></p>
+<h4 id="evaluation-on-attack-efficiency">4.4 Evaluation on Attack Efficiency：</h4>
+<p>​ 对抗训练需要高效率的生成对抗样本以有效地提升模型鲁棒性。因此，我们评估了不同攻击方法在三个数据集上生成生成200个对抗样本的总时间。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904135842.png" /></p>
+<h4 id="evaluation-on-adversarial-training">4.5 Evaluation on Adversarial Training：</h4>
+<p>​ 我们评估ATFL的对抗样本防御能力和抗转移能力：</p>
+<p>​ <strong>对抗样本防御能力：</strong></p>
+<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904140647.png" /></p>
+<p>​ <strong>抗转移能力：</strong></p>
+<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904141719.png" /></p>
+<h4 id="evaluation-on-adversarial-training-variants">4.6 Evaluation on Adversarial Training Variants:</h4>
+<p>​ 许多对抗训练的变体，例如CLP和ALP，TRADES等，已经尝试采用不同的正则化方法来提高针对图像数据的对抗训练准确率。</p>
+<p>​ 在这里，我们回答一个问题：这些变体方法也可以提高文本数据准确率吗？</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904142406.png" /></p>
+<p>​ 从表中可以看出，只有ALP可以长远地提升对抗训练的表现。</p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>AD</tag>
+        <tag>NLP</tag>
+        <tag>AD training</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Black-Box Attacks against RNN based Malware Detection Algorithms</title>
+    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Black-Box%20Attacks%20against%20RNN%20based%20Malware%20Detection%20Algorithms/</url>
+    <content><![CDATA[<h1 id="论文阅读black-box-attacks-against-rnn-based-malware-detection-algorithms">【论文阅读】Black-Box Attacks against RNN based Malware Detection Algorithms</h1>
+<blockquote>
+<p><strong>时间</strong>：2017</p>
+<p><strong>作者：</strong> Weiwei Hu 北京大学</p>
+<p>​ Ying Tan 北京大学</p>
+</blockquote>
+<ul>
+<li><h4 id="abstract">Abstract：</h4>
+<p>​ 1. <strong>原文：</strong></p>
+<p>​ 最近的研究表明，基于机器学习的恶意软件分类算法在面对对抗样本攻击时表现的十分脆弱。这些工作主要集中于那些利用了混合维度的特征的追踪算法，但一些研究者已经开始使用RNN，基于API特征序列来辨识恶意软件。</p>
+<p>​ 这篇文章提出了一种用于生成对抗样本序列的原创算法，它被用于攻击基于RNN的恶意软件分类系统。对于攻击者来说，通常，知晓目标RNN的内部结构和权重是很难的。于是一个替代的用于近似目标RNN的RNN模型就被训练了出来，接着我们利用这个RNN来从原始序列输入中生成对抗样本序列。</p>
+<p>​ <strong>权威结果表明基于RNN的恶意软件分类算法不能追踪大多数我们所生成的恶意对抗样本，这意味着我们生成的模型可以很有效的规避追踪算法。</strong></p>
+<p>​ 2. <strong>总结：</strong></p>
+<p>​ 一个对基于RNN的恶意样本分类器的灰盒攻击，有三个RNN，受害者RNN（源RNN），替代RNN，对抗样本生成RNN。</p></li>
+</ul>
+<h3 id="introduction">1. Introduction:</h3>
+<ol type="1">
+<li>现有的基于N机器学习的恶意软件追踪算法主要将程序表现为固定维度的特征向量，然后将其分类为无害程序和恶意软件；</li>
+<li>举例，利用API的调用序列，或者不被调用的API序列进行分类；</li>
+<li>【11】展现了，基于固定维度特征来进行恶意样本分类的算法，面对对抗样本的攻击是脆弱的；</li>
+<li>最近也有利用RNN进行恶意样本追踪与分类的，RNN的输入就是API序列。</li>
+</ol>
+<h3 id="adversarial-examples">2. Adversarial Examples:</h3>
+<p>​ 一些其它的针对序列的对抗样本攻击：</p>
+<blockquote>
+<p>Nicolas Papernot, Patrick McDaniel, Ananthram Swami, and Richard Harang. Crafting adver</p>
+<p>sarial input sequences for recurrent neural networks. In <em>Military Communications Conference,</em></p>
+<p><em>MILCOM 2016-2016 IEEE</em>, pages 49–54. IEEE, 2016.</p>
+<p>Kathrin Grosse, Nicolas Papernot, Praveen Manoharan, Michael Backes, and Patrick McDaniel.</p>
+<p>Adversarial perturbations against deep neural networks for malware classifification. <em>arXiv preprint</em></p>
+<p><em>arXiv:1606.04435</em>, 2016.</p>
+</blockquote>
+<h3 id="attacking-rnn-based-malware-detection-algorithms">4. Attacking RNN based Malware Detection Algorithms</h3>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830150941.png" /></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830151007.png" /></p>
+<h3 id="实验">5. 实验</h3>
+<p>​ Adam 用于训练所有模型；</p>
+<p>​ LSTM由于其在处理长序列的优秀表现，也被应用在实验的所有RNN中。</p>
+<h4 id="数据集">5.1 数据集：</h4>
+<p>​ <strong>来源：</strong>https://malwr.com/ （一个恶意样本分析网站，爬取180个项目，该网站可以分析用户上传的项目，并给出其API序列，网站中70%的项目都是恶意样本）</p>
+<p>​ <strong>数据集划分：</strong>为了模拟真实的测试环境，数据集划分如下：（30%+10%）用于生成RNN，（30%+10%）用于受害者RNN，20%用于测试。</p>
+<h4 id="受害者rnn">5.2 受害者RNN：</h4>
+<p>​ 尝试了不同模型：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830110738.png" /></p>
+<p>​ <strong>结论如下：</strong></p>
+<ol type="1">
+<li>与LSTM相比，BiLSTM不能提升模型的分类表现；</li>
+<li>与Average-Pooling相比，注意力机制的效果更好；</li>
+</ol>
+<h4 id="生成对抗样本rnn测试结果">5.3 生成（对抗样本）RNN测试结果：</h4>
+<p>​ 介绍参数规范：</p>
+<blockquote>
+<p>The hyper-parameters of the generative RNN and the substitute RNN were tuned separately for each</p>
+<p>black-box victim RNN. The learning rate and the regularization coeffificient were chosen by line</p>
+<p>search along the direction 0.01, 0.001, et al.. The Gumbel-Softmax temperature was searched in the</p>
+<p>range [1<em>,</em> 100]. Actually, the decoder length <em>L</em> in the generative RNN is also a kind of regularization</p>
+<p>coeffificient. A large <em>L</em> will make the generative RNN have strong representation ability, but the whole</p>
+<p>adversarial sequences will become too long, and the generative RNN’s size may exceed the capacity</p>
+<p>of the GPU memory. Therefore, in our experiments we set <em>L</em> to 1.</p>
+</blockquote>
+<p>​</p>
+<p>​ 给出实验结果：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830140545.png" /></p>
+<ol type="1">
+<li>对于所有RNN模型，攻击都十分有效；</li>
+<li>于LSTM的攻击效果最差，故替代RNN对LSTM的拟合效果并不好；</li>
+<li>训练集与测试集的测试效果差别不大， 模型泛化能力强；</li>
+<li>即使更换了模型与训练数据集，对抗样本仍效果很好。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>AD</tag>
+        <tag>Malware Classifiers</tag>
+        <tag>RNN</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Automatically Evading Classififiers----A Case Study on PDF Malware Classififiers</title>
+    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Automatically%20Evading%20Classififiers----A%20Case%20Study%20on%20PDF%20Malware%20Classififiers/</url>
+    <content><![CDATA[<h1 id="论文阅读automatically-evading-classififiers----a-case-study-on-pdf-malware-classififiers">【论文阅读】Automatically Evading Classififiers----A Case Study on PDF Malware Classififiers</h1>
+<blockquote>
+<p><strong>时间：2016</strong></p>
+<p><strong>作者：Weilin Xu, Yanjun Qi, and David Evans 弗吉尼亚大学</strong></p>
+<p><strong>会议：NDSS（ccf_B类）</strong></p>
+</blockquote>
+<h3 id="总结">总结：</h3>
+<ol type="1">
+<li><p><strong>白盒黑盒？</strong></p>
+<p><strong>黑盒攻击</strong>，需要知道生成样本在目标模型中的输出（分类分数）和目标模型所使用的特征（粗略知道）；</p></li>
+<li><p><strong>针对什么目标？</strong></p>
+<p>仅仅使用表层特征的分类器；</p></li>
+<li><p><strong>攻击方法？</strong></p>
+<p>3.1 <strong>如何制造对抗样本？</strong></p>
+<p>​ 使用<strong>遗传算法（GP-BASED）</strong>进行随机扰动</p>
+<p>3.2 <strong>如何判别对抗样本的恶意能力？</strong></p>
+<p>​ 使用<strong><em>oracle</em></strong></p></li>
+</ol>
+<h3 id="abstract">Abstract:</h3>
+<p>​ 在本文，我们提出了一个一般化的方法来检验分类器的鲁棒性，通过在两个PDF恶意样本分类器，PDFrate和Hidost上来检验。其关键就是随机控制一个恶意样本来找到一个对抗样本。</p>
+<p>​ 我们的方法可以自动地对500个恶意样本种子中找到对于两个PDF分类器的对抗样本，我们的结果提出了一个严重的疑问，基于表面特征的分类器在面对对抗样本时是否还有效？</p>
+<hr />
+<h3 id="introduction">1. Introduction:</h3>
+<p>​ 主要贡献：</p>
+<pre><code>1. 提出了一个一般化的方法用于自动寻找分类器的对抗样本；
+2. 制作了一个原型系统用于自动生成对抗样本；
+3. 我们的系统在对500个恶意样本种子寻找对抗样本的过程中，达到了100%的准确率。</code></pre>
+<hr />
+<h3 id="overview">2. Overview：</h3>
+<h4 id="finding-evasive-samples"><em>2.1 Finding Evasive Samples</em>：</h4>
+<p>​ <strong>整体思路：</strong></p>
+<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901185852.png" /></p>
+<p>​ <strong><em>oracle</em></strong>用于判断一个样本是否具有恶意行为；</p>
+<hr />
+<h3 id="pdf-malware-and-classifiers">3. PDF Malware and Classifiers</h3>
+<h4 id="pdfmalware"><em>3.1 PDFmalware:</em></h4>
+<p>​ PDF文件的整体结构：</p>
+<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901191527.png" /></p>
+<p>​ 早些的PDF恶意样本一般使用JavaScript嵌入，用户双击打开时出发执行恶意脚本。</p>
+<p>​ 因为不是所有的PDF恶意样本都是嵌入了JavaScript代码，最近的一些PDF恶意分类器就着重于PDF文件的结构化特征。在本文，我们的目标就是攻击这些有代表性的基于文件结构化特征的分类器。</p>
+<h4 id="target-classififiers"><em>3.2 Target Classififiers：</em></h4>
+<p>​ <strong>PDFrate：</strong>一个使用随机森林算法的分类器。</p>
+<p>​ <strong>Hidost:</strong>一个SVM分类器。</p>
+<p>​</p>
+<hr />
+<h3 id="evading-pdf-malware-classifiers">4. Evading PDF Malware Classifiers：</h3>
+<hr />
+<h3 id="experiment">5. Experiment:</h3>
+<h4 id="dataset"><em>5.1 Dataset:</em></h4>
+<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194138.png" /></p>
+<h4 id="test"><em>5.2 Test：</em></h4>
+<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194328.png" /></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194448.png" /></p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>AD</tag>
+        <tag>Malware Classifiers</tag>
+        <tag>PDF</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Deep Text Classifification Can be Fooled</title>
+    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/</url>
+    <content><![CDATA[<h1 id="论文阅读deep-text-classifification-can-be-fooled">【论文阅读】<strong>Deep Text Classifification Can be Fooled</strong></h1>
+<blockquote>
+<p><strong>时间：</strong>2017</p>
+<p><strong>作者：</strong>Bin Liang, Hongcheng Li, Miaoqiang Su, Pan Bian, Xirong Li and Wenchang Shi 中国人民大学</p>
+</blockquote>
+<h3 id="abstract">Abstract:</h3>
+<p>​ 在这篇文章，我们提出了一种有效的生成文本对抗样本的方法，并且揭示了一个很重要但被低估的事实：基于DNN的文本分类器很容易被对抗样本攻击。</p>
+<p>​ 具体来说，面对不同的对抗场景，通过计算输入的代价梯度(白盒攻击)或生成一系列被遮挡的测试样本(黑盒攻击)来识别对分类重要的文本项。（<u>这句不是很懂，什么叫’ the text items that are important for classifification‘？</u>）</p>
+<p>​ 基于这些项目，我们设计了三种扰动策略，insertion，modification，removal，用于生成对抗样本。实验结果表明基于我们的方法生成的对抗样本可以成功地欺骗主流的在字符等级和单词等级的DNN文本分类器。</p>
+<p>​ 对抗样本可以被扰动到任意理想的类中而不降低其效率。（？）同时，被引入的扰动很难被察觉。</p>
+<p>​</p>
+<h3 id="introduction">1. Introduction:</h3>
+<p>​ 在文本中，即使很小的扰动也会使一个字母或者单词完全变化，这会导致句子不能被辨识。故如果直接将应用于多媒体（图片，音频）的算法应用到文本上，得到的对抗样本的原意就会改变，而且很大程度上变成人类无法理解的句子。</p>
+<p>​ 在这片论文里，我们提出了一种生成对抗样本的有效方法。与直接简单插入扰动相比，我们设计了三种扰动策略：<em>insertion</em>, <em>modifification</em>, and <em>removal</em>，并且引入了自然语言文本水印（<em>natural language watermarking</em>）技术用于生成对抗样本。</p>
+<p>​ 理论上，生成一个好的对抗样本很大程度上依赖于对目标分类模型的信息。在这里我们根据不同情形，使用了白盒攻击和黑盒攻击。</p>
+<p>​ 为了普遍性，我们使用了字符等级的模型和单词等级的模型作为受害者。我们的实验结果证明基于DNN的文本分类器在面对对抗样本攻击时是脆弱的。</p>
+<h3 id="target-models-and-datasets">2. Target Models and Datasets:</h3>
+<p>​ 这里使用的文本分类器是Zhang et al. 2015《Character-level Convolutional Networks foe Text Classification》，数据集是Lehmann et al.2014的DBpedia ontology dataset（一个多语言知识库），里面包括560000个训练样本和70000个测试样本，涵盖14个high-level 类，比如公司类、建筑类、电影类等。</p>
+<p>​ 在把样本送进网络前，需要用独热编码法（one-hot representation）对每个字母编码成一个向量。通过网络的六个卷积层、三个全连接层，最终会被分到14个类中。</p>
+<h3 id="white-box-attacks"><u>3. White-Box-Attacks:</u></h3>
+<h4 id="fgsm算法">3.1 FGSM算法：</h4>
+<p>​ FGSM是Goodfellow在2015年提出的对图片生成对抗样本的经典算法。使用类似的思路来在文本领域生成对抗样本结果并不好：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830214227.png" /></p>
+<h4 id="idenfitying-classification-important-items">3.2 Idenfitying Classification-important Items:</h4>
+<p>​ 在白盒攻击中，我们需要定位文本中对于分类器的分类结果起到很大作用的文本段（通过计算代价梯度）。在这里，我们使用<strong><em>Hot Training Phrases</em> (HTPs)</strong>代表最常使用的短语：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831150703.png" /></p>
+<p>​ HTPS表明了用什么短语/词去做扰动，但是没有说在哪里做。在这里使用<strong><em>Hot Sample Phrases</em> (HSPs)</strong>来表明在哪里做扰动。</p>
+<h4 id="attacking-character-level-dnn">3.3 Attacking Character-level DNN:</h4>
+<p>​ 我们的方法是一种targeted攻击，可以指定对抗样本的误导类型。</p>
+<h5 id="insertion-strategy插入策略">3.3.1 Insertion Strategy（插入策略）:</h5>
+<p>​ 在某个HSP前插入一个HTP，就可以达到效果：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831151929.png" /></p>
+<p>​ 由上图可以看到，将某个<strong>HTP</strong>（<em>historic</em>）插入到<strong>HSP</strong>（<em>principal stock exchange of Uganda. It was founded</em>）之前，就可以使一个公司的分类文本变为对建筑的分类。</p>
+<p>​ 实际上，我们通常需要进行多次插入，但插入次数过多会影响样本的效用和可读性，为了解决这个问题，这里引入NL水印技术（<em>Natural Language watermarking technique</em>）。该技术可以通过语义或句法操作将所有权水印隐形地嵌入到普通文本中,虽然我们的攻击目标与NL水印有本质的不同，但我们可以借用它的思想来构造对抗样本。实际上，扰动可以看作是一种水印，并以类似的方式嵌入到样本中。</p>
+<p>​ 在这里，我们拓展这个思路，在样本中插入<strong>Presupposition</strong>(读者熟知的模糊短语)和 <strong>semantically empty phrases</strong>（可有可无的短语），有没有他们，在读者看来，原文的意思不会改变。</p>
+<p>​ 总的来说，我们考虑将各种HTPS组合成一个语法单元后再嵌入到文本中，新的单元可以是生成的可有可无的资料，或者甚至是不会改变文本原意的伪造的资料。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831154859.png" /></p>
+<p>​ <strong>特别的，通过互联网搜索或者查找一些数据集，我们可以找到与插入点很相关的资料，包括一些期望的目标分类的HTPs。</strong></p>
+<p>​ 由于我们不能总是找到合适的HTPs，所以提出一个新概念——伪造的事实（forged fact），也就是插入很难证伪的HTPs。例如：</p>
+<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/20210831154910.png" /></p>
+<p>​ 此外，我们排除了伪造的事实，这些事实可以通过检索他们在网上的相反证据而被否认。</p>
+<h5 id="modification-strategy修改策略">3.3.2 Modification Strategy（修改策略）：</h5>
+<p>​ Moidfication就是轻微修改一些HSP。</p>
+<p>​ 为了让修改不被人类观察者发现，我们采用了typo-based watermarking 技术。具体的说，一个HSP可以通过两种方式来被修改：</p>
+<p>​ 1. 从相关的语料库中选择常见的拼写错误来替换它；</p>
+<p>​ 2. 把它的一些字符修改成类似的外观（例如小写字母'l'与阿拉伯数字‘1’很像）。</p>
+<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831160407.png" /></p>
+<p>​ 由上图可以看出，这种方式对分类结果的扰动是巨大的。</p>
+<h5 id="removal-strategy移除策略">3.3.3 Removal Strategy（移除策略）:</h5>
+<p>​ 移除策略单独使用也许并不能足够有效地影响预测结果，但是可以很大程度上降低原始预测类型的置信度。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831161007.png" /></p>
+<p>​ 由上图可以看出，移除'<strong><em>British</em></strong>'可以导致原始预测类型的置信度下降了35%。</p>
+<h5 id="combination-of-three-strategies">3.3.4 Combination of Three Strategies:</h5>
+<p>​ 如图6所示，单靠去除策略改变输出分类往往是困难的。但是，通过与其他策略相结合，可以避免对原文进行过多的修改或插入。在实践中，我们常常结合以上三种策略来制作微妙的对抗样本。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831161638.png" /></p>
+<p>​ 以图7为例，通过去除一个HSP、插入一个伪造事实和修改一个HSP，可以成功地改变输出分类，但单独应用上述任何扰动都失败。具体来说，删除、插入和修改仅使置信度分别下降27.3 %、17.5 %和10.1 %，保持预测类不变。</p>
+<h3 id="black-box-attack">4. Black-Box-Attack:</h3>
+<p>暂略</p>
+<h3 id="evaluation">5. Evaluation：</h3>
+<h4 id="我们的方法能否执行有效的源目标误分类攻击">5.1 我们的方法能否执行有效的源/目标误分类攻击?</h4>
+<p>​ <strong><em>答：</em></strong>在众多测试集中，只有DBpedia ontology数据集是一个多分类数据集，故我们在其中随机选取了一些样本：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831165135.png" /></p>
+<h4 id="所生成的对抗样本能否避免被人类观察者认出来并同时保持其功能性">5.2 所生成的对抗样本能否避免被人类观察者认出来，并同时保持其功能性？</h4>
+<p><strong><em>答：</em></strong>我们找了23个学生。他们对项目不了解，然后每个人给20个文本，其中一半是加扰的。让他们分到14个类中，如果他们觉得哪个文本不对劲，让他们指出来。</p>
+<p>​ 他们总的分类正确率是94.2%，10个对抗样本的正确率是94.8%。所以实用性还是有的。</p>
+<p>​ 他们标注出了240项修改处，其中12项符合真实的修改。但实际上我们做了594处修改。</p>
+<h4 id="我们的方法足够有效吗">5.3 我们的方法足够有效吗？</h4>
+<p><strong><em>答：</em></strong>实验中计算梯度和找HTPs花了116小时。14个类的HTPs每个类花了8.29小时。对所有的adversarial示例只执行一次计算。制作一个对抗性的样品大约需要10到20分钟。对于对手来说，获得理想的对抗样本是可以接受的。实际上，她或他愿意花更多的时间来做这件事。</p>
+<h3 id="realted-works">6. Realted Works:</h3>
+<p>​ <strong>可以做的方向：</strong>1.自动生成对抗样本；（然而，Papernot等人(Papernot et al. 2016a)提出了一种基于雅可比矩阵的数据集增强技术，该技术可以在不访问其模型、参数或训练数据的情况下，在有限对输入输出的基础上，为目标dnn提供替代模型。作者还表明，使用替代模型也可以有效地制作对抗样本，以攻击目标DNN。）2.迁移、黑盒攻击；</p>
+<p>​</p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>AD</tag>
+        <tag>NLP</tag>
+        <tag>DNN</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers</title>
+    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/</url>
+    <content><![CDATA[<h1 id="论文阅读generic-black-box-end-to-end-attack-against-state-of-the-art-api-call-based-malware-classifiers">【论文阅读】Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers</h1>
+<blockquote>
+<p><strong>作者：Ishai Rosenberg </strong></p>
+<p><strong>大学：Ben-Gurion University of the Negev</strong></p>
+<p><strong>时间：2018.6.4</strong></p>
+</blockquote>
+<h3 id="做了什么">1. 做了什么？</h3>
+<ul>
+<li><p>​ 对一个通过机器学习训练的，通过API调用来分类恶意软件的分类器的攻击。</p>
+<p>​ 这个攻击可以使分类器不能成功识别恶意软件，并且不改变原有软件的功能。</p></li>
+<li><p>​ 实现了<strong>GADGET</strong>，一个可以直接将二进制恶意软件文件转换为分类器无法检测的二进制文件，<strong>并不需要访问文件源代码。</strong></p></li>
+</ul>
+<h3 id="一些概念">2. 一些概念：</h3>
+<h4 id="machine-learning-malware-classififiers基于机器学习的恶意软件分类器">2.1 Machine learning malware classififiers（基于机器学习的恶意软件分类器）</h4>
+<p>​ 优点：1. 可以自动训练，节省时间；</p>
+<p>​ 2. 只要分类器并不是基于指纹特征或者某个特定的特征（如Hash值）来分类，面对不可见威胁时泛化能力较强。</p>
+<h4 id="adversarial-examples对抗样本">2.2 Adversarial Examples（对抗样本）</h4>
+<p><strong>对输入样本故意添加一些人无法察觉的细微的干扰，导致模型以高置信度给出一个错误的输出。</strong></p>
+<ol type="1">
+<li><strong>可以针对一张已经有正确分类的image，对其进行细微的像素修改，可以在DNN下被错分为其他label。</strong></li>
+</ol>
+<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-ed60089ae25c81ba2677ec34ffa2a47f_720w.jpg" /></p>
+<p>​ 样本x的label为熊猫，在对x添加部分干扰后，在人眼中仍然分为熊猫，但对深度模型，却将其错分为长臂猿，且给出了高达99.3%的置信度。</p>
+<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-59a3afcc069df94927ffe1efd62822e9_720w.jpg" /></p>
+<p>像素攻击：改动图片上的一个像素，就能让神经网络认错图，甚至还可以诱导它返回特定的结果。</p>
+<p>改动图片上的一个像素，就能让神经网络认错图，甚至还可以诱导它返回特定的结果</p>
+<p><strong>2. 同样，根据DNN，很容易产生一张在人眼下毫无意义的image，但是在DNN中能够获得高confidence的label。</strong></p>
+<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-0390bba1f2c35220c8b099b8ab0f4ebc_720w.jpg" /></p>
+<p>两种EA算法生成的样本，这些样本人类完全无法识别，但深度学习模型会以高置信度对它们进行分类，例如将噪声识别为狮子。</p>
+<h5 id="adversarial-examples-for-api-sequences生成api序列对抗样本与生成图像对抗样本并不同">2.2.1： Adversarial examples for API sequences(生成API序列对抗样本与生成图像对抗样本并不同):</h5>
+<ol type="1">
+<li>API序列由长度可变的离散符号组成，但图像可以用固定维度的矩阵表示为矩阵，且矩阵的值是连续的。</li>
+<li>对于对抗API序列，其必须验证原始的恶意功能是完整的。</li>
+<li><strong>对抗样本的迁移性</strong>：针对一种模型的对抗样本通常对另一种模型也奏效，即使这两个模型不是用同一数据集训练的。</li>
+</ol>
+<h4 id="几种攻击方法">2.3 几种攻击方法：</h4>
+<blockquote>
+<p><strong>White-box attack</strong>：白盒攻击，对模型和训练集完全了解。</p>
+<p><strong>Black-box attack</strong>：黑盒攻击：对模型不了解，对训练集不了解或了解很少。</p>
+<p><strong>Real-word attack</strong>：在真实世界攻击。如将对抗样本打印出来，用手机拍照识别。</p>
+<p><strong>targeted attack</strong>：使得图像都被错分到给定类别上。</p>
+<p><strong>non-target attack</strong>：事先不知道需要攻击的网络细节，也不指定预测的类别，生成对抗样本来欺骗防守方的网络。</p>
+<p><strong>mimicry attack</strong>: 编写恶意的exploit，该exp模拟良性代码系统调用的痕迹，因为能够逃逸检测。</p>
+<p><strong>disguise attack:</strong> 仅修改系统调用的参数使良性系统调用生成恶意行为 。</p>
+<p><strong>No-op attack</strong>: 添加语义的no-ops-系统调用，其没有影响，或者是不相干的影响，即，打开一个不存在的文件。</p>
+<p><strong>Equivalence attack</strong>: 使用一个不同的系统调用来达到恶意的目的.</p>
+</blockquote>
+<h4 id="decision-boundary决策界限">2.4 decision boundary(决策界限)</h4>
+<h4 id="end-to-end">2.5 end-to-end:</h4>
+<h4 id="结果分类">2.6 结果分类：</h4>
+<p>虑一个二分问题，即将实例分成正类（positive）或负类（negative）。对一个二分问题来说，会出现四种情况。如果一个实例是正类并且也被 预测成正类，即为真正类（True positive）,如果实例是负类被预测成正类，称之为假正类（False positive）。相应地，如果实例是负类被预测成负类，称之为真负类（True negative）,正类被预测成负类则为假负类（false negative）。</p>
+<p>列联表如下表所示，1代表正类，0代表负类。（预测正确：true，预测是正类：positive）</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th></th>
+<th>预测</th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td></td>
+<td>1</td>
+<td>0</td>
+<td>合计</td>
+</tr>
+<tr class="even">
+<td>实际</td>
+<td>1</td>
+<td>True Positive（TP）</td>
+<td>False Negative（FN）</td>
+<td>Actual Positive(TP+FN)</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td>0</td>
+<td>False Positive（FP)</td>
+<td>True Negative(TN)</td>
+<td>Actual Negative(FP+TN)</td>
+</tr>
+<tr class="even">
+<td>合计</td>
+<td></td>
+<td>Predicted Positive(TP+FP)</td>
+<td>Predicted Negative(FN+TN)</td>
+<td>TP+FP+FN+TN</td>
+</tr>
+</tbody>
+</table>
+<p>从列联表引入两个新名词。</p>
+<p>其一是真正类率(true positive rate ,TPR), 计算公式为 <em>TPR=TP</em>/ ( <em>TP</em>+ <em>FN</em>)，刻画的是分类器所识别出的 正实例占所有正实例的比例。</p>
+<p>另外一个是负正类率(false positive rate, FPR),计算公式为 <em>FPR= FP / (FP + TN)，</em>计算的是分类器错认为负类的正实例占所有负实例的比例。</p>
+<p>还有一个真负类率（True Negative Rate，TNR），也称为specificity,计算公式为TNR= <em>TN</em>/ ( <em>FP</em>+ <em>TN</em>) = 1 - <em>FPR</em>。</p>
+<h3 id="如何实现">3. 如何实现？</h3>
+<p>一些问题：程序调用API的过程；</p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>AD</tag>
+        <tag>Malware Classifiers</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Learning Multiagent Communication with Backpropagation</title>
+    <url>/2021/09/21/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Learning%20Multiagent%20Communication%20with%20Backpropagation/</url>
+    <content><![CDATA[<h1 id="论文阅读learning-multiagent-communication-with-backpropagation">【论文阅读】Learning Multiagent Communication with Backpropagation</h1>
+<blockquote>
+<p><strong>作者：</strong> <strong>Sainbayar Sukhbaatar</strong>，<strong>Rob Fergus</strong>， <strong>Arthur Szlam</strong>（纽约大学，FacebookAI）</p>
+<p><strong>时间：</strong>2016</p>
+<p><strong>出版社：</strong>NIPS</p>
+</blockquote>
+<h3 id="abstract">Abstract</h3>
+<p>​ 在AI领域许多任务都需要智能体之间的同心合作，一般地，代理之间的通信协议是人为指定的，其并不在训练过程中改变。在这篇文章中，我们提出了一个简单的神经模型CommNet，其使用持续不断的通信来完成完全合作的任务。该模型由许多代理组成，他们之间的通信基于设定的策略学习，我们将此模型应用于一系列不同的任务中，显示了代理学会相互通信的能力，从而比非通信代理的模型和baselines有更好的性能。</p>
+<h3 id="introduction">1. Introduction</h3>
+<p>​ 虽然控制每个代理的模型是通过强化学习来学习的，但通信的规范和格式通常是预定的。</p>
+<p>​ 在本工作中，每个代理单元都被一个深度前馈神经网络控制，这个网络接入了一个携带连续向量的通信信道。在这个通信信道中每个代理传输的内容不是被指定的，而是通过学习得来的。因为communication是连续的，因此模型可以通过反向传播训练得到。这样就可以结合标准的单智能体RL算法或者监督学习。此外，该模型允许代理的数量和类型在运行时动态变化，这在移动汽车之间的通信等应用中很重要。</p>
+<p>​ 我们考虑的是我们有J个代理的环境，所有的合作都是为了在某些环境中最大化报酬R。我们简化了代理人之间充分合作的假设，从而每个代理人收到R独立于他们的贡献。在此设置中，每个代理都有自己的控制器，或者将它们看作控制所有代理的更大模型的一部分，这两者之间没有区别。从后一个角度来看，我们的控制器是一个大型的前馈神经网络，它将所有Agent的输入映射到它们的动作上，每个Agent占据一个单元的子集。</p>
+<p>​ 我们在两种任务下探索这个模型，在有些情况下，对每项行动都提供监督，而对另一些行动则零星地给予监督。在前一种情况，每个代理单元的控制器通过在连接模型中反向传播错误信号来学习；在后一种情况下，强化学习必须被作为一个额外的外部循环使用，为了给每个时间步骤提供训练信号。</p>
+<hr />
+<h3 id="communication-model">2. Communication Model</h3>
+<p>​ 我们现在描述一个模型，用来计算在给定时间t (省略时间指标)下动作p ( a ( t ) | s ( t )，θ )的分布。</p>
+<p>​ S<sub>j</sub> 表示第j个代理单元所观测到的环境信息，将所有S<sub>j</sub>合并就成了控制器的输入S = {S<sub>1</sub>，S<sub>2</sub>…… S<sub>J</sub>}。</p>
+<p>​ 控制器的输出<strong>a</strong> = {a<sub>1</sub>，a<sub>2</sub>…… a<sub>J</sub>}，表示各个代理单元会做出的动作。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210921211706.png" /></p>
+<p>​ 该框架中所有灰色模块部分的参数均是所有智能体共享的，这一定程度上提升了算法的可扩展性。从上图可以看出，算法接收所有智能体的局部观察作为输入，然后输出所有智能体的决策。</p>
+<p>​ 本算法采用的信息传递方式是采用广播的方式，文中认为可以对算法做出些许修改，让每个智能体只接收其相邻k个智能体的信息。</p>
+<p>​ 拿上图中间的框架图来说明，即上层网络每个模块的输入，不再都是所有智能体消息的平均，而是每个模块只接受满足条件的下层消息的输出，这个条件即下层模块对应的智能体位于其领域范围内。<strong>这样通过增加网络层数，即可增大智能体的感受野（借用计算机视觉的术语），从而间接了解全局的信息。</strong></p>
+<p>​ 除此之外，文中还提出了两种对上述算法可以采取的改进方式：</p>
+<ul>
+<li>可以对上图中间的结构加上 skip connection，类似于 ResNet。这样可以使得智能体在学习的过程中同时考虑局部信息以及全局信息，类似于计算机视觉领域 multi-scale 的思想</li>
+<li>可以将灰色模块的网络结构换成 RNN-like，例如 LSTM 或者 GRU 等等，这是为了处理局部观察所带来的 POMDP 问题。</li>
+</ul>
+<hr />
+<h3 id="related-work">3. Related Work</h3>
+<hr />
+<h3 id="experiments">4. Experiments</h3>
+<h4 id="baselines3个">4.1 Baselines（3个）:</h4>
+<p>​ <strong>Independent controller: </strong>每个代理单元都被独立控制，他们之间相互没有通信。这个模型的好处是智能体可以自由加入或者离开队伍，但是很难将智能体学会合作。</p>
+<p>​ <strong>Fully-connected: </strong>创建一个全连接层的多代理神经网络，这个模型运行智能体之间互相通信，但是这个模型不够灵活，也就是说智能体的数目必须固定。</p>
+<p>​ <strong>Discrete communication:</strong> 通过在训练中学习到的symbols来通信。因为在这个模型中存在离散的操作，并且这个操作不可微分，这种情况一般使用强化学习。</p>
+<h4 id="simple-demonstration-with-a-lever-pulling-task">4.2 Simple Demonstration with a Lever Pulling Task</h4>
+<p>​ <strong>任务</strong>：一共有m个杆子，N个智能体。在每个回合，m个智能体从N个智能体中随机取出，然后他们要选择拉动的杆子。他们的目标是尽可能的拉动不同的杆子，他们的奖励正比于拉动的不同杆子的数量。</p>
+<p>​ <strong>测试结果：</strong></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210921213910.png" /></p>
+<p>​ 可以看出，CommNet的结果非常好。</p>
+<h4 id="multi-turn-games">4.3 Multi-turn Games</h4>
+<p>​ <strong>任务：</strong></p>
+<p>​ <strong>Traffic Junction: </strong>控制车辆通过交通枢纽，使流量最大的同时保证不发生碰撞；</p>
+<p>​ <strong>Combat Task: </strong> 多个智能体攻击其他多个敌方单位。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210921214250.png" /></p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>RL</tag>
+        <tag>Mutiagent</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Learning to Communicate with Deep Multi-Agent Reinforcement Learning</title>
+    <url>/2021/09/16/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Learning%20to%20Communicate%20with%20Deep%20Multi-Agent%20Reinforcement%20Learning/</url>
+    <content><![CDATA[<h1 id="论文阅读learning-to-communicate-with-deep-multi-agent-reinforcement-learning">【论文阅读】Learning to Communicate with Deep Multi-Agent Reinforcement Learning</h1>
+<blockquote>
+<p><strong>作者：Jakob N. Foerster ，Yannis M. Assael ，Nando de Freitas，Shimon Whiteson</strong>（哈佛大学，Google Deepmind）</p>
+<p><strong>时间：2017</strong></p>
+</blockquote>
+<h3 id="abstract">Abstract:</h3>
+<p>​ 我们考虑这样一个问题：多个智能体在环境中通过感知和行动来最大化他们的分享能力。在这些环境中， 智能体必须学习共同协议以此来分享解决问题的必要信息。通过引入深度神经网络，我们可以成功地演示在复杂的环境中的端对端协议学习。我们提出了两种在这个领域学习的方法：<strong>Reinforced Inter-Agent Learning (RIAL) </strong>和 <strong>Differentiable Inter-Agent Learning (DIAL)</strong>。</p>
+<p>​ 前者使用深度Q-learning，后者揭示了在学习过程中智能体可以通过communication channels反向传播错误的梯度，因此，这种方法使用集中学习（centralised learning），分散执行（decentralised execution）。</p>
+<p>​ 我们的实验介绍了用于学习通信协议的新环境，展示了一系列工程上的创新。</p>
+<p>PS：</p>
+<p>​ 1. <strong>端对端（end-to-end,e2e）,</strong> 将多步骤/模块的任务用一个步骤/模型解决的模型。</p>
+<p>​ 可以理解为从输入端到输出端中间只用一个步骤或模块，比如神经网络训练的过程就是一个典型的端对端学习，我们只能知道输入端与输出端的信息，中间的训练过程就是一个黑盒，我们知晓中间的训练过程。</p>
+<p>​ 2.<strong><em>centralised learning</em> but <em>decentralised execution</em></strong>，中心化学习但是分散执行。</p>
+<hr />
+<h3 id="introduction">1. Introduction</h3>
+<p>​ 1.1 <strong>回答的问题：</strong></p>
+<pre><code>    1. 智能体之间如何使用机器学习来自动地发现符合他们需求的通信规则？
+    2. 深度学习也可以吗？
+    3. 我们能从智能体之间学习成功或者失败的经验中学到什么？</code></pre>
+<p>​ 1.2 <strong>研究思路：</strong></p>
+<ol type="1">
+<li><strong>提出一系列经典需要交流的多智能体任务</strong>，每个智能体可以采取行动来影响环境，也可以通过一个离散的有限带宽的通道来跟其它有限的智能体进行通信；</li>
+<li><strong>为1中的任务制定几个学习算法</strong>，由于每个智能体的观察范围有限，同时通信通道能力有限，所有智能体必须找到一个可以在此限制下帮助他们完成任务的通信规则；</li>
+<li><strong>分析这些算法如何学习通讯规则，或者如何失败的</strong>。</li>
+</ol>
+<p>​ 1.3 <strong>主要贡献：</strong></p>
+<p>​ 提出两个方法，<strong><em>reinforced inter-agent learning</em>(RIAL)</strong>和 <strong><em>differentiable inter-agent learning</em> (DIAL)</strong></p>
+<p>​ 结果表明，这两种方法在MNIST数据集上可以很好的解决问题，并且智能体们学到的通信协议往往十分优雅。</p>
+<p>​ 结果同样指出深度学习更好的利用了中心化学习的优点，是一个学习这样通信协议的有力工具。</p>
+<hr />
+<h3 id="related-work">2. Related Work</h3>
+<hr />
+<h3 id="background">3. Background</h3>
+<h4 id="deep-q-networksdqn">3.1 Deep Q-Networks(DQN)</h4>
+<p>​ Deep Learning + Q-Learning，在游戏领域应用广泛。</p>
+<h4 id="independent-dqn">3.2 Independent DQN·</h4>
+<h4 id="deep-recurrent-q-networks">3.3 Deep Recurrent Q-Networks</h4>
+<hr />
+<h3 id="setting">4. Setting</h3>
+<p>​ 在强化学习的背景下，每个智能体的观察能力有限。</p>
+<p>​ 所有智能体的共同目标就是最大化同一个折算后的总奖赏R<sub>t</sub>，但同时，没有智能体可以观察到当前环境隐藏的马尔科夫状态S<sub>t</sub>，每个智能体a分别接收到一个与S<sub>t</sub>相关的观察值相关联的值<span class="math inline">\(O^{a}_{t}\)</span>。</p>
+<p>​ 在每一步t，每个智能体选择一个<em>environment action</em> <span class="math inline">\(u^{a}_{t}\)</span>来影响环境，同时选择一个<em>communication action</em> <span class="math inline">\(m^{a}_{t}\)</span>来被其他智能体观察，但<span class="math inline">\(m^{a}_{t}\)</span>对环境没有直接影响。</p>
+<p>​ 没有通信协议被预先给定，智能体们需要自己学习。</p>
+<p>​ 由于协议是从动作观测历史到消息序列的映射，所以协议的空间维度是非常高的。自动地在这个空间发现有效的通信协议是非常困难的，这体现在智能体需要协调发送消息和解释消息。举个例子，如果一个智能体发送了一个有效的信息，它只有在接受方正确解释并回应的情况下才会受到正反馈，如果没有，反而会打击其发送有效信息的积极性。</p>
+<p>​ 因此，积极的reward是稀少的，只有在发送和解释协调操作时才会发生，这通过随机探索很难实现。</p>
+<p>​ 在这里，我们聚焦于<strong><em>centralised learning</em> but <em>decentralised execution</em></strong>的情况，在学习的时候智能体之间的通信没有限制，在实施过程时，智能体之间仅仅能通过一条带宽有限的通道通信。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211015211416.png" /></p>
+<hr />
+<h3 id="methods">5. Methods</h3>
+<h4 id="rialreinforced-inter-agent-learning">5.1 RIAL（<em>Reinforced Inter-Agent Learning</em>）</h4>
+<p>​ 简单直接的说，<strong>RIAL就是将DRQN(<em>Deep Recurrent Q-Learning</em>)与Q-learning相结合来进行action（影响环境）与communication（与其它智能体通信）选择的方法</strong>。</p>
+<p>​ 每个智能体的<em>Q</em>-network可以表示为：<span class="math inline">\(Q^{a}(o^{a}_{t},m^{a^{,}}_{t-1},h^{a}_{t-1},u^{a})\)</span>。</p>
+<p>​ 四个参数分别代表：环境观察值，其它智能体上一步传来的消息，智能体自己的隐藏状态，选择的action。</p>
+<p>​ 如果直接学习输出最终的Q表，得到的输出将有|U||M|大小。为了避免输出过大，将Q-network拆分为两个<span class="math inline">\(Q^{a}_{u}\)</span>与<span class="math inline">\(Q^{a}_{m}\)</span>，分别表示影响环境的action与同智能体的通信（communication），学习方式使用ε-贪心算法。</p>
+<p>​ <span class="math inline">\(Q^{a}_{u}\)</span>与<span class="math inline">\(Q^{a}_{m}\)</span>都使用DQN训练方法，但所使用的DQN有以下两点改进：</p>
+<ol type="1">
+<li>禁止experience replay;</li>
+<li>为了考虑部分可观测性，我们将每个智能体所采取的操作u和m作为下一步的输入;</li>
+</ol>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211015213709.png" /></p>
+<p>​ RIAL可以扩展到通过在智能体之间之间共享参数来利用集中学习，在这种情况下，由于智能体观察不同，因此也进化出了不同的隐藏状态。参数共享大大减少了必须学习的参数数量，从而加快了学习速度。</p>
+<p>​ 在参数共享情况下，智能体学习两个Q函数<span class="math inline">\(Q_{u}(o^{a}_{t},m^{a^{,}}_{t-1},h^{a}_{t-1},u^{a}_{t-1},m^{a}_{t-1},a,u^{a}_{t})\)</span>与<span class="math inline">\(Q_{m}(o^{a}_{t},m^{a^{,}}_{t-1},h^{a}_{t-1},u^{a}_{t-1},m^{a}_{t-1},a,u^{a}_{t})\)</span>。</p>
+<h4 id="dialdifferentiable-inter-agent-learning">5.1 DIAL（<em>Differentiable Inter-Agent Learning</em>）</h4>
+<p>​ 虽然RIAL可以进行参数共享，但其仍不能在通信过程中给其他智能反馈。</p>
+<p>​ 打个比方，在人类通信活动中，listener即使不说话也会给出及时，丰富的反馈来表明listener对谈话的兴趣和理解程度，而RIAL反而缺少了这个反馈机制，仿佛对着一个面无表情的人在说话，显然，这个方式存在缺点。</p>
+<p>​ DIAL就是为了解决这个问题而存在的，<strong>通过结合centralised learning与Q-networks，不仅可以共享参数，而且可以通过通信信道将梯度从一个Agent推向另一个Agent。</strong></p>
+<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211015215914.png" /></p>
+<hr />
+<h3 id="experiments">6. Experiments</h3>
+<p>​ 在测试中，我们评估了RIAL与DIAL在有无参数共享的情况下进行多智能体任务的情况，并跟一个无交流，参数共享的基准方法进行比较。</p>
+<p>​ 在整个过程中，奖励是通过访问真实状态( Oracle )所能获得的最高平均奖励来规范的。</p>
+<p>​ 我们使用ε-贪心算法（ε = 0.05）。</p>
+<h4 id="switch-riddles开关谜题">6.1 Switch Riddles（开关谜题）</h4>
+<p>​ 一百名囚犯入狱。典狱长告诉他们，从明天开始，每个人都会被安置在一个孤立的牢房里，无法相互交流。每天，监狱长都会随意统一挑选其中一名被替换的犯人，并将其安置在中央审讯室，室内只装有一个带有切换开关的灯泡。囚犯将能够观察灯泡的当前状态。如果他愿意，他可以拨动灯泡的开关。他还可以宣布，他相信所有的囚犯都已经访问了审讯室。如果这个公告是真的，那么所有囚犯都被释放，但如果是假的，所有囚犯都被处死。</p>
+<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211009165843.png" /></p>
+<h4 id="results1">6.2 Results1</h4>
+<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211009170433.png" /></p>
+<p>​ （a）可以看到，在n=3时四种方法的效果都比Baseline的效果好，参数共享加速了算法。</p>
+<p>​ （b）在n=4时，参数共享的DIAL方法最好。不带参数共享的RIAL没有baseline效果好。可以看出，智能体们独立的学习出相同的策略是很难的。</p>
+<p>​ （c）n=3时智能体使用DIAL学习到的策略。</p>
+<h4 id="colour-digit-mnist">6.3 Colour-Digit MNIST</h4>
+<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211009200856.png" /></p>
+<h4 id="effect-of-channel-noise">6.4 Effect of Channel Noise</h4>
+<p>​ <u><em>这里没太看懂</em></u></p>
+<p>​</p>
+<h3 id="section"></h3>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>RL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Learning to Communicate with Deep Multi-Agent Reinforcement Learning</title>
+    <url>/2021/10/11/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Sequence%20Squeezing%20A%20Defense%20Method%20Against%20Adversarial%20Examples%20for%20API%20Call-Based%20RNN%20Variants/</url>
+    <content><![CDATA[<h1 id="论文阅读sequence-squeezing-a-defense-method-against-adversarial-examples-for-api-call-based-rnn-variants">【论文阅读】Sequence Squeezing: A Defense Method Against Adversarial Examples for API Call-Based RNN Variants</h1>
+<blockquote>
+<p><strong>作者：Ishai Rosenberg，Asaf Shabtai，Yuval Elovici，Lior Rokach（本·古里安大学，以色列）</strong></p>
+<p><strong>时间：2021</strong></p>
+</blockquote>
+<h3 id="abstract">ABSTRACT</h3>
+<p>​ 在此篇文章中，我们提出了一个原创的防御方法，<strong>Sequence Squeezing</strong>，用以提高RNN分类器的鲁棒性。</p>
+<p>​ 另外，受到最近公布的CNN防御方法的启发，我们又实现了3种额外的防御方法作为baseline。使用Sequence Squeezing，我们可以使针对此类的对抗样本攻击有效性由99.9%降至15%，比目前其他所有的防御方法做的更好。</p>
+<hr />
+<h3 id="introduction">1. INTRODUCTION</h3>
+<p>​ 我们只关注<strong>在网络安全领域经常使用的离散序列输入（API序列）</strong>，其他序列输入领域如NLP会是我们未来的工作。</p>
+<p>​ 贡献：</p>
+<pre><code>1. 提出防御方法Sequence Squeezing，不需要对分类器本身做改变；
+2. 受到CNN防御的启发，展示三种额外的防御方法；
+3. 在API-based恶意样本分类器上，对以上的防御方法进行了全面评估（准确率，训练和使用时的开销）。</code></pre>
+<hr />
+<h3 id="background-and-related-work">2. BACKGROUND AND RELATED WORK</h3>
+<h4 id="rnn-adversarial-examples">2.1 <em>RNN Adversarial Examples</em></h4>
+<h4 id="defense-mechanisms-against-non-sequence-based-adversarial-attacks">2.2 <em>Defense Mechanisms Against Non-Sequence Based Adversarial Attacks</em></h4>
+<hr />
+<h3 id="methodology">3. METHODOLOGY</h3>
+<h4 id="threat-model">3.1 <em>Threat Model</em></h4>
+<ol type="1">
+<li>考虑到实际安全需要，这里分类器仅使用API-based RNN二分类器（malware or benign）；</li>
+<li>假设攻击者可以完全访问训练好的模型，并且可以无限询问使用，但不能修改模型；</li>
+<li>我们的防御方法并不只限于这个领域，任何离散序列输入的领域如NLP都可以使用。</li>
+</ol>
+<h4 id="the-sequence-squeezing-defense-method">3.2 <em>The Sequence Squeezing Defense Method</em></h4>
+<p>​ <strong>Sequence Squeezing</strong>通过生成比原本更短的语义保留向量，比较原始向量与压缩向量的输出区别，若二者有较多不同则该样本很可能为对抗样本，在压缩操作中被剔除的特征很可能就是对抗样本插入的。</p>
+<p>​ <strong>Sequence Squeezing</strong>的效果来自于其减少了对抗样本的扰动空间，通过合并语义相似的特征，减少了特征的种类（这里指的是API种类）。</p>
+<p>​ 举个例子：</p>
+<blockquote>
+<p>​ 一个间谍程序使用以下API调用序列上传数据：</p>
+<p><em>ReadFile()</em>--&gt; <em>InternetConnectA()</em>--&gt; <em>HttpOpenRequestA()</em>--&gt; <em>HttpSendRequestA()</em></p>
+<p>​ 因为<strong>HttpSendRequestA()</strong>这个API是恶意软件常用API，直接使用会被分类器识别。</p>
+<p>​ 一般的对抗样本会将<strong>HttpSendRequestA()</strong>换成<strong>HttpSendRequestW()</strong>，后者并不是恶意软件常用的API。</p>
+<p>​ 使用<strong>Sequence Squeezing</strong>方法时，由于<strong>HttpSendRequestA()</strong>和<strong>HttpSendRequestW()</strong>有着相似的语义（这里指API的功能），二者会被挤压为一个单独的特征群，由<strong>HttpSendRequestA()</strong>表示。</p>
+<p>​ 其中，相较于<strong>HttpSendRequestW()</strong>， <strong>HttpSendRequestA()</strong>能更好的代表群组的信息。因为同时被恶意软件和正常软件使用，可以覆盖更多的语义使用情况。</p>
+<p>​ 在完成挤压操作后，更短的序列就会被识别为恶意样本。</p>
+</blockquote>
+<p>​ 本方法分为两个阶段：</p>
+<ol type="1">
+<li><p><strong>one-time post-training阶段</strong>：</p>
+<p>用于选取用于挤压向量的特征值。</p>
+<p>该阶段进行了一次替换操作，输出用于生成挤压特征向量，算法共分为三步：</p>
+<ol type="1">
+<li>计算单词嵌入（ GloVe【17】），在词汇库中将每个API以语义保留的方式表示，意思相近的单词有着更近的嵌入距离（2-3行）；</li>
+<li>将最接近(含义最相似)的单词按迭代自下而上的顺序合并到单个中心上，以降低词汇量的维数（4-18行）；</li>
+<li>将所有单词替换为最近的单词中心，保持单词嵌入一直被原始分类器使用，这样就不必改变分类器（19-22行）。</li>
+</ol>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211013195514.png" /></p></li>
+<li><p><strong>inference阶段</strong>：</p>
+<p>用于检查出对抗样本。</p>
+<ol type="1">
+<li>通过Algorithm.1算法生成的嵌入来将API序列压缩，生成压缩后的序列；</li>
+<li>将原始API序列与压缩API序列分别通过分类器C；</li>
+<li>计算二者的输出差，与阈值 <strong><em>T hreshold<sub>adv</sub></em></strong>相比，若大则为对抗样本。</li>
+</ol></li>
+</ol>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211013200625.png" /></p>
+<p>​ <strong>Threshold<sub>adv</sub></strong>为训练集中所有样本里原始输入和压缩输入的最大差距：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211013200959.png" /></p>
+<hr />
+<h3 id="experimental-evaluation">4. EXPERIMENTAL EVALUATION</h3>
+<h4 id="dataset-and-target-malware-classifiers">4.1 <em>Dataset and Target Malware Classifiers</em></h4>
+<ul>
+<li><strong>数据集来源：</strong></li>
+</ul>
+<p>​ 【21】 Ishai Rosenberg, Asaf Shabtai, Lior Rokach, and Yuval Elovici. Generic black-box end-to-end attack against state of the art API call based malware classififiers. In <em>RAID</em>, pages 490–510, 2018.</p>
+<ol type="1">
+<li><p>目前只找到这一个公开的，有足够样本数量的数据集（250000正常样本，250000恶意样本）；</p></li>
+<li><p>数据集包含了最新的样本恶意软件家族，例如Cerber和Locky勒索软件家族。其中不同种类的恶意软件（勒索病毒，蠕虫，后门，木马，间谍，流氓软件（<strong>PUA</strong>，potentially unwanted application），病毒）数量相当，以防止bios过于偏向某一类别；</p></li>
+</ol>
+<ul>
+<li><p><strong>API序列来源：</strong></p>
+<p>用布谷鸟沙箱提取（老方法），其中，通过使用YARA规则来过滤掉抗沙盒的恶意软件。经过提取过滤后共有360000个样本用于train，36000个样本用于validate，36000个样本用于test。</p></li>
+<li><p><strong>测试配置：</strong></p>
+<ol type="1">
+<li><p>有20%的恶意软件家族将被只用于test，以此来提高泛化能力；</p></li>
+<li><p>training set比test set早八个月生成（通过VirusTotal的日期判断）；</p></li>
+<li><p>一个样本若在63个分类中有多与等于15个阳性类，则被认为是恶意样本，如果一个都没有，认为是良性样本，否则忽略该样本；</p></li>
+<li><p>测试所用分类器见【21】。</p></li>
+</ol></li>
+</ul>
+<h4 id="evaluated-attacks">4.2 <em>Evaluated Attacks</em></h4>
+<p>​ 用于测试防御性能的攻击方法见【21】。</p>
+<p>​ <strong>攻击方法：</strong>1.灰盒；2.白盒；3.白盒；4.随机扰动</p>
+<p>​ <strong>攻击思路：</strong><u>将API序列添加到其他API序列中</u>（不移动或者改变API序列，以免影响功能），依据被添加序列的梯度或者随机添加。</p>
+<p>​ 当然，我们的测试不仅仅只针对于添加API序列的方法，我们还对已有的攻击方法进行了改进，使得其也会对API进行修改和删除，在测试结果中我们看到了同样好的结果。</p>
+<p>​ <strong>有一点需要声明：</strong>在图像领域我们要求对抗样本的扰动尽量小，以此对人类不可识别，但在API序列的领域此点并不适用。<u>人类并不能辨别成百上千个API组成的序列，故对API序列的扰动是没有限制的</u>（满足功能的前提下）。但也不是说API添加的越多越好，当API添加过多时，程序的异常会增加，对抗样本的逃逸率会降低。</p>
+<h4 id="defense-methods-evaluated">4.3 <em>Defense Methods Evaluated</em></h4>
+<p>​ 我们调查研究了4种防御方法：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211012215716.png" /></p>
+<p>​ PS：<strong>Attack-Specific:</strong> 需要提供某种攻击的对抗样本实例；</p>
+<p>​ <strong>Attack-Agnostic:</strong>针对所有攻击，不需要提供对抗样本实例。</p>
+<p>​ 其中，RNN Ensemble方法改变了分类器本身，其他则只改变了输入序列。</p>
+<p>​ 当提出一个对抗防御方法时要考虑<strong><em>adaptive attacks（</em>transparent-box attacks<em>）</em></strong>，即攻击者知道防御的方法，从而设计出一个特殊的攻击来对抗这种防御【4】。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211013090338.png" /></p>
+<p>​ 可以看到，所有被评测的防御方法对于adaptive attack的防御效果都没有对non-adaptive attack的效果好。尽管对adaptive attack防御效果有所下降，但还是比没有强，本文没有对adaptive attack做专门防御。</p>
+<h4 id="defense-method-performance">4.4 <em>Defense Method Performance</em></h4>
+<p>​ 两个评价指标：</p>
+<ol type="1">
+<li><strong><em>Adversarial recall：</em></strong>生成的所有对抗样本中被识别出来的比率，数值越高分类器的鲁棒性越好；</li>
+<li><strong><em>Classififiers’ accuracy：</em></strong>在没有对抗样本的情况下测试分类准确率。</li>
+</ol>
+<p>​ 测试结果见上图。</p>
+<p>​ 不仅仅对插入攻击方法的测试，我们改修改了攻击方法以此能产生对API进行修改，删除的对抗样本序列（<strong>这些序列不具备原来的功能</strong>）。实验结果显示效果跟上图差不多。</p>
+<h4 id="discussion">4.5 <em>Discussion</em></h4>
+<ol type="1">
+<li>attack-specific的攻击方法效果通常更差；</li>
+<li>以上测试的防御方法通常可以更好的抵御白盒攻击（相对于黑盒攻击），这表明<strong>有着转移性（transferable）的对抗样本跟其他对抗样本并不相同</strong>，防御方法对他们效果更弱，但是，这里并没有仔细分析黑盒攻击与白盒攻击产生的对抗样本的不同；</li>
+<li>所有列出的防御方法都对随机扰动攻击的防御效果很好。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>AD</tag>
+        <tag>RNN</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/2021/09/08/%E3%80%90%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E8%AF%BE%E8%AE%BE%E3%80%91%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%9C%E4%B8%9A/</url>
+    <content><![CDATA[<blockquote>
+<p>组长：袁也</p>
+<p>组员：吴骁，缪文俊，王相炜，杨涵博，杨传冠</p>
+<p>班级：网安1902</p>
+</blockquote>
+<h3 id="detours-学习">1. Detours 学习：</h3>
+<p>​ 通过阅读文档，理论+实际的结合，组内成员基本理解了detours运作原理。</p>
+<h3 id="detours-编译">2. Detours 编译：</h3>
+<pre><code>1. 首先，在VS2019自带的cmd中编译detours:</code></pre>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162623.png" /></p>
+<p>​ 可见，编译成功。</p>
+<h3 id="消息弹窗的注入">3. 消息弹窗的注入：</h3>
+<p>​ dllmain中代码如下：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162822.png" /></p>
+<p>​ 演示效果：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162923.png" /></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162947.png" /></p>
+<p>​ 可见，成功</p>
+<h3 id="vs框架搭建">4. VS框架搭建：</h3>
+<p>​ VS框架组成如下：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908163111.png" /></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908163125.png" /></p>
+<h3 id="目前碰到的一些问题">5. 目前碰到的一些问题：</h3>
+<h4 id="使用vs2019自带的命令行界面进行编译提示没有nmake命令">5.1 使用VS2019自带的命令行界面进行编译，提示没有nmake命令：</h4>
+<p>​ 检查后发现VS2019只安装了桌面开发模块，没有安装C++开发模块，更新相应拓展包即可。</p>
+<p><img src="%E3%80%90%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E8%AF%BE%E8%AE%BE%E3%80%91%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%9C%E4%B8%9A/20210906172501.png" /></p>
+<h4 id="在testconsole.cpp文件中引入代码编译报错百余个标识符错误">5.2 在testconsole.cpp文件中引入代码，编译报错百余个标识符错误：</h4>
+<p>​ 在外网查询后发现，是因为引入引用windows.h在引用detours之前：</p>
+<p><img src="%E3%80%90%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E8%AF%BE%E8%AE%BE%E3%80%91%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%9C%E4%B8%9A/20210906165008.png" /></p>
+<h4 id="字符编码问题">5.3 字符编码问题：</h4>
+<p>​ 熟悉宽字符与unicode字符编码的原理后，才能正确处理HCHAR,TCHAR等。</p>
+<h4 id="messagebox操作中出现如下文件操作">5.4 Messagebox操作中出现如下文件操作：</h4>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908170241.png" /></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>极大似然估计</title>
+    <url>/2021/09/04/%E3%80%90%E9%9A%8F%E5%86%99%E3%80%91%E6%9E%81%E5%A4%A7%E4%BC%BC%E7%84%B6%E4%BC%B0%E8%AE%A1/</url>
+    <content><![CDATA[<h1 id="随写极大似然估计maximum-likelihood-estimatemle">【随写】极大似然估计（<em>Maximum Likelihood Estimate，MLE</em>）</h1>
+<p>​ “模型已定，参数未知。”</p>
+<p>​ 极大似然估计，<strong>就是利用已知的样本结果信息，反推最具有可能（<u>最大概率</u>）导致这些样本结果出现的模型参数值。</strong></p>
+<p>​</p>
+<p>​ 对于这个函数：<span class="math inline">\(P(x|θ)\)</span>，</p>
+<p>​ 输入有两个：x表示某一个具体的数据；θ表示模型的参数。</p>
+<p>​ 如果θ是已知确定的，x是变量，这个函数叫做<strong>概率函数(probability function)</strong>，它描述对于不同的样本点x，其出现概率是多少。</p>
+<p>​ 如果x是已知确定的，θ 是变量，这个函数叫做<strong>似然函数(likelihood function)</strong>, 它描述对于不同的模型参数，出现x这个样本点的概率是多少。</p>
+<p>​</p>
+<p>​ 一般说来，事件A发生的概率与某一未知参数θ有关，θ取值不同，则事件A发生的概率<span class="math inline">\(P(A|θ)\)</span>也不同，当我们在一次试验中事件A发生了，则认为此时的θ值应是t的一切可能取值中使<span class="math inline">\(P(A|θ)\)</span>达到最大的那一个，极大似然估计法就是要选取这样的t值作为参数t的估计值，使所选取的样本在被选的总体中出现的可能性为最大。</p>
+]]></content>
+      <categories>
+        <category>Something</category>
+      </categories>
+      <tags>
+        <tag>Math</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>近似误差与估计误差</title>
+    <url>/2021/09/05/%E3%80%90%E9%9A%8F%E6%89%8B%E5%86%99%E3%80%91%E8%BF%91%E4%BC%BC%E8%AF%AF%E5%B7%AE%E4%B8%8E%E4%BC%B0%E8%AE%A1%E8%AF%AF%E5%B7%AE/</url>
+    <content><![CDATA[<h1 id="随手写近似误差与估计误差">【随手写】近似误差与估计误差</h1>
+<p>​ 在读《统计学习方法》中关于k-邻近算法的介绍时，发现了这么一段话：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905153525.png" /></p>
+<p>​ <strong>近似误差（<em>Approximation Error</em>）:</strong> 训练时，训练集与当前模型的误差；</p>
+<p>​ <strong>估计误差（<em>Estimation Error</em>）：</strong> 训练完成后，所选择的模型已经固定，模型对未知数据拟合时的误差。</p>
+<p>​ 近似误差与估计误差二者不可兼得，此消彼长，需要取其平衡。</p>
+]]></content>
+      <categories>
+        <category>Something</category>
+      </categories>
+      <tags>
+        <tag>Machine Learning</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/2021/10/12/%E5%85%B3%E4%BA%8EReinforcement%20Learning(%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0)/</url>
+    <content><![CDATA[<h1 id="关于reinforcement-learning强化学习">关于Reinforcement Learning(强化学习)</h1>
+<blockquote>
+<p>参考资料：《机器学习》-周志华，莫烦强化学习系列教程，相关论文</p>
+<p>前置知识：numpy,pandas,Tkinter,gym(不支持windows)</p>
+</blockquote>
+<h3 id="q-learning">1. Q-Learning:</h3>
+<p>​</p>
 ]]></content>
   </entry>
   <entry>
@@ -198,1013 +1569,6 @@
 <p>“要有光！”</p>
 <p>于是就有了光。</p>
 ]]></content>
-  </entry>
-  <entry>
-    <title></title>
-    <url>/2021/10/12/%E5%85%B3%E4%BA%8EReinforcement%20Learning(%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0)/</url>
-    <content><![CDATA[<h1 id="关于reinforcement-learning强化学习">关于Reinforcement Learning(强化学习)</h1>
-<blockquote>
-<p>参考资料：《机器学习》-周志华，莫烦强化学习系列教程，相关论文</p>
-<p>前置知识：numpy,pandas,Tkinter,gym(不支持windows)</p>
-</blockquote>
-<h3 id="q-learning">1. Q-Learning:</h3>
-<p>​</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>Learning to Communicate with Deep Multi-Agent Reinforcement Learning</title>
-    <url>/2021/10/11/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Sequence%20Squeezing%20A%20Defense%20Method%20Against%20Adversarial%20Examples%20for%20API%20Call-Based%20RNN%20Variants/</url>
-    <content><![CDATA[<h1 id="论文阅读sequence-squeezing-a-defense-method-against-adversarial-examples-for-api-call-based-rnn-variants">【论文阅读】Sequence Squeezing: A Defense Method Against Adversarial Examples for API Call-Based RNN Variants</h1>
-<blockquote>
-<p><strong>作者：Ishai Rosenberg，Asaf Shabtai，Yuval Elovici，Lior Rokach（本·古里安大学，以色列）</strong></p>
-<p><strong>时间：2021</strong></p>
-</blockquote>
-<h3 id="abstract">ABSTRACT</h3>
-<p>​ 在此篇文章中，我们提出了一个原创的防御方法，<strong>Sequence Squeezing</strong>，用以提高RNN分类器的鲁棒性。</p>
-<p>​ 另外，受到最近公布的CNN防御方法的启发，我们又实现了3种额外的防御方法作为baseline。使用Sequence Squeezing，我们可以使针对此类的对抗样本攻击有效性由99.9%降至15%，比目前其他所有的防御方法做的更好。</p>
-<hr />
-<h3 id="introduction">1. INTRODUCTION</h3>
-<p>​ 我们只关注<strong>在网络安全领域经常使用的离散序列输入（API序列）</strong>，其他序列输入领域如NLP会是我们未来的工作。</p>
-<p>​ 贡献：</p>
-<pre><code>1. 提出防御方法Sequence Squeezing，不需要对分类器本身做改变；
-2. 受到CNN防御的启发，展示三种额外的防御方法；
-3. 在API-based恶意样本分类器上，对以上的防御方法进行了全面评估（准确率，训练和使用时的开销）。</code></pre>
-<hr />
-<h3 id="background-and-related-work">2. BACKGROUND AND RELATED WORK</h3>
-<h4 id="rnn-adversarial-examples">2.1 <em>RNN Adversarial Examples</em></h4>
-<h4 id="defense-mechanisms-against-non-sequence-based-adversarial-attacks">2.2 <em>Defense Mechanisms Against Non-Sequence Based Adversarial Attacks</em></h4>
-<hr />
-<h3 id="methodology">3. METHODOLOGY</h3>
-<h4 id="threat-model">3.1 <em>Threat Model</em></h4>
-<ol type="1">
-<li>考虑到实际安全需要，这里分类器仅使用API-based RNN二分类器（malware or benign）；</li>
-<li>假设攻击者可以完全访问训练好的模型，并且可以无限询问使用，但不能修改模型；</li>
-<li>我们的防御方法并不只限于这个领域，任何离散序列输入的领域如NLP都可以使用。</li>
-</ol>
-<h4 id="the-sequence-squeezing-defense-method">3.2 <em>The Sequence Squeezing Defense Method</em></h4>
-<p>​ <strong>Sequence Squeezing</strong>通过生成比原本更短的语义保留向量，比较原始向量与压缩向量的输出区别，若二者有较多不同则该样本很可能为对抗样本，在压缩操作中被剔除的特征很可能就是对抗样本插入的。</p>
-<p>​ <strong>Sequence Squeezing</strong>的效果来自于其减少了对抗样本的扰动空间，通过合并语义相似的特征，减少了特征的种类（这里指的是API种类）。</p>
-<p>​ 举个例子：</p>
-<blockquote>
-<p>​ 一个间谍程序使用以下API调用序列上传数据：</p>
-<p><em>ReadFile()</em>--&gt; <em>InternetConnectA()</em>--&gt; <em>HttpOpenRequestA()</em>--&gt; <em>HttpSendRequestA()</em></p>
-<p>​ 因为<strong>HttpSendRequestA()</strong>这个API是恶意软件常用API，直接使用会被分类器识别。</p>
-<p>​ 一般的对抗样本会将<strong>HttpSendRequestA()</strong>换成<strong>HttpSendRequestW()</strong>，后者并不是恶意软件常用的API。</p>
-<p>​ 使用<strong>Sequence Squeezing</strong>方法时，由于<strong>HttpSendRequestA()</strong>和<strong>HttpSendRequestW()</strong>有着相似的语义（这里指API的功能），二者会被挤压为一个单独的特征群，由<strong>HttpSendRequestA()</strong>表示。</p>
-<p>​ 其中，相较于<strong>HttpSendRequestW()</strong>， <strong>HttpSendRequestA()</strong>能更好的代表群组的信息。因为同时被恶意软件和正常软件使用，可以覆盖更多的语义使用情况。</p>
-<p>​ 在完成挤压操作后，更短的序列就会被识别为恶意样本。</p>
-</blockquote>
-<p>​ 本方法分为两个阶段：</p>
-<ol type="1">
-<li><p><strong>one-time post-training阶段</strong>：</p>
-<p>用于选取用于挤压向量的特征值。</p>
-<p>该阶段进行了一次替换操作，输出用于生成挤压特征向量，算法共分为三步：</p>
-<ol type="1">
-<li>计算单词嵌入（ GloVe【17】），在词汇库中将每个API以语义保留的方式表示，意思相近的单词有着更近的嵌入距离（2-3行）；</li>
-<li>将最接近(含义最相似)的单词按迭代自下而上的顺序合并到单个中心上，以降低词汇量的维数（4-18行）；</li>
-<li>将所有单词替换为最近的单词中心，保持单词嵌入一直被原始分类器使用，这样就不必改变分类器（19-22行）。</li>
-</ol>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211013195514.png" /></p></li>
-<li><p><strong>inference阶段</strong>：</p>
-<p>用于检查出对抗样本。</p>
-<ol type="1">
-<li>通过Algorithm.1算法生成的嵌入来将API序列压缩，生成压缩后的序列；</li>
-<li>将原始API序列与压缩API序列分别通过分类器C；</li>
-<li>计算二者的输出差，与阈值 <strong><em>T hreshold<sub>adv</sub></em></strong>相比，若大则为对抗样本。</li>
-</ol></li>
-</ol>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211013200625.png" /></p>
-<p>​ <strong>Threshold<sub>adv</sub></strong>为训练集中所有样本里原始输入和压缩输入的最大差距：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211013200959.png" /></p>
-<hr />
-<h3 id="experimental-evaluation">4. EXPERIMENTAL EVALUATION</h3>
-<h4 id="dataset-and-target-malware-classifiers">4.1 <em>Dataset and Target Malware Classifiers</em></h4>
-<ul>
-<li><strong>数据集来源：</strong></li>
-</ul>
-<p>​ 【21】 Ishai Rosenberg, Asaf Shabtai, Lior Rokach, and Yuval Elovici. Generic black-box end-to-end attack against state of the art API call based malware classififiers. In <em>RAID</em>, pages 490–510, 2018.</p>
-<ol type="1">
-<li><p>目前只找到这一个公开的，有足够样本数量的数据集（250000正常样本，250000恶意样本）；</p></li>
-<li><p>数据集包含了最新的样本恶意软件家族，例如Cerber和Locky勒索软件家族。其中不同种类的恶意软件（勒索病毒，蠕虫，后门，木马，间谍，流氓软件（<strong>PUA</strong>，potentially unwanted application），病毒）数量相当，以防止bios过于偏向某一类别；</p></li>
-</ol>
-<ul>
-<li><p><strong>API序列来源：</strong></p>
-<p>用布谷鸟沙箱提取（老方法），其中，通过使用YARA规则来过滤掉抗沙盒的恶意软件。经过提取过滤后共有360000个样本用于train，36000个样本用于validate，36000个样本用于test。</p></li>
-<li><p><strong>测试配置：</strong></p>
-<ol type="1">
-<li><p>有20%的恶意软件家族将被只用于test，以此来提高泛化能力；</p></li>
-<li><p>training set比test set早八个月生成（通过VirusTotal的日期判断）；</p></li>
-<li><p>一个样本若在63个分类中有多与等于15个阳性类，则被认为是恶意样本，如果一个都没有，认为是良性样本，否则忽略该样本；</p></li>
-<li><p>测试所用分类器见【21】。</p></li>
-</ol></li>
-</ul>
-<h4 id="evaluated-attacks">4.2 <em>Evaluated Attacks</em></h4>
-<p>​ 用于测试防御性能的攻击方法见【21】。</p>
-<p>​ <strong>攻击方法：</strong>1.灰盒；2.白盒；3.白盒；4.随机扰动</p>
-<p>​ <strong>攻击思路：</strong><u>将API序列添加到其他API序列中</u>（不移动或者改变API序列，以免影响功能），依据被添加序列的梯度或者随机添加。</p>
-<p>​ 当然，我们的测试不仅仅只针对于添加API序列的方法，我们还对已有的攻击方法进行了改进，使得其也会对API进行修改和删除，在测试结果中我们看到了同样好的结果。</p>
-<p>​ <strong>有一点需要声明：</strong>在图像领域我们要求对抗样本的扰动尽量小，以此对人类不可识别，但在API序列的领域此点并不适用。<u>人类并不能辨别成百上千个API组成的序列，故对API序列的扰动是没有限制的</u>（满足功能的前提下）。但也不是说API添加的越多越好，当API添加过多时，程序的异常会增加，对抗样本的逃逸率会降低。</p>
-<h4 id="defense-methods-evaluated">4.3 <em>Defense Methods Evaluated</em></h4>
-<p>​ 我们调查研究了4种防御方法：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211012215716.png" /></p>
-<p>​ PS：<strong>Attack-Specific:</strong> 需要提供某种攻击的对抗样本实例；</p>
-<p>​ <strong>Attack-Agnostic:</strong>针对所有攻击，不需要提供对抗样本实例。</p>
-<p>​ 其中，RNN Ensemble方法改变了分类器本身，其他则只改变了输入序列。</p>
-<p>​ 当提出一个对抗防御方法时要考虑<strong><em>adaptive attacks（</em>transparent-box attacks<em>）</em></strong>，即攻击者知道防御的方法，从而设计出一个特殊的攻击来对抗这种防御【4】。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211013090338.png" /></p>
-<p>​ 可以看到，所有被评测的防御方法对于adaptive attack的防御效果都没有对non-adaptive attack的效果好。尽管对adaptive attack防御效果有所下降，但还是比没有强，本文没有对adaptive attack做专门防御。</p>
-<h4 id="defense-method-performance">4.4 <em>Defense Method Performance</em></h4>
-<p>​ 两个评价指标：</p>
-<ol type="1">
-<li><strong><em>Adversarial recall：</em></strong>生成的所有对抗样本中被识别出来的比率，数值越高分类器的鲁棒性越好；</li>
-<li><strong><em>Classififiers’ accuracy：</em></strong>在没有对抗样本的情况下测试分类准确率。</li>
-</ol>
-<p>​ 测试结果见上图。</p>
-<p>​ 不仅仅对插入攻击方法的测试，我们改修改了攻击方法以此能产生对API进行修改，删除的对抗样本序列（<strong>这些序列不具备原来的功能</strong>）。实验结果显示效果跟上图差不多。</p>
-<h4 id="discussion">4.5 <em>Discussion</em></h4>
-<ol type="1">
-<li>attack-specific的攻击方法效果通常更差；</li>
-<li>以上测试的防御方法通常可以更好的抵御白盒攻击（相对于黑盒攻击），这表明<strong>有着转移性（transferable）的对抗样本跟其他对抗样本并不相同</strong>，防御方法对他们效果更弱，但是，这里并没有仔细分析黑盒攻击与白盒攻击产生的对抗样本的不同；</li>
-<li>所有列出的防御方法都对随机扰动攻击的防御效果很好。</li>
-</ol>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>AD</tag>
-        <tag>RNN</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>A Comprehensive Survey of Multiagent Reinforcement Learning</title>
-    <url>/2021/10/09/A%20Comprehensive%20Survey%20of%20%20Multiagent%20Reinforcement%20Learning/</url>
-    <content><![CDATA[<h1 id="a-comprehensive-survey-of-multiagent-reinforcement-learning">A Comprehensive Survey of Multiagent Reinforcement Learning</h1>
-<blockquote>
-<p>作者：Lucian Bus¸oniu, Robert Babuska, and Bart De Schutter</p>
-<p>时间：2008</p>
-</blockquote>
-<h3 id="abstract">Abstract</h3>
-<p>​ <u><em>一篇对Multiagent reinforcement learning(MARL)的综述。</em></u></p>
-<p>​ 一个首要的问题：多智能体学习目的的正式陈述是什么？不同观点引出了不同的目标，智能体动态学习的稳定性和对其它智能体行为变化的适应性。文献中描述的MARL算法都是在完全合作、完全竞争或更一般的环境中，明确或含蓄地表明这两个目标之一或两者结合。</p>
-<p>​ <strong>本文接下来描述了:</strong></p>
-<ol type="1">
-<li>详细讨论了这些算法的一个具有代表性的选择，以及每一类算法中出现的具体问题；</li>
-<li>MARL算法的好处和遇到的挑战；</li>
-<li>对该领域的展望。</li>
-</ol>
-<p>​</p>
-<hr />
-<h3 id="introduction">1. Introduction</h3>
-<h4 id="背景">1.1 背景</h4>
-<p>​ 一个多智能体系统可以被定义为：一群<strong>独立的，互相影响的</strong>实体在同一个环境中。</p>
-<p>​ 多智能体系统在机器人团队，分散控制，资源管理，合作决定系统，数据处理等多方面领域有广泛的应用。在机器人团队中，很自然，控制权是分散在机器人之中的；在资源管理中，尽管资源可以被一个中心权威机构管理，但用一个Agent来识别每个资源可能会对系统提供一个有用的、分布式的视角。</p>
-<p>​ 尽管每个智能体可以被预编程，为在面对复杂环境时提前给智能体设计好的行为准则是十分困难的，甚至可以说是不可能的。所以，让他们在线学习自己的行为准则是十分有必要的，这可以使个体与整体的表现都逐渐提升。</p>
-<p>​ 并且考虑到环境可能随时变化，一个硬布线的（<em>hardwired</em>，组原概念，硬布线是提前定死的，不能对其编程）行为可能不是那么合适。</p>
-<p>​ 考虑到强化学习的简单性和普遍性，其对于多智能体学习是十分合适的。<strong>但强化学习在多智能体系统中也有一些挑战：</strong></p>
-<ol type="1">
-<li><p>很难给定RL多智能体一个好的学习目标；</p></li>
-<li><p>大多数情况下，每个智能体必须跟踪其他正在学习的智能体（因此，整个过程并不平稳，也使大多数单智能体RL算法的收敛性质失效），只有这样，才有可能使其行为与他们的行为相协调，从而产生连贯的联合行为结果；</p></li>
-<li><p>算法对现实问题规模的可伸缩性，在单Agent RL中已经是有问题的，在多Agent强化学习( MARL )中更是引起关注的一个更大的原因。</p>
-<blockquote>
-<p><strong>可伸缩性（scalability）：</strong>算法在处理各种规模的数据时都有很好的性能。随着数据的增大，效率不会下降很快。</p>
-</blockquote></li>
-</ol>
-<p><strong>多智能体强化学习通常有四种设定：</strong></p>
-<ol type="1">
-<li><strong>Fully cooperative</strong> 完全合作关系，这种设定里面，Agents的利益一致，获得的奖励相同，有共同的目标。</li>
-<li><strong>Fully competitive</strong> 完全竞争关系，一方的收益是另一方的损失。典型的代表就是0和博弈，双方获得的奖励的总和为0.</li>
-<li><strong>Mixed Cooperative &amp; comepetitive</strong> 既有竞争也有合作。例如：足球机器人踢球，两支球队，一方获得的奖励就是另一方的损失，但是球队内部成员是合作关系。</li>
-<li><strong>Self-interested</strong> 利己主义。系统中有多个Agents，一个Agent的动作会改变环境的状态，可能让别人受益或者受损。每个Agent只想最大化自身利益，至于让别人受损还是受益它不管。</li>
-</ol>
-<p>​ MARL与博弈论，进化计算，优化理论等有着强烈联系：</p>
-<p>​ 1. <strong>Game theory（博弈论）:</strong> 一个探究多智能体互动来最大化奖励的研究。在这里我们专注于对解决动态多智能体任务的算法，虽然大多数博弈论的研究结果与静态一次性或者多次重复任务相关。</p>
-<p>​ 【13】<strong>Bowling</strong>和<strong>Veloso</strong> 讨论了几种MARL算法，将这些算法用RL与博弈论相结合，用于动态环境中每个状态产生的静态博弈。</p>
-<p>​ 【14】<strong>Shoham</strong>对MARL的研究提供了批判性的评价，并研究了一小撮方法。</p>
-<ol start="2" type="1">
-<li><p><strong>Evolutionary computation（进化计算）：</strong>进化计算使用生物进化的准则来寻找解决问题的方法，这里不做回顾。进化学习总体上并不能轻易的从RL任务结构中获益。</p>
-<p>【17】<strong>Panait and Luke</strong>提供了只针对cooperative agent teams的进化学习（也有MARL）综述研究。</p>
-<p>【18-20】有兴趣的读者可以在这里找到协同进化技术的例子，在这里智能体是平行进化的。</p>
-<p>【21-23】团队学习技术，通过单个演化过程发现agent的学习行为。</p>
-<ol start="3" type="1">
-<li><strong>optimization theory（优化理论）</strong>进化多智能体学习（Evolutionary multiagent learning ）是一类源于优化理论的更大规模技术的特例，它直接探索智能体行为的空间。</li>
-</ol></li>
-<li><p><strong>Evolutionary game theory（进化博弈论）</strong>是进化学习和博弈论的结合。</p>
-<p>【28】<strong>Tuyls and Now´e</strong>更细节地调查了MARL与进化博弈论之间的关系（针对静态任务）。</p></li>
-</ol>
-<hr />
-<h3 id="background">2. Background</h3>
-<p>​ 介绍了必要的single-agent与multiagent RL算法。</p>
-<h4 id="single-agent">2.1 single-agent</h4>
-<h4 id="multiagent">2.2 multiagent</h4>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>RL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title></title>
-    <url>/2021/10/07/RL%20Learning(%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0)/</url>
-    <content><![CDATA[<h1 id="rl-learning强化学习">RL Learning(强化学习)</h1>
-<blockquote>
-<p>参考资料：机器学习--周志华</p>
-</blockquote>
-<h3 id="什么是强化学习">1. 什么是强化学习？</h3>
-<h3 id="section"></h3>
-]]></content>
-  </entry>
-  <entry>
-    <title>Learning Multiagent Communication with Backpropagation</title>
-    <url>/2021/09/21/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Learning%20Multiagent%20Communication%20with%20Backpropagation/</url>
-    <content><![CDATA[<h1 id="论文阅读learning-multiagent-communication-with-backpropagation">【论文阅读】Learning Multiagent Communication with Backpropagation</h1>
-<blockquote>
-<p><strong>作者：</strong> <strong>Sainbayar Sukhbaatar</strong>，<strong>Rob Fergus</strong>， <strong>Arthur Szlam</strong>（纽约大学，FacebookAI）</p>
-<p><strong>时间：</strong>2016</p>
-<p><strong>出版社：</strong>NIPS</p>
-</blockquote>
-<h3 id="abstract">Abstract</h3>
-<p>​ 在AI领域许多任务都需要智能体之间的同心合作，一般地，代理之间的通信协议是人为指定的，其并不在训练过程中改变。在这篇文章中，我们提出了一个简单的神经模型CommNet，其使用持续不断的通信来完成完全合作的任务。该模型由许多代理组成，他们之间的通信基于设定的策略学习，我们将此模型应用于一系列不同的任务中，显示了代理学会相互通信的能力，从而比非通信代理的模型和baselines有更好的性能。</p>
-<h3 id="introduction">1. Introduction</h3>
-<p>​ 虽然控制每个代理的模型是通过强化学习来学习的，但通信的规范和格式通常是预定的。</p>
-<p>​ 在本工作中，每个代理单元都被一个深度前馈神经网络控制，这个网络接入了一个携带连续向量的通信信道。在这个通信信道中每个代理传输的内容不是被指定的，而是通过学习得来的。因为communication是连续的，因此模型可以通过反向传播训练得到。这样就可以结合标准的单智能体RL算法或者监督学习。此外，该模型允许代理的数量和类型在运行时动态变化，这在移动汽车之间的通信等应用中很重要。</p>
-<p>​ 我们考虑的是我们有J个代理的环境，所有的合作都是为了在某些环境中最大化报酬R。我们简化了代理人之间充分合作的假设，从而每个代理人收到R独立于他们的贡献。在此设置中，每个代理都有自己的控制器，或者将它们看作控制所有代理的更大模型的一部分，这两者之间没有区别。从后一个角度来看，我们的控制器是一个大型的前馈神经网络，它将所有Agent的输入映射到它们的动作上，每个Agent占据一个单元的子集。</p>
-<p>​ 我们在两种任务下探索这个模型，在有些情况下，对每项行动都提供监督，而对另一些行动则零星地给予监督。在前一种情况，每个代理单元的控制器通过在连接模型中反向传播错误信号来学习；在后一种情况下，强化学习必须被作为一个额外的外部循环使用，为了给每个时间步骤提供训练信号。</p>
-<hr />
-<h3 id="communication-model">2. Communication Model</h3>
-<p>​ 我们现在描述一个模型，用来计算在给定时间t (省略时间指标)下动作p ( a ( t ) | s ( t )，θ )的分布。</p>
-<p>​ S<sub>j</sub> 表示第j个代理单元所观测到的环境信息，将所有S<sub>j</sub>合并就成了控制器的输入S = {S<sub>1</sub>，S<sub>2</sub>…… S<sub>J</sub>}。</p>
-<p>​ 控制器的输出<strong>a</strong> = {a<sub>1</sub>，a<sub>2</sub>…… a<sub>J</sub>}，表示各个代理单元会做出的动作。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210921211706.png" /></p>
-<p>​ 该框架中所有灰色模块部分的参数均是所有智能体共享的，这一定程度上提升了算法的可扩展性。从上图可以看出，算法接收所有智能体的局部观察作为输入，然后输出所有智能体的决策。</p>
-<p>​ 本算法采用的信息传递方式是采用广播的方式，文中认为可以对算法做出些许修改，让每个智能体只接收其相邻k个智能体的信息。</p>
-<p>​ 拿上图中间的框架图来说明，即上层网络每个模块的输入，不再都是所有智能体消息的平均，而是每个模块只接受满足条件的下层消息的输出，这个条件即下层模块对应的智能体位于其领域范围内。<strong>这样通过增加网络层数，即可增大智能体的感受野（借用计算机视觉的术语），从而间接了解全局的信息。</strong></p>
-<p>​ 除此之外，文中还提出了两种对上述算法可以采取的改进方式：</p>
-<ul>
-<li>可以对上图中间的结构加上 skip connection，类似于 ResNet。这样可以使得智能体在学习的过程中同时考虑局部信息以及全局信息，类似于计算机视觉领域 multi-scale 的思想</li>
-<li>可以将灰色模块的网络结构换成 RNN-like，例如 LSTM 或者 GRU 等等，这是为了处理局部观察所带来的 POMDP 问题。</li>
-</ul>
-<hr />
-<h3 id="related-work">3. Related Work</h3>
-<hr />
-<h3 id="experiments">4. Experiments</h3>
-<h4 id="baselines3个">4.1 Baselines（3个）:</h4>
-<p>​ <strong>Independent controller: </strong>每个代理单元都被独立控制，他们之间相互没有通信。这个模型的好处是智能体可以自由加入或者离开队伍，但是很难将智能体学会合作。</p>
-<p>​ <strong>Fully-connected: </strong>创建一个全连接层的多代理神经网络，这个模型运行智能体之间互相通信，但是这个模型不够灵活，也就是说智能体的数目必须固定。</p>
-<p>​ <strong>Discrete communication:</strong> 通过在训练中学习到的symbols来通信。因为在这个模型中存在离散的操作，并且这个操作不可微分，这种情况一般使用强化学习。</p>
-<h4 id="simple-demonstration-with-a-lever-pulling-task">4.2 Simple Demonstration with a Lever Pulling Task</h4>
-<p>​ <strong>任务</strong>：一共有m个杆子，N个智能体。在每个回合，m个智能体从N个智能体中随机取出，然后他们要选择拉动的杆子。他们的目标是尽可能的拉动不同的杆子，他们的奖励正比于拉动的不同杆子的数量。</p>
-<p>​ <strong>测试结果：</strong></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210921213910.png" /></p>
-<p>​ 可以看出，CommNet的结果非常好。</p>
-<h4 id="multi-turn-games">4.3 Multi-turn Games</h4>
-<p>​ <strong>任务：</strong></p>
-<p>​ <strong>Traffic Junction: </strong>控制车辆通过交通枢纽，使流量最大的同时保证不发生碰撞；</p>
-<p>​ <strong>Combat Task: </strong> 多个智能体攻击其他多个敌方单位。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210921214250.png" /></p>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>RL</tag>
-        <tag>Mutiagent</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Learning to Communicate with Deep Multi-Agent Reinforcement Learning</title>
-    <url>/2021/09/16/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Learning%20to%20Communicate%20with%20Deep%20Multi-Agent%20Reinforcement%20Learning/</url>
-    <content><![CDATA[<h1 id="论文阅读learning-to-communicate-with-deep-multi-agent-reinforcement-learning">【论文阅读】Learning to Communicate with Deep Multi-Agent Reinforcement Learning</h1>
-<blockquote>
-<p><strong>作者：Jakob N. Foerster ，Yannis M. Assael ，Nando de Freitas，Shimon Whiteson</strong>（哈佛大学，Google Deepmind）</p>
-<p><strong>时间：2017</strong></p>
-</blockquote>
-<h3 id="abstract">Abstract:</h3>
-<p>​ 我们考虑这样一个问题：多个智能体在环境中通过感知和行动来最大化他们的分享能力。在这些环境中， 智能体必须学习共同协议以此来分享解决问题的必要信息。通过引入深度神经网络，我们可以成功地演示在复杂的环境中的端对端协议学习。我们提出了两种在这个领域学习的方法：<strong>Reinforced Inter-Agent Learning (RIAL) </strong>和 <strong>Differentiable Inter-Agent Learning (DIAL)</strong>。</p>
-<p>​ 前者使用深度Q-learning，后者揭示了在学习过程中智能体可以通过communication channels反向传播错误的梯度，因此，这种方法使用集中学习（centralised learning），分散执行（decentralised execution）。</p>
-<p>​ 我们的实验介绍了用于学习通信协议的新环境，展示了一系列工程上的创新。</p>
-<p>PS：</p>
-<p>​ 1. <strong>端对端（end-to-end,e2e）,</strong> 将多步骤/模块的任务用一个步骤/模型解决的模型。</p>
-<p>​ 可以理解为从输入端到输出端中间只用一个步骤或模块，比如神经网络训练的过程就是一个典型的端对端学习，我们只能知道输入端与输出端的信息，中间的训练过程就是一个黑盒，我们知晓中间的训练过程。</p>
-<p>​ 2.<strong><em>centralised learning</em> but <em>decentralised execution</em></strong>，中心化学习但是分散执行。</p>
-<hr />
-<h3 id="introduction">1. Introduction</h3>
-<p>​ 1.1 <strong>回答的问题：</strong></p>
-<pre><code>    1. 智能体之间如何使用机器学习来自动地发现符合他们需求的通信规则？
-    2. 深度学习也可以吗？
-    3. 我们能从智能体之间学习成功或者失败的经验中学到什么？</code></pre>
-<p>​ 1.2 <strong>研究思路：</strong></p>
-<ol type="1">
-<li><strong>提出一系列经典需要交流的多智能体任务</strong>，每个智能体可以采取行动来影响环境，也可以通过一个离散的有限带宽的通道来跟其它有限的智能体进行通信；</li>
-<li><strong>为1中的任务制定几个学习算法</strong>，由于每个智能体的观察范围有限，同时通信通道能力有限，所有智能体必须找到一个可以在此限制下帮助他们完成任务的通信规则；</li>
-<li><strong>分析这些算法如何学习通讯规则，或者如何失败的</strong>。</li>
-</ol>
-<p>​ 1.3 <strong>主要贡献：</strong></p>
-<p>​ 提出两个方法，<strong><em>reinforced inter-agent learning</em>(RIAL)</strong>和 <strong><em>differentiable inter-agent learning</em> (DIAL)</strong></p>
-<p>​ 结果表明，这两种方法在MNIST数据集上可以很好的解决问题，并且智能体们学到的通信协议往往十分优雅。</p>
-<p>​ 结果同样指出深度学习更好的利用了中心化学习的优点，是一个学习这样通信协议的有力工具。</p>
-<hr />
-<h3 id="related-work">2. Related Work</h3>
-<hr />
-<h3 id="background">3. Background</h3>
-<h4 id="deep-q-networksdqn">3.1 Deep Q-Networks(DQN)</h4>
-<p>​ Deep Learning + Q-Learning，在游戏领域应用广泛。</p>
-<h4 id="independent-dqn">3.2 Independent DQN·</h4>
-<h4 id="deep-recurrent-q-networks">3.3 Deep Recurrent Q-Networks</h4>
-<hr />
-<h3 id="setting">4. Setting</h3>
-<p>​ 在强化学习的背景下，每个智能体的观察能力有限。</p>
-<p>​ 所有智能体的共同目标就是最大化同一个折算后的总奖赏R<sub>t</sub>，但同时，没有智能体可以观察到当前环境隐藏的马尔科夫状态S<sub>t</sub>，每个智能体a分别接收到一个与S<sub>t</sub>相关的观察值相关联的值<span class="math inline">\(O^{a}_{t}\)</span>。</p>
-<p>​ 在每一步t，每个智能体选择一个<em>environment action</em> <span class="math inline">\(u^{a}_{t}\)</span>来影响环境，同时选择一个<em>communication action</em> <span class="math inline">\(m^{a}_{t}\)</span>来被其他智能体观察，但<span class="math inline">\(m^{a}_{t}\)</span>对环境没有直接影响。</p>
-<p>​ 没有通信协议被预先给定，智能体们需要自己学习。</p>
-<p>​ 由于协议是从动作观测历史到消息序列的映射，所以协议的空间维度是非常高的。自动地在这个空间发现有效的通信协议是非常困难的，这体现在智能体需要协调发送消息和解释消息。举个例子，如果一个智能体发送了一个有效的信息，它只有在接受方正确解释并回应的情况下才会受到正反馈，如果没有，反而会打击其发送有效信息的积极性。</p>
-<p>​ 因此，积极的reward是稀少的，只有在发送和解释协调操作时才会发生，这通过随机探索很难实现。</p>
-<p>​ 在这里，我们聚焦于<strong><em>centralised learning</em> but <em>decentralised execution</em></strong>的情况，在学习的时候智能体之间的通信没有限制，在实施过程时，智能体之间仅仅能通过一条带宽有限的通道通信。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211015211416.png" /></p>
-<hr />
-<h3 id="methods">5. Methods</h3>
-<h4 id="rialreinforced-inter-agent-learning">5.1 RIAL（<em>Reinforced Inter-Agent Learning</em>）</h4>
-<p>​ 简单直接的说，<strong>RIAL就是将DRQN(<em>Deep Recurrent Q-Learning</em>)与Q-learning相结合来进行action（影响环境）与communication（与其它智能体通信）选择的方法</strong>。</p>
-<p>​ 每个智能体的<em>Q</em>-network可以表示为：<span class="math inline">\(Q^{a}(o^{a}_{t},m^{a^{,}}_{t-1},h^{a}_{t-1},u^{a})\)</span>。</p>
-<p>​ 四个参数分别代表：环境观察值，其它智能体上一步传来的消息，智能体自己的隐藏状态，选择的action。</p>
-<p>​ 如果直接学习输出最终的Q表，得到的输出将有|U||M|大小。为了避免输出过大，将Q-network拆分为两个<span class="math inline">\(Q^{a}_{u}\)</span>与<span class="math inline">\(Q^{a}_{m}\)</span>，分别表示影响环境的action与同智能体的通信（communication），学习方式使用ε-贪心算法。</p>
-<p>​ <span class="math inline">\(Q^{a}_{u}\)</span>与<span class="math inline">\(Q^{a}_{m}\)</span>都使用DQN训练方法，但所使用的DQN有以下两点改进：</p>
-<ol type="1">
-<li>禁止experience replay;</li>
-<li>为了考虑部分可观测性，我们将每个智能体所采取的操作u和m作为下一步的输入;</li>
-</ol>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211015213709.png" /></p>
-<p>​ RIAL可以扩展到通过在智能体之间之间共享参数来利用集中学习，在这种情况下，由于智能体观察不同，因此也进化出了不同的隐藏状态。参数共享大大减少了必须学习的参数数量，从而加快了学习速度。</p>
-<p>​ 在参数共享情况下，智能体学习两个Q函数<span class="math inline">\(Q_{u}(o^{a}_{t},m^{a^{,}}_{t-1},h^{a}_{t-1},u^{a}_{t-1},m^{a}_{t-1},a,u^{a}_{t})\)</span>与<span class="math inline">\(Q_{m}(o^{a}_{t},m^{a^{,}}_{t-1},h^{a}_{t-1},u^{a}_{t-1},m^{a}_{t-1},a,u^{a}_{t})\)</span>。</p>
-<h4 id="dialdifferentiable-inter-agent-learning">5.1 DIAL（<em>Differentiable Inter-Agent Learning</em>）</h4>
-<p>​ 虽然RIAL可以进行参数共享，但其仍不能在通信过程中给其他智能反馈。</p>
-<p>​ 打个比方，在人类通信活动中，listener即使不说话也会给出及时，丰富的反馈来表明listener对谈话的兴趣和理解程度，而RIAL反而缺少了这个反馈机制，仿佛对着一个面无表情的人在说话，显然，这个方式存在缺点。</p>
-<p>​ DIAL就是为了解决这个问题而存在的，<strong>通过结合centralised learning与Q-networks，不仅可以共享参数，而且可以通过通信信道将梯度从一个Agent推向另一个Agent。</strong></p>
-<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211015215914.png" /></p>
-<hr />
-<h3 id="experiments">6. Experiments</h3>
-<p>​ 在测试中，我们评估了RIAL与DIAL在有无参数共享的情况下进行多智能体任务的情况，并跟一个无交流，参数共享的基准方法进行比较。</p>
-<p>​ 在整个过程中，奖励是通过访问真实状态( Oracle )所能获得的最高平均奖励来规范的。</p>
-<p>​ 我们使用ε-贪心算法（ε = 0.05）。</p>
-<h4 id="switch-riddles开关谜题">6.1 Switch Riddles（开关谜题）</h4>
-<p>​ 一百名囚犯入狱。典狱长告诉他们，从明天开始，每个人都会被安置在一个孤立的牢房里，无法相互交流。每天，监狱长都会随意统一挑选其中一名被替换的犯人，并将其安置在中央审讯室，室内只装有一个带有切换开关的灯泡。囚犯将能够观察灯泡的当前状态。如果他愿意，他可以拨动灯泡的开关。他还可以宣布，他相信所有的囚犯都已经访问了审讯室。如果这个公告是真的，那么所有囚犯都被释放，但如果是假的，所有囚犯都被处死。</p>
-<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211009165843.png" /></p>
-<h4 id="results1">6.2 Results1</h4>
-<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211009170433.png" /></p>
-<p>​ （a）可以看到，在n=3时四种方法的效果都比Baseline的效果好，参数共享加速了算法。</p>
-<p>​ （b）在n=4时，参数共享的DIAL方法最好。不带参数共享的RIAL没有baseline效果好。可以看出，智能体们独立的学习出相同的策略是很难的。</p>
-<p>​ （c）n=3时智能体使用DIAL学习到的策略。</p>
-<h4 id="colour-digit-mnist">6.3 Colour-Digit MNIST</h4>
-<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211009200856.png" /></p>
-<h4 id="effect-of-channel-noise">6.4 Effect of Channel Noise</h4>
-<p>​ <u><em>这里没太看懂</em></u></p>
-<p>​</p>
-<h3 id="section"></h3>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>RL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title></title>
-    <url>/2021/09/08/Log/</url>
-    <content><![CDATA[<h1 id="log">Log</h1>
-<blockquote>
-<p>软安课设日志</p>
-</blockquote>
-<h3 id="编译">1. 编译：</h3>
-<h4 id="使用vs2019自带的命令行界面进行编译提示没有nmake命令">1.1 使用VS2019自带的命令行界面进行编译，提示没有nmake命令：</h4>
-<p>​ 检查后发现VS2019只安装了桌面开发模块，没有安装C++开发模块，更新相应拓展包即可。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210906172501.png" /></p>
-<h3 id="尝试运行代码">2. 尝试运行代码：</h3>
-<h4 id="在testconsole.cpp文件中引入代码编译报错百余个标识符错误">2.1 在testconsole.cpp文件中引入代码，编译报错百余个标识符错误：</h4>
-<p>​ 在外网查询后发现，是因为引入引用windows.h在引用detours之前：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210906165008.png" /></p>
-<h4 id="在进行writefile函数的捕获时">2.2 在进行WriteFile函数的捕获时：</h4>
-<p>​ 首先，如果我们直接设置替换函数如下：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210909152145.png" /></p>
-<p>​ 会得到极其多的捕获信息：</p>
-<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210909152314.png" /></p>
-<p>​ 从图中可以看到，这是由于程序同时捕获了TestConsole(注射器)的写操作信息。</p>
-<p>​ <u>这就造成了典型的递归调用问题，NewWriteFile向控制台输出的信息又被捕获了</u>，故加入一个过滤器，使用GetStdHandle函数来获取当前控制台程序的句柄，与hFile句柄进行比较：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210910140215.png" /></p>
-<p>​ 使钩子忽略来自TestConsole.exe的写入操作。</p>
-<p>​ 但是，这样虽然避免了来自注射器程序的干扰，由于TextApp.exe(被注入程序)有时也可能存在像控制台打印信息的操作，以防后患，我们让dll排除此操作：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210910140549.png" /></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210909153514.png" /></p>
-<p>​ 成功排除该干扰。</p>
-<p>​</p>
-<h4 id="注册表创建操作">2.3 注册表创建操作：</h4>
-<p>​ 使用如下代码时会卡住：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210909221507.png" /></p>
-<p>​ 检查+查阅资料后发现，GetModuleFileName函数涉及到创建注册表操作，会导致递归调用，禁止后问题解决。</p>
-<h4 id="点击messagebox后文件读写钩子失效">2.3 点击MessageBox后文件读写钩子失效：</h4>
-<p>​ 在测试程序中如果测试了MessageBoxA/W,后续的文件读写操作虽然可以成功，但是钩子勾不住。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210910142705.png" /></p>
-<h4 id="在写ui界面文件读写问题">2.4 在写UI界面文件读写问题：</h4>
-<p>​ 本次实验所用的UI界面是django，由于JavaScript不提供内置的文件读写操作，同时，由于所使用的浏览器是Edge（基于Chrome内核），无法使用ActiveXObject操作来读取文件：</p>
-<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">//这段代码非IE内核浏览器无法使用</span>
-fp <span class="token operator">=</span> <span class="token function">ActiveXObject</span><span class="token punctuation">(</span><span class="token string">"Scripting.FileSystemObject"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">var</span> file <span class="token operator">=</span> fp<span class="token punctuation">.</span><span class="token function">OpenTextFile</span><span class="token punctuation">(</span><span class="token string">"C:\\Users\\Shaw\\Desktop\\S_s\\TestInitialNullForStudent\\TestConsole\\API_sequence.txt"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">var</span> str <span class="token operator">=</span> <span class="token string">""</span><span class="token punctuation">;</span>
-        <span class="token keyword">while</span><span class="token punctuation">(</span><span class="token operator">!</span>file<span class="token punctuation">.</span>AtEndOfStream<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
-            <span class="token keyword">var</span> temp <span class="token operator">=</span> f<span class="token punctuation">.</span><span class="token function">ReadLine</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> temp<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-                str <span class="token operator">+=</span> temp<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">+</span> <span class="token string">"&amp;nbsp;"</span><span class="token punctuation">;</span>
-            <span class="token punctuation">&#125;</span>
-            str <span class="token operator">+=</span> <span class="token string">"&lt;br>"</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-        document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">"console"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>innerHTML <span class="token operator">=</span> str<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​ 因为不想更换浏览器，并且考虑到使用此种动态显示方式需要使用异步线程，时间所限，故在这里尝试使用Django+Wsgi的socket连接方式进行前后端通信：</p>
-<ul>
-<li>​ References:</li>
-</ul>
-<p>​ <a href="http://www.ruanyifeng.com/blog/2017/05/websocket.html">WebSocket 教程 - 阮一峰的网络日志 (ruanyifeng.com)</a></p>
-<p>​ <a href="https://caojingyou.github.io/2017/11/15/C++与浏览器交互/">C++与浏览器交互 | 曹景游 (caojingyou.github.io)</a></p>
-<p>​ <a href="https://blog.csdn.net/byxdaz/article/details/84638249">(7条消息) Windows下使用websocketpp_深之JohnChen的专栏-CSDN博客</a></p>
-<p>​ <a href="https://web.dev/file-system-access/">The File System Access API: simplifying access to local files (web.dev)</a></p>
-]]></content>
-  </entry>
-  <entry>
-    <title></title>
-    <url>/2021/09/08/%E3%80%90%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E8%AF%BE%E8%AE%BE%E3%80%91%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%9C%E4%B8%9A/</url>
-    <content><![CDATA[<blockquote>
-<p>组长：袁也</p>
-<p>组员：吴骁，缪文俊，王相炜，杨涵博，杨传冠</p>
-<p>班级：网安1902</p>
-</blockquote>
-<h3 id="detours-学习">1. Detours 学习：</h3>
-<p>​ 通过阅读文档，理论+实际的结合，组内成员基本理解了detours运作原理。</p>
-<h3 id="detours-编译">2. Detours 编译：</h3>
-<pre><code>1. 首先，在VS2019自带的cmd中编译detours:</code></pre>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162623.png" /></p>
-<p>​ 可见，编译成功。</p>
-<h3 id="消息弹窗的注入">3. 消息弹窗的注入：</h3>
-<p>​ dllmain中代码如下：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162822.png" /></p>
-<p>​ 演示效果：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162923.png" /></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162947.png" /></p>
-<p>​ 可见，成功</p>
-<h3 id="vs框架搭建">4. VS框架搭建：</h3>
-<p>​ VS框架组成如下：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908163111.png" /></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908163125.png" /></p>
-<h3 id="目前碰到的一些问题">5. 目前碰到的一些问题：</h3>
-<h4 id="使用vs2019自带的命令行界面进行编译提示没有nmake命令">5.1 使用VS2019自带的命令行界面进行编译，提示没有nmake命令：</h4>
-<p>​ 检查后发现VS2019只安装了桌面开发模块，没有安装C++开发模块，更新相应拓展包即可。</p>
-<p><img src="%E3%80%90%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E8%AF%BE%E8%AE%BE%E3%80%91%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%9C%E4%B8%9A/20210906172501.png" /></p>
-<h4 id="在testconsole.cpp文件中引入代码编译报错百余个标识符错误">5.2 在testconsole.cpp文件中引入代码，编译报错百余个标识符错误：</h4>
-<p>​ 在外网查询后发现，是因为引入引用windows.h在引用detours之前：</p>
-<p><img src="%E3%80%90%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E8%AF%BE%E8%AE%BE%E3%80%91%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%9C%E4%B8%9A/20210906165008.png" /></p>
-<h4 id="字符编码问题">5.3 字符编码问题：</h4>
-<p>​ 熟悉宽字符与unicode字符编码的原理后，才能正确处理HCHAR,TCHAR等。</p>
-<h4 id="messagebox操作中出现如下文件操作">5.4 Messagebox操作中出现如下文件操作：</h4>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908170241.png" /></p>
-]]></content>
-  </entry>
-  <entry>
-    <title>A Benchmark API Call Dataset For Windows PE Malware Classification</title>
-    <url>/2021/09/06/Detours/</url>
-    <content><![CDATA[<h1 id="detours">Detours</h1>
-<p>​ Detours 是一个在<u>x86</u>平台上截获任意<u>Win32函数调用</u>的工具库。中断代码可以在运行时动态加载，也可以在静态执行文件处理。</p>
-<h3 id="detous库原理">1. Detous库原理：</h3>
-<p>​ 修改目标函数（一般为Windows API接口函数）：使用一个无条件转移指令来替换该目标函数的首部几条指令，<strong>将控制流直接转移到一个用户自己实现的截获函数（即Detour函数）。</strong></p>
-<p>​ 而原目标函数中被替换的指令被保存在一个被称为“Trampoline”函数中（译注：英文意为蹦床函数）。这些指令包括目标函数中被替换的代码以及一个重新跳转到目标函数正确位置的无条件分支。</p>
-<p>​ 截获函数可以替换目标函数，或者通过执行“Trampoline”函数时，将目标函数作为子程序来调用的办法，在保留原来目标函数功能基础上，来完成扩展功能。</p>
-<p>​ 因为截获函数（Detour函数）是执行时被插入到内存中目标函数的代码里，<strong>不是在硬盘上直接修改目标函数</strong>，所以，可以在一个很好的粒度上使得截获二进制函数的执行变得更容易。</p>
-<p>​ 例如，一个应用程序执行时加载的 DLL中的函数过程，可以被插入一段截获代码（detoured），与此同时，这个DLL还可以被其他应用程序按正常情况执行（译注：也就是按照不被截获的方式执行，因为DLL二进制文件没有被修改，所以发生截获时不会影响其他进程空间加载这个DLL）。</p>
-<p>​ 出于使用基本的函数截获功能的目的， Detours同样提供了编辑任何DLL导入表的功能，达到向已存在的二进制代码中添加任意数据节表的目的，向一个新进程或者一个已经运行着的进程中注入一个DLL。<strong>一旦向一个进程注入了DLL，这个动态库就可以截获任何Win32函数，不论它是在应用程序中或者在系统库中。</strong></p>
-]]></content>
-      <categories>
-        <category>●	课内</category>
-      </categories>
-      <tags>
-        <tag>软安课设</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>近似误差与估计误差</title>
-    <url>/2021/09/05/%E3%80%90%E9%9A%8F%E6%89%8B%E5%86%99%E3%80%91%E8%BF%91%E4%BC%BC%E8%AF%AF%E5%B7%AE%E4%B8%8E%E4%BC%B0%E8%AE%A1%E8%AF%AF%E5%B7%AE/</url>
-    <content><![CDATA[<h1 id="随手写近似误差与估计误差">【随手写】近似误差与估计误差</h1>
-<p>​ 在读《统计学习方法》中关于k-邻近算法的介绍时，发现了这么一段话：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905153525.png" /></p>
-<p>​ <strong>近似误差（<em>Approximation Error</em>）:</strong> 训练时，训练集与当前模型的误差；</p>
-<p>​ <strong>估计误差（<em>Estimation Error</em>）：</strong> 训练完成后，所选择的模型已经固定，模型对未知数据拟合时的误差。</p>
-<p>​ 近似误差与估计误差二者不可兼得，此消彼长，需要取其平衡。</p>
-]]></content>
-      <categories>
-        <category>Something</category>
-      </categories>
-      <tags>
-        <tag>Machine Learning</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>极大似然估计</title>
-    <url>/2021/09/04/%E3%80%90%E9%9A%8F%E5%86%99%E3%80%91%E6%9E%81%E5%A4%A7%E4%BC%BC%E7%84%B6%E4%BC%B0%E8%AE%A1/</url>
-    <content><![CDATA[<h1 id="随写极大似然估计maximum-likelihood-estimatemle">【随写】极大似然估计（<em>Maximum Likelihood Estimate，MLE</em>）</h1>
-<p>​ “模型已定，参数未知。”</p>
-<p>​ 极大似然估计，<strong>就是利用已知的样本结果信息，反推最具有可能（<u>最大概率</u>）导致这些样本结果出现的模型参数值。</strong></p>
-<p>​</p>
-<p>​ 对于这个函数：<span class="math inline">\(P(x|θ)\)</span>，</p>
-<p>​ 输入有两个：x表示某一个具体的数据；θ表示模型的参数。</p>
-<p>​ 如果θ是已知确定的，x是变量，这个函数叫做<strong>概率函数(probability function)</strong>，它描述对于不同的样本点x，其出现概率是多少。</p>
-<p>​ 如果x是已知确定的，θ 是变量，这个函数叫做<strong>似然函数(likelihood function)</strong>, 它描述对于不同的模型参数，出现x这个样本点的概率是多少。</p>
-<p>​</p>
-<p>​ 一般说来，事件A发生的概率与某一未知参数θ有关，θ取值不同，则事件A发生的概率<span class="math inline">\(P(A|θ)\)</span>也不同，当我们在一次试验中事件A发生了，则认为此时的θ值应是t的一切可能取值中使<span class="math inline">\(P(A|θ)\)</span>达到最大的那一个，极大似然估计法就是要选取这样的t值作为参数t的估计值，使所选取的样本在被选的总体中出现的可能性为最大。</p>
-]]></content>
-      <categories>
-        <category>Something</category>
-      </categories>
-      <tags>
-        <tag>Math</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Adversarial Training with Fast Gradient Projection Method against Synonym Substitution Based Text Attacks</title>
-    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Adversarial%20Training%20with%20Fast%20Gradient%20Projection%20Method%20against%20Synonym%20Substitution%20Based%20Text%20Attacks/</url>
-    <content><![CDATA[<h1 id="论文阅读adversarial-training-with-fast-gradient-projection-method-against-synonym-substitution-based-text-attacks">【论文阅读】Adversarial Training with Fast Gradient Projection Method against Synonym Substitution Based Text Attacks</h1>
-<blockquote>
-<p><strong>时间：2020</strong></p>
-<p><strong>作者：王晓森，杨逸辰等 </strong>华中科技大学</p>
-<p><strong>会议：AAAI</strong></p>
-</blockquote>
-<h3 id="总结">总结：</h3>
-<ol type="1">
-<li><p><strong>做了什么？</strong></p>
-<ul>
-<li><p>提出了一种速度更快的，更容易应用在复杂神经网络和大数据集上的，基于同义词替换的NLP对抗样本生成方法，FGPM；</p></li>
-<li><p>将FGPM纳入对抗训练中，以提高深度神经网络的鲁棒性。</p></li>
-</ul></li>
-<li><p><strong>怎么做的？</strong></p></li>
-<li><p><strong>实验结果？</strong></p>
-<ul>
-<li>FGPM的效果不是最高的，但也跟最高的差不多，但生成对抗样本的时间对比同类方法，缩减了1-3个数量级。</li>
-<li>ATFL的对抗样本防御能力和抗转移能力很强。</li>
-</ul></li>
-</ol>
-<hr />
-<h3 id="abstract">Abstract:</h3>
-<p>​ 对抗训练是对于提升图像分类深度神经网络鲁棒性的，基于实验的最成功的进步所在。</p>
-<p>​ 然而，对于文本分类，现有的基于同义词替换的对抗样本攻击十分奏效，但却没有被很有效地合并入实际的文本对抗训练中。</p>
-<p>​ 基于梯度的攻击对于图像很有效，但因为文本的词汇，语法，语义结构的限制以及离散的文本输入空间，不能很好的应用于基于近义词替换的文本攻击中。</p>
-<p>​ 因此，我们提出了一个基于同义词的替换的快速的文本对抗抗攻击方法名为<strong><em>Fast Gradient Projection Method (FGPM)</em></strong>。它的速度是已有文本攻击方法的20余倍，攻击效果也跟这些方法差不多。</p>
-<p>​ 我们接着将FGPM合并入对抗训练中，提出了一个文本防御方法，<strong><em>Adversarial Training with FGPM enhanced by Logit pairing</em>(ATFL)</strong>。</p>
-<p>​ 实验结果表明ATFL可以显著提高模型的鲁棒性，破坏对抗样本的可转移性。</p>
-<hr />
-<h3 id="introduction">1 Introduction:</h3>
-<p>​ 现有的针对NLP的攻击方法包括了：字符等级攻击，单词等级攻击，句子等级攻击。</p>
-<p>​ 对于字符等级的攻击，最近的工作（<em>Pruthi, Dhingra, and Lipton 2019</em>）表明了拼写检查器很容易修正样本中的扰动；</p>
-<p>​ 对于句子等级的攻击，其一般需要基于改述，故需要更长的时间来生成对抗样本；</p>
-<p>​ 对于单词等级的攻击，基于嵌入扰动的替换（<em>replacing word based on embedding perturbation</em>），添加，删除单词都会很容易改变句子的语法语义结构与正确性，<strong>故同义词替换的方法可以更好的处理上述问题，同时保证对抗样本更难被人类观察者发现</strong>。</p>
-<p>​ 但不幸的是，基于同义词替换的攻击相较于如今对图像的攻击展现出了更低的功效。</p>
-<p>​</p>
-<p>​ 据我们所知，对抗训练，对图像数据最有效的防御方法之一，并没有在对抗基于同义词替换的攻击上很好的实施过。</p>
-<p>​ 一方面，现有的基于同义词替换的攻击方法通常效率要低得多，难以纳入对抗训练。另一方面，尽管对图像的方法很有效，但其并不能直接移植到文本数据上。</p>
-<p>​</p>
-<h4 id="adversarial-defense">1.1 Adversarial Defense:</h4>
-<p>​ 有一系列工作对词嵌入进行扰动，并将扰动作为正则化策略用于对抗训练(<em>Miyato, Dai, and Goodfellow</em></p>
-<p><em>2016; Sato et al. 2018; Barham and Feizi 2019</em>) 。这些工作目的是提高模型对于原始数据集的表现，并不是为了防御对抗样本攻击，因此，我们不会考虑这些工作。</p>
-<p>​ 不同于如今现有的防御方法，我们的工作聚焦于快速对抗样本生成，容易应用在复杂的神经网络和大数据集上的防御方法。</p>
-<hr />
-<h3 id="fast-gradient-projection-methodfgpm">2 Fast Gradient Projection Method（FGPM）:</h3>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904144444.png" /></p>
-<hr />
-<h3 id="adversarial-training-with-fgpm">3 Adversarial Training with FGPM：</h3>
-<p>​ 具体算法中文描述见：</p>
-<p><a href="https://zhuanlan.zhihu.com/p/248425749">《基于同义词替换的快速梯度映射（FGPM）文本对抗攻击方法》阅读笔记 - 知乎 (zhihu.com)</a></p>
-<hr />
-<h3 id="experimental-results">4 Experimental Results：</h3>
-<p>​ 我们衡量FGPM使用四种攻击准则，衡量ATFL使用两种防御准则。</p>
-<p>​ 我们在三个很受欢迎的基准数据集上，同时包括CNN和RNN模型上进行测试，代码开源：https://github.com/JHL-HUST/FGPM</p>
-<h4 id="baselines">4.1 Baselines:</h4>
-<p>​ 为了评估FGPM的攻击效能，我们将其与Papernot’、GSA ( Kuleshov等人的4种对抗性攻击进行了比较。2018 )、PWWS ( Ren et al . 2019 )和Iga ( Wang，jin，and he 2019 )。</p>
-<p>​ 此外，为了验证我们的ATFL的防御能力，我们采用了SEM ( Wang，Jin，He 2019 )和IBP ( Jia et al . 2019 )，针对上述Word-Level攻击。由于攻击基线的效率很低，我们在每个数据集上随机抽取200个示例，并在各种模型上生成对抗样本。</p>
-<h4 id="datasets">4.2 Datasets:</h4>
-<p>​ <em>AG’s News</em>, <em>DBPedia ontology</em> and <em>Yahoo! Answers</em> (Zhang,Zhao, and LeCun 2015).</p>
-<h4 id="models">4.3 Models:</h4>
-<p>​ 我们使用了CNNs,RNNs,来达到主流的文本分类表现，所有模型的嵌入维度均为300。</p>
-<h4 id="evaluation-on-attack-effectiveness">4.4 Evaluation on Attack Effectiveness：</h4>
-<p>​ 我们评估模型在攻击下的准确率和转移率：</p>
-<p>​ <strong>准确率：</strong></p>
-<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904134852.png" /></p>
-<p>​ <strong>转移率：</strong></p>
-<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904135419.png" /></p>
-<h4 id="evaluation-on-attack-efficiency">4.4 Evaluation on Attack Efficiency：</h4>
-<p>​ 对抗训练需要高效率的生成对抗样本以有效地提升模型鲁棒性。因此，我们评估了不同攻击方法在三个数据集上生成生成200个对抗样本的总时间。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904135842.png" /></p>
-<h4 id="evaluation-on-adversarial-training">4.5 Evaluation on Adversarial Training：</h4>
-<p>​ 我们评估ATFL的对抗样本防御能力和抗转移能力：</p>
-<p>​ <strong>对抗样本防御能力：</strong></p>
-<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904140647.png" /></p>
-<p>​ <strong>抗转移能力：</strong></p>
-<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904141719.png" /></p>
-<h4 id="evaluation-on-adversarial-training-variants">4.6 Evaluation on Adversarial Training Variants:</h4>
-<p>​ 许多对抗训练的变体，例如CLP和ALP，TRADES等，已经尝试采用不同的正则化方法来提高针对图像数据的对抗训练准确率。</p>
-<p>​ 在这里，我们回答一个问题：这些变体方法也可以提高文本数据准确率吗？</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904142406.png" /></p>
-<p>​ 从表中可以看出，只有ALP可以长远地提升对抗训练的表现。</p>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>AD</tag>
-        <tag>NLP</tag>
-        <tag>AD training</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>《统计学习方法》</title>
-    <url>/2021/09/03/%E3%80%90%E4%B9%A6%E7%B1%8D%E9%98%85%E8%AF%BB%E3%80%91%E3%80%8A%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95%E3%80%8B/</url>
-    <content><![CDATA[<h1 id="书籍阅读统计学习方法">【书籍阅读】《统计学习方法》</h1>
-<h3 id="一.-统计学习方法概论">一. 统计学习方法概论：</h3>
-<p>​ 首先，要明确计算机科学中存在三个维度：系统，计算，与信息。统计学习方法（机器学习）主要属于信息这一维度，并在其中扮演者核心角色。</p>
-<h4 id="监督学习概念">1. 监督学习概念：</h4>
-<p>​ 监督学习，Supervised learning，指在已经做好标注的训练集上学习，为了叙述方便，定义以下基本概念：</p>
-<blockquote>
-<ol type="1">
-<li><strong>输入空间（X），输出空间（Y）：</strong>输入所有可能取值，输出所有可能取值；</li>
-<li><strong>特征空间：</strong>输入一般由特征向量表示，所有特征向量存在的空间称为特征空间，输入空间与特征空间并不完全等价，有时需要映射；</li>
-<li><strong>上标 x<sup>i</sup></strong> :表示一个输入的第 i 个特征；</li>
-<li><strong>下标 x<sub>j</sub>：</strong>表示第 j 个输入。</li>
-<li><strong>回归问题：</strong>输入输出都为连续型变量；</li>
-<li><strong>分类问题：</strong>输出变量为有限个离散型变量；</li>
-<li><strong>标注问题：</strong>输入与输出变量都为变量序列。</li>
-<li><strong>假设空间：</strong>所有可能的模型的集合，也就是学习的范围。</li>
-</ol>
-</blockquote>
-<p>​ 使用训练集学习----&gt;对未知数据进行预测</p>
-<p>​</p>
-<h4 id="统计学习三要素">2. 统计学习三要素：</h4>
-<p>​ 统计学习三要素为：<strong>模型，策略，算法</strong>；</p>
-<p>​ 模型是决定学习的预测函数的类型；</p>
-<p>​ 策略是判定什么样的模型是好的，用于度量当前的模型好坏；</p>
-<p>​ 算法是训练过程中的具体做法，例如如何回归，如何计算，如何调整等。</p>
-<h4 id="模型的衡量方法">3. 模型的衡量方法：</h4>
-<ul>
-<li><p><strong>损失函数与风险函数：</strong></p>
-<p>​ 损失函数，Loss Function，用于模型一次预测的错误程度，例如：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902154618.png" /></p>
-<p>​ 损失函数的数值越小，模型就越好。如果计算损失函数的期望，得到的就是风险函数，Risk Function:</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902154745.png" /></p>
-<p>​ 可以看出，损失函数用于某次预测的估计，风险函数用于总体平均估计。我们当然希望训练出的模型的风险函数越小越好。</p>
-<p>​ <strong>但是，观察上式，理想化的概率分布P(x，y)是未知的，我们进行学习就是要通过模型来模拟它，故这个式子理论存在，实际不能计算，不能用作评估模型的直接方法。</strong></p></li>
-<li><p><strong>经验风险与结构风险：</strong></p>
-<p>​ 为了解决上述问题，我们引入经验风险：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902155212.png" /></p>
-<p>​ 可以看到，经验风险将每个样本视作等概率出现，是模型对于训练集的平均损失，那么其与风险函数的误差在哪？</p>
-<p>​ 根据大数定律，当训练集足够大时，二者是近似相等的。但实际情况下，很多时候训练样本数目有限，甚至很小，故用经验风险效估计风险函数并不理想，故需要进行修正，这就是监督学习中的<strong>两个基本策略：</strong>经验风险最小化和结构风险最小化。</p>
-<p>​ 如果训练样本容量较大，使用经验风险最小化没什么问题。</p>
-<p>​ 当样本容量很小时，仅仅使用经验风险最小化容易导致过拟合，故这里使用<strong>结构风险（就是正则化）</strong>最小化方法，对模型复杂度进行惩罚，后续介绍。</p></li>
-<li><p><strong>训练误差与测试误差：</strong></p>
-<p>​ 训练误差本质上不重要，它可以反应一个问题是不是容易学习，但要衡量模型的预测能力，主要是看测试误差。</p></li>
-<li><p><strong>正则化与交叉验证：</strong></p>
-<p>​ 正则化是在经验风险项后再增加一个正则化项（Regularizer），其与模型的复杂度成正相关，一般使用模型参数向量的范数：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902161201.png" /></p>
-<p>​ 交叉验证的基本思想是重复使用数据：</p>
-<ol type="1">
-<li><p><strong>简单交叉验证：</strong></p>
-<p>将训练集随机分为两部分，一部分训练，一部分测试，然后在各种条件下训练出不同的模型，用测试集进行横向对比，选出最好的。</p></li>
-<li><p><strong>S折交叉验证：</strong></p></li>
-</ol>
-<pre><code>S-fold cross validation，随机地将已给数据切分为S个互不相交的大小相同的子集，选取S-1个用于训练，剩下一个用于测试。
-
-这样总共测试集有S种选法，将这S种全部试一遍，评选S次测评中平均误差最小的模型。</code></pre>
-<ol start="3" type="1">
-<li><strong>留一交叉验证：</strong></li>
-</ol>
-<pre><code>令S=N（训练集大小）即可，这种方法往往是在数据集特别缺乏的情况下使用。</code></pre></li>
-<li><p><strong>泛化误差与泛化上界：</strong></p>
-<p>​ 泛化能力指模型对位置数据的预测能力，就是模型的好坏。如何量化这个能力？</p>
-<p>​ 根据定义，其就是模型在测试集上的测试表现：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902162814.png" /></p>
-<p>​ 同时可以用以下式子衡量泛化误差的上界：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210902162851.png" /></p></li>
-<li><p><strong>生成模型与判别模型：</strong></p>
-<p>​ 监督学习方法又可以分为两种方法：生成方法（Generatice Approach）和判别方法（Discriminative Approach）。</p>
-<p>​ 如果以概率论的角度来看待，模型的作用是根据P（x）来求P（y | x），故下面有两种方法求</p>
-<p>P（y | x），直接模拟P（y | x）和通过求 <span class="math inline">\(P(\frac{y}{x}) = \frac{P(x,y)}{P(x)}\)</span> 来求P（y | x）。</p>
-<p>​ 前者就是判别模型，后者是生成模型。</p>
-<p>​ 生成模型可以还原出联合概率分布P（x , y），学习收敛速度更快，可以适应存在隐含变量的情况；</p>
-<p>​ 判别模型直接学习条件概率,直接面对预测，准确率更高，并且简化了学习问题。</p></li>
-</ul>
-<hr />
-<h3 id="二.-感知机">二. 感知机</h3>
-<p>​ 感知机，perceptron，是二分类的线性分类模型，输入为特征向量，输出为类别，取1和-1两种。</p>
-<p>​ 感知机属于判别模型。</p>
-<p>​</p>
-<p>​ 对于一个给定数据集，T = {（x<sub>1</sub>，y<sub>1</sub>）……（x<sub>n</sub>，y<sub>n</sub>）}，如果存在某个超平面S，w·x + b = 0（这里w是超平面的法向量，b是截距），使得所有 y<sub>i</sub> = 1 的实例i，有 w·x<sub>i</sub> + b &gt; 0，y<sub>i</sub> = -1则相反，则称数据集T为<strong>线性可分数据集（<em>Linealy separable data set</em>）</strong>，否则，称数据集T为线性不可分数据集。</p>
-<h4 id="感知机损失函数">2.1 感知机损失函数：</h4>
-<p>​ 感知机的目的就是对于一个线性可分的数据集，通过找出w和b，来确定一个超平面用于分类。</p>
-<p>​ 这里，我们选取某错误分类点到超平面S的<strong>总距离</strong>来当做损失函数，某一点到超平面S的距离如下：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904182025.png" /></p>
-<p>​ ‖w‖是w的L<sub>2</sub>范数。</p>
-<p>​ 故，某个误分类点到超平面S的距离是：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904182154.png" /></p>
-<p>​ 将所有误分类点求和，忽略L<sub>2</sub>范数，即可得到<strong>感知机的损失函数</strong>（M为误分类点集合）：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904182339.png" /></p>
-<p>​ 对于一个特定样本点的损失函数，在误分类时是参数w,b的线性函数，在正确分类时是0，故给定训练数据集T，损失函数L是w，b的连续可导函数。</p>
-<h4 id="训练过程">2.2 训练过程：</h4>
-<p>​ 感知机训练采用随机梯度下降的方法：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904183233.png" /></p>
-<p>​ 当找到一个误分类点时，不断梯度下降直至该点被正确分类为止。</p>
-<p>​ <strong>数学证明其收敛性：</strong></p>
-<p>​ 具体见书本，这里略过。</p>
-<h4 id="感知机的对偶形式">2.3 感知机的对偶形式：</h4>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905112734.png" /></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905112750.png" /></p>
-<p>​ 由图可以看到，对于每个测试集中的x<sub>i</sub>，都有一个与之对应的α<sub>i</sub>，对偶形式中就是调整其对应的α。</p>
-<p>​ 关于gram矩阵的作用，如果手算一遍简单的训练过程，就可以得到答案。</p>
-<hr />
-<h3 id="三.-k近邻法">三. k近邻法</h3>
-<p>​ k近邻法是一种基本的分类与回归方法，这里只讨论分类方法。</p>
-<p>​ 其输入为特征向量，输出为实例的类别，可以取<strong>多类</strong>。</p>
-<h4 id="算法描述">3.1 算法描述：</h4>
-<p>​ 给定一个训练集，对于新的数据实例，在训练数据集中找到与其最邻近的k个实例，这k个实例多数属于某个类，就把该输入实例分为这个类。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905113440.png" /></p>
-<p>​ <u>k近邻法没有显式的学习过程。</u>可以理解为，k近邻算法将特征空间划分为了一些子空间，每个点所属的空间是确定的。</p>
-<p>​</p>
-<ul>
-<li><strong>如何度量两个特征之间的距离？</strong></li>
-</ul>
-<p>​ k邻近模型的特征空间一般是n维实空间R<sup>n</sup>，使用欧氏距离或者L<sub>p</sub>距离（<em>L<sub>p</sub> distance</em>），Minkowski距离（<em>Minkowski distance</em>）；</p>
-<p>​ <strong>L<sub>p</sub>距离：</strong></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905143250.png" /></p>
-<p>​ <strong>欧氏距离：</strong></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905143332.png" /></p>
-<p>​ <strong>曼哈顿距离：</strong></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905143356.png" /></p>
-<p>​ <strong>无穷距离：</strong></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905143648.png" /></p>
-<p>​ 由下图可以看出，p取值不同时到原点距离为1的图形是不同的：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905143741.png" /></p>
-<ul>
-<li><p><strong>如何选择k的值？</strong></p>
-<p>​ k值越小，模型学习时的近似误差越小，估计误差越大，模型会越复杂，抗干扰性越小（例如，最邻近的点是噪声），模型会非常敏感，容易过拟合；</p>
-<p>​ k值越大，估计误差会很小，近似误差会很大，整体模型变得简单。</p>
-<p>​ k一般的取值并不大，使用交叉验证的方法来选取最佳的k值。</p></li>
-<li><p><strong>如何决策？</strong></p>
-<p>​ 在得到k个最相似的实例后，采用何种规则判断测试样本属于哪一类呢？</p>
-<p>​ k邻近算法使用多数表决的方法：</p></li>
-</ul>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905154943.png" /></p>
-<blockquote>
-<p>ps: ci表示某种决策规则下一组测试用例的表决结果。经由以上推导可以得出，多数表决规则是合理的。</p>
-</blockquote>
-<p>​</p>
-<ul>
-<li><p><strong>如何快速找到某个用例的K近邻点？</strong></p>
-<p><strong>KD树：</strong> 具体算法见书。</p>
-<hr />
-<h3 id="四.-朴素贝叶斯法">四. 朴素贝叶斯法</h3>
-<p>​</p></li>
-</ul>
-]]></content>
-      <categories>
-        <category>Book</category>
-      </categories>
-      <tags>
-        <tag>Machine Learning</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Deep Text Classifification Can be Fooled</title>
-    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/</url>
-    <content><![CDATA[<h1 id="论文阅读deep-text-classifification-can-be-fooled">【论文阅读】<strong>Deep Text Classifification Can be Fooled</strong></h1>
-<blockquote>
-<p><strong>时间：</strong>2017</p>
-<p><strong>作者：</strong>Bin Liang, Hongcheng Li, Miaoqiang Su, Pan Bian, Xirong Li and Wenchang Shi 中国人民大学</p>
-</blockquote>
-<h3 id="abstract">Abstract:</h3>
-<p>​ 在这篇文章，我们提出了一种有效的生成文本对抗样本的方法，并且揭示了一个很重要但被低估的事实：基于DNN的文本分类器很容易被对抗样本攻击。</p>
-<p>​ 具体来说，面对不同的对抗场景，通过计算输入的代价梯度(白盒攻击)或生成一系列被遮挡的测试样本(黑盒攻击)来识别对分类重要的文本项。（<u>这句不是很懂，什么叫’ the text items that are important for classifification‘？</u>）</p>
-<p>​ 基于这些项目，我们设计了三种扰动策略，insertion，modification，removal，用于生成对抗样本。实验结果表明基于我们的方法生成的对抗样本可以成功地欺骗主流的在字符等级和单词等级的DNN文本分类器。</p>
-<p>​ 对抗样本可以被扰动到任意理想的类中而不降低其效率。（？）同时，被引入的扰动很难被察觉。</p>
-<p>​</p>
-<h3 id="introduction">1. Introduction:</h3>
-<p>​ 在文本中，即使很小的扰动也会使一个字母或者单词完全变化，这会导致句子不能被辨识。故如果直接将应用于多媒体（图片，音频）的算法应用到文本上，得到的对抗样本的原意就会改变，而且很大程度上变成人类无法理解的句子。</p>
-<p>​ 在这片论文里，我们提出了一种生成对抗样本的有效方法。与直接简单插入扰动相比，我们设计了三种扰动策略：<em>insertion</em>, <em>modifification</em>, and <em>removal</em>，并且引入了自然语言文本水印（<em>natural language watermarking</em>）技术用于生成对抗样本。</p>
-<p>​ 理论上，生成一个好的对抗样本很大程度上依赖于对目标分类模型的信息。在这里我们根据不同情形，使用了白盒攻击和黑盒攻击。</p>
-<p>​ 为了普遍性，我们使用了字符等级的模型和单词等级的模型作为受害者。我们的实验结果证明基于DNN的文本分类器在面对对抗样本攻击时是脆弱的。</p>
-<h3 id="target-models-and-datasets">2. Target Models and Datasets:</h3>
-<p>​ 这里使用的文本分类器是Zhang et al. 2015《Character-level Convolutional Networks foe Text Classification》，数据集是Lehmann et al.2014的DBpedia ontology dataset（一个多语言知识库），里面包括560000个训练样本和70000个测试样本，涵盖14个high-level 类，比如公司类、建筑类、电影类等。</p>
-<p>​ 在把样本送进网络前，需要用独热编码法（one-hot representation）对每个字母编码成一个向量。通过网络的六个卷积层、三个全连接层，最终会被分到14个类中。</p>
-<h3 id="white-box-attacks"><u>3. White-Box-Attacks:</u></h3>
-<h4 id="fgsm算法">3.1 FGSM算法：</h4>
-<p>​ FGSM是Goodfellow在2015年提出的对图片生成对抗样本的经典算法。使用类似的思路来在文本领域生成对抗样本结果并不好：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830214227.png" /></p>
-<h4 id="idenfitying-classification-important-items">3.2 Idenfitying Classification-important Items:</h4>
-<p>​ 在白盒攻击中，我们需要定位文本中对于分类器的分类结果起到很大作用的文本段（通过计算代价梯度）。在这里，我们使用<strong><em>Hot Training Phrases</em> (HTPs)</strong>代表最常使用的短语：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831150703.png" /></p>
-<p>​ HTPS表明了用什么短语/词去做扰动，但是没有说在哪里做。在这里使用<strong><em>Hot Sample Phrases</em> (HSPs)</strong>来表明在哪里做扰动。</p>
-<h4 id="attacking-character-level-dnn">3.3 Attacking Character-level DNN:</h4>
-<p>​ 我们的方法是一种targeted攻击，可以指定对抗样本的误导类型。</p>
-<h5 id="insertion-strategy插入策略">3.3.1 Insertion Strategy（插入策略）:</h5>
-<p>​ 在某个HSP前插入一个HTP，就可以达到效果：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831151929.png" /></p>
-<p>​ 由上图可以看到，将某个<strong>HTP</strong>（<em>historic</em>）插入到<strong>HSP</strong>（<em>principal stock exchange of Uganda. It was founded</em>）之前，就可以使一个公司的分类文本变为对建筑的分类。</p>
-<p>​ 实际上，我们通常需要进行多次插入，但插入次数过多会影响样本的效用和可读性，为了解决这个问题，这里引入NL水印技术（<em>Natural Language watermarking technique</em>）。该技术可以通过语义或句法操作将所有权水印隐形地嵌入到普通文本中,虽然我们的攻击目标与NL水印有本质的不同，但我们可以借用它的思想来构造对抗样本。实际上，扰动可以看作是一种水印，并以类似的方式嵌入到样本中。</p>
-<p>​ 在这里，我们拓展这个思路，在样本中插入<strong>Presupposition</strong>(读者熟知的模糊短语)和 <strong>semantically empty phrases</strong>（可有可无的短语），有没有他们，在读者看来，原文的意思不会改变。</p>
-<p>​ 总的来说，我们考虑将各种HTPS组合成一个语法单元后再嵌入到文本中，新的单元可以是生成的可有可无的资料，或者甚至是不会改变文本原意的伪造的资料。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831154859.png" /></p>
-<p>​ <strong>特别的，通过互联网搜索或者查找一些数据集，我们可以找到与插入点很相关的资料，包括一些期望的目标分类的HTPs。</strong></p>
-<p>​ 由于我们不能总是找到合适的HTPs，所以提出一个新概念——伪造的事实（forged fact），也就是插入很难证伪的HTPs。例如：</p>
-<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/20210831154910.png" /></p>
-<p>​ 此外，我们排除了伪造的事实，这些事实可以通过检索他们在网上的相反证据而被否认。</p>
-<h5 id="modification-strategy修改策略">3.3.2 Modification Strategy（修改策略）：</h5>
-<p>​ Moidfication就是轻微修改一些HSP。</p>
-<p>​ 为了让修改不被人类观察者发现，我们采用了typo-based watermarking 技术。具体的说，一个HSP可以通过两种方式来被修改：</p>
-<p>​ 1. 从相关的语料库中选择常见的拼写错误来替换它；</p>
-<p>​ 2. 把它的一些字符修改成类似的外观（例如小写字母'l'与阿拉伯数字‘1’很像）。</p>
-<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831160407.png" /></p>
-<p>​ 由上图可以看出，这种方式对分类结果的扰动是巨大的。</p>
-<h5 id="removal-strategy移除策略">3.3.3 Removal Strategy（移除策略）:</h5>
-<p>​ 移除策略单独使用也许并不能足够有效地影响预测结果，但是可以很大程度上降低原始预测类型的置信度。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831161007.png" /></p>
-<p>​ 由上图可以看出，移除'<strong><em>British</em></strong>'可以导致原始预测类型的置信度下降了35%。</p>
-<h5 id="combination-of-three-strategies">3.3.4 Combination of Three Strategies:</h5>
-<p>​ 如图6所示，单靠去除策略改变输出分类往往是困难的。但是，通过与其他策略相结合，可以避免对原文进行过多的修改或插入。在实践中，我们常常结合以上三种策略来制作微妙的对抗样本。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831161638.png" /></p>
-<p>​ 以图7为例，通过去除一个HSP、插入一个伪造事实和修改一个HSP，可以成功地改变输出分类，但单独应用上述任何扰动都失败。具体来说，删除、插入和修改仅使置信度分别下降27.3 %、17.5 %和10.1 %，保持预测类不变。</p>
-<h3 id="black-box-attack">4. Black-Box-Attack:</h3>
-<p>暂略</p>
-<h3 id="evaluation">5. Evaluation：</h3>
-<h4 id="我们的方法能否执行有效的源目标误分类攻击">5.1 我们的方法能否执行有效的源/目标误分类攻击?</h4>
-<p>​ <strong><em>答：</em></strong>在众多测试集中，只有DBpedia ontology数据集是一个多分类数据集，故我们在其中随机选取了一些样本：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831165135.png" /></p>
-<h4 id="所生成的对抗样本能否避免被人类观察者认出来并同时保持其功能性">5.2 所生成的对抗样本能否避免被人类观察者认出来，并同时保持其功能性？</h4>
-<p><strong><em>答：</em></strong>我们找了23个学生。他们对项目不了解，然后每个人给20个文本，其中一半是加扰的。让他们分到14个类中，如果他们觉得哪个文本不对劲，让他们指出来。</p>
-<p>​ 他们总的分类正确率是94.2%，10个对抗样本的正确率是94.8%。所以实用性还是有的。</p>
-<p>​ 他们标注出了240项修改处，其中12项符合真实的修改。但实际上我们做了594处修改。</p>
-<h4 id="我们的方法足够有效吗">5.3 我们的方法足够有效吗？</h4>
-<p><strong><em>答：</em></strong>实验中计算梯度和找HTPs花了116小时。14个类的HTPs每个类花了8.29小时。对所有的adversarial示例只执行一次计算。制作一个对抗性的样品大约需要10到20分钟。对于对手来说，获得理想的对抗样本是可以接受的。实际上，她或他愿意花更多的时间来做这件事。</p>
-<h3 id="realted-works">6. Realted Works:</h3>
-<p>​ <strong>可以做的方向：</strong>1.自动生成对抗样本；（然而，Papernot等人(Papernot et al. 2016a)提出了一种基于雅可比矩阵的数据集增强技术，该技术可以在不访问其模型、参数或训练数据的情况下，在有限对输入输出的基础上，为目标dnn提供替代模型。作者还表明，使用替代模型也可以有效地制作对抗样本，以攻击目标DNN。）2.迁移、黑盒攻击；</p>
-<p>​</p>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>AD</tag>
-        <tag>NLP</tag>
-        <tag>DNN</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Black-Box Attacks against RNN based Malware Detection Algorithms</title>
-    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Black-Box%20Attacks%20against%20RNN%20based%20Malware%20Detection%20Algorithms/</url>
-    <content><![CDATA[<h1 id="论文阅读black-box-attacks-against-rnn-based-malware-detection-algorithms">【论文阅读】Black-Box Attacks against RNN based Malware Detection Algorithms</h1>
-<blockquote>
-<p><strong>时间</strong>：2017</p>
-<p><strong>作者：</strong> Weiwei Hu 北京大学</p>
-<p>​ Ying Tan 北京大学</p>
-</blockquote>
-<ul>
-<li><h4 id="abstract">Abstract：</h4>
-<p>​ 1. <strong>原文：</strong></p>
-<p>​ 最近的研究表明，基于机器学习的恶意软件分类算法在面对对抗样本攻击时表现的十分脆弱。这些工作主要集中于那些利用了混合维度的特征的追踪算法，但一些研究者已经开始使用RNN，基于API特征序列来辨识恶意软件。</p>
-<p>​ 这篇文章提出了一种用于生成对抗样本序列的原创算法，它被用于攻击基于RNN的恶意软件分类系统。对于攻击者来说，通常，知晓目标RNN的内部结构和权重是很难的。于是一个替代的用于近似目标RNN的RNN模型就被训练了出来，接着我们利用这个RNN来从原始序列输入中生成对抗样本序列。</p>
-<p>​ <strong>权威结果表明基于RNN的恶意软件分类算法不能追踪大多数我们所生成的恶意对抗样本，这意味着我们生成的模型可以很有效的规避追踪算法。</strong></p>
-<p>​ 2. <strong>总结：</strong></p>
-<p>​ 一个对基于RNN的恶意样本分类器的灰盒攻击，有三个RNN，受害者RNN（源RNN），替代RNN，对抗样本生成RNN。</p></li>
-</ul>
-<h3 id="introduction">1. Introduction:</h3>
-<ol type="1">
-<li>现有的基于N机器学习的恶意软件追踪算法主要将程序表现为固定维度的特征向量，然后将其分类为无害程序和恶意软件；</li>
-<li>举例，利用API的调用序列，或者不被调用的API序列进行分类；</li>
-<li>【11】展现了，基于固定维度特征来进行恶意样本分类的算法，面对对抗样本的攻击是脆弱的；</li>
-<li>最近也有利用RNN进行恶意样本追踪与分类的，RNN的输入就是API序列。</li>
-</ol>
-<h3 id="adversarial-examples">2. Adversarial Examples:</h3>
-<p>​ 一些其它的针对序列的对抗样本攻击：</p>
-<blockquote>
-<p>Nicolas Papernot, Patrick McDaniel, Ananthram Swami, and Richard Harang. Crafting adver</p>
-<p>sarial input sequences for recurrent neural networks. In <em>Military Communications Conference,</em></p>
-<p><em>MILCOM 2016-2016 IEEE</em>, pages 49–54. IEEE, 2016.</p>
-<p>Kathrin Grosse, Nicolas Papernot, Praveen Manoharan, Michael Backes, and Patrick McDaniel.</p>
-<p>Adversarial perturbations against deep neural networks for malware classifification. <em>arXiv preprint</em></p>
-<p><em>arXiv:1606.04435</em>, 2016.</p>
-</blockquote>
-<h3 id="attacking-rnn-based-malware-detection-algorithms">4. Attacking RNN based Malware Detection Algorithms</h3>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830150941.png" /></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830151007.png" /></p>
-<h3 id="实验">5. 实验</h3>
-<p>​ Adam 用于训练所有模型；</p>
-<p>​ LSTM由于其在处理长序列的优秀表现，也被应用在实验的所有RNN中。</p>
-<h4 id="数据集">5.1 数据集：</h4>
-<p>​ <strong>来源：</strong>https://malwr.com/ （一个恶意样本分析网站，爬取180个项目，该网站可以分析用户上传的项目，并给出其API序列，网站中70%的项目都是恶意样本）</p>
-<p>​ <strong>数据集划分：</strong>为了模拟真实的测试环境，数据集划分如下：（30%+10%）用于生成RNN，（30%+10%）用于受害者RNN，20%用于测试。</p>
-<h4 id="受害者rnn">5.2 受害者RNN：</h4>
-<p>​ 尝试了不同模型：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830110738.png" /></p>
-<p>​ <strong>结论如下：</strong></p>
-<ol type="1">
-<li>与LSTM相比，BiLSTM不能提升模型的分类表现；</li>
-<li>与Average-Pooling相比，注意力机制的效果更好；</li>
-</ol>
-<h4 id="生成对抗样本rnn测试结果">5.3 生成（对抗样本）RNN测试结果：</h4>
-<p>​ 介绍参数规范：</p>
-<blockquote>
-<p>The hyper-parameters of the generative RNN and the substitute RNN were tuned separately for each</p>
-<p>black-box victim RNN. The learning rate and the regularization coeffificient were chosen by line</p>
-<p>search along the direction 0.01, 0.001, et al.. The Gumbel-Softmax temperature was searched in the</p>
-<p>range [1<em>,</em> 100]. Actually, the decoder length <em>L</em> in the generative RNN is also a kind of regularization</p>
-<p>coeffificient. A large <em>L</em> will make the generative RNN have strong representation ability, but the whole</p>
-<p>adversarial sequences will become too long, and the generative RNN’s size may exceed the capacity</p>
-<p>of the GPU memory. Therefore, in our experiments we set <em>L</em> to 1.</p>
-</blockquote>
-<p>​</p>
-<p>​ 给出实验结果：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830140545.png" /></p>
-<ol type="1">
-<li>对于所有RNN模型，攻击都十分有效；</li>
-<li>于LSTM的攻击效果最差，故替代RNN对LSTM的拟合效果并不好；</li>
-<li>训练集与测试集的测试效果差别不大， 模型泛化能力强；</li>
-<li>即使更换了模型与训练数据集，对抗样本仍效果很好。</li>
-</ol>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>AD</tag>
-        <tag>Malware Classifiers</tag>
-        <tag>RNN</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Automatically Evading Classififiers----A Case Study on PDF Malware Classififiers</title>
-    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Automatically%20Evading%20Classififiers----A%20Case%20Study%20on%20PDF%20Malware%20Classififiers/</url>
-    <content><![CDATA[<h1 id="论文阅读automatically-evading-classififiers----a-case-study-on-pdf-malware-classififiers">【论文阅读】Automatically Evading Classififiers----A Case Study on PDF Malware Classififiers</h1>
-<blockquote>
-<p><strong>时间：2016</strong></p>
-<p><strong>作者：Weilin Xu, Yanjun Qi, and David Evans 弗吉尼亚大学</strong></p>
-<p><strong>会议：NDSS（ccf_B类）</strong></p>
-</blockquote>
-<h3 id="总结">总结：</h3>
-<ol type="1">
-<li><p><strong>白盒黑盒？</strong></p>
-<p><strong>黑盒攻击</strong>，需要知道生成样本在目标模型中的输出（分类分数）和目标模型所使用的特征（粗略知道）；</p></li>
-<li><p><strong>针对什么目标？</strong></p>
-<p>仅仅使用表层特征的分类器；</p></li>
-<li><p><strong>攻击方法？</strong></p>
-<p>3.1 <strong>如何制造对抗样本？</strong></p>
-<p>​ 使用<strong>遗传算法（GP-BASED）</strong>进行随机扰动</p>
-<p>3.2 <strong>如何判别对抗样本的恶意能力？</strong></p>
-<p>​ 使用<strong><em>oracle</em></strong></p></li>
-</ol>
-<h3 id="abstract">Abstract:</h3>
-<p>​ 在本文，我们提出了一个一般化的方法来检验分类器的鲁棒性，通过在两个PDF恶意样本分类器，PDFrate和Hidost上来检验。其关键就是随机控制一个恶意样本来找到一个对抗样本。</p>
-<p>​ 我们的方法可以自动地对500个恶意样本种子中找到对于两个PDF分类器的对抗样本，我们的结果提出了一个严重的疑问，基于表面特征的分类器在面对对抗样本时是否还有效？</p>
-<hr />
-<h3 id="introduction">1. Introduction:</h3>
-<p>​ 主要贡献：</p>
-<pre><code>1. 提出了一个一般化的方法用于自动寻找分类器的对抗样本；
-2. 制作了一个原型系统用于自动生成对抗样本；
-3. 我们的系统在对500个恶意样本种子寻找对抗样本的过程中，达到了100%的准确率。</code></pre>
-<hr />
-<h3 id="overview">2. Overview：</h3>
-<h4 id="finding-evasive-samples"><em>2.1 Finding Evasive Samples</em>：</h4>
-<p>​ <strong>整体思路：</strong></p>
-<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901185852.png" /></p>
-<p>​ <strong><em>oracle</em></strong>用于判断一个样本是否具有恶意行为；</p>
-<hr />
-<h3 id="pdf-malware-and-classifiers">3. PDF Malware and Classifiers</h3>
-<h4 id="pdfmalware"><em>3.1 PDFmalware:</em></h4>
-<p>​ PDF文件的整体结构：</p>
-<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901191527.png" /></p>
-<p>​ 早些的PDF恶意样本一般使用JavaScript嵌入，用户双击打开时出发执行恶意脚本。</p>
-<p>​ 因为不是所有的PDF恶意样本都是嵌入了JavaScript代码，最近的一些PDF恶意分类器就着重于PDF文件的结构化特征。在本文，我们的目标就是攻击这些有代表性的基于文件结构化特征的分类器。</p>
-<h4 id="target-classififiers"><em>3.2 Target Classififiers：</em></h4>
-<p>​ <strong>PDFrate：</strong>一个使用随机森林算法的分类器。</p>
-<p>​ <strong>Hidost:</strong>一个SVM分类器。</p>
-<p>​</p>
-<hr />
-<h3 id="evading-pdf-malware-classifiers">4. Evading PDF Malware Classifiers：</h3>
-<hr />
-<h3 id="experiment">5. Experiment:</h3>
-<h4 id="dataset"><em>5.1 Dataset:</em></h4>
-<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194138.png" /></p>
-<h4 id="test"><em>5.2 Test：</em></h4>
-<p>​ <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194328.png" /></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194448.png" /></p>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>AD</tag>
-        <tag>Malware Classifiers</tag>
-        <tag>PDF</tag>
-      </tags>
   </entry>
   <entry>
     <title>AD nlp Survey</title>
@@ -1474,369 +1838,5 @@ fp <span class="token operator">=</span> <span class="token function">ActiveXObj
         <tag>AD</tag>
         <tag>NLP</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>A Benchmark API Call Dataset For Windows PE Malware Classification</title>
-    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91A%20Benchmark%20API%20Call%20Dataset%20For%20Windows%20PE%20Malware%20Classification/</url>
-    <content><![CDATA[<h1 id="论文阅读a-benchmark-api-call-dataset-for-windows-pe-malware-classification">【论文阅读】A Benchmark API Call Dataset For Windows PE Malware Classification</h1>
-<blockquote>
-<p><strong>作者：Ferhat Ozgur Catak（土耳其）</strong></p>
-<p>​ <strong>Ahmet Faruk Yazi（土耳其）</strong></p>
-<p><strong>时间：2021.2.23</strong></p>
-<p><strong>关键词：恶意软件分析，网络空间安全，数据集，沙箱环境，恶意软件分类</strong></p>
-</blockquote>
-<h3 id="abstract">1. Abstract</h3>
-<p>​ 在Windows操作系统中，系统API调用的使用在监控恶意PE程序中是一个很有前途的方法。这个方法被定义为在安全隔离的沙箱环境中运行恶意软件，记录其调用的Windows系统API，再顺序分析这些调用。 ​ 在这里，我们在隔离沙箱中分析了7107个属于不同家族（病毒，后门，木马等）的恶意软件，并把这些分析结果转化为了不同分类算法和方法可以使用的形式。 ​ <strong>首先</strong>，我们会解释如何得到这些恶意软件；<strong>其次</strong>，我们会解释如何将这些软件捆绑至家族中；<strong>最后，</strong>我们会描述如何使用这些数据集来通过不同的方法实现恶意软件的分类。</p>
-<hr />
-<h3 id="introduction">2. Introduction</h3>
-<h4 id="简单介绍了恶意软件">2.1 简单介绍了恶意软件</h4>
-<h4 id="恶意软件与恶意软件识别之间的竞争">2.2 恶意软件与恶意软件识别之间的竞争</h4>
-<p>​ 相互促进</p>
-<h4 id="变形恶意软件metamorphic-malware">2.3 变形恶意软件（Metamorphic malware）</h4>
-<p>​ 恶意软件家族里很先进的一种，这种软件可以持续不断的改变自身源代码以此改变自身结构，通过这种方式来改变自身代码特征。还有，这种软件可能还可以通过强度反算（counter-analysis）来识别自身运行的环境，以此来隐藏自身的恶意功能。</p>
-<p>​ 变形恶意软件很难识别。</p>
-<h4 id="恶意软件的识别">2.4 恶意软件的识别：</h4>
-<p>​ 所有恶意软件都会有恶意行为以达成其目的，如果可以很好的分析恶意行为，就可以做成恶意软件的识别与分类。 ​ 恶意软件的识别包括了很多需要解决的问题，例如在汇编中不正确的跳转操作码，PE文本段代码隐藏，代码加密。本研究收集了现有的恶意软件及其变式，例如WannaCry，Zeus，特别是在Github上。</p>
-<p>​ 我们通过在VirusTotal网站上寻找每个恶意软件的哈希值，从而获得了得到了其家族类。</p>
-<p>​ 最后，所有我们记录的行为都是在Cuckoo沙盒环境中运行的。</p>
-<p>​ 我们发现几乎所有恶意软件都会使用很多方法改变其行为，但即使这样，恶意软件还是有一个目标，有一个确定的模式来达到此目标。还有，恶意软件会做出一些不必要的API调用，但其还是可以被一个训练好的分析器识别，因为其行为模式是相同的。</p>
-<p>​ 恶意软件分析被视为网络空间安全的一个分支，其由两方面组成：</p>
-<h5 id="静态分析"><strong>1. 静态分析 </strong>：</h5>
-<p>​ 静态分析可以可以定义为通过执行一个孤立的环境检查可执行文件而不查看实际指令。例如MD5校验和，其通过反病毒检测攻击识别，查找字符串。</p>
-<h5 id="动态分析">2. 动态分析</h5>
-<p>​ 动态分析指运行恶意程序来理解其功能，观察其表现，识别其技术指标。几乎所有的重要行为都包含API调用序列。</p>
-<p>​ <strong>大多数动态分析领域的研究都只关注分类算法，有个基本问题是没有标准的数据集来检查所提出模型的效率。</strong></p>
-<p>​ <strong>我们在Github上分享了我们的数据集：https://github.com/ocatak/malware_api_class ，该数据集包含了基于Cuckoo沙箱的已知恶意软件执行和基于VirusTotal的文件MD5特征分类的原始数据。</strong></p>
-<hr />
-<h3 id="methods">3. Methods</h3>
-<h4 id="windows-api-calls">3.1 Windows API Calls：</h4>
-<p>​ 软件安全知识，略</p>
-<h4 id="cuckoo-sandbox">3.2 Cuckoo SandBox</h4>
-<p>​ 免费软件，高度集成，开源，可以自动分析Winodws,OS X,Linux,Android系统下的恶意文件。</p>
-<h4 id="virustotal">3.3 VirusTotal</h4>
-<p>​ 可以在线免费分析文件或者URL。其提供了一个API，可以不通过浏览器来提供分析结果，可以自动分析。其以JSON文件的形式提供分析结果，不同反病毒应用引擎和浏览器的分析结果会分开存放。</p>
-<h4 id="数据集生成">3.4 数据集生成</h4>
-<p>​ 本文的数据集有着简单明了的结构。数据集以CVS格式文件提供来提高互操作性，而且并不需要特定的软件或者库来读取他们。数据由来自不同Github页面的Git命令实施收集，数据集中的每一行都是在沙箱中分析的Windows操作系统的API调用序列。</p>
-<p>​ 数据集的生成过程如下：</p>
-<p>​ <strong>1. 沙箱环境准备：</strong></p>
-<p>​ 分析机器使用Ubuntu系统，将Cuckoo沙箱安装在其中，分析机运行虚拟服务，Windows操作系统就运行在虚拟服务上，同时关掉防火墙，系统升级。</p>
-<p>​ <strong>2. 分析恶意软件:</strong></p>
-<p>​ 虚拟机中同时运行超过20000个恶意软件，应用程序会将每个恶意软件的分析结果写入MongoDB数据库，分析结果中包含恶意软件的行为数据，这些数据都是恶意软件在Win7上的API调用请求。</p>
-<p>​ <strong>3. 处理API调用：</strong></p>
-<p>​ 我们在数据集中收集到了342种API调用，这些调用会被以0-341来标记，以此生成一个新数据集。我们使用了该数据集中至少有10个不同API调用的恶意软件的分析结果。</p>
-<p>​ <strong>4. 使用Virus Total公用API分析恶意软件：</strong></p>
-<p>​ 作为分析的补充，所有在数据集中的恶意软件也会被Virus Total所分析，通过这种方式，每个恶意软件都会被不同的反病毒引擎所分析，结果会被记录。</p>
-<p>​ <strong>5. 处理分析结果：</strong></p>
-<p>​ Virus Total服务使用大约66个不同的防病毒应用程序进行文件分析。利用我们利用这个服务得到的每个研究结果，我们识别了每个恶意软件的家族。通过观察，我们发现对于同一恶意软件，不同的防病毒应用程序给出了不同的结果。此外，观察到并非每一个防病毒应用程序都能检测到一些恶意软件。因此，在检测每一个恶意软件类时，认为它属于所有分析中的大多数类。</p>
-<p><img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210716172418.png" /></p>
-<p><img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210716172518.png" /></p>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>AD</tag>
-        <tag>Malware Classifiers</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers</title>
-    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/</url>
-    <content><![CDATA[<h1 id="论文阅读generic-black-box-end-to-end-attack-against-state-of-the-art-api-call-based-malware-classifiers">【论文阅读】Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers</h1>
-<blockquote>
-<p><strong>作者：Ishai Rosenberg </strong></p>
-<p><strong>大学：Ben-Gurion University of the Negev</strong></p>
-<p><strong>时间：2018.6.4</strong></p>
-</blockquote>
-<h3 id="做了什么">1. 做了什么？</h3>
-<ul>
-<li><p>​ 对一个通过机器学习训练的，通过API调用来分类恶意软件的分类器的攻击。</p>
-<p>​ 这个攻击可以使分类器不能成功识别恶意软件，并且不改变原有软件的功能。</p></li>
-<li><p>​ 实现了<strong>GADGET</strong>，一个可以直接将二进制恶意软件文件转换为分类器无法检测的二进制文件，<strong>并不需要访问文件源代码。</strong></p></li>
-</ul>
-<h3 id="一些概念">2. 一些概念：</h3>
-<h4 id="machine-learning-malware-classififiers基于机器学习的恶意软件分类器">2.1 Machine learning malware classififiers（基于机器学习的恶意软件分类器）</h4>
-<p>​ 优点：1. 可以自动训练，节省时间；</p>
-<p>​ 2. 只要分类器并不是基于指纹特征或者某个特定的特征（如Hash值）来分类，面对不可见威胁时泛化能力较强。</p>
-<h4 id="adversarial-examples对抗样本">2.2 Adversarial Examples（对抗样本）</h4>
-<p><strong>对输入样本故意添加一些人无法察觉的细微的干扰，导致模型以高置信度给出一个错误的输出。</strong></p>
-<ol type="1">
-<li><strong>可以针对一张已经有正确分类的image，对其进行细微的像素修改，可以在DNN下被错分为其他label。</strong></li>
-</ol>
-<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-ed60089ae25c81ba2677ec34ffa2a47f_720w.jpg" /></p>
-<p>​ 样本x的label为熊猫，在对x添加部分干扰后，在人眼中仍然分为熊猫，但对深度模型，却将其错分为长臂猿，且给出了高达99.3%的置信度。</p>
-<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-59a3afcc069df94927ffe1efd62822e9_720w.jpg" /></p>
-<p>像素攻击：改动图片上的一个像素，就能让神经网络认错图，甚至还可以诱导它返回特定的结果。</p>
-<p>改动图片上的一个像素，就能让神经网络认错图，甚至还可以诱导它返回特定的结果</p>
-<p><strong>2. 同样，根据DNN，很容易产生一张在人眼下毫无意义的image，但是在DNN中能够获得高confidence的label。</strong></p>
-<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-0390bba1f2c35220c8b099b8ab0f4ebc_720w.jpg" /></p>
-<p>两种EA算法生成的样本，这些样本人类完全无法识别，但深度学习模型会以高置信度对它们进行分类，例如将噪声识别为狮子。</p>
-<h5 id="adversarial-examples-for-api-sequences生成api序列对抗样本与生成图像对抗样本并不同">2.2.1： Adversarial examples for API sequences(生成API序列对抗样本与生成图像对抗样本并不同):</h5>
-<ol type="1">
-<li>API序列由长度可变的离散符号组成，但图像可以用固定维度的矩阵表示为矩阵，且矩阵的值是连续的。</li>
-<li>对于对抗API序列，其必须验证原始的恶意功能是完整的。</li>
-<li><strong>对抗样本的迁移性</strong>：针对一种模型的对抗样本通常对另一种模型也奏效，即使这两个模型不是用同一数据集训练的。</li>
-</ol>
-<h4 id="几种攻击方法">2.3 几种攻击方法：</h4>
-<blockquote>
-<p><strong>White-box attack</strong>：白盒攻击，对模型和训练集完全了解。</p>
-<p><strong>Black-box attack</strong>：黑盒攻击：对模型不了解，对训练集不了解或了解很少。</p>
-<p><strong>Real-word attack</strong>：在真实世界攻击。如将对抗样本打印出来，用手机拍照识别。</p>
-<p><strong>targeted attack</strong>：使得图像都被错分到给定类别上。</p>
-<p><strong>non-target attack</strong>：事先不知道需要攻击的网络细节，也不指定预测的类别，生成对抗样本来欺骗防守方的网络。</p>
-<p><strong>mimicry attack</strong>: 编写恶意的exploit，该exp模拟良性代码系统调用的痕迹，因为能够逃逸检测。</p>
-<p><strong>disguise attack:</strong> 仅修改系统调用的参数使良性系统调用生成恶意行为 。</p>
-<p><strong>No-op attack</strong>: 添加语义的no-ops-系统调用，其没有影响，或者是不相干的影响，即，打开一个不存在的文件。</p>
-<p><strong>Equivalence attack</strong>: 使用一个不同的系统调用来达到恶意的目的.</p>
-</blockquote>
-<h4 id="decision-boundary决策界限">2.4 decision boundary(决策界限)</h4>
-<h4 id="end-to-end">2.5 end-to-end:</h4>
-<h4 id="结果分类">2.6 结果分类：</h4>
-<p>虑一个二分问题，即将实例分成正类（positive）或负类（negative）。对一个二分问题来说，会出现四种情况。如果一个实例是正类并且也被 预测成正类，即为真正类（True positive）,如果实例是负类被预测成正类，称之为假正类（False positive）。相应地，如果实例是负类被预测成负类，称之为真负类（True negative）,正类被预测成负类则为假负类（false negative）。</p>
-<p>列联表如下表所示，1代表正类，0代表负类。（预测正确：true，预测是正类：positive）</p>
-<table>
-<thead>
-<tr class="header">
-<th></th>
-<th></th>
-<th>预测</th>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td></td>
-<td></td>
-<td>1</td>
-<td>0</td>
-<td>合计</td>
-</tr>
-<tr class="even">
-<td>实际</td>
-<td>1</td>
-<td>True Positive（TP）</td>
-<td>False Negative（FN）</td>
-<td>Actual Positive(TP+FN)</td>
-</tr>
-<tr class="odd">
-<td></td>
-<td>0</td>
-<td>False Positive（FP)</td>
-<td>True Negative(TN)</td>
-<td>Actual Negative(FP+TN)</td>
-</tr>
-<tr class="even">
-<td>合计</td>
-<td></td>
-<td>Predicted Positive(TP+FP)</td>
-<td>Predicted Negative(FN+TN)</td>
-<td>TP+FP+FN+TN</td>
-</tr>
-</tbody>
-</table>
-<p>从列联表引入两个新名词。</p>
-<p>其一是真正类率(true positive rate ,TPR), 计算公式为 <em>TPR=TP</em>/ ( <em>TP</em>+ <em>FN</em>)，刻画的是分类器所识别出的 正实例占所有正实例的比例。</p>
-<p>另外一个是负正类率(false positive rate, FPR),计算公式为 <em>FPR= FP / (FP + TN)，</em>计算的是分类器错认为负类的正实例占所有负实例的比例。</p>
-<p>还有一个真负类率（True Negative Rate，TNR），也称为specificity,计算公式为TNR= <em>TN</em>/ ( <em>FP</em>+ <em>TN</em>) = 1 - <em>FPR</em>。</p>
-<h3 id="如何实现">3. 如何实现？</h3>
-<p>一些问题：程序调用API的过程；</p>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>AD</tag>
-        <tag>Malware Classifiers</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>【组原实验】全相联Cache设计</title>
-    <url>/2021/06/14/%5B%E7%BB%84%E5%8E%9F%E5%AE%9E%E9%AA%8C%5D%20%E5%85%A8%E7%9B%B8%E8%81%94Cache%E8%AE%BE%E8%AE%A1/</url>
-    <content><![CDATA[<h1 id="组原实验全相联cache设计">【组原实验】全相联Cache设计</h1>
-<h3 id="实验要求">1. 实验要求：</h3>
-<p>"结合引脚功能说明，实现全相联 cache 模块，该 cache 模块共包括<strong>8个 cache 行</strong>，每个数据块包含包括<strong>4个字节共32位数据</strong>。"</p>
-<figure>
-<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612105210.png" alt="image-20210612105209418" /><figcaption aria-hidden="true">image-20210612105209418</figcaption>
-</figure>
-<h3 id="电路分析">2. 电路分析：</h3>
-<h4 id="读操作">2.1 读操作：</h4>
-<h5 id="cache行">2.1.1 Cache行：</h5>
-<p>​ 一个Cache行包括：==有效位（1）+Tag（？）+数据位（32）==</p>
-<p>​ 下面计算tag：</p>
-<p>​ 一个内存地址共有16位宽，由于一块有4字节，故<strong>块内地址</strong>需要2位，所以有：</p>
-<blockquote>
-<p>块号（14位）+ 块内地址（2位）</p>
-</blockquote>
-<p>​ 故Tag也应为14位，在实际应用中，由于要考虑替算法，故还要做一个<strong>淘汰计数器</strong>。这里的替换算法我们使用LRU，考虑到266次的测试数据，我们使用一个8位计数器即可。</p>
-<p>​ 所以一个Cache行包括：</p>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: center;">1位有效位 + 14位Tag + 8位计数器 + 32位数据块</th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;"></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<p>故Cache行的设计如下：</p>
-<figure>
-<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161048.png" alt="image-20210612161047398" /><figcaption aria-hidden="true">image-20210612161047398</figcaption>
-</figure>
-<h5 id="cache存储体">2.1.2 Cache存储体：</h5>
-<p>​ 将2.1的cache行拓展到8行即可：</p>
-<figure>
-<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161246.png" alt="image-20210612161245664" /><figcaption aria-hidden="true">image-20210612161245664</figcaption>
-</figure>
-<h5 id="多路并发比较电路">2.1.3 多路并发比较电路：</h5>
-<p>​ 多路并发比较使用8个比较器即可，加上V位，8路结果取或得到Hit信号，Hit去反得到Miss信号：</p>
-<figure>
-<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161515.png" alt="image-20210612161514214" /><figcaption aria-hidden="true">image-20210612161514214</figcaption>
-</figure>
-<h5 id="选择输出电路">2.1.4 选择输出电路：</h5>
-<p>​ 选择输出电路将slotdata的32位信息送入多选择器中，由Hit和Block共同控制选择：</p>
-<figure>
-<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161618.png" alt="image-20210612161617443" /><figcaption aria-hidden="true">image-20210612161617443</figcaption>
-</figure>
-<hr />
-<h4 id="写操作">2.2 写操作：</h4>
-<p>​ 只有在Miss=1时才会出发写操作，写操作主要涉及到两部分：<strong>替换算法</strong>，<strong>数据写入</strong>。</p>
-<h5 id="替换算法">2.2.1 替换算法：</h5>
-<p>​ 在cache写入时：</p>
-<ol type="1">
-<li><p><em>cache行未满：</em></p>
-<p>则直接使用优先编码器，按编码规则依次填充。</p></li>
-</ol>
-<figure>
-<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612163240.png" alt="image-20210612163238678" /><figcaption aria-hidden="true">image-20210612163238678</figcaption>
-</figure>
-<p>​ 其中，0-7个有效位取反输入，这样做的目的是可以得到一个full输出，full本来是多路选择器的Os位（使能端有效且输入全为0时输出1），当输入变量取反后则此位的含义表示当==使能信号有效==且==输入全1==时输出1。</p>
-<p>​ not_full是一个三位宽度的地址，其表示将要填充的空cache行的序号。</p>
-<ol start="2" type="1">
-<li><p><em>cache行已满：</em></p>
-<p>若cache行已满，full=1，此时应比较各行计数器的值，替换数字计数值最大的一行。</p>
-<p>这里，可以利用自带的归并比较电路MAX3：3</p>
-<figure>
-<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612165351.png" alt="image-20210612165350132" /><figcaption aria-hidden="true">image-20210612165350132</figcaption>
-</figure>
-<p>比较8个计数值，输出数值最大的序号Max_cnt：</p>
-<figure>
-<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612170621.png" alt="image-20210612170620445" /><figcaption aria-hidden="true">image-20210612170620445</figcaption>
-</figure></li>
-</ol>
-<ul>
-<li>至此，我们有两个写入选择组，full和not_full，故应使用一个二路选择器，在Miss和BlkReady同时为1时选择合适的写入信号组合：</li>
-</ul>
-<figure>
-<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612175012.png" alt="image-20210612175011066" /><figcaption aria-hidden="true">image-20210612175011066</figcaption>
-</figure>
-<hr />
-<p>​ BTW: ==由于每次写入对应行计数器值清零，其他行计数器的值加一，故计数器的清零信号连接在对应行的命中信号（Hi)上。==</p>
-<p>总：</p>
-<figure>
-<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612174946.png" alt="image-20210612174945662" /><figcaption aria-hidden="true">image-20210612174945662</figcaption>
-</figure>
-]]></content>
-      <categories>
-        <category>●	课内</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>【安全攻防实验】电子数据取</title>
-    <url>/2021/06/14/%5B%E5%AE%89%E5%85%A8%E6%94%BB%E9%98%B2%E5%AE%9E%E9%AA%8C%5D%20%E7%94%B5%E5%AD%90%E6%95%B0%E6%8D%AE%E5%8F%96%E8%AF%81/</url>
-    <content><![CDATA[<h1 id="安全攻防实验电子数据取证">【安全攻防实验】电子数据取证</h1>
-<h3 id="磁盘镜像和证据固定">1. 磁盘镜像和证据固定</h3>
-<h5 id="在磁盘上创建一个文本文件">1.1 在磁盘上创建一个文本文件：</h5>
-<ul>
-<li>以‘abcdefgh’开头，后续随机填充一些字串。</li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194142.png" /></p>
-<ul>
-<li>把文本文件的拓展名改成学号：</li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194319.png" /></p>
-<h5 id="在x-ways-forensics中创建一个案件添加目标存储器">1.2 在X-Ways Forensics中创建一个案件，添加目标存储器：</h5>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194404.png" /></p>
-<h5 id="对该u盘存储器创建磁盘镜像">1.3 对该U盘存储器创建磁盘镜像：</h5>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194429.png" /></p>
-<h3 id="判断文件类型">2. 判断文件类型</h3>
-<h5 id="在案件中去除原来的存储器添加上一步的镜像文件">2.1 在案件中去除原来的存储器，添加上一步的镜像文件:</h5>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194448.png" /></p>
-<h5 id="用表格软件打开file-type-signatures-search.txt">2.2 /2.3 用表格软件打开File Type Signatures Search.txt：</h5>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194450.png" /></p>
-<ul>
-<li>添加一个文件类型：</li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194456.png" /></p>
-<ul>
-<li>在专业工具中选择‘进行磁盘快照’，对磁盘进行快照操作：</li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194500.png" /></p>
-<ul>
-<li>在选项中开启目录浏览器；</li>
-<li>在X-Ways中查看新类型的文件添加是否成功：</li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609194503.png" /></p>
-<p>​ 可以看出，新文件类型添加成功，成功识别了拓展名，文件类型与签名状态。</p>
-<h5 id="修改文件签名数据库中的内容再次分析">2.4 修改文件签名数据库中的内容，再次分析：</h5>
-<ul>
-<li><p>​ 修改文件签名数据库中的文件头签名内容，再次使用 文件快照对指定存储器进行分析，查看3中文件的文件类型、扩展名、签名状态等信息的变化。</p></li>
-<li><p>更改文件头签名为‘zzzzz’：</p></li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609195832.png" /></p>
-<ul>
-<li>重新进行快照，检查：</li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609195711.png" /></p>
-<p>​ 可以发现，在更改文件头签名内容后，签名状态变为了“未确认”。</p>
-<h5 id="删除添加到文件签名数据库中新的文件类型签名再次使用文件快照对指定存储器进行分析">2.5 删除添加到文件签名数据库中新的文件类型签名，再次使用文件快照对指定存储器进行分析：</h5>
-<p>​ 具体步骤同2.4，结果如下：</p>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609200431.png" /></p>
-<h3 id="文件搜索">3. 文件搜索：</h3>
-<h5 id="搜索华中科技大学word文档">3.1 搜索“华中科技大学”word文档：</h5>
-<ul>
-<li>去除上一个任务的存储器，添加自己电脑的C盘：</li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609202255.png" /></p>
-<ul>
-<li>提前验证C盘是否存在包含“华中科技大学“的文档：</li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609202623.png" /></p>
-<ul>
-<li>设置搜索：</li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609205543.png" /></p>
-<ul>
-<li><p>搜索结果：</p></li>
-<li><p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609205439.png" /></p></li>
-</ul>
-<h5 id="搜索web邮件">3.2 搜索WEB邮件：</h5>
-<ul>
-<li><p>首先发一封邮件给别人（用的是QQ邮箱，edge浏览器）</p></li>
-<li><p>直接搜索"mail"字串：</p>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609221822.png" /></p></li>
-<li><p>搜索结果：</p></li>
-</ul>
-<p><img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210614201318.png" /></p>
-<p>可以看出，成功找到了发送邮件的记录。</p>
-<h5 id="搜索电话号码">3.3 搜索电话号码：</h5>
-<ul>
-<li><p>电话号码有11位，故使用grep表达式： <strong>189[0-9]{8}</strong>：</p></li>
-<li><p>设置搜索如下：</p></li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609215841.png" /></p>
-<ul>
-<li>搜索结果如下：</li>
-</ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210609215920.png" /></p>
-]]></content>
-      <categories>
-        <category>●	课内</category>
-      </categories>
   </entry>
 </search>
