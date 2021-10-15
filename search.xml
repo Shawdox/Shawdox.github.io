@@ -70,37 +70,6 @@
       </tags>
   </entry>
   <entry>
-    <title>A Benchmark API Call Dataset For Windows PE Malware Classification</title>
-    <url>/2021/09/06/Detours/</url>
-    <content><![CDATA[<h1 id="detours">Detours</h1>
-<p>​ Detours 是一个在<u>x86</u>平台上截获任意<u>Win32函数调用</u>的工具库。中断代码可以在运行时动态加载，也可以在静态执行文件处理。</p>
-<h3 id="detous库原理">1. Detous库原理：</h3>
-<p>​ 修改目标函数（一般为Windows API接口函数）：使用一个无条件转移指令来替换该目标函数的首部几条指令，<strong>将控制流直接转移到一个用户自己实现的截获函数（即Detour函数）。</strong></p>
-<p>​ 而原目标函数中被替换的指令被保存在一个被称为“Trampoline”函数中（译注：英文意为蹦床函数）。这些指令包括目标函数中被替换的代码以及一个重新跳转到目标函数正确位置的无条件分支。</p>
-<p>​ 截获函数可以替换目标函数，或者通过执行“Trampoline”函数时，将目标函数作为子程序来调用的办法，在保留原来目标函数功能基础上，来完成扩展功能。</p>
-<p>​ 因为截获函数（Detour函数）是执行时被插入到内存中目标函数的代码里，<strong>不是在硬盘上直接修改目标函数</strong>，所以，可以在一个很好的粒度上使得截获二进制函数的执行变得更容易。</p>
-<p>​ 例如，一个应用程序执行时加载的 DLL中的函数过程，可以被插入一段截获代码（detoured），与此同时，这个DLL还可以被其他应用程序按正常情况执行（译注：也就是按照不被截获的方式执行，因为DLL二进制文件没有被修改，所以发生截获时不会影响其他进程空间加载这个DLL）。</p>
-<p>​ 出于使用基本的函数截获功能的目的， Detours同样提供了编辑任何DLL导入表的功能，达到向已存在的二进制代码中添加任意数据节表的目的，向一个新进程或者一个已经运行着的进程中注入一个DLL。<strong>一旦向一个进程注入了DLL，这个动态库就可以截获任何Win32函数，不论它是在应用程序中或者在系统库中。</strong></p>
-]]></content>
-      <categories>
-        <category>●	课内</category>
-      </categories>
-      <tags>
-        <tag>软安课设</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title></title>
-    <url>/2021/10/07/RL%20Learning(%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0)/</url>
-    <content><![CDATA[<h1 id="rl-learning强化学习">RL Learning(强化学习)</h1>
-<blockquote>
-<p>参考资料：机器学习--周志华</p>
-</blockquote>
-<h3 id="什么是强化学习">1. 什么是强化学习？</h3>
-<h3 id="section"></h3>
-]]></content>
-  </entry>
-  <entry>
     <title></title>
     <url>/2021/09/08/Log/</url>
     <content><![CDATA[<h1 id="log">Log</h1>
@@ -158,14 +127,6 @@ fp <span class="token operator">=</span> <span class="token function">ActiveXObj
 <p>​ <a href="https://caojingyou.github.io/2017/11/15/C++与浏览器交互/">C++与浏览器交互 | 曹景游 (caojingyou.github.io)</a></p>
 <p>​ <a href="https://blog.csdn.net/byxdaz/article/details/84638249">(7条消息) Windows下使用websocketpp_深之JohnChen的专栏-CSDN博客</a></p>
 <p>​ <a href="https://web.dev/file-system-access/">The File System Access API: simplifying access to local files (web.dev)</a></p>
-]]></content>
-  </entry>
-  <entry>
-    <title>More is different.</title>
-    <url>/2021/09/03/Welcome/</url>
-    <content><![CDATA[<h3 id="shaw的">Shaw的，</h3>
-<h3 id="一些记录一些随手写">一些记录，一些随手写。</h3>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210903135448.png" /></p>
 ]]></content>
   </entry>
   <entry>
@@ -260,6 +221,14 @@ fp <span class="token operator">=</span> <span class="token function">ActiveXObj
       <categories>
         <category>●	课内</category>
       </categories>
+  </entry>
+  <entry>
+    <title>More is different.</title>
+    <url>/2021/09/03/Welcome/</url>
+    <content><![CDATA[<h3 id="shaw的">Shaw的，</h3>
+<h3 id="一些记录一些随手写">一些记录，一些随手写。</h3>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210903135448.png" /></p>
+]]></content>
   </entry>
   <entry>
     <title>【组原实验】全相联Cache设计</title>
@@ -670,88 +639,6 @@ fp <span class="token operator">=</span> <span class="token function">ActiveXObj
       </tags>
   </entry>
   <entry>
-    <title>Black-Box Attacks against RNN based Malware Detection Algorithms</title>
-    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Black-Box%20Attacks%20against%20RNN%20based%20Malware%20Detection%20Algorithms/</url>
-    <content><![CDATA[<h1 id="论文阅读black-box-attacks-against-rnn-based-malware-detection-algorithms">【论文阅读】Black-Box Attacks against RNN based Malware Detection Algorithms</h1>
-<blockquote>
-<p><strong>时间</strong>：2017</p>
-<p><strong>作者：</strong> Weiwei Hu 北京大学</p>
-<p>​ Ying Tan 北京大学</p>
-</blockquote>
-<ul>
-<li><h4 id="abstract">Abstract：</h4>
-<p>​ 1. <strong>原文：</strong></p>
-<p>​ 最近的研究表明，基于机器学习的恶意软件分类算法在面对对抗样本攻击时表现的十分脆弱。这些工作主要集中于那些利用了混合维度的特征的追踪算法，但一些研究者已经开始使用RNN，基于API特征序列来辨识恶意软件。</p>
-<p>​ 这篇文章提出了一种用于生成对抗样本序列的原创算法，它被用于攻击基于RNN的恶意软件分类系统。对于攻击者来说，通常，知晓目标RNN的内部结构和权重是很难的。于是一个替代的用于近似目标RNN的RNN模型就被训练了出来，接着我们利用这个RNN来从原始序列输入中生成对抗样本序列。</p>
-<p>​ <strong>权威结果表明基于RNN的恶意软件分类算法不能追踪大多数我们所生成的恶意对抗样本，这意味着我们生成的模型可以很有效的规避追踪算法。</strong></p>
-<p>​ 2. <strong>总结：</strong></p>
-<p>​ 一个对基于RNN的恶意样本分类器的灰盒攻击，有三个RNN，受害者RNN（源RNN），替代RNN，对抗样本生成RNN。</p></li>
-</ul>
-<h3 id="introduction">1. Introduction:</h3>
-<ol type="1">
-<li>现有的基于N机器学习的恶意软件追踪算法主要将程序表现为固定维度的特征向量，然后将其分类为无害程序和恶意软件；</li>
-<li>举例，利用API的调用序列，或者不被调用的API序列进行分类；</li>
-<li>【11】展现了，基于固定维度特征来进行恶意样本分类的算法，面对对抗样本的攻击是脆弱的；</li>
-<li>最近也有利用RNN进行恶意样本追踪与分类的，RNN的输入就是API序列。</li>
-</ol>
-<h3 id="adversarial-examples">2. Adversarial Examples:</h3>
-<p>​ 一些其它的针对序列的对抗样本攻击：</p>
-<blockquote>
-<p>Nicolas Papernot, Patrick McDaniel, Ananthram Swami, and Richard Harang. Crafting adver</p>
-<p>sarial input sequences for recurrent neural networks. In <em>Military Communications Conference,</em></p>
-<p><em>MILCOM 2016-2016 IEEE</em>, pages 49–54. IEEE, 2016.</p>
-<p>Kathrin Grosse, Nicolas Papernot, Praveen Manoharan, Michael Backes, and Patrick McDaniel.</p>
-<p>Adversarial perturbations against deep neural networks for malware classifification. <em>arXiv preprint</em></p>
-<p><em>arXiv:1606.04435</em>, 2016.</p>
-</blockquote>
-<h3 id="attacking-rnn-based-malware-detection-algorithms">4. Attacking RNN based Malware Detection Algorithms</h3>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830150941.png" /></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830151007.png" /></p>
-<h3 id="实验">5. 实验</h3>
-<p>​ Adam 用于训练所有模型；</p>
-<p>​ LSTM由于其在处理长序列的优秀表现，也被应用在实验的所有RNN中。</p>
-<h4 id="数据集">5.1 数据集：</h4>
-<p>​ <strong>来源：</strong>https://malwr.com/ （一个恶意样本分析网站，爬取180个项目，该网站可以分析用户上传的项目，并给出其API序列，网站中70%的项目都是恶意样本）</p>
-<p>​ <strong>数据集划分：</strong>为了模拟真实的测试环境，数据集划分如下：（30%+10%）用于生成RNN，（30%+10%）用于受害者RNN，20%用于测试。</p>
-<h4 id="受害者rnn">5.2 受害者RNN：</h4>
-<p>​ 尝试了不同模型：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830110738.png" /></p>
-<p>​ <strong>结论如下：</strong></p>
-<ol type="1">
-<li>与LSTM相比，BiLSTM不能提升模型的分类表现；</li>
-<li>与Average-Pooling相比，注意力机制的效果更好；</li>
-</ol>
-<h4 id="生成对抗样本rnn测试结果">5.3 生成（对抗样本）RNN测试结果：</h4>
-<p>​ 介绍参数规范：</p>
-<blockquote>
-<p>The hyper-parameters of the generative RNN and the substitute RNN were tuned separately for each</p>
-<p>black-box victim RNN. The learning rate and the regularization coeffificient were chosen by line</p>
-<p>search along the direction 0.01, 0.001, et al.. The Gumbel-Softmax temperature was searched in the</p>
-<p>range [1<em>,</em> 100]. Actually, the decoder length <em>L</em> in the generative RNN is also a kind of regularization</p>
-<p>coeffificient. A large <em>L</em> will make the generative RNN have strong representation ability, but the whole</p>
-<p>adversarial sequences will become too long, and the generative RNN’s size may exceed the capacity</p>
-<p>of the GPU memory. Therefore, in our experiments we set <em>L</em> to 1.</p>
-</blockquote>
-<p>​</p>
-<p>​ 给出实验结果：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830140545.png" /></p>
-<ol type="1">
-<li>对于所有RNN模型，攻击都十分有效；</li>
-<li>于LSTM的攻击效果最差，故替代RNN对LSTM的拟合效果并不好；</li>
-<li>训练集与测试集的测试效果差别不大， 模型泛化能力强；</li>
-<li>即使更换了模型与训练数据集，对抗样本仍效果很好。</li>
-</ol>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>AD</tag>
-        <tag>Malware Classifiers</tag>
-        <tag>RNN</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Automatically Evading Classififiers----A Case Study on PDF Malware Classififiers</title>
     <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Automatically%20Evading%20Classififiers----A%20Case%20Study%20on%20PDF%20Malware%20Classififiers/</url>
     <content><![CDATA[<h1 id="论文阅读automatically-evading-classififiers----a-case-study-on-pdf-malware-classififiers">【论文阅读】Automatically Evading Classififiers----A Case Study on PDF Malware Classififiers</h1>
@@ -902,6 +789,145 @@ fp <span class="token operator">=</span> <span class="token function">ActiveXObj
       </tags>
   </entry>
   <entry>
+    <title>Black-Box Attacks against RNN based Malware Detection Algorithms</title>
+    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Black-Box%20Attacks%20against%20RNN%20based%20Malware%20Detection%20Algorithms/</url>
+    <content><![CDATA[<h1 id="论文阅读black-box-attacks-against-rnn-based-malware-detection-algorithms">【论文阅读】Black-Box Attacks against RNN based Malware Detection Algorithms</h1>
+<blockquote>
+<p><strong>时间</strong>：2017</p>
+<p><strong>作者：</strong> Weiwei Hu 北京大学</p>
+<p>​ Ying Tan 北京大学</p>
+</blockquote>
+<ul>
+<li><h4 id="abstract">Abstract：</h4>
+<p>​ 1. <strong>原文：</strong></p>
+<p>​ 最近的研究表明，基于机器学习的恶意软件分类算法在面对对抗样本攻击时表现的十分脆弱。这些工作主要集中于那些利用了混合维度的特征的追踪算法，但一些研究者已经开始使用RNN，基于API特征序列来辨识恶意软件。</p>
+<p>​ 这篇文章提出了一种用于生成对抗样本序列的原创算法，它被用于攻击基于RNN的恶意软件分类系统。对于攻击者来说，通常，知晓目标RNN的内部结构和权重是很难的。于是一个替代的用于近似目标RNN的RNN模型就被训练了出来，接着我们利用这个RNN来从原始序列输入中生成对抗样本序列。</p>
+<p>​ <strong>权威结果表明基于RNN的恶意软件分类算法不能追踪大多数我们所生成的恶意对抗样本，这意味着我们生成的模型可以很有效的规避追踪算法。</strong></p>
+<p>​ 2. <strong>总结：</strong></p>
+<p>​ 一个对基于RNN的恶意样本分类器的灰盒攻击，有三个RNN，受害者RNN（源RNN），替代RNN，对抗样本生成RNN。</p></li>
+</ul>
+<h3 id="introduction">1. Introduction:</h3>
+<ol type="1">
+<li>现有的基于N机器学习的恶意软件追踪算法主要将程序表现为固定维度的特征向量，然后将其分类为无害程序和恶意软件；</li>
+<li>举例，利用API的调用序列，或者不被调用的API序列进行分类；</li>
+<li>【11】展现了，基于固定维度特征来进行恶意样本分类的算法，面对对抗样本的攻击是脆弱的；</li>
+<li>最近也有利用RNN进行恶意样本追踪与分类的，RNN的输入就是API序列。</li>
+</ol>
+<h3 id="adversarial-examples">2. Adversarial Examples:</h3>
+<p>​ 一些其它的针对序列的对抗样本攻击：</p>
+<blockquote>
+<p>Nicolas Papernot, Patrick McDaniel, Ananthram Swami, and Richard Harang. Crafting adver</p>
+<p>sarial input sequences for recurrent neural networks. In <em>Military Communications Conference,</em></p>
+<p><em>MILCOM 2016-2016 IEEE</em>, pages 49–54. IEEE, 2016.</p>
+<p>Kathrin Grosse, Nicolas Papernot, Praveen Manoharan, Michael Backes, and Patrick McDaniel.</p>
+<p>Adversarial perturbations against deep neural networks for malware classifification. <em>arXiv preprint</em></p>
+<p><em>arXiv:1606.04435</em>, 2016.</p>
+</blockquote>
+<h3 id="attacking-rnn-based-malware-detection-algorithms">4. Attacking RNN based Malware Detection Algorithms</h3>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830150941.png" /></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830151007.png" /></p>
+<h3 id="实验">5. 实验</h3>
+<p>​ Adam 用于训练所有模型；</p>
+<p>​ LSTM由于其在处理长序列的优秀表现，也被应用在实验的所有RNN中。</p>
+<h4 id="数据集">5.1 数据集：</h4>
+<p>​ <strong>来源：</strong>https://malwr.com/ （一个恶意样本分析网站，爬取180个项目，该网站可以分析用户上传的项目，并给出其API序列，网站中70%的项目都是恶意样本）</p>
+<p>​ <strong>数据集划分：</strong>为了模拟真实的测试环境，数据集划分如下：（30%+10%）用于生成RNN，（30%+10%）用于受害者RNN，20%用于测试。</p>
+<h4 id="受害者rnn">5.2 受害者RNN：</h4>
+<p>​ 尝试了不同模型：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830110738.png" /></p>
+<p>​ <strong>结论如下：</strong></p>
+<ol type="1">
+<li>与LSTM相比，BiLSTM不能提升模型的分类表现；</li>
+<li>与Average-Pooling相比，注意力机制的效果更好；</li>
+</ol>
+<h4 id="生成对抗样本rnn测试结果">5.3 生成（对抗样本）RNN测试结果：</h4>
+<p>​ 介绍参数规范：</p>
+<blockquote>
+<p>The hyper-parameters of the generative RNN and the substitute RNN were tuned separately for each</p>
+<p>black-box victim RNN. The learning rate and the regularization coeffificient were chosen by line</p>
+<p>search along the direction 0.01, 0.001, et al.. The Gumbel-Softmax temperature was searched in the</p>
+<p>range [1<em>,</em> 100]. Actually, the decoder length <em>L</em> in the generative RNN is also a kind of regularization</p>
+<p>coeffificient. A large <em>L</em> will make the generative RNN have strong representation ability, but the whole</p>
+<p>adversarial sequences will become too long, and the generative RNN’s size may exceed the capacity</p>
+<p>of the GPU memory. Therefore, in our experiments we set <em>L</em> to 1.</p>
+</blockquote>
+<p>​</p>
+<p>​ 给出实验结果：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830140545.png" /></p>
+<ol type="1">
+<li>对于所有RNN模型，攻击都十分有效；</li>
+<li>于LSTM的攻击效果最差，故替代RNN对LSTM的拟合效果并不好；</li>
+<li>训练集与测试集的测试效果差别不大， 模型泛化能力强；</li>
+<li>即使更换了模型与训练数据集，对抗样本仍效果很好。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>AD</tag>
+        <tag>Malware Classifiers</tag>
+        <tag>RNN</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Learning Multiagent Communication with Backpropagation</title>
+    <url>/2021/09/21/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Learning%20Multiagent%20Communication%20with%20Backpropagation/</url>
+    <content><![CDATA[<h1 id="论文阅读learning-multiagent-communication-with-backpropagation">【论文阅读】Learning Multiagent Communication with Backpropagation</h1>
+<blockquote>
+<p><strong>作者：</strong> <strong>Sainbayar Sukhbaatar</strong>，<strong>Rob Fergus</strong>， <strong>Arthur Szlam</strong>（纽约大学，FacebookAI）</p>
+<p><strong>时间：</strong>2016</p>
+<p><strong>出版社：</strong>NIPS</p>
+</blockquote>
+<h3 id="abstract">Abstract</h3>
+<p>​ 在AI领域许多任务都需要智能体之间的同心合作，一般地，代理之间的通信协议是人为指定的，其并不在训练过程中改变。在这篇文章中，我们提出了一个简单的神经模型CommNet，其使用持续不断的通信来完成完全合作的任务。该模型由许多代理组成，他们之间的通信基于设定的策略学习，我们将此模型应用于一系列不同的任务中，显示了代理学会相互通信的能力，从而比非通信代理的模型和baselines有更好的性能。</p>
+<h3 id="introduction">1. Introduction</h3>
+<p>​ 虽然控制每个代理的模型是通过强化学习来学习的，但通信的规范和格式通常是预定的。</p>
+<p>​ 在本工作中，每个代理单元都被一个深度前馈神经网络控制，这个网络接入了一个携带连续向量的通信信道。在这个通信信道中每个代理传输的内容不是被指定的，而是通过学习得来的。因为communication是连续的，因此模型可以通过反向传播训练得到。这样就可以结合标准的单智能体RL算法或者监督学习。此外，该模型允许代理的数量和类型在运行时动态变化，这在移动汽车之间的通信等应用中很重要。</p>
+<p>​ 我们考虑的是我们有J个代理的环境，所有的合作都是为了在某些环境中最大化报酬R。我们简化了代理人之间充分合作的假设，从而每个代理人收到R独立于他们的贡献。在此设置中，每个代理都有自己的控制器，或者将它们看作控制所有代理的更大模型的一部分，这两者之间没有区别。从后一个角度来看，我们的控制器是一个大型的前馈神经网络，它将所有Agent的输入映射到它们的动作上，每个Agent占据一个单元的子集。</p>
+<p>​ 我们在两种任务下探索这个模型，在有些情况下，对每项行动都提供监督，而对另一些行动则零星地给予监督。在前一种情况，每个代理单元的控制器通过在连接模型中反向传播错误信号来学习；在后一种情况下，强化学习必须被作为一个额外的外部循环使用，为了给每个时间步骤提供训练信号。</p>
+<hr />
+<h3 id="communication-model">2. Communication Model</h3>
+<p>​ 我们现在描述一个模型，用来计算在给定时间t (省略时间指标)下动作p ( a ( t ) | s ( t )，θ )的分布。</p>
+<p>​ S<sub>j</sub> 表示第j个代理单元所观测到的环境信息，将所有S<sub>j</sub>合并就成了控制器的输入S = {S<sub>1</sub>，S<sub>2</sub>…… S<sub>J</sub>}。</p>
+<p>​ 控制器的输出<strong>a</strong> = {a<sub>1</sub>，a<sub>2</sub>…… a<sub>J</sub>}，表示各个代理单元会做出的动作。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210921211706.png" /></p>
+<p>​ 该框架中所有灰色模块部分的参数均是所有智能体共享的，这一定程度上提升了算法的可扩展性。从上图可以看出，算法接收所有智能体的局部观察作为输入，然后输出所有智能体的决策。</p>
+<p>​ 本算法采用的信息传递方式是采用广播的方式，文中认为可以对算法做出些许修改，让每个智能体只接收其相邻k个智能体的信息。</p>
+<p>​ 拿上图中间的框架图来说明，即上层网络每个模块的输入，不再都是所有智能体消息的平均，而是每个模块只接受满足条件的下层消息的输出，这个条件即下层模块对应的智能体位于其领域范围内。<strong>这样通过增加网络层数，即可增大智能体的感受野（借用计算机视觉的术语），从而间接了解全局的信息。</strong></p>
+<p>​ 除此之外，文中还提出了两种对上述算法可以采取的改进方式：</p>
+<ul>
+<li>可以对上图中间的结构加上 skip connection，类似于 ResNet。这样可以使得智能体在学习的过程中同时考虑局部信息以及全局信息，类似于计算机视觉领域 multi-scale 的思想</li>
+<li>可以将灰色模块的网络结构换成 RNN-like，例如 LSTM 或者 GRU 等等，这是为了处理局部观察所带来的 POMDP 问题。</li>
+</ul>
+<hr />
+<h3 id="related-work">3. Related Work</h3>
+<hr />
+<h3 id="experiments">4. Experiments</h3>
+<h4 id="baselines3个">4.1 Baselines（3个）:</h4>
+<p>​ <strong>Independent controller: </strong>每个代理单元都被独立控制，他们之间相互没有通信。这个模型的好处是智能体可以自由加入或者离开队伍，但是很难将智能体学会合作。</p>
+<p>​ <strong>Fully-connected: </strong>创建一个全连接层的多代理神经网络，这个模型运行智能体之间互相通信，但是这个模型不够灵活，也就是说智能体的数目必须固定。</p>
+<p>​ <strong>Discrete communication:</strong> 通过在训练中学习到的symbols来通信。因为在这个模型中存在离散的操作，并且这个操作不可微分，这种情况一般使用强化学习。</p>
+<h4 id="simple-demonstration-with-a-lever-pulling-task">4.2 Simple Demonstration with a Lever Pulling Task</h4>
+<p>​ <strong>任务</strong>：一共有m个杆子，N个智能体。在每个回合，m个智能体从N个智能体中随机取出，然后他们要选择拉动的杆子。他们的目标是尽可能的拉动不同的杆子，他们的奖励正比于拉动的不同杆子的数量。</p>
+<p>​ <strong>测试结果：</strong></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210921213910.png" /></p>
+<p>​ 可以看出，CommNet的结果非常好。</p>
+<h4 id="multi-turn-games">4.3 Multi-turn Games</h4>
+<p>​ <strong>任务：</strong></p>
+<p>​ <strong>Traffic Junction: </strong>控制车辆通过交通枢纽，使流量最大的同时保证不发生碰撞；</p>
+<p>​ <strong>Combat Task: </strong> 多个智能体攻击其他多个敌方单位。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210921214250.png" /></p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>RL</tag>
+        <tag>Mutiagent</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers</title>
     <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/</url>
     <content><![CDATA[<h1 id="论文阅读generic-black-box-end-to-end-attack-against-state-of-the-art-api-call-based-malware-classifiers">【论文阅读】Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers</h1>
@@ -1013,63 +1039,6 @@ fp <span class="token operator">=</span> <span class="token function">ActiveXObj
       </tags>
   </entry>
   <entry>
-    <title>Learning Multiagent Communication with Backpropagation</title>
-    <url>/2021/09/21/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Learning%20Multiagent%20Communication%20with%20Backpropagation/</url>
-    <content><![CDATA[<h1 id="论文阅读learning-multiagent-communication-with-backpropagation">【论文阅读】Learning Multiagent Communication with Backpropagation</h1>
-<blockquote>
-<p><strong>作者：</strong> <strong>Sainbayar Sukhbaatar</strong>，<strong>Rob Fergus</strong>， <strong>Arthur Szlam</strong>（纽约大学，FacebookAI）</p>
-<p><strong>时间：</strong>2016</p>
-<p><strong>出版社：</strong>NIPS</p>
-</blockquote>
-<h3 id="abstract">Abstract</h3>
-<p>​ 在AI领域许多任务都需要智能体之间的同心合作，一般地，代理之间的通信协议是人为指定的，其并不在训练过程中改变。在这篇文章中，我们提出了一个简单的神经模型CommNet，其使用持续不断的通信来完成完全合作的任务。该模型由许多代理组成，他们之间的通信基于设定的策略学习，我们将此模型应用于一系列不同的任务中，显示了代理学会相互通信的能力，从而比非通信代理的模型和baselines有更好的性能。</p>
-<h3 id="introduction">1. Introduction</h3>
-<p>​ 虽然控制每个代理的模型是通过强化学习来学习的，但通信的规范和格式通常是预定的。</p>
-<p>​ 在本工作中，每个代理单元都被一个深度前馈神经网络控制，这个网络接入了一个携带连续向量的通信信道。在这个通信信道中每个代理传输的内容不是被指定的，而是通过学习得来的。因为communication是连续的，因此模型可以通过反向传播训练得到。这样就可以结合标准的单智能体RL算法或者监督学习。此外，该模型允许代理的数量和类型在运行时动态变化，这在移动汽车之间的通信等应用中很重要。</p>
-<p>​ 我们考虑的是我们有J个代理的环境，所有的合作都是为了在某些环境中最大化报酬R。我们简化了代理人之间充分合作的假设，从而每个代理人收到R独立于他们的贡献。在此设置中，每个代理都有自己的控制器，或者将它们看作控制所有代理的更大模型的一部分，这两者之间没有区别。从后一个角度来看，我们的控制器是一个大型的前馈神经网络，它将所有Agent的输入映射到它们的动作上，每个Agent占据一个单元的子集。</p>
-<p>​ 我们在两种任务下探索这个模型，在有些情况下，对每项行动都提供监督，而对另一些行动则零星地给予监督。在前一种情况，每个代理单元的控制器通过在连接模型中反向传播错误信号来学习；在后一种情况下，强化学习必须被作为一个额外的外部循环使用，为了给每个时间步骤提供训练信号。</p>
-<hr />
-<h3 id="communication-model">2. Communication Model</h3>
-<p>​ 我们现在描述一个模型，用来计算在给定时间t (省略时间指标)下动作p ( a ( t ) | s ( t )，θ )的分布。</p>
-<p>​ S<sub>j</sub> 表示第j个代理单元所观测到的环境信息，将所有S<sub>j</sub>合并就成了控制器的输入S = {S<sub>1</sub>，S<sub>2</sub>…… S<sub>J</sub>}。</p>
-<p>​ 控制器的输出<strong>a</strong> = {a<sub>1</sub>，a<sub>2</sub>…… a<sub>J</sub>}，表示各个代理单元会做出的动作。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210921211706.png" /></p>
-<p>​ 该框架中所有灰色模块部分的参数均是所有智能体共享的，这一定程度上提升了算法的可扩展性。从上图可以看出，算法接收所有智能体的局部观察作为输入，然后输出所有智能体的决策。</p>
-<p>​ 本算法采用的信息传递方式是采用广播的方式，文中认为可以对算法做出些许修改，让每个智能体只接收其相邻k个智能体的信息。</p>
-<p>​ 拿上图中间的框架图来说明，即上层网络每个模块的输入，不再都是所有智能体消息的平均，而是每个模块只接受满足条件的下层消息的输出，这个条件即下层模块对应的智能体位于其领域范围内。<strong>这样通过增加网络层数，即可增大智能体的感受野（借用计算机视觉的术语），从而间接了解全局的信息。</strong></p>
-<p>​ 除此之外，文中还提出了两种对上述算法可以采取的改进方式：</p>
-<ul>
-<li>可以对上图中间的结构加上 skip connection，类似于 ResNet。这样可以使得智能体在学习的过程中同时考虑局部信息以及全局信息，类似于计算机视觉领域 multi-scale 的思想</li>
-<li>可以将灰色模块的网络结构换成 RNN-like，例如 LSTM 或者 GRU 等等，这是为了处理局部观察所带来的 POMDP 问题。</li>
-</ul>
-<hr />
-<h3 id="related-work">3. Related Work</h3>
-<hr />
-<h3 id="experiments">4. Experiments</h3>
-<h4 id="baselines3个">4.1 Baselines（3个）:</h4>
-<p>​ <strong>Independent controller: </strong>每个代理单元都被独立控制，他们之间相互没有通信。这个模型的好处是智能体可以自由加入或者离开队伍，但是很难将智能体学会合作。</p>
-<p>​ <strong>Fully-connected: </strong>创建一个全连接层的多代理神经网络，这个模型运行智能体之间互相通信，但是这个模型不够灵活，也就是说智能体的数目必须固定。</p>
-<p>​ <strong>Discrete communication:</strong> 通过在训练中学习到的symbols来通信。因为在这个模型中存在离散的操作，并且这个操作不可微分，这种情况一般使用强化学习。</p>
-<h4 id="simple-demonstration-with-a-lever-pulling-task">4.2 Simple Demonstration with a Lever Pulling Task</h4>
-<p>​ <strong>任务</strong>：一共有m个杆子，N个智能体。在每个回合，m个智能体从N个智能体中随机取出，然后他们要选择拉动的杆子。他们的目标是尽可能的拉动不同的杆子，他们的奖励正比于拉动的不同杆子的数量。</p>
-<p>​ <strong>测试结果：</strong></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210921213910.png" /></p>
-<p>​ 可以看出，CommNet的结果非常好。</p>
-<h4 id="multi-turn-games">4.3 Multi-turn Games</h4>
-<p>​ <strong>任务：</strong></p>
-<p>​ <strong>Traffic Junction: </strong>控制车辆通过交通枢纽，使流量最大的同时保证不发生碰撞；</p>
-<p>​ <strong>Combat Task: </strong> 多个智能体攻击其他多个敌方单位。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210921214250.png" /></p>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>RL</tag>
-        <tag>Mutiagent</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Learning to Communicate with Deep Multi-Agent Reinforcement Learning</title>
     <url>/2021/09/16/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Learning%20to%20Communicate%20with%20Deep%20Multi-Agent%20Reinforcement%20Learning/</url>
     <content><![CDATA[<h1 id="论文阅读learning-to-communicate-with-deep-multi-agent-reinforcement-learning">【论文阅读】Learning to Communicate with Deep Multi-Agent Reinforcement Learning</h1>
@@ -1165,6 +1134,44 @@ fp <span class="token operator">=</span> <span class="token function">ActiveXObj
       <tags>
         <tag>RL</tag>
       </tags>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/2021/09/08/%E3%80%90%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E8%AF%BE%E8%AE%BE%E3%80%91%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%9C%E4%B8%9A/</url>
+    <content><![CDATA[<blockquote>
+<p>组长：袁也</p>
+<p>组员：吴骁，缪文俊，王相炜，杨涵博，杨传冠</p>
+<p>班级：网安1902</p>
+</blockquote>
+<h3 id="detours-学习">1. Detours 学习：</h3>
+<p>​ 通过阅读文档，理论+实际的结合，组内成员基本理解了detours运作原理。</p>
+<h3 id="detours-编译">2. Detours 编译：</h3>
+<pre><code>1. 首先，在VS2019自带的cmd中编译detours:</code></pre>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162623.png" /></p>
+<p>​ 可见，编译成功。</p>
+<h3 id="消息弹窗的注入">3. 消息弹窗的注入：</h3>
+<p>​ dllmain中代码如下：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162822.png" /></p>
+<p>​ 演示效果：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162923.png" /></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162947.png" /></p>
+<p>​ 可见，成功</p>
+<h3 id="vs框架搭建">4. VS框架搭建：</h3>
+<p>​ VS框架组成如下：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908163111.png" /></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908163125.png" /></p>
+<h3 id="目前碰到的一些问题">5. 目前碰到的一些问题：</h3>
+<h4 id="使用vs2019自带的命令行界面进行编译提示没有nmake命令">5.1 使用VS2019自带的命令行界面进行编译，提示没有nmake命令：</h4>
+<p>​ 检查后发现VS2019只安装了桌面开发模块，没有安装C++开发模块，更新相应拓展包即可。</p>
+<p><img src="%E3%80%90%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E8%AF%BE%E8%AE%BE%E3%80%91%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%9C%E4%B8%9A/20210906172501.png" /></p>
+<h4 id="在testconsole.cpp文件中引入代码编译报错百余个标识符错误">5.2 在testconsole.cpp文件中引入代码，编译报错百余个标识符错误：</h4>
+<p>​ 在外网查询后发现，是因为引入引用windows.h在引用detours之前：</p>
+<p><img src="%E3%80%90%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E8%AF%BE%E8%AE%BE%E3%80%91%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%9C%E4%B8%9A/20210906165008.png" /></p>
+<h4 id="字符编码问题">5.3 字符编码问题：</h4>
+<p>​ 熟悉宽字符与unicode字符编码的原理后，才能正确处理HCHAR,TCHAR等。</p>
+<h4 id="messagebox操作中出现如下文件操作">5.4 Messagebox操作中出现如下文件操作：</h4>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908170241.png" /></p>
+]]></content>
   </entry>
   <entry>
     <title>Learning to Communicate with Deep Multi-Agent Reinforcement Learning</title>
@@ -1290,44 +1297,6 @@ fp <span class="token operator">=</span> <span class="token function">ActiveXObj
         <tag>AD</tag>
         <tag>RNN</tag>
       </tags>
-  </entry>
-  <entry>
-    <title></title>
-    <url>/2021/09/08/%E3%80%90%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E8%AF%BE%E8%AE%BE%E3%80%91%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%9C%E4%B8%9A/</url>
-    <content><![CDATA[<blockquote>
-<p>组长：袁也</p>
-<p>组员：吴骁，缪文俊，王相炜，杨涵博，杨传冠</p>
-<p>班级：网安1902</p>
-</blockquote>
-<h3 id="detours-学习">1. Detours 学习：</h3>
-<p>​ 通过阅读文档，理论+实际的结合，组内成员基本理解了detours运作原理。</p>
-<h3 id="detours-编译">2. Detours 编译：</h3>
-<pre><code>1. 首先，在VS2019自带的cmd中编译detours:</code></pre>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162623.png" /></p>
-<p>​ 可见，编译成功。</p>
-<h3 id="消息弹窗的注入">3. 消息弹窗的注入：</h3>
-<p>​ dllmain中代码如下：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162822.png" /></p>
-<p>​ 演示效果：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162923.png" /></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162947.png" /></p>
-<p>​ 可见，成功</p>
-<h3 id="vs框架搭建">4. VS框架搭建：</h3>
-<p>​ VS框架组成如下：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908163111.png" /></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908163125.png" /></p>
-<h3 id="目前碰到的一些问题">5. 目前碰到的一些问题：</h3>
-<h4 id="使用vs2019自带的命令行界面进行编译提示没有nmake命令">5.1 使用VS2019自带的命令行界面进行编译，提示没有nmake命令：</h4>
-<p>​ 检查后发现VS2019只安装了桌面开发模块，没有安装C++开发模块，更新相应拓展包即可。</p>
-<p><img src="%E3%80%90%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E8%AF%BE%E8%AE%BE%E3%80%91%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%9C%E4%B8%9A/20210906172501.png" /></p>
-<h4 id="在testconsole.cpp文件中引入代码编译报错百余个标识符错误">5.2 在testconsole.cpp文件中引入代码，编译报错百余个标识符错误：</h4>
-<p>​ 在外网查询后发现，是因为引入引用windows.h在引用detours之前：</p>
-<p><img src="%E3%80%90%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E8%AF%BE%E8%AE%BE%E3%80%91%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%9C%E4%B8%9A/20210906165008.png" /></p>
-<h4 id="字符编码问题">5.3 字符编码问题：</h4>
-<p>​ 熟悉宽字符与unicode字符编码的原理后，才能正确处理HCHAR,TCHAR等。</p>
-<h4 id="messagebox操作中出现如下文件操作">5.4 Messagebox操作中出现如下文件操作：</h4>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908170241.png" /></p>
-]]></content>
   </entry>
   <entry>
     <title>极大似然估计</title>
