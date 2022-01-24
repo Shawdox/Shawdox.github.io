@@ -203,94 +203,67 @@
 
             <!-- Post Main Content -->
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <h1 id="组原实验全相联cache设计">【组原实验】全相联Cache设计</h1>
-<h3 id="实验要求">1. 实验要求：</h3>
-<p>"结合引脚功能说明，实现全相联 cache 模块，该 cache 模块共包括<strong>8个 cache 行</strong>，每个数据块包含包括<strong>4个字节共32位数据</strong>。"</p>
-<figure>
-<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612105210.png" alt="image-20210612105209418" /><figcaption aria-hidden="true">image-20210612105209418</figcaption>
-</figure>
-<h3 id="电路分析">2. 电路分析：</h3>
-<h4 id="读操作">2.1 读操作：</h4>
-<h5 id="cache行">2.1.1 Cache行：</h5>
-<p>​ 一个Cache行包括：==有效位（1）+Tag（？）+数据位（32）==</p>
-<p>​ 下面计算tag：</p>
-<p>​ 一个内存地址共有16位宽，由于一块有4字节，故<strong>块内地址</strong>需要2位，所以有：</p>
+                <h1 id="【组原实验】全相联Cache设计"><a href="#【组原实验】全相联Cache设计" class="headerlink" title="【组原实验】全相联Cache设计"></a>【组原实验】全相联Cache设计</h1><h3 id="1-实验要求："><a href="#1-实验要求：" class="headerlink" title="1. 实验要求："></a>1. 实验要求：</h3><p>“结合引脚功能说明，实现全相联 cache 模块，该 cache 模块共包括<strong>8个 cache 行</strong>，每个数据块包含包括<strong>4个字节共32位数据</strong>。”</p>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612105210.png" alt="image-20210612105209418"></p>
+<h3 id="2-电路分析："><a href="#2-电路分析：" class="headerlink" title="2. 电路分析："></a>2. 电路分析：</h3><h4 id="2-1-读操作："><a href="#2-1-读操作：" class="headerlink" title="2.1 读操作："></a>2.1 读操作：</h4><h5 id="2-1-1-Cache行："><a href="#2-1-1-Cache行：" class="headerlink" title="2.1.1 Cache行："></a>2.1.1 Cache行：</h5><p>​    一个Cache行包括：==有效位（1）+Tag（？）+数据位（32）==</p>
+<p>​    下面计算tag：</p>
+<p>​    一个内存地址共有16位宽，由于一块有4字节，故<strong>块内地址</strong>需要2位，所以有：</p>
 <blockquote>
 <p>块号（14位）+ 块内地址（2位）</p>
 </blockquote>
-<p>​ 故Tag也应为14位，在实际应用中，由于要考虑替算法，故还要做一个<strong>淘汰计数器</strong>。这里的替换算法我们使用LRU，考虑到266次的测试数据，我们使用一个8位计数器即可。</p>
-<p>​ 所以一个Cache行包括：</p>
+<p>​    故Tag也应为14位，在实际应用中，由于要考虑替算法，故还要做一个<strong>淘汰计数器</strong>。这里的替换算法我们使用LRU，考虑到266次的测试数据，我们使用一个8位计数器即可。</p>
+<p>​    所以一个Cache行包括：</p>
+<div class="table-container">
 <table>
 <thead>
-<tr class="header">
-<th style="text-align: center;">1位有效位 + 14位Tag + 8位计数器 + 32位数据块</th>
+<tr>
+<th style="text-align:center">1位有效位     +    14位Tag     +     8位计数器    +     32位数据块</th>
 <th></th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td style="text-align: center;"></td>
-<td></td>
+<tr>
+<td style="text-align:center"></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p>故Cache行的设计如下：</p>
-<figure>
-<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161048.png" alt="image-20210612161047398" /><figcaption aria-hidden="true">image-20210612161047398</figcaption>
-</figure>
-<h5 id="cache存储体">2.1.2 Cache存储体：</h5>
-<p>​ 将2.1的cache行拓展到8行即可：</p>
-<figure>
-<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161246.png" alt="image-20210612161245664" /><figcaption aria-hidden="true">image-20210612161245664</figcaption>
-</figure>
-<h5 id="多路并发比较电路">2.1.3 多路并发比较电路：</h5>
-<p>​ 多路并发比较使用8个比较器即可，加上V位，8路结果取或得到Hit信号，Hit去反得到Miss信号：</p>
-<figure>
-<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161515.png" alt="image-20210612161514214" /><figcaption aria-hidden="true">image-20210612161514214</figcaption>
-</figure>
-<h5 id="选择输出电路">2.1.4 选择输出电路：</h5>
-<p>​ 选择输出电路将slotdata的32位信息送入多选择器中，由Hit和Block共同控制选择：</p>
-<figure>
-<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161618.png" alt="image-20210612161617443" /><figcaption aria-hidden="true">image-20210612161617443</figcaption>
-</figure>
-<hr />
-<h4 id="写操作">2.2 写操作：</h4>
-<p>​ 只有在Miss=1时才会出发写操作，写操作主要涉及到两部分：<strong>替换算法</strong>，<strong>数据写入</strong>。</p>
-<h5 id="替换算法">2.2.1 替换算法：</h5>
-<p>​ 在cache写入时：</p>
-<ol type="1">
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161048.png" alt="image-20210612161047398"></p>
+<h5 id="2-1-2-Cache存储体："><a href="#2-1-2-Cache存储体：" class="headerlink" title="2.1.2 Cache存储体："></a>2.1.2 Cache存储体：</h5><p>​    将2.1的cache行拓展到8行即可：</p>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161246.png" alt="image-20210612161245664"></p>
+<h5 id="2-1-3-多路并发比较电路："><a href="#2-1-3-多路并发比较电路：" class="headerlink" title="2.1.3 多路并发比较电路："></a>2.1.3 多路并发比较电路：</h5><p>​    多路并发比较使用8个比较器即可，加上V位，8路结果取或得到Hit信号，Hit去反得到Miss信号：</p>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161515.png" alt="image-20210612161514214"></p>
+<h5 id="2-1-4-选择输出电路："><a href="#2-1-4-选择输出电路：" class="headerlink" title="2.1.4 选择输出电路："></a>2.1.4 选择输出电路：</h5><p>​    选择输出电路将slotdata的32位信息送入多选择器中，由Hit和Block共同控制选择：</p>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161618.png" alt="image-20210612161617443"></p>
+<hr>
+<h4 id="2-2-写操作："><a href="#2-2-写操作：" class="headerlink" title="2.2 写操作："></a>2.2 写操作：</h4><p>​    只有在Miss=1时才会出发写操作，写操作主要涉及到两部分：<strong>替换算法</strong>，<strong>数据写入</strong>。</p>
+<h5 id="2-2-1-替换算法："><a href="#2-2-1-替换算法：" class="headerlink" title="2.2.1 替换算法："></a>2.2.1 替换算法：</h5><p>​    在cache写入时：</p>
+<ol>
 <li><p><em>cache行未满：</em></p>
-<p>则直接使用优先编码器，按编码规则依次填充。</p></li>
+<p>则直接使用优先编码器，按编码规则依次填充。</p>
+</li>
 </ol>
-<figure>
-<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612163240.png" alt="image-20210612163238678" /><figcaption aria-hidden="true">image-20210612163238678</figcaption>
-</figure>
-<p>​ 其中，0-7个有效位取反输入，这样做的目的是可以得到一个full输出，full本来是多路选择器的Os位（使能端有效且输入全为0时输出1），当输入变量取反后则此位的含义表示当==使能信号有效==且==输入全1==时输出1。</p>
-<p>​ not_full是一个三位宽度的地址，其表示将要填充的空cache行的序号。</p>
-<ol start="2" type="1">
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612163240.png" alt="image-20210612163238678"></p>
+<p>​    其中，0-7个有效位取反输入，这样做的目的是可以得到一个full输出，full本来是多路选择器的Os位（使能端有效且输入全为0时输出1），当输入变量取反后则此位的含义表示当==使能信号有效==且==输入全1==时输出1。</p>
+<p>​    not_full是一个三位宽度的地址，其表示将要填充的空cache行的序号。</p>
+<ol>
 <li><p><em>cache行已满：</em></p>
 <p>若cache行已满，full=1，此时应比较各行计数器的值，替换数字计数值最大的一行。</p>
 <p>这里，可以利用自带的归并比较电路MAX3：3</p>
-<figure>
-<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612165351.png" alt="image-20210612165350132" /><figcaption aria-hidden="true">image-20210612165350132</figcaption>
-</figure>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612165351.png" alt="image-20210612165350132"></p>
 <p>比较8个计数值，输出数值最大的序号Max_cnt：</p>
-<figure>
-<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612170621.png" alt="image-20210612170620445" /><figcaption aria-hidden="true">image-20210612170620445</figcaption>
-</figure></li>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612170621.png" alt="image-20210612170620445"></p>
+</li>
 </ol>
 <ul>
 <li>至此，我们有两个写入选择组，full和not_full，故应使用一个二路选择器，在Miss和BlkReady同时为1时选择合适的写入信号组合：</li>
 </ul>
-<figure>
-<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612175012.png" alt="image-20210612175011066" /><figcaption aria-hidden="true">image-20210612175011066</figcaption>
-</figure>
-<hr />
-<p>​ BTW: ==由于每次写入对应行计数器值清零，其他行计数器的值加一，故计数器的清零信号连接在对应行的命中信号（Hi)上。==</p>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612175012.png" alt="image-20210612175011066"></p>
+<hr>
+<p>​    BTW: ==由于每次写入对应行计数器值清零，其他行计数器的值加一，故计数器的清零信号连接在对应行的命中信号（Hi)上。==</p>
 <p>总：</p>
-<figure>
-<img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612174946.png" alt="image-20210612174945662" /><figcaption aria-hidden="true">image-20210612174945662</figcaption>
-</figure>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612174946.png" alt="image-20210612174945662"></p>
 
 
                 
@@ -338,7 +311,7 @@
 
                     
                 </ul>
-                <p class="copyright text-muted">&copy; 2021 Shaw<br></p>
+                <p class="copyright text-muted">&copy; 2022 Shaw<br></p>
                 <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
                 <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
             </div>

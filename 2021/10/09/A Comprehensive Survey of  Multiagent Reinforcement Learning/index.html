@@ -210,65 +210,63 @@
 
             <!-- Post Main Content -->
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <h1 id="a-comprehensive-survey-of-multiagent-reinforcement-learning">A Comprehensive Survey of Multiagent Reinforcement Learning</h1>
-<blockquote>
-<p>作者：Lucian Bus¸oniu, Robert Babuska, and Bart De Schutter</p>
+                <h1 id="A-Comprehensive-Survey-of-Multiagent-Reinforcement-Learning"><a href="#A-Comprehensive-Survey-of-Multiagent-Reinforcement-Learning" class="headerlink" title="A Comprehensive Survey of  Multiagent Reinforcement Learning"></a>A Comprehensive Survey of  Multiagent Reinforcement Learning</h1><blockquote>
+<p>作者：Lucian Bus¸oniu, Robert Babuska, and Bart De Schutter </p>
 <p>时间：2008</p>
 </blockquote>
-<h3 id="abstract">Abstract</h3>
-<p>​ <u><em>一篇对Multiagent reinforcement learning(MARL)的综述。</em></u></p>
-<p>​ 一个首要的问题：多智能体学习目的的正式陈述是什么？不同观点引出了不同的目标，智能体动态学习的稳定性和对其它智能体行为变化的适应性。文献中描述的MARL算法都是在完全合作、完全竞争或更一般的环境中，明确或含蓄地表明这两个目标之一或两者结合。</p>
-<p>​ <strong>本文接下来描述了:</strong></p>
-<ol type="1">
+<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h3><p>​    <u><em>一篇对Multiagent reinforcement learning(MARL)的综述。</em></u></p>
+<p>​    一个首要的问题：多智能体学习目的的正式陈述是什么？不同观点引出了不同的目标，智能体动态学习的稳定性和对其它智能体行为变化的适应性。文献中描述的MARL算法都是在完全合作、完全竞争或更一般的环境中，明确或含蓄地表明这两个目标之一或两者结合。</p>
+<p>​    <strong>本文接下来描述了:</strong></p>
+<ol>
 <li>详细讨论了这些算法的一个具有代表性的选择，以及每一类算法中出现的具体问题；</li>
 <li>MARL算法的好处和遇到的挑战；</li>
 <li>对该领域的展望。</li>
 </ol>
-<p>​</p>
-<hr />
-<h3 id="introduction">1. Introduction</h3>
-<h4 id="背景">1.1 背景</h4>
-<p>​ 一个多智能体系统可以被定义为：一群<strong>独立的，互相影响的</strong>实体在同一个环境中。</p>
-<p>​ 多智能体系统在机器人团队，分散控制，资源管理，合作决定系统，数据处理等多方面领域有广泛的应用。在机器人团队中，很自然，控制权是分散在机器人之中的；在资源管理中，尽管资源可以被一个中心权威机构管理，但用一个Agent来识别每个资源可能会对系统提供一个有用的、分布式的视角。</p>
-<p>​ 尽管每个智能体可以被预编程，为在面对复杂环境时提前给智能体设计好的行为准则是十分困难的，甚至可以说是不可能的。所以，让他们在线学习自己的行为准则是十分有必要的，这可以使个体与整体的表现都逐渐提升。</p>
-<p>​ 并且考虑到环境可能随时变化，一个硬布线的（<em>hardwired</em>，组原概念，硬布线是提前定死的，不能对其编程）行为可能不是那么合适。</p>
-<p>​ 考虑到强化学习的简单性和普遍性，其对于多智能体学习是十分合适的。<strong>但强化学习在多智能体系统中也有一些挑战：</strong></p>
-<ol type="1">
-<li><p>很难给定RL多智能体一个好的学习目标；</p></li>
-<li><p>大多数情况下，每个智能体必须跟踪其他正在学习的智能体（因此，整个过程并不平稳，也使大多数单智能体RL算法的收敛性质失效），只有这样，才有可能使其行为与他们的行为相协调，从而产生连贯的联合行为结果；</p></li>
+<p>​    </p>
+<hr>
+<h3 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h3><h4 id="1-1-背景"><a href="#1-1-背景" class="headerlink" title="1.1 背景"></a>1.1 背景</h4><p>​    一个多智能体系统可以被定义为：一群<strong>独立的，互相影响的</strong>实体在同一个环境中。</p>
+<p>​    多智能体系统在机器人团队，分散控制，资源管理，合作决定系统，数据处理等多方面领域有广泛的应用。在机器人团队中，很自然，控制权是分散在机器人之中的；在资源管理中，尽管资源可以被一个中心权威机构管理，但用一个Agent来识别每个资源可能会对系统提供一个有用的、分布式的视角。</p>
+<p>​    尽管每个智能体可以被预编程，为在面对复杂环境时提前给智能体设计好的行为准则是十分困难的，甚至可以说是不可能的。所以，让他们在线学习自己的行为准则是十分有必要的，这可以使个体与整体的表现都逐渐提升。</p>
+<p>​    并且考虑到环境可能随时变化，一个硬布线的（<em>hardwired</em>，组原概念，硬布线是提前定死的，不能对其编程）行为可能不是那么合适。</p>
+<p>​    考虑到强化学习的简单性和普遍性，其对于多智能体学习是十分合适的。<strong>但强化学习在多智能体系统中也有一些挑战：</strong></p>
+<ol>
+<li><p>很难给定RL多智能体一个好的学习目标；</p>
+</li>
+<li><p>大多数情况下，每个智能体必须跟踪其他正在学习的智能体（因此，整个过程并不平稳，也使大多数单智能体RL算法的收敛性质失效），只有这样，才有可能使其行为与他们的行为相协调，从而产生连贯的联合行为结果；</p>
+</li>
 <li><p>算法对现实问题规模的可伸缩性，在单Agent RL中已经是有问题的，在多Agent强化学习( MARL )中更是引起关注的一个更大的原因。</p>
 <blockquote>
 <p><strong>可伸缩性（scalability）：</strong>算法在处理各种规模的数据时都有很好的性能。随着数据的增大，效率不会下降很快。</p>
-</blockquote></li>
+</blockquote>
+</li>
 </ol>
-<p><strong>多智能体强化学习通常有四种设定：</strong></p>
-<ol type="1">
-<li><strong>Fully cooperative</strong> 完全合作关系，这种设定里面，Agents的利益一致，获得的奖励相同，有共同的目标。</li>
-<li><strong>Fully competitive</strong> 完全竞争关系，一方的收益是另一方的损失。典型的代表就是0和博弈，双方获得的奖励的总和为0.</li>
-<li><strong>Mixed Cooperative &amp; comepetitive</strong> 既有竞争也有合作。例如：足球机器人踢球，两支球队，一方获得的奖励就是另一方的损失，但是球队内部成员是合作关系。</li>
-<li><strong>Self-interested</strong> 利己主义。系统中有多个Agents，一个Agent的动作会改变环境的状态，可能让别人受益或者受损。每个Agent只想最大化自身利益，至于让别人受损还是受益它不管。</li>
+<p> <strong>多智能体强化学习通常有四种设定：</strong></p>
+<ol>
+<li><strong>Fully cooperative</strong><br>完全合作关系，这种设定里面，Agents的利益一致，获得的奖励相同，有共同的目标。</li>
+<li><strong>Fully competitive</strong><br>完全竞争关系，一方的收益是另一方的损失。典型的代表就是0和博弈，双方获得的奖励的总和为0.</li>
+<li><strong>Mixed Cooperative &amp; comepetitive</strong><br>既有竞争也有合作。例如：足球机器人踢球，两支球队，一方获得的奖励就是另一方的损失，但是球队内部成员是合作关系。</li>
+<li><strong>Self-interested</strong><br>利己主义。系统中有多个Agents，一个Agent的动作会改变环境的状态，可能让别人受益或者受损。每个Agent只想最大化自身利益，至于让别人受损还是受益它不管。</li>
 </ol>
-<p>​ MARL与博弈论，进化计算，优化理论等有着强烈联系：</p>
-<p>​ 1. <strong>Game theory（博弈论）:</strong> 一个探究多智能体互动来最大化奖励的研究。在这里我们专注于对解决动态多智能体任务的算法，虽然大多数博弈论的研究结果与静态一次性或者多次重复任务相关。</p>
-<p>​ 【13】<strong>Bowling</strong>和<strong>Veloso</strong> 讨论了几种MARL算法，将这些算法用RL与博弈论相结合，用于动态环境中每个状态产生的静态博弈。</p>
-<p>​ 【14】<strong>Shoham</strong>对MARL的研究提供了批判性的评价，并研究了一小撮方法。</p>
-<ol start="2" type="1">
+<p>​    MARL与博弈论，进化计算，优化理论等有着强烈联系：</p>
+<p>​    1. <strong>Game theory（博弈论）:</strong> 一个探究多智能体互动来最大化奖励的研究。在这里我们专注于对解决动态多智能体任务的算法，虽然大多数博弈论的研究结果与静态一次性或者多次重复任务相关。</p>
+<p>​        【13】<strong>Bowling</strong>和<strong>Veloso</strong> 讨论了几种MARL算法，将这些算法用RL与博弈论相结合，用于动态环境中每个状态产生的静态博弈。</p>
+<p>​        【14】<strong>Shoham</strong>对MARL的研究提供了批判性的评价，并研究了一小撮方法。</p>
+<ol>
 <li><p><strong>Evolutionary computation（进化计算）：</strong>进化计算使用生物进化的准则来寻找解决问题的方法，这里不做回顾。进化学习总体上并不能轻易的从RL任务结构中获益。</p>
 <p>【17】<strong>Panait and Luke</strong>提供了只针对cooperative agent teams的进化学习（也有MARL）综述研究。</p>
 <p>【18-20】有兴趣的读者可以在这里找到协同进化技术的例子，在这里智能体是平行进化的。</p>
 <p>【21-23】团队学习技术，通过单个演化过程发现agent的学习行为。</p>
-<ol start="3" type="1">
-<li><strong>optimization theory（优化理论）</strong>进化多智能体学习（Evolutionary multiagent learning ）是一类源于优化理论的更大规模技术的特例，它直接探索智能体行为的空间。</li>
-</ol></li>
-<li><p><strong>Evolutionary game theory（进化博弈论）</strong>是进化学习和博弈论的结合。</p>
-<p>【28】<strong>Tuyls and Now´e</strong>更细节地调查了MARL与进化博弈论之间的关系（针对静态任务）。</p></li>
+</li>
 </ol>
-<hr />
-<h3 id="background">2. Background</h3>
-<p>​ 介绍了必要的single-agent与multiagent RL算法。</p>
-<h4 id="single-agent">2.1 single-agent</h4>
-<h4 id="multiagent">2.2 multiagent</h4>
-
+<pre><code>3. **optimization theory（优化理论）**进化多智能体学习（Evolutionary multiagent learning ）是一类源于优化理论的更大规模技术的特例，它直接探索智能体行为的空间。
+</code></pre><ol>
+<li><p><strong>Evolutionary game theory（进化博弈论）</strong>是进化学习和博弈论的结合。</p>
+<p>【28】<strong>Tuyls and Now´e</strong>更细节地调查了MARL与进化博弈论之间的关系（针对静态任务）。</p>
+</li>
+</ol>
+<hr>
+<h3 id="2-Background"><a href="#2-Background" class="headerlink" title="2. Background"></a>2. Background</h3><p>​    介绍了必要的single-agent与multiagent RL算法。</p>
+<h4 id="2-1-single-agent"><a href="#2-1-single-agent" class="headerlink" title="2.1 single-agent"></a>2.1 single-agent</h4><h4 id="2-2-multiagent"><a href="#2-2-multiagent" class="headerlink" title="2.2 multiagent"></a>2.2 multiagent</h4>
 
                 
             </div>
@@ -315,7 +313,7 @@
 
                     
                 </ul>
-                <p class="copyright text-muted">&copy; 2021 Shaw<br></p>
+                <p class="copyright text-muted">&copy; 2022 Shaw<br></p>
                 <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
                 <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
             </div>

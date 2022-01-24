@@ -194,34 +194,25 @@
 <p>组员：吴骁，缪文俊，王相炜，杨涵博，杨传冠</p>
 <p>班级：网安1902</p>
 </blockquote>
-<h3 id="detours-学习">1. Detours 学习：</h3>
-<p>​ 通过阅读文档，理论+实际的结合，组内成员基本理解了detours运作原理。</p>
-<h3 id="detours-编译">2. Detours 编译：</h3>
-<pre><code>1. 首先，在VS2019自带的cmd中编译detours:</code></pre>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162623.png" /></p>
-<p>​ 可见，编译成功。</p>
-<h3 id="消息弹窗的注入">3. 消息弹窗的注入：</h3>
-<p>​ dllmain中代码如下：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162822.png" /></p>
-<p>​ 演示效果：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162923.png" /></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162947.png" /></p>
-<p>​ 可见，成功</p>
-<h3 id="vs框架搭建">4. VS框架搭建：</h3>
-<p>​ VS框架组成如下：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908163111.png" /></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908163125.png" /></p>
-<h3 id="目前碰到的一些问题">5. 目前碰到的一些问题：</h3>
-<h4 id="使用vs2019自带的命令行界面进行编译提示没有nmake命令">5.1 使用VS2019自带的命令行界面进行编译，提示没有nmake命令：</h4>
-<p>​ 检查后发现VS2019只安装了桌面开发模块，没有安装C++开发模块，更新相应拓展包即可。</p>
-<p><img src="%E3%80%90%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E8%AF%BE%E8%AE%BE%E3%80%91%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%9C%E4%B8%9A/20210906172501.png" /></p>
-<h4 id="在testconsole.cpp文件中引入代码编译报错百余个标识符错误">5.2 在testconsole.cpp文件中引入代码，编译报错百余个标识符错误：</h4>
-<p>​ 在外网查询后发现，是因为引入引用windows.h在引用detours之前：</p>
-<p><img src="%E3%80%90%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E8%AF%BE%E8%AE%BE%E3%80%91%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%9C%E4%B8%9A/20210906165008.png" /></p>
-<h4 id="字符编码问题">5.3 字符编码问题：</h4>
-<p>​ 熟悉宽字符与unicode字符编码的原理后，才能正确处理HCHAR,TCHAR等。</p>
-<h4 id="messagebox操作中出现如下文件操作">5.4 Messagebox操作中出现如下文件操作：</h4>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908170241.png" /></p>
+<h3 id="1-Detours-学习："><a href="#1-Detours-学习：" class="headerlink" title="1. Detours 学习："></a>1. Detours 学习：</h3><p>​    通过阅读文档，理论+实际的结合，组内成员基本理解了detours运作原理。</p>
+<h3 id="2-Detours-编译："><a href="#2-Detours-编译：" class="headerlink" title="2. Detours 编译："></a>2. Detours 编译：</h3><pre><code>1. 首先，在VS2019自带的cmd中编译detours:
+</code></pre><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162623.png" alt=""></p>
+<p>​    可见，编译成功。</p>
+<h3 id="3-消息弹窗的注入："><a href="#3-消息弹窗的注入：" class="headerlink" title="3. 消息弹窗的注入："></a>3. 消息弹窗的注入：</h3><p>​    dllmain中代码如下：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162822.png" alt=""></p>
+<p>​    演示效果：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162923.png" alt=""></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908162947.png" alt=""></p>
+<p>​    可见，成功</p>
+<h3 id="4-VS框架搭建："><a href="#4-VS框架搭建：" class="headerlink" title="4. VS框架搭建："></a>4. VS框架搭建：</h3><p>​    VS框架组成如下：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908163111.png" alt=""></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908163125.png" alt=""></p>
+<h3 id="5-目前碰到的一些问题："><a href="#5-目前碰到的一些问题：" class="headerlink" title="5. 目前碰到的一些问题："></a>5. 目前碰到的一些问题：</h3><h4 id="5-1-使用VS2019自带的命令行界面进行编译，提示没有nmake命令："><a href="#5-1-使用VS2019自带的命令行界面进行编译，提示没有nmake命令：" class="headerlink" title="5.1 使用VS2019自带的命令行界面进行编译，提示没有nmake命令："></a>5.1 使用VS2019自带的命令行界面进行编译，提示没有nmake命令：</h4><p>​    检查后发现VS2019只安装了桌面开发模块，没有安装C++开发模块，更新相应拓展包即可。</p>
+<p><img src="%E3%80%90%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E8%AF%BE%E8%AE%BE%E3%80%91%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%9C%E4%B8%9A/20210906172501.png" alt=""></p>
+<h4 id="5-2-在testconsole-cpp文件中引入代码，编译报错百余个标识符错误："><a href="#5-2-在testconsole-cpp文件中引入代码，编译报错百余个标识符错误：" class="headerlink" title="5.2 在testconsole.cpp文件中引入代码，编译报错百余个标识符错误："></a>5.2 在testconsole.cpp文件中引入代码，编译报错百余个标识符错误：</h4><p>​        在外网查询后发现，是因为引入引用windows.h在引用detours之前：</p>
+<p><img src="%E3%80%90%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E8%AF%BE%E8%AE%BE%E3%80%91%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%9C%E4%B8%9A/20210906165008.png" alt=""></p>
+<h4 id="5-3-字符编码问题："><a href="#5-3-字符编码问题：" class="headerlink" title="5.3 字符编码问题："></a>5.3 字符编码问题：</h4><p>​    熟悉宽字符与unicode字符编码的原理后，才能正确处理HCHAR,TCHAR等。</p>
+<h4 id="5-4-Messagebox操作中出现如下文件操作："><a href="#5-4-Messagebox操作中出现如下文件操作：" class="headerlink" title="5.4 Messagebox操作中出现如下文件操作："></a>5.4 Messagebox操作中出现如下文件操作：</h4><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210908170241.png" alt=""></p>
 
 
                 
@@ -269,7 +260,7 @@
 
                     
                 </ul>
-                <p class="copyright text-muted">&copy; 2021 Shaw<br></p>
+                <p class="copyright text-muted">&copy; 2022 Shaw<br></p>
                 <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
                 <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
             </div>

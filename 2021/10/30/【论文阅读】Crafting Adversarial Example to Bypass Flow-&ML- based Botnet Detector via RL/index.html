@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <!--Description-->
+
+    
+
+    
+        <meta name="description" content="随想随录"/>
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Shaw"/>
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="Crafting Adversarial Example to Bypass Flow-&amp;ML- based Botnet Detector via RL"/>
+    
+
+    <!--Open Graph Description-->
+    
+        <meta property="og:description" content="随想随录"/>
+    
+
+    <!--Open Graph Site Name-->
+        <meta property="og:site_name" content="Shaw"/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article"/>
+    
+
+    <!--Page Cover-->
+    
+    
+        <meta property="og:image" content="http://example.comimg/home-bg.jpg"/>
+    
+
+        <meta name="twitter:card" content="summary_large_image"/>
+
+    
+
+    
+        <meta name="twitter:image" content="http://example.comimg/home-bg.jpg"/>
+    
+
+    <!-- Title -->
+    
+    <title>Crafting Adversarial Example to Bypass Flow-&amp;ML- based Botnet Detector via RL - Shaw</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css"/>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet"/>
+
+    <!-- Google Analytics -->
+    
+
+
+    <!-- favicon -->
+    
+    <link rel="icon" href="img/putaoyou.png"/>
+    
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Here</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/">
+                            
+                                Home
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/tags">
+                            
+                                Tags
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/categories">
+                            
+                                Categories
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a target="_blank" rel="noopener" href="https://github.com/Shawdox">
+                            
+                                <i class="fa fa-github fa-stack-2x"></i>
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>Crafting Adversarial Example to Bypass Flow-&ML- based Botnet Detector via RL</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                            Posted by Shaw on
+                        
+                        
+                            2021-10-30
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
+                    
+                        
+
+
+<a href="/tags/RL/">#RL</a> <a href="/tags/Botnet/">#Botnet</a>
+
+
+                    
+                </div>
+                <div class="col-lg-4 col-md-5 post-categories">
+                    
+                        
+
+<a href="/categories/Paper/">Paper</a>
+
+                    
+                </div>
+            
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h1 id="Crafting-Adversarial-Example-to-Bypass-Flow-amp-ML-based-Botnet-Detector-via-RL"><a href="#Crafting-Adversarial-Example-to-Bypass-Flow-amp-ML-based-Botnet-Detector-via-RL" class="headerlink" title="Crafting Adversarial Example to Bypass Flow-&amp;ML- based Botnet Detector via RL"></a>Crafting Adversarial Example to Bypass Flow-&amp;ML- based Botnet Detector via RL</h1><blockquote>
+<p><strong>作者：Junnan Wang，Qixu Liu，Di Wu，Ying Dong，Xiang Cui（中国科学院大学，华为科技，北京维纳斯纲科技，广州大学）</strong></p>
+<p><strong>时间：2021.10.6</strong></p>
+</blockquote>
+<h4 id="1-Botnet-僵尸网络-："><a href="#1-Botnet-僵尸网络-：" class="headerlink" title="1. Botnet(僵尸网络)："></a>1. Botnet(僵尸网络)：</h4><h5 id="1-1-定义："><a href="#1-1-定义：" class="headerlink" title="1.1 定义："></a>1.1 定义：</h5><p>​    Botnet = robot + network。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211030111947.png" alt=""></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211030112012.png" alt=""></p>
+<blockquote>
+<p>——参考《软件安全》.彭国军</p>
+</blockquote>
+<h5 id="1-2-如何攻击？"><a href="#1-2-如何攻击？" class="headerlink" title="1.2 如何攻击？"></a>1.2 如何攻击？</h5><p>​    一个僵尸网络的生存周期包括<strong><u>形成、C&amp;C、攻击、后攻击</u></strong>四个阶段。</p>
+<p>​    形成阶段由攻击者入侵有漏洞的主机，并在其上执行恶意程序，使之成为僵尸主机。</p>
+<p>​    一旦成为僵尸主机之后，botmaster会通过各种方式与之通信。</p>
+<p>​    之后根据botmaster的指令执行攻击行为。后攻击阶段是指botmaster对僵尸网络进行升级更新。</p>
+<h4 id="2-Botnet-Detector-僵尸网络检测器-："><a href="#2-Botnet-Detector-僵尸网络检测器-：" class="headerlink" title="2. Botnet Detector(僵尸网络检测器)："></a>2. Botnet Detector(僵尸网络检测器)：</h4><h5 id="2-1-传统方法："><a href="#2-1-传统方法：" class="headerlink" title="2.1 传统方法："></a>2.1 传统方法：</h5><p>​    从检测原理上来说，大致可以分为三类方法：</p>
+<p>　　·行为特征统计分析</p>
+<p>　　·bot行为仿真以监控</p>
+<p>　　·流量数据特征匹配</p>
+<p>​    传统的检测僵尸网络的方法一般在形成、攻击阶段，利用僵尸主机存在的行为特征，例如通信的数据内容。一些基于网络流量行为分析的方法可以检测僵尸网络，主要是从<strong>通信流量特征</strong>的角度去检测的，例如流量的通信周期，这种方法可以检测出一些加密的僵尸主机流量，同时还可以检测出新型的僵尸网络。</p>
+<blockquote>
+<p>——参考：<a target="_blank" rel="noopener" href="http://blog.chinaunix.net/uid-20597254-id-1918281.html">解析：僵尸网络（Botnet）的检测方法-西湖泛舟-ChinaUnix博客</a></p>
+</blockquote>
+<hr>
+<h3 id="ABSTRACT"><a href="#ABSTRACT" class="headerlink" title="ABSTRACT"></a>ABSTRACT</h3><p>​    提出了一个<u>基于RL</u>的方法来对<u>基于ML的僵尸网络追踪器</u>做逃逸攻击。</p>
+<p>​    黑盒攻击，不用改变追踪器本身。</p>
+<hr>
+<h3 id="INTRODUCTION"><a href="#INTRODUCTION" class="headerlink" title="INTRODUCTION"></a>INTRODUCTION</h3><p>​    训练一个RLagent，让其通过与追踪器的交流反馈自己学习如何扰动样本。</p>
+<p>​    为了确保功能的保留，我们设计了一个包含14个增量操作的操作空间，每个操作只向原始流中添加一个精心编制的数据包，以尝试更改一些流级特性。检测器认为这些特征具有区分性，但这可能不是良性交通的因果指标。</p>
+<p>​    此外，添加数据包是传输层的增量操作，而恶意数据一般封装在应用层。</p>
+<p>​    主要贡献：</p>
+<pre><code> 1. 黑盒攻击；
+ 2. 功能保留，且步骤较简单，成本低；
+ 3. 可以逃逸。
+</code></pre><hr>
+<h3 id="RELATED-WORK"><a href="#RELATED-WORK" class="headerlink" title="RELATED WORK"></a>RELATED WORK</h3><h4 id="Botnet-Evasion"><a href="#Botnet-Evasion" class="headerlink" title="Botnet Evasion:"></a>Botnet Evasion:</h4><ul>
+<li><p>传统botnet逃逸方法：加密网络流；在TCP/IP协议簇的冗余字段中隐藏C &amp; C信息(command and control)；使用online-social-networks(OSN)来构建隐藏的通道。</p>
+</li>
+<li><p>ML-based逃逸方法：</p>
+<ol>
+<li><p><strong>Feature space attack：</strong>指的是只能生成traffic对抗特征向量的方法。但是，考虑到traffic样本映射到特征向量的过程是不可逆的，这样的攻击不能造成实际的安全威胁，只能用来证明基于ML的检测器的脆弱性。</p>
+</li>
+<li><p><strong>End-to-end attack：</strong>指的是可以生成真正的traffic数据的方法。</p>
+<p>【35】利用了GAN来模仿facebook聊天网络的traffic以此绕过自适应IPS。</p>
+<p>【36】利用了GAN来生成尽量真实的traffic，以此来提高数据集的质量，解决数据不平衡问题。</p>
+</li>
+</ol>
+</li>
+</ul>
+<hr>
+<h3 id="THREAT-MODEL-AND-SYSTEM-FRAMEWORK"><a href="#THREAT-MODEL-AND-SYSTEM-FRAMEWORK" class="headerlink" title="THREAT MODEL AND SYSTEM FRAMEWORK"></a>THREAT MODEL AND SYSTEM FRAMEWORK</h3><ol>
+<li><p><strong>Threat Model</strong></p>
+<ul>
+<li><p><strong>攻击者的目的：</strong>生成对抗样本，隐藏botnet flow。</p>
+</li>
+<li><p><strong>攻击者的信息：</strong>1. 攻击者理解目标网络可能被流等级（flow-level）ML网络检测系统保护；2. 攻击者不需要知道detector的算法，参数，特征或训练数据等信息。</p>
+</li>
+<li><p><strong>攻击者的能力：</strong>1. 攻击者只有能力修改测试集，并不能改变detector的训练集；2. 同时，我们假设攻击者可以持续访问detector，从检测器中获取二进制预测结果。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>System Design</strong></p>
+</li>
+</ol>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211031113229.png" alt=""></p>
+<p>​    见图即可，简单的RL学习模型。</p>
+<ol>
+<li><p><strong>RL Algorithm</strong></p>
+<p>选择了（value-based）DQN和SARSA，都用。</p>
+<ol>
+<li><p><strong>Action Space</strong></p>
+<p><strong>Q：如何在不影响原来功能的情况下添加扰动？</strong></p>
+<p>A：因为botnet内容在应用层，故可以对传输层进行扰动。（<u>PS：这样确实不会改变功能，但是应用层的恶意特征不会仍被detector检测到吗？</u>）</p>
+<p><strong>Q：如何确定哪个特征该进行扰动？</strong></p>
+<p>A：考虑到动作设计的困难，从僵尸网络检测中常用的特征集合中选取18个特征。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211031115102.png" alt=""></p>
+<p>​    由上述特征，基于botnet和normal flow的差异，action space包含了14个动作，这些动作可以影响以上的统计特征，例如简单修改数据包的时间戳，或者添加构建的新数据包。</p>
+<p>​    当在构建新数据包时，考虑三个地方：时间戳，方向，包的大小。</p>
+<p>​    14个动作被分成了5类：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211031115453.png" alt=""></p>
+</li>
+</ol>
+</li>
+</ol>
+<pre><code>具体见原文。
+</code></pre><ol>
+<li><p><strong>State Space</strong></p>
+<p>​    detector返回的二进制信息很难直接使用，需要有一个状态生成器来生成供agent使用的state。</p>
+<p>​    这里使用堆叠自编码器（Stacked Autoencoder，SAE）来自动提取botnet flow的特征，然后将其返回给agent以作为state。</p>
+<p>​    将每个botnet flow的前1024个字节作为SAE的输入，经过一些epoch的训练，SAE就可以自动地从botnet flow中学习到一个256维度的state vector。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211031152136.png" alt=""></p>
+</li>
+</ol>
+<hr>
+<h3 id="EXPERIMENTAL-SETUP"><a href="#EXPERIMENTAL-SETUP" class="headerlink" title="EXPERIMENTAL SETUP"></a>EXPERIMENTAL SETUP</h3><ol>
+<li><p><strong>Implementation</strong></p>
+<p>系统的位置如下：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211031152307.png"  /></p>
+<p>作为BotMaster的一个代理存在。</p>
+</li>
+<li><p><strong>Dataset</strong></p>
+<p>两个公开数据集：CTU，ISOT。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211031152816.png" alt=""></p>
+<p>然后做一下数据处理：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211031153008.png" alt="image-20211031153006310" style="zoom:80%;" /></p>
+<ol>
+<li>合并属于同一botnet 家族的样本，如果某个pcap包太大，就舍弃；</li>
+<li>将pcap包切片；</li>
+<li>匿名化，将ip,mac等包中独一无二的东西随机化，以避免影响。</li>
+</ol>
+</li>
+<li><p><strong>Detector</strong></p>
+<p>​    选取了两个state-of-art的detector: <strong>the composite DL detection model combining CNN</strong></p>
+<p><strong>with LSTM(<em>BotCatcher detection model</em>)</strong>，<strong>the non-differentiable ML detection model based on XGBoost(<em>XGBoost detection model</em>)</strong>。</p>
+<p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211031154038.png" alt=""></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211031154144.png" alt=""></p>
+</li>
+</ol>
+<hr>
+<h3 id="RESULTS"><a href="#RESULTS" class="headerlink" title="RESULTS"></a>RESULTS</h3><ol>
+<li><p><strong>Evasion performance</strong></p>
+<p>将DQM,SARSA与BotCatcher,XGBoost两两组合：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211101153359.png" alt=""></p>
+<p>逃逸率如上图所示，可以看到，即使是随机扰动都有一定的逃逸率。</p>
+<p>不同测试集效果差异很大：</p>
+<pre><code>1. 数据包可能过大（storm），导致对时间戳做修改等操作对结果的影响很小；
+2. 数据包的特征跟其它数据集差别很大，导致模型难以在有限的步骤时间里改变足够多的特征。
+</code></pre></li>
+<li><p><strong>Time performances</strong></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211101155037.png" alt=""></p>
+</li>
+<li><p><strong>Dominant actions</strong></p>
+<p><strong>Dominant actions</strong>指的是agent在创建对抗样本时采用的最频繁的操作。</p>
+</li>
+</ol>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211101155358.png" alt=""></p>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+                    
+
+                    
+                        <li>
+                            <a href="https://github.com/Shawdox" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2022 Shaw<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+
+</html>
