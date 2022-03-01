@@ -23,7 +23,7 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="Shaw"/>
+        <meta property="og:title" content="Intrusion detection system-A comprehensive review"/>
     
 
     <!--Open Graph Description-->
@@ -36,7 +36,7 @@
 
     <!--Type page-->
     
-        <meta property="og:type" content="website"/>
+        <meta property="og:type" content="article"/>
     
 
     <!--Page Cover-->
@@ -55,7 +55,7 @@
 
     <!-- Title -->
     
-    <title>归档：2022 - Shaw</title>
+    <title>Intrusion detection system-A comprehensive review - Shaw</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
@@ -153,49 +153,106 @@
 </nav>
 
     <!-- Main Content -->
-    
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
 
-<!-- Page Header -->
-<!-- Set your background image for this header in the theme's configuration: index_cover -->
 <header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <div class="site-heading">
-                    <h1>2022</h1>
+                <div class="post-heading">
+                    <h1>Intrusion detection system-A comprehensive review</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                            Posted by Shaw on
+                        
+                        
+                            2021-11-03
+                        
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Main Content -->
-<div class="container">
-    <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
+                    
+                        
+
+
+<a href="/tags/IDS/">#IDS</a>
+
+
+                    
+                </div>
+                <div class="col-lg-4 col-md-5 post-categories">
+                    
+                        
+
+<a href="/categories/Paper/">Paper</a>
+
+                    
+                </div>
             
-                <div class="post-preview">
-    <a href="/2022/02/28/A Study on XSS AttacksIntelligent Detection Methods/">
-        <h1 class="post-title archive">
-            XXXXXXX
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2022-02-28
-    </p>
-</div>
+
+            <!-- Gallery -->
             
-            <div class="archive-before-pagination"></div>
-            <ul class="pager">
-    
-    
-</ul>
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h1 id="Intrusion-detection-system-A-comprehensive-review"><a href="#Intrusion-detection-system-A-comprehensive-review" class="headerlink" title="Intrusion detection system: A comprehensive review"></a>Intrusion detection system: A comprehensive review</h1><blockquote>
+<p><strong>作者：Hung-Jen Liao a , Chun-Hung Richard Lin a,n , Ying-Chih Lin a,b , Kuang-Yuan Tung a（国立中山大学，正修科技大学）</strong></p>
+<p><strong>时间：2012</strong></p>
+</blockquote>
+<h3 id="ABSTRACT"><a href="#ABSTRACT" class="headerlink" title="ABSTRACT"></a>ABSTRACT</h3><p>​    一个IDS综述。</p>
+<p>PS：<a target="_blank" rel="noopener" href="https://blog.csdn.net/haoxuexiaolang/article/details/106562102?spm=1001.2101.3001.6661.1&amp;utm_medium=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~default-1.no_search_link&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~default-1.no_search_link">(17条消息) 防火墙、IDS和IPS之间的区别（浅谈）_淡风wisdon－大大的博客-CSDN博客</a></p>
+<hr>
+<h3 id="INTRODUCTION"><a href="#INTRODUCTION" class="headerlink" title="INTRODUCTION"></a>INTRODUCTION</h3><p>​    <strong>CIA：</strong>Confifidentiality, Integrity and Availability，</p>
+<p>​    <strong>Instrusion:</strong> 针对CIA的破坏行为，或者绕过计算机或网络安全机制的行为。</p>
+<p>​    <strong>Instrusion detection:</strong> 是监视计算机系统或网络中发生的事件，并分析它们以发现入侵迹象的过程。</p>
+<p>​    <strong>Instrusion detection sysytem(IDS):</strong> 实现instrusion detection自动化的软件或硬件。</p>
+<p>​    <strong>Instrusion prevention system(IPS):</strong> 不仅有IDS的监控功能，还可以阻止可能的突发安全事件。在少数文章中，入侵检测与防御系统( IDPS )和入侵防御系统( IPS )是同义词，其中IDPS一词在安全界很少使用。</p>
+<hr>
+<h3 id="DETECTION-METHODOLOGIES"><a href="#DETECTION-METHODOLOGIES" class="headerlink" title="DETECTION METHODOLOGIES"></a>DETECTION METHODOLOGIES</h3><p>​    Detection的方法一共分为三类：Signature-based Detection (<strong>SD</strong>), Anomaly-based Detection</p>
+<p>(<strong>AD</strong>) and Stateful Protocol Analysis (<strong>SPA</strong>)。</p>
+<h4 id="1-SD（特征检测）"><a href="#1-SD（特征检测）" class="headerlink" title="1. SD（特征检测）:"></a>1. SD（特征检测）:</h4><p>​    Signature-based Detection，特征检测。将已知的patterns与捕获的事件进行比较，从而发现可能的入侵。因为使用特定攻击或者系统漏洞所积累下的知识，SD又被称为Knowledge-based Detection 或者 Misuse Detection。</p>
+<h4 id="2-AD（异常检测）："><a href="#2-AD（异常检测）：" class="headerlink" title="2. AD（异常检测）："></a>2. AD（异常检测）：</h4><p>​    Anomaly-based detection，异常检测。一个异常（anomaly）指的是与已知行为相异的地方。Profiles表示定期从活动，网络连接中监视的正常或特定的行为文件，profile可以是静态的也可以是动态的，并且从许多特性中生成。例如，登录失败，处理器的使用，邮件的发送数量等。</p>
+<p>​    接下来，AD 比较器就将正常的profile与观察到的事件相比较，以此辨别出显著的攻击。AD又被称为Behavior-based Detection。</p>
+<p>​    一些AD的例子，例如，企图闯入、伪装、合法用户渗透、拒绝服务( DOS )、特洛伊木马等。</p>
+<h4 id="3-SPA（状态协议分析）："><a href="#3-SPA（状态协议分析）：" class="headerlink" title="3. SPA（状态协议分析）："></a>3. SPA（状态协议分析）：</h4><p>​    Stateful Protocol Analysis，状态协议分析。Stateful指的是IDS可以知晓并追踪协议的状态（举例，将请求与答复配对）。</p>
+<p>​    尽管SPA与AD很像，二者其实完全不同。AD采用预加载的网络或者特定域名的profile，然而SPA依赖于供应商开发的特定协议<strong>通用profile</strong>。通常，SPA中的网络协议模型最初基于国际标准组织(例如IETF )的协议标准。SPA也被称为Specifification-based Detection（基于规格的检测）。</p>
+<p>大多数IDS使用多种方法来提供更广泛和准确的检测。</p>
+<hr>
+<h3 id="DETECTION-APPROACHES"><a href="#DETECTION-APPROACHES" class="headerlink" title="DETECTION APPROACHES"></a>DETECTION APPROACHES</h3><p>​    此文将已有的方法分为了5类：Statistics-based, Pattern-based, Rule-based, State-based and</p>
+<p>Heuristic-based。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211106153047.png" alt=""></p>
+<p>​    由上图所示，其中，Time series指的是是否考虑了time series behavior。</p>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
         </div>
     </div>
-</div>
-
+</article>
 
     <!-- Footer -->
     <hr />
