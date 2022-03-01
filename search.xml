@@ -8,6 +8,12 @@
   </entry>
   <entry>
     <title></title>
+    <url>/2022/02/28/A%20Study%20on%20XSS%20AttacksIntelligent%20Detection%20Methods/</url>
+    <content><![CDATA[<h1 id="A-Study-on-XSS-Attacks-Intelligent-Detection-Methods"><a href="#A-Study-on-XSS-Attacks-Intelligent-Detection-Methods" class="headerlink" title="A Study on XSS Attacks:Intelligent Detection Methods"></a>A Study on XSS Attacks:Intelligent Detection Methods</h1><p>&gt;</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>HydraText-Multi-objective Optimization for Adversarial Textual Attack</title>
     <url>/2021/11/14/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/</url>
     <content><![CDATA[<h1 id="HydraText-Multi-objective-Optimization-for-Adversarial-Textual-Attack"><a href="#HydraText-Multi-objective-Optimization-for-Adversarial-Textual-Attack" class="headerlink" title="HydraText: Multi-objective Optimization for Adversarial Textual Attack"></a>HydraText: Multi-objective Optimization for Adversarial Textual Attack</h1><blockquote>
 <p><strong>作者：Shengcai Liu，Ning Lu，Cheng Chen，Chao Qian，Ke Tang</strong></p>
@@ -42,7 +48,7 @@
         <category>Paper</category>
       </categories>
       <tags>
-        <tag>IDS</tag>
+        <tag>AD</tag>
       </tags>
   </entry>
   <entry>
@@ -68,44 +74,6 @@
       </categories>
       <tags>
         <tag>AD</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title></title>
-    <url>/2021/11/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Intrusion%20detection%20system%20A%20comprehensive%20review/</url>
-    <content><![CDATA[<h1 id="Intrusion-detection-system-A-comprehensive-review"><a href="#Intrusion-detection-system-A-comprehensive-review" class="headerlink" title="Intrusion detection system: A comprehensive review"></a>Intrusion detection system: A comprehensive review</h1><blockquote>
-<p><strong>作者：Hung-Jen Liao a , Chun-Hung Richard Lin a,n , Ying-Chih Lin a,b , Kuang-Yuan Tung a（国立中山大学，正修科技大学）</strong></p>
-<p><strong>时间：2012</strong></p>
-</blockquote>
-<h3 id="ABSTRACT"><a href="#ABSTRACT" class="headerlink" title="ABSTRACT"></a>ABSTRACT</h3><p>​    一个IDS综述。</p>
-<p>PS：<a href="https://blog.csdn.net/haoxuexiaolang/article/details/106562102?spm=1001.2101.3001.6661.1&amp;utm_medium=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~default-1.no_search_link&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~default-1.no_search_link">(17条消息) 防火墙、IDS和IPS之间的区别（浅谈）_淡风wisdon－大大的博客-CSDN博客</a></p>
-<hr>
-<h3 id="INTRODUCTION"><a href="#INTRODUCTION" class="headerlink" title="INTRODUCTION"></a>INTRODUCTION</h3><p>​    <strong>CIA：</strong>Confifidentiality, Integrity and Availability，</p>
-<p>​    <strong>Instrusion:</strong> 针对CIA的破坏行为，或者绕过计算机或网络安全机制的行为。</p>
-<p>​    <strong>Instrusion detection:</strong> 是监视计算机系统或网络中发生的事件，并分析它们以发现入侵迹象的过程。</p>
-<p>​    <strong>Instrusion detection sysytem(IDS):</strong> 实现instrusion detection自动化的软件或硬件。</p>
-<p>​    <strong>Instrusion prevention system(IPS):</strong> 不仅有IDS的监控功能，还可以阻止可能的突发安全事件。在少数文章中，入侵检测与防御系统( IDPS )和入侵防御系统( IPS )是同义词，其中IDPS一词在安全界很少使用。</p>
-<hr>
-<h3 id="DETECTION-METHODOLOGIES"><a href="#DETECTION-METHODOLOGIES" class="headerlink" title="DETECTION METHODOLOGIES"></a>DETECTION METHODOLOGIES</h3><p>​    Detection的方法一共分为三类：Signature-based Detection (<strong>SD</strong>), Anomaly-based Detection</p>
-<p>(<strong>AD</strong>) and Stateful Protocol Analysis (<strong>SPA</strong>)。</p>
-<h4 id="1-SD（特征检测）"><a href="#1-SD（特征检测）" class="headerlink" title="1. SD（特征检测）:"></a>1. SD（特征检测）:</h4><p>​    Signature-based Detection，特征检测。将已知的patterns与捕获的事件进行比较，从而发现可能的入侵。因为使用特定攻击或者系统漏洞所积累下的知识，SD又被称为Knowledge-based Detection 或者 Misuse Detection。</p>
-<h4 id="2-AD（异常检测）："><a href="#2-AD（异常检测）：" class="headerlink" title="2. AD（异常检测）："></a>2. AD（异常检测）：</h4><p>​    Anomaly-based detection，异常检测。一个异常（anomaly）指的是与已知行为相异的地方。Profiles表示定期从活动，网络连接中监视的正常或特定的行为文件，profile可以是静态的也可以是动态的，并且从许多特性中生成。例如，登录失败，处理器的使用，邮件的发送数量等。</p>
-<p>​    接下来，AD 比较器就将正常的profile与观察到的事件相比较，以此辨别出显著的攻击。AD又被称为Behavior-based Detection。</p>
-<p>​    一些AD的例子，例如，企图闯入、伪装、合法用户渗透、拒绝服务( DOS )、特洛伊木马等。</p>
-<h4 id="3-SPA（状态协议分析）："><a href="#3-SPA（状态协议分析）：" class="headerlink" title="3. SPA（状态协议分析）："></a>3. SPA（状态协议分析）：</h4><p>​    Stateful Protocol Analysis，状态协议分析。Stateful指的是IDS可以知晓并追踪协议的状态（举例，将请求与答复配对）。</p>
-<p>​    尽管SPA与AD很像，二者其实完全不同。AD采用预加载的网络或者特定域名的profile，然而SPA依赖于供应商开发的特定协议<strong>通用profile</strong>。通常，SPA中的网络协议模型最初基于国际标准组织(例如IETF )的协议标准。SPA也被称为Specifification-based Detection（基于规格的检测）。</p>
-<p>大多数IDS使用多种方法来提供更广泛和准确的检测。</p>
-<hr>
-<h3 id="DETECTION-APPROACHES"><a href="#DETECTION-APPROACHES" class="headerlink" title="DETECTION APPROACHES"></a>DETECTION APPROACHES</h3><p>​    此文将已有的方法分为了5类：Statistics-based, Pattern-based, Rule-based, State-based and</p>
-<p>Heuristic-based。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211106153047.png" alt=""></p>
-<p>​    由上图所示，其中，Time series指的是是否考虑了time series behavior。</p>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>IDS</tag>
       </tags>
   </entry>
   <entry>
@@ -182,6 +150,7 @@
     <content><![CDATA[<h1 id="Crafting-Adversarial-Example-to-Bypass-Flow-amp-ML-based-Botnet-Detector-via-RL"><a href="#Crafting-Adversarial-Example-to-Bypass-Flow-amp-ML-based-Botnet-Detector-via-RL" class="headerlink" title="Crafting Adversarial Example to Bypass Flow-&amp;ML- based Botnet Detector via RL"></a>Crafting Adversarial Example to Bypass Flow-&amp;ML- based Botnet Detector via RL</h1><blockquote>
 <p><strong>作者：Junnan Wang，Qixu Liu，Di Wu，Ying Dong，Xiang Cui（中国科学院大学，华为科技，北京维纳斯纲科技，广州大学）</strong></p>
 <p><strong>时间：2021.10.6</strong></p>
+<p><strong>会议：RAID(CCF_B)</strong></p>
 </blockquote>
 <h4 id="1-Botnet-僵尸网络-："><a href="#1-Botnet-僵尸网络-：" class="headerlink" title="1. Botnet(僵尸网络)："></a>1. Botnet(僵尸网络)：</h4><h5 id="1-1-定义："><a href="#1-1-定义：" class="headerlink" title="1.1 定义："></a>1.1 定义：</h5><p>​    Botnet = robot + network。</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211030111947.png" alt=""></p>
@@ -202,16 +171,20 @@
 <p>——参考：<a href="http://blog.chinaunix.net/uid-20597254-id-1918281.html">解析：僵尸网络（Botnet）的检测方法-西湖泛舟-ChinaUnix博客</a></p>
 </blockquote>
 <hr>
-<h3 id="ABSTRACT"><a href="#ABSTRACT" class="headerlink" title="ABSTRACT"></a>ABSTRACT</h3><p>​    提出了一个<u>基于RL</u>的方法来对<u>基于ML的僵尸网络追踪器</u>做逃逸攻击。</p>
+<h3 id="ABSTRACT"><a href="#ABSTRACT" class="headerlink" title="ABSTRACT"></a>ABSTRACT</h3><p>​    提出了一个<u>基于RL</u>的方法来对<u>基于ML的僵尸网络追踪器</u>做逃逸攻击，并且可以保留僵尸网络的恶意功能。</p>
 <p>​    黑盒攻击，不用改变追踪器本身。</p>
 <hr>
 <h3 id="INTRODUCTION"><a href="#INTRODUCTION" class="headerlink" title="INTRODUCTION"></a>INTRODUCTION</h3><p>​    训练一个RLagent，让其通过与追踪器的交流反馈自己学习如何扰动样本。</p>
 <p>​    为了确保功能的保留，我们设计了一个包含14个增量操作的操作空间，每个操作只向原始流中添加一个精心编制的数据包，以尝试更改一些流级特性。检测器认为这些特征具有区分性，但这可能不是良性交通的因果指标。</p>
 <p>​    此外，添加数据包是传输层的增量操作，而恶意数据一般封装在应用层。</p>
-<p>​    主要贡献：</p>
+<p>​    这种攻击方法的优点：</p>
 <pre><code> 1. 黑盒攻击；
- 2. 功能保留，且步骤较简单，成本低；
- 3. 可以逃逸。
+ 2. 它具有通用性，不论探测器的损失函数是否可微，都可以使用；
+ 3. 即插即用，RL智能体可以作为网络代理存在，逃逸成本低并且适用于任何botnet家族。
+</code></pre><p>​    主要贡献：</p>
+<pre><code>1. 提出一个黑盒攻击方法；
+ 2. 在RL框架中设计了一些列通用动作空间，这些动作都是添加操作，在可以逃逸的前提下保证了恶意样本的功能性；
+ 3. 我们演示了如何训练和部署我们的系统以避免在精心构建的僵尸网络流数据集上进行ML检测，并综合评估框架的逃避性能、时间开销和通用性。
 </code></pre><hr>
 <h3 id="RELATED-WORK"><a href="#RELATED-WORK" class="headerlink" title="RELATED WORK"></a>RELATED WORK</h3><h4 id="Botnet-Evasion"><a href="#Botnet-Evasion" class="headerlink" title="Botnet Evasion:"></a>Botnet Evasion:</h4><ul>
 <li><p>传统botnet逃逸方法：加密网络流；在TCP/IP协议簇的冗余字段中隐藏C &amp; C信息(command and control)；使用online-social-networks(OSN)来构建隐藏的通道。</p>
@@ -229,19 +202,20 @@
 </ul>
 <hr>
 <h3 id="THREAT-MODEL-AND-SYSTEM-FRAMEWORK"><a href="#THREAT-MODEL-AND-SYSTEM-FRAMEWORK" class="headerlink" title="THREAT MODEL AND SYSTEM FRAMEWORK"></a>THREAT MODEL AND SYSTEM FRAMEWORK</h3><ol>
-<li><p><strong>Threat Model</strong></p>
-<ul>
-<li><p><strong>攻击者的目的：</strong>生成对抗样本，隐藏botnet flow。</p>
+<li><strong>Threat Model</strong><ul>
+<li><strong>攻击者的目的：</strong>生成对抗样本，隐藏botnet flow。</li>
+</ul>
 </li>
+</ol>
+<ul>
 <li><p><strong>攻击者的信息：</strong>1. 攻击者理解目标网络可能被流等级（flow-level）ML网络检测系统保护；2. 攻击者不需要知道detector的算法，参数，特征或训练数据等信息。</p>
 </li>
 <li><p><strong>攻击者的能力：</strong>1. 攻击者只有能力修改测试集，并不能改变detector的训练集；2. 同时，我们假设攻击者可以持续访问detector，从检测器中获取二进制预测结果。</p>
+<ol>
+<li><strong>System Design</strong></li>
+</ol>
 </li>
 </ul>
-</li>
-<li><p><strong>System Design</strong></p>
-</li>
-</ol>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211031113229.png" alt=""></p>
 <p>​    见图即可，简单的RL学习模型。</p>
 <ol>
@@ -609,7 +583,7 @@
       </categories>
   </entry>
   <entry>
-    <title>Learning to Communicate with Deep Multi-Agent Reinforcement Learning</title>
+    <title></title>
     <url>/2021/10/11/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Sequence%20Squeezing%20A%20Defense%20Method%20Against%20Adversarial%20Examples%20for%20API%20Call-Based%20RNN%20Variants/</url>
     <content><![CDATA[<h1 id="【论文阅读】Sequence-Squeezing-A-Defense-Method-Against-Adversarial-Examples-for-API-Call-Based-RNN-Variants"><a href="#【论文阅读】Sequence-Squeezing-A-Defense-Method-Against-Adversarial-Examples-for-API-Call-Based-RNN-Variants" class="headerlink" title="【论文阅读】Sequence Squeezing: A Defense Method Against Adversarial Examples for API Call-Based RNN Variants"></a>【论文阅读】Sequence Squeezing: A Defense Method Against Adversarial Examples for API Call-Based RNN Variants</h1><blockquote>
 <p><strong>作者：Ishai Rosenberg，Asaf Shabtai，Yuval Elovici，Lior Rokach（本·古里安大学，以色列）</strong></p>
@@ -1750,6 +1724,74 @@ fp <span class="token operator">=</span> <span class="token function">ActiveXObj
       <tags>
         <tag>AD</tag>
         <tag>NLP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>A novel Android malware detection system-adaption of flter‑based  feature selection methods</title>
+    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91A%20novel%20Android%20malware%20detection%20system%20adaption%20of%20flter%E2%80%91based%20%20feature%20selection%20methods/</url>
+    <content><![CDATA[<h1 id="【论文阅读】A-novel-Android-malware-detection-system-adaption-of-flter‑based-feature-selection-methods"><a href="#【论文阅读】A-novel-Android-malware-detection-system-adaption-of-flter‑based-feature-selection-methods" class="headerlink" title="【论文阅读】A novel Android malware detection system: adaption of flter‑based  feature selection methods"></a>【论文阅读】A novel Android malware detection system: adaption of flter‑based  feature selection methods</h1><blockquote>
+<p><strong>时间：</strong>2021</p>
+<p><strong>作者：</strong> <strong>Durmuş Özkan Şahin</strong>   <strong>Oğuz Emre Kural</strong>   <strong>· Sedat Akleylek</strong>   <strong>Erdal Kılıç</strong></p>
+</blockquote>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><ol>
+<li><strong>二分类</strong>，<strong>静态</strong>代码检测；</li>
+<li>创新点主要在<strong>特征提取</strong>（已经有的方法+文本分类的方法）上，分类器用的各种现成的方法；</li>
+</ol>
+<hr>
+<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract:"></a>Abstract:</h3><p>​    在本研究中，提出了一个基于过滤器特征选择方法的，原创的安卓端恶意软件追踪系统。</p>
+<p>​    该方法是一个在机器学习的基础上的<strong>静态</strong>安卓恶意软件追踪方法。在所开发的系统中，使用应用程序文件中提取的权限作为特征。八个不同的特征选择方法被用于维度降低，以减少运行时间，提升机器学习算法的效率。</p>
+<p>​    其中四种方法应用于安卓恶意样本分类，其余四种方法是从文本分类研究中采用的，其从提取特征和分类结果两方面对方法进行了比较，在对结果进行检验时，表明所采用的方法提高了分类算法的效率，可以在本领域中使用。</p>
+<hr>
+<h3 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction:"></a>1. Introduction:</h3><h4 id="1-1-如何提取相关特征？"><a href="#1-1-如何提取相关特征？" class="headerlink" title="1.1 如何提取相关特征？"></a>1.1 如何提取相关特征？</h4><p>​    <strong>Shabtai (2012)</strong>介绍了Andromaly架构，其中包含不同的特征选取方法和分类方法。</p>
+<p>​    <strong>Zhao（2015）</strong>提出了一个特征选择方法FrequelSel，其基于无害样本和恶意样本的频率特征差异。</p>
+<p>​    <strong>Xu （2016）</strong>提出了一个新的安卓恶意样本追踪方法ICCdetector，他们使用CFS（Correlation </p>
+<p>Based Feature Selection）在许多特征向量中做特征提取。</p>
+<p>​    <strong>Morales-Ortega（2016）</strong>提出了一种可以在恶意软件分析和检测设备上本地运行的方法，他们使用不同的特征选择方法和分类方法进行了对比实验。</p>
+<p>​    <strong>Bhattacharya and Goswami (2018) </strong>提出了一种通过通过混合基于community的粗略设置特征选择方法（community-based rough set feature selection method）来进行特征选择的新方法。</p>
+<p>​    <strong>Peynirci et al. (2020) </strong>提出了Delta IDF方法，其通过选择具有最高IDF（NLP中的）无害样本和最低IDF的恶意样本来提取特征。在特征提取中使用了字符串，API调用序列，权限等来作为特征。</p>
+<p>​    <strong>Ananya et al. (2020) </strong>提出了一种安卓恶意样本追踪的动态分析技术。</p>
+<p>​    <strong>Kouliaridis et al. (2021)</strong>使用了两个特征选取算法和八个不同的分类器进行了比较试验。</p>
+<p>​    <strong>Jung et al. (2021) </strong>在Gini Importance 和 domaind 知识上进行了特征提取。使用了API调用序列和应用权限。</p>
+<p>​    <strong>Liu et al. (2021)</strong>使用非监督学习进行了安卓恶意样本的特征提取。</p>
+<h4 id="1-2-Contribution"><a href="#1-2-Contribution" class="headerlink" title="1.2 Contribution:"></a>1.2 Contribution:</h4><p>​    <strong>主要贡献：</strong></p>
+<ol>
+<li>提出了一个基于过滤器特征选择方法的，原创的安卓端恶意软件追踪系统（<strong>静态检查</strong>）；<ol>
+<li>基于文本分类的特征选择方法对现有的属性选择方法进行替代是适应于Android恶意软件检测系统的。因此，不使用所有的权限，而是选择了最具特色的权限，提高了分类算法的性能；</li>
+<li>比较给出各度量得到的允许度和分类结果。在检查结果时，所提出的系统使用的特征比现有的检测系统少；</li>
+<li>从我们所采用的特征提取方法中得到的结果总体上所得到的特征比其他方法少；</li>
+<li>实验结果更好，run的时间更短，分类效果更佳；</li>
+<li>一些矩阵与贪婪方法相结合形成各种属性子集。这些创建的属性子集在用大量classifer进行测试时表现出了显著的性能。</li>
+</ol>
+</li>
+</ol>
+<hr>
+<h3 id="2-Preliminaries："><a href="#2-Preliminaries：" class="headerlink" title="2. Preliminaries："></a>2. Preliminaries：</h3><h4 id="2-1-Feature-extraction（如何处理APK文件）："><a href="#2-1-Feature-extraction（如何处理APK文件）：" class="headerlink" title="2.1 Feature extraction（如何处理APK文件）："></a>2.1 Feature extraction（如何处理APK文件）：</h4><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901113521.png" alt=""></p>
+<h4 id="2-2-Feature-selection（提取特征）："><a href="#2-2-Feature-selection（提取特征）：" class="headerlink" title="2.2 Feature selection（提取特征）："></a>2.2 Feature selection（提取特征）：</h4><p>​        特征选择技术分为三类：<strong>flter-based</strong>，wrapper-based，embedded methods.</p>
+<p>​        <strong>在基于过滤的技术中，就是在所有属性中选择最好的k个属性，而不使用剩余的属性。各种基于统计或信息论的技术被用来寻找最佳的k个特征。</strong></p>
+<p>​        基于Wrapper的技术在操作上与过滤技术类似，但在搜索策略上，选择是用遗传算法等启发式方法代替统计技术进行的。</p>
+<p>​        特征选择过程是在机器学习算法的训练阶段进行的。特征选择是通过找到影响在训练阶段创建的模型性能的最佳子集来进行的。</p>
+<h4 id="2-3-The-proposed-Android-malware-detection-system："><a href="#2-3-The-proposed-Android-malware-detection-system：" class="headerlink" title="2.3 The proposed Android malware detection system："></a>2.3 <strong>The proposed Android malware detection</strong> system：</h4><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901115235.png" alt=""></p>
+<p>​    </p>
+<hr>
+<h3 id="3-Experimental-settings："><a href="#3-Experimental-settings：" class="headerlink" title="3.  Experimental settings："></a>3.  Experimental settings：</h3><h4 id="3-1-datasets："><a href="#3-1-datasets：" class="headerlink" title="3.1 datasets："></a>3.1 datasets：</h4><p>​    3000恶意样本（VirusShare dataset ），3000无害样本（APKPure）</p>
+<h4 id="3-2-Classifcation-algorithms"><a href="#3-2-Classifcation-algorithms" class="headerlink" title="3.2 Classifcation algorithms"></a>3.2 Classifcation algorithms</h4><h4 id="3-3-Performance-measure"><a href="#3-3-Performance-measure" class="headerlink" title="3.3 Performance measure"></a>3.3 Performance measure</h4><hr>
+<h3 id="4-Results-and-discussions"><a href="#4-Results-and-discussions" class="headerlink" title="4. Results and discussions:"></a>4. Results and discussions:</h3><h4 id="4-1-Results-of-performed-experiments"><a href="#4-1-Results-of-performed-experiments" class="headerlink" title="4.1 Results of performed experiments:"></a>4.1 Results of performed experiments:</h4><p>数据处理：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901120437.png" alt=""></p>
+<p>分类结果（部分）：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901151407.png" alt=""></p>
+<p>总：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901151954.png" alt=""></p>
+<p>与其他方法比较：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901152049.png" alt=""></p>
+<hr>
+<h3 id=""><a href="#" class="headerlink" title=" "></a> </h3><p>​    </p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>Malware Classifiers</tag>
+        <tag>Android</tag>
       </tags>
   </entry>
   <entry>
