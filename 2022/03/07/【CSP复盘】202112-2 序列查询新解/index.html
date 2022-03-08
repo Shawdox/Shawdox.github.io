@@ -23,7 +23,7 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="Obfuscated Malware Detection Using Deep Generative Model based on Global/Local Features"/>
+        <meta property="og:title" content="CSP复盘202112-2-序列查询新解"/>
     
 
     <!--Open Graph Description-->
@@ -55,7 +55,7 @@
 
     <!-- Title -->
     
-    <title>Obfuscated Malware Detection Using Deep Generative Model based on Global/Local Features - Shaw</title>
+    <title>CSP复盘202112-2-序列查询新解 - Shaw</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
@@ -89,7 +89,11 @@
     <link rel="icon" href="img/putaoyou.png"/>
     
 
-<meta name="generator" content="Hexo 5.4.1"></head>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.1"></head>
 
 
 <body>
@@ -161,7 +165,7 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="post-heading">
-                    <h1>Obfuscated Malware Detection Using Deep Generative Model based on Global/Local Features</h1>
+                    <h1>CSP复盘202112-2-序列查询新解</h1>
                     
                     <span class="meta">
                         <!-- Date and Author -->
@@ -169,7 +173,7 @@
                             Posted by Shaw on
                         
                         
-                            2021-10-16
+                            2022-03-07
                         
                     </span>
                 </div>
@@ -189,18 +193,11 @@
                     
                         
 
-
-<a href="/tags/AD/">#AD</a>
-
+<a href="/categories/CSP/">CSP</a>
 
                     
                 </div>
                 <div class="col-lg-4 col-md-5 post-categories">
-                    
-                        
-
-<a href="/categories/Paper/">Paper</a>
-
                     
                 </div>
             
@@ -210,54 +207,96 @@
 
             <!-- Post Main Content -->
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <h1 id="Obfuscated-Malware-Detection-Using-Deep-Generative-Model-based-on-Global-Local-Features"><a href="#Obfuscated-Malware-Detection-Using-Deep-Generative-Model-based-on-Global-Local-Features" class="headerlink" title="Obfuscated Malware Detection Using Deep Generative Model based on Global/Local Features"></a>Obfuscated Malware Detection Using Deep Generative Model based on Global/Local Features</h1><blockquote>
-<p><strong>作者：Jin-Young Kim, Sung-Bae Cho（延世大学）</strong></p>
-<p><strong>时间：2021</strong></p>
-</blockquote>
-<h3 id="ABSTRACT"><a href="#ABSTRACT" class="headerlink" title="ABSTRACT"></a>ABSTRACT</h3><p>​    提出了一种混合深度生成模型（<em>hybrid deep generative model</em>），将全局特征与局部特征结合起来以此有效辨别恶意样本。</p>
-<p>​    在将恶意软件转化为图像以有效地表示具有预定义潜在空间的全局特征的同时，它使用二进制代码序列提取局部特征。我们通过类激活图( CAM )分析恶意软件代码的哪些部分部分会影响检测结果，并通过分析生成的恶意软件的CAM结果来确认虚拟恶意软件生成提高了检测性能。</p>
-<hr>
-<h3 id="INTRODUCTION"><a href="#INTRODUCTION" class="headerlink" title="INTRODUCTION"></a>INTRODUCTION</h3><p>​    提出一个原创的方法：生成恶意样本，同时使用生成的图片等级的数据（ image-level ）和代码等级的信息（code-level）来训练分类器。</p>
-<p>​    为了训练分类器，我们使用VAE（variational autoencoder），预定义一个潜在空间用于将数据的特征嵌入其中，以此来生成更多的精密的恶意样本。</p>
-<p>​    在这种方法下，代码等级的信息丢失，故使用一个模型来提取代码等级的信息送入分类器。</p>
-<p>​    然后，两种恶意样本的特征被合并，接下来被用于分类。一个恶意样本的数据可以被表示为汇编代码，二进制代码或者恶意样本图像。</p>
-<p>​    Contributions:</p>
-<pre><code>1. 一个原创的，结合全局与局部两种特征的恶意软件检测方法，克服已有方法缺点，达到主流表现；
-2. 构建一个深度生成模型，生成恶意样本以此提高鲁棒性；
-3. 通过类激活图（CAM）来分析恶意软件代码的哪些部分影响检测结果，来验证生成的恶意软件的效果，并确认虚拟恶意软件的生成提高了检测性能。
-</code></pre><hr>
-<h3 id="METHOD"><a href="#METHOD" class="headerlink" title="METHOD"></a>METHOD</h3><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211016154717.png" alt=""></p>
-<h4 id="3-1-Defining-Latent-Space"><a href="#3-1-Defining-Latent-Space" class="headerlink" title="3.1 Defining Latent Space"></a>3.1 <em>Defining Latent Space</em></h4><h4 id="3-2-Generating-Data"><a href="#3-2-Generating-Data" class="headerlink" title="3.2 Generating Data"></a>3.2 <em>Generating Data</em></h4><h4 id="3-3-Local-Feature-Modeling"><a href="#3-3-Local-Feature-Modeling" class="headerlink" title="3.3 Local Feature Modeling"></a>3.3 <em>Local Feature Modeling</em></h4><h4 id="3-4-Malware-Detection-with-Transfer-Learning"><a href="#3-4-Malware-Detection-with-Transfer-Learning" class="headerlink" title="3.4 Malware Detection with Transfer Learning"></a>3.4 <em>Malware Detection with Transfer Learning</em></h4><p>​    </p>
-<hr>
-<h3 id="EXPERIMENT"><a href="#EXPERIMENT" class="headerlink" title="EXPERIMENT"></a>EXPERIMENT</h3><h4 id="4-1-Dataset-and-Experimental-Settings"><a href="#4-1-Dataset-and-Experimental-Settings" class="headerlink" title="4.1 Dataset and Experimental Settings"></a>4.1 <em>Dataset and Experimental Settings</em></h4><ul>
-<li><p><strong>数据集来源：</strong>Kaggle Microsoft Malware Classification Challenge；</p>
-</li>
-<li><p><strong>数据形式：</strong>二进制或汇编代码，这里只使用二进制代码；</p>
-</li>
-</ul>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211016163637.png" alt=""></p>
-<ul>
-<li><p><strong>数据处理：</strong></p>
+                <h1 id="202112-2-序列查询新解"><a href="#202112-2-序列查询新解" class="headerlink" title="202112-2 序列查询新解"></a>202112-2 序列查询新解</h1><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220307165808.png" alt=""></p>
+<p>​    注意到：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220307165833.png" alt="image-20220307165831883" style="zoom: 67%;" /></p>
+<p>​    要计算$error(A)$，<strong><u>如果将每一步的|<em>g(i)-f(i)</em>|都算出来则要计算10^9^次，但1s内最多算10^7^次</u></strong>。故如果不对最外层的大循环进行优化，无论对f(i)的计算如何优化结果都会超时，以下是70分代码：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; 202112-2 70分
+#include &quot;stdio.h&quot;
+using namespace std;
+int n,N,a[300] &#x3D; &#123;0,&#125;;
+int g(int x)&#123;
+    int r &#x3D; N&#x2F;(n+1);
+    return x&#x2F;r;
+&#125;
+int f(int x)&#123;&#x2F;&#x2F;f(i)的计算是线性查询，也可以改写为在f(i-1)的基础上递推
+    int ans &#x3D; 0,i &#x3D; 1;
+    while(x &gt;&#x3D; a[i] &amp;&amp; i &lt;&#x3D; n)&#123;
+        ans++;
+        i++;
+    &#125;
+    return ans;
+&#125;
+int abs(int x)&#123;
+    return x&lt;0?-1*x:x;
+&#125;
+int main(void)&#123;
+    scanf(&quot;%d %d&quot;,&amp;n,&amp;N);
+    for(int i &#x3D; 1;i &lt;&#x3D; n;++i)scanf(&quot;%d&quot;,&amp;a[i]);
+    &#x2F;&#x2F;for(int i &#x3D; 0;i &lt; N;++i) printf(&quot;f(%d)&#x3D;%d,g(%d)&#x3D;%d\n&quot;,i,f(i),i,g(i));
+    long long ans &#x3D; 0;
+    for(int i &#x3D; 0;i &lt; N;++i) ans +&#x3D; abs(f(i)-g(i));&#x2F;&#x2F;这里大循环超时
+    printf(&quot;%lld\n&quot;,ans);
+    return 0;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​    要拿满100分，就要对题目所给的”误差估计”方法入手（还是得数学优化）。<br>​    故$f(i)$序列被a[i]分为好几个区间的同时，$g(i)$序列也被等距地分为好几个区间，在各自的区间内值不变。按照这个性质，我们可以固定每个$f(i)$的区间，在其中求每个$error(A)$：</p>
 <ol>
-<li>将十六进制的二进制代码转换为01表示；</li>
-<li>将二进制代码转化为malware image。</li>
+<li><p>若$f(i)\le g(i) or f(i)\ge g(i):$</p>
+<p>此区间内的$error(A)$可直接使用$|sum(f)-sum(g)|$来计算，由于f(i)已知且不变，故很方便计算。g(i)虽然已知但需要找到快速求$sum(g)$的方法，根据其类似等差数列的性质可以有：</p>
+<p>   $g(i)$等于r个公差为1的等差数列叠加，可以方便得到$g(i)$的前缀和公式：</p>
+<script type="math/tex; mode=display">
+h(i) = \frac{r}{2}\times\lfloor\frac{i}{r}\rfloor\times(\lfloor\frac{i}{r}\rfloor-1)+(\lfloor i\%r\rfloor+1)\times\lfloor\frac{i}{r}\rfloor\</script><p>故：</p>
+<script type="math/tex; mode=display">
+sum(g)=h(a)-h(b)</script></li>
+<li><p>否则，找到区间内f(i)=g(i)的点，将区间一分为二，重复步骤一。</p>
+</li>
 </ol>
-</li>
-</ul>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211016164826.png" alt=""></p>
-<ul>
-<li><p><strong>参数设置：</strong>Adam 优化器，weights初始化使用特定的方法(Kingma and Ba, 2014; Glorot and Bengio, 2009)。</p>
-<h4 id="4-2-Detection-Results"><a href="#4-2-Detection-Results" class="headerlink" title="4.2 Detection Results"></a>4.2 <em>Detection Results</em></h4><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211016164705.png" alt=""></p>
-<p>PS：Std.dev.是标准差；当p-value小于0.05时，我们就说这个独立变量重要（significant），因为这个独立变量与输出结果有关系。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211016164742.png" alt=""></p>
-<h4 id="4-3-Effects-of-Generating-Malware"><a href="#4-3-Effects-of-Generating-Malware" class="headerlink" title="4.3 Effects of Generating Malware"></a>4.3 <em>Effects of Generating Malware</em></h4><p>使用structural similarity index measure（SSIM）来找到与生成数据相似的数据。</p>
-<p>包含真实数据和生产数据的恶意软件的std . des .和SSIM值分别为0.3308和0.1019，而只有实际数据的std . des .和SSIM值分别为0.3224和0.1068。这说明产生的数据增加了恶意软件的种类。</p>
-<p>我们进行了F检验以检查统计结果的std.des.，p值为0.0342.</p>
-</li>
-</ul>
-<p>  使用CAM来查找影响了模型结果的特征：</p>
-<p>  <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211016165953.png" alt=""></p>
-<p>  ​    上图中，亮点是重要的地方，前两行是分别对text和data做的结果检查，最后一行是对生成恶意样本做的，结果表明可以增强鲁棒性。</p>
+<p>满分代码如下：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; 202112-2 100分
+#include &quot;stdio.h&quot;
+int n,N,a[100009] &#x3D; &#123;0,&#125;;
+int r;
+int abs(int x)&#123;
+    return x &lt; 0 ? -1 * x : x;
+&#125;
+int g(int x)&#123;
+    return x&#x2F;r;
+&#125;
+int f(int x)&#123;
+    int ans &#x3D; 0,i &#x3D; 1;
+    while(x &gt;&#x3D; a[i] &amp;&amp; i &lt;&#x3D; n)&#123;
+        ans++;i++;
+    &#125;
+    return ans;
+&#125;
+long long h(int x)&#123;
+    if(x &lt;0) return 0;
+    int a &#x3D; x&#x2F;r;
+    int b &#x3D; x%r;
+    return 0.5*a*(a-1)*r + (b+1)*a;
+&#125;
+long long cal(int a,int b,int f)&#123;
+    return abs((b - a + 1) * f - (h(b) - h(a-1)));
+&#125;
+int main(void)&#123;
+    scanf(&quot;%d %d&quot;,&amp;n,&amp;N);
+    r &#x3D; N &#x2F; (n + 1);
+    for(int i &#x3D; 1;i &lt;&#x3D; n;++i)scanf(&quot;%d&quot;,&amp;a[i]);
+    long long ans &#x3D; 0;
+    for(int fi &#x3D; 0;fi &lt;&#x3D; n;++fi)&#123;&#x2F;&#x2F;对于每个fi
+        int lf &#x3D; a[fi];
+        int rf &#x3D; a[fi+1]-1;
+        if(fi &#x3D;&#x3D; n) rf &#x3D; N-1;
+        if(fi &lt;&#x3D; g(lf) || fi &gt;&#x3D; g(rf))&#123;
+            ans +&#x3D; cal(lf,rf,fi);
+        &#125;
+        else&#123;
+            ans +&#x3D; cal(lf,r*fi,fi)+cal(r*fi +1,rf,fi)
+        &#125;
+    &#125;
+    printf(&quot;%lld\n&quot;,ans);
+    return 0;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 
                 

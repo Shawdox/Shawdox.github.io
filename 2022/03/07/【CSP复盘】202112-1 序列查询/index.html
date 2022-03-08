@@ -23,7 +23,7 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="Shaw"/>
+        <meta property="og:title" content="CSP复盘-202112-1-序列查询"/>
     
 
     <!--Open Graph Description-->
@@ -36,7 +36,7 @@
 
     <!--Type page-->
     
-        <meta property="og:type" content="website"/>
+        <meta property="og:type" content="article"/>
     
 
     <!--Page Cover-->
@@ -55,7 +55,7 @@
 
     <!-- Title -->
     
-    <title>page - AD - Shaw</title>
+    <title>CSP复盘-202112-1-序列查询 - Shaw</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
@@ -89,7 +89,11 @@
     <link rel="icon" href="img/putaoyou.png"/>
     
 
-<meta name="generator" content="Hexo 5.4.1"></head>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.1"></head>
 
 
 <body>
@@ -153,53 +157,133 @@
 </nav>
 
     <!-- Main Content -->
-    
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
 
-<!-- Page Header -->
-<!-- Set your background image for this header in the theme's configuration: index_cover -->
 <header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <div class="site-heading">
-                    <h1>#AD</h1>
+                <div class="post-heading">
+                    <h1>CSP复盘-202112-1-序列查询</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                            Posted by Shaw on
+                        
+                        
+                            2022-03-07
+                        
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Main Content -->
-<div class="container">
-    <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
+                    
+                        
+
+<a href="/categories/CSP/">CSP</a>
+
+                    
+                </div>
+                <div class="col-lg-4 col-md-5 post-categories">
+                    
+                </div>
             
-                <div class="post-preview">
-    <a href="/2021/09/03/【论文阅读】Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers/">
-        <h1 class="post-title archive">
-            Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-            Posted by Shaw on
-        
-        2021-09-03
-    </p>
-</div>
+
+            <!-- Gallery -->
             
-            <div class="archive-before-pagination"></div>
-            <ul class="pager">
-    
-        <li class="previous"><a href="/tags/AD/">&larr;  下一页</a></li>
-    
-    
-</ul>
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h1 id="【CSP复盘】202112-1-序列查询"><a href="#【CSP复盘】202112-1-序列查询" class="headerlink" title="【CSP复盘】202112-1 序列查询"></a>【CSP复盘】202112-1 序列查询</h1><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220307103437.png" alt=""></p>
+<p>​    考试的时候满脑子都是dp，当时想：</p>
+<script type="math/tex; mode=display">
+f(i+1)=
+   \begin{cases}
+   f(i)&\mbox{if A[f(i)] <= i+1 <A[f(i)+1] or f(i) = n }\\
+   f(i)+1&\mbox{if A[f(i)+1] = i+1}\\
+
+   \end{cases}</script><p>​    然后用一个数组all_f[MAX_N]存储f(i)，然后dp：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;202112 -1
+#include &quot;stdio.h&quot;
+#include &quot;string.h&quot;
+#define MAX_N 10000000
+#define MAX_n 200
+int n,N;
+int A[MAX_n] &#x3D; &#123;0,&#125;;
+int all_f[MAX_N];
+int f(int i)&#123;
+    if(all_f[i] &gt;&#x3D; 0) return all_f[i];
+    else&#123;
+        if(A[f(i-1)] &lt;&#x3D; i &amp;&amp; i &lt; A[f(i-1)+1])&#123;
+            all_f[i] &#x3D; f(i-1);
+        &#125;
+        else if(f(i-1) &#x3D;&#x3D; n)&#123;
+            all_f[i] &#x3D; f(i - 1);
+        &#125;
+        else&#123;
+            all_f[i] &#x3D; f(i - 1)+1;
+        &#125;
+    return all_f[i];
+    &#125;
+&#125;
+int main()&#123;
+    memset(all_f,-1,sizeof(all_f));
+    all_f[0] &#x3D; 0;
+    scanf(&quot;%d %d&quot;,&amp;n,&amp;N);
+    int ans &#x3D; 0;
+    for(int i &#x3D; 1; i &lt;&#x3D; n;++i) scanf(&quot;%d&quot;,&amp;A[i]);
+    for(int j &#x3D; 1; j &lt; N;++j) ans +&#x3D; f(j);
+    printf(&quot;%d\n&quot;,ans);
+    return 0;
+&#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​    但这样只能得40分，后来发现是MAX_n如果只设为200会导致溢出，应该大于等于201，更改后问题解决，100分通过，但做法还是一个一个计算f(i)，太耗费时间空间。</p>
+<p>​    <strong><u>但其实仔细观察f(i)的性质，就会发现完全没有必要这么麻烦：</u></strong></p>
+<script type="math/tex; mode=display">
+f(k) = i,\quad A[i]\le k \le A[i+1]-1</script><p>​    那完全可以用A[i]将连续数列0~N-1分段，且上一段的f(i)总是比下一段多1，相乘相加即可：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;202112 -1
+#include &quot;stdio.h&quot;
+int a[500] &#x3D; &#123;0&#125;;
+int main(void)&#123;
+    int n, N, ans &#x3D; 0, t &#x3D; 0;
+    a[0] &#x3D; 0;
+    scanf(&quot;%d %d&quot;,&amp;n,&amp;N);
+    for(int i &#x3D; 1;i &lt;&#x3D; n;++i) scanf(&quot;%d&quot;,&amp;a[i]);
+    for(int j &#x3D; 1;j &lt;&#x3D; n;++j) ans +&#x3D; (t++)*(a[j]-a[j-1]);
+    ans +&#x3D; (N-a[n])*t;
+    printf(&quot;%d\n&quot;,ans);
+    return 0;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​    也有博客是使用差分数组等方式实现，但没有上述方法简单。</p>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
         </div>
     </div>
-</div>
-
+</article>
 
     <!-- Footer -->
     <hr />
