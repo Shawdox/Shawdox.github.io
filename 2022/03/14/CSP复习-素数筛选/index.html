@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <title>CSP复习-素数筛选 | Shaw</title>
+  <meta name="description" content="@hust" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" type="text/css" href="/css/screen.css" />
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Noto+Serif:400,700,400italic|Open+Sans:700,400" />
+
+  <meta name="generator" content="Shaw">
+
+  
+  
+  
+
+  
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+
+<body class="post-template">
+
+  <header class="site-head"  style="background-image: url(//blog.ghost.org/content/images/2013/Nov/cover.png)" >
+    <div class="vertical">
+        <div class="site-head-content inner">
+             <a class="blog-logo" href="/"><img src="//blog.ghost.org/content/images/2013/Nov/bloglogo_1-1.png" alt="Blog Logo"/></a> 
+            <h1 class="blog-title">Shaw</h1>
+            <h2 class="blog-description">@hust</h2>
+        </div>
+    </div>
+</header>
+  
+
+<main class="content" role="main">
+  <article class="post">
+    <span class="post-meta">
+      <time datetime="2022-03-14T08:58:02.742Z" itemprop="datePublished">
+          2022-03-14
+      </time>
+    
+</span>
+    <h1 class="post-title">CSP复习-素数筛选</h1>
+    <section class="post-content">
+      <h1 id="【CPS复习】素数筛选"><a href="#【CPS复习】素数筛选" class="headerlink" title="【CPS复习】素数筛选"></a>【CPS复习】素数筛选</h1><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220314170334.png" alt=""></p>
+<p> 单个素数的判断可以控制在$O(\sqrt{n})$，对于不超过10^5^的n素数表可以直接遍历，复杂度为$O(n\sqrt{n})$，超过此复杂度的使用如下的欧拉筛法，可以控制在$O(n)$：</p>
+<p>​    </p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">bool isPrime[100000010];
+&#x2F;&#x2F;isPrime[i] &#x3D;&#x3D; 1表示：i是素数
+int Prime[6000010], cnt &#x3D; 0;
+&#x2F;&#x2F;Prime存质数
+
+void GetPrime(int n)&#x2F;&#x2F;筛到n
+&#123;
+	memset(isPrime, 1, sizeof(isPrime));
+	&#x2F;&#x2F;以“每个数都是素数”为初始状态，逐个删去
+	isPrime[1] &#x3D; 0;&#x2F;&#x2F;1不是素数
+	
+	for(int i &#x3D; 2; i &lt;&#x3D; n; i++)
+	&#123;
+		if(isPrime[i])&#x2F;&#x2F;没筛掉 
+			Prime[++cnt] &#x3D; i; &#x2F;&#x2F;i成为下一个素数
+			
+		for(int j &#x3D; 1; j &lt;&#x3D; cnt &amp;&amp; i*Prime[j] &lt;&#x3D; n&#x2F;*不超上限*&#x2F;; j++) 
+		&#123;
+        	&#x2F;&#x2F;从Prime[1]，即最小质数2开始，逐个枚举已知的质数，并期望Prime[j]是(i*Prime[j])的最小质因数
+            &#x2F;&#x2F;当然，i肯定比Prime[j]大，因为Prime[j]是在i之前得出的
+			isPrime[i*Prime[j]] &#x3D; 0;
+            
+			if(i % Prime[j] &#x3D;&#x3D; 0)&#x2F;&#x2F;i中也含有Prime[j]这个因子
+				break; &#x2F;&#x2F;重要步骤。见原理
+		&#125;
+	&#125;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​    </p>
+
+    </section>
+    <footer class="post-footer">
+      <section class="author">
+    <h4>Shaw</h4>
+    <p>A designer, developer and entrepreneur. Spends his time travelling the world with a bag of kites. Likes journalism and publishing platforms.</p>
+</section>
+      <section class="share">
+    <h4>Share this post</h4>
+    <a class="icon-twitter" target="_blank" rel="noopener" href="http://twitter.com/share?url=http://example.com/2022/03/14/CSP复习-素数筛选/"
+       onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <span class="hidden">Twitter</span>
+    </a>
+    <a class="icon-facebook" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/2022/03/14/CSP复习-素数筛选/"
+       onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <span class="hidden">Facebook</span>
+    </a>
+    <a class="icon-google-plus" target="_blank" rel="noopener" href="https://plus.google.com/share?url=http://example.com/2022/03/14/CSP复习-素数筛选/"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <span class="hidden">Google+</span>
+    </a>
+</section>
+    </footer>
+  </article>
+  <nav class="pagination" role="pagination">
+    
+    <a class="newer-posts" href="/2022/03/14/LQB-%E7%A0%9D%E7%A0%81%E7%A7%B0%E9%87%8D/">
+        ← LQB-砝码称重
+    </a>
+    
+    <span class="page-number">•</span>
+    
+    <a class="older-posts" href="/2022/03/14/CSP%E5%A4%8D%E4%B9%A0-%E6%8B%8D%E5%A4%B4/">
+        CSP复习-拍头 →
+    </a>
+    
+</nav>
+  <div id="comment" class="comments-area">
+    <h1 class="title"><a href="#disqus_comments" name="disqus_comments">Comments</a></h1>
+
+    
+</div>
+</main>
+
+
+  
+<footer class="site-footer">
+  
+  <div class="inner">
+     <section class="copyright">All content copyright <a href="/">Shaw</a> &copy; 2014 &bull; All rights reserved.</section>
+     <section class="poweredby">Proudly published with <a class="icon-ghost" target="_blank" rel="noopener" href="http://zespia.tw/hexo/">Hexo</a></section>
+  </div>
+</footer>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+<script type="text/javascript" src="/js/jquery.fitvids.js"></script>
+<script type="text/javascript" src="/js/index.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>

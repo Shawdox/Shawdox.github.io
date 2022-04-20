@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <title>算法-非零段划分 | Shaw</title>
+  <meta name="description" content="@hust" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" type="text/css" href="/css/screen.css" />
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Noto+Serif:400,700,400italic|Open+Sans:700,400" />
+
+  <meta name="generator" content="Shaw">
+
+  
+  
+  
+
+  
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+
+<body class="post-template">
+
+  <header class="site-head"  style="background-image: url(//blog.ghost.org/content/images/2013/Nov/cover.png)" >
+    <div class="vertical">
+        <div class="site-head-content inner">
+             <a class="blog-logo" href="/"><img src="//blog.ghost.org/content/images/2013/Nov/bloglogo_1-1.png" alt="Blog Logo"/></a> 
+            <h1 class="blog-title">Shaw</h1>
+            <h2 class="blog-description">@hust</h2>
+        </div>
+    </div>
+</header>
+  
+
+<main class="content" role="main">
+  <article class="post">
+    <span class="post-meta">
+      <time datetime="2022-03-16T07:33:58.022Z" itemprop="datePublished">
+          2022-03-16
+      </time>
+    
+</span>
+    <h1 class="post-title">算法-非零段划分</h1>
+    <section class="post-content">
+      <h1 id="【算法复习】非零段划分"><a href="#【算法复习】非零段划分" class="headerlink" title="【算法复习】非零段划分"></a>【算法复习】非零段划分</h1><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220316153408.png" alt=""></p>
+<p>​    第二遍重做，暴力的解法是O（n^2^），必不可能过，用浮水法来解，但只有70分，后来发现是ans的判断放到了双循环的最里面，小错误调了1h：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#include &quot;stdio.h&quot;
+#include &quot;vector&quot;
+#include &quot;algorithm&quot;
+using namespace std;
+int main(void)&#123;
+    int n, A[5005] &#x3D; &#123; 0, &#125;,m&#x3D;0,now &#x3D; 0,ans &#x3D; 0;
+    vector&lt;int&gt; B[1005];&#x2F;&#x2F;下标值索引
+    scanf(&quot;%d&quot;, &amp;n);
+    for (int i &#x3D; 1; i &lt;&#x3D; n; ++i) &#123;
+        scanf(&quot;%d&quot;, &amp;A[i]);
+        B[A[i]].push_back(i);
+        m &#x3D; max(m, A[i]);
+    &#125;
+    for (int p &#x3D; m; p &gt;&#x3D; 1; --p) &#123;
+        for (int i &#x3D; 0; i &lt; B[p].size(); ++i) &#123;
+            int left &#x3D; B[p][i] - 1,right;
+            while (i + 1 &lt; B[p].size() &amp;&amp; B[p][i] + 1 &#x3D;&#x3D; B[p][i + 1] ) i++;
+            right &#x3D; B[p][i] + 1;
+            if (A[left] &lt; p &amp;&amp; p &gt; A[right]) now++;                      
+            else if (A[left] &gt; p &amp;&amp; p &lt; A[right]) now--;
+        &#125;
+       ans &#x3D; max(ans, now);&#x2F;&#x2F;这个ans判断开始放到最里面了，导致70分，一个p的遍历过程可能有加有减
+    &#125;
+    printf(&quot;%d\n&quot;, ans);
+    return 0;
+&#125;   <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​    这次写的比上一次更短，主要思想没变，但还是有小错误，要是考试真不一定能拿满。</p>
+
+    </section>
+    <footer class="post-footer">
+      <section class="author">
+    <h4>Shaw</h4>
+    <p>A designer, developer and entrepreneur. Spends his time travelling the world with a bag of kites. Likes journalism and publishing platforms.</p>
+</section>
+      <section class="share">
+    <h4>Share this post</h4>
+    <a class="icon-twitter" target="_blank" rel="noopener" href="http://twitter.com/share?url=http://example.com/2022/03/16/算法-非零段划分/"
+       onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <span class="hidden">Twitter</span>
+    </a>
+    <a class="icon-facebook" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/2022/03/16/算法-非零段划分/"
+       onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <span class="hidden">Facebook</span>
+    </a>
+    <a class="icon-google-plus" target="_blank" rel="noopener" href="https://plus.google.com/share?url=http://example.com/2022/03/16/算法-非零段划分/"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <span class="hidden">Google+</span>
+    </a>
+</section>
+    </footer>
+  </article>
+  <nav class="pagination" role="pagination">
+    
+    <a class="newer-posts" href="/2022/03/19/%E7%AE%97%E6%B3%95-%E5%8F%8C%E6%8C%87%E9%92%88/">
+        ← 
+    </a>
+    
+    <span class="page-number">•</span>
+    
+    <a class="older-posts" href="/2022/03/16/%E7%AE%97%E6%B3%95-%E5%B7%A6%E5%AD%A9%E5%AD%90%E5%8F%B3%E5%85%84%E5%BC%9F/">
+        算法-左孩子右兄弟 →
+    </a>
+    
+</nav>
+  <div id="comment" class="comments-area">
+    <h1 class="title"><a href="#disqus_comments" name="disqus_comments">Comments</a></h1>
+
+    
+</div>
+</main>
+
+
+  
+<footer class="site-footer">
+  
+  <div class="inner">
+     <section class="copyright">All content copyright <a href="/">Shaw</a> &copy; 2014 &bull; All rights reserved.</section>
+     <section class="poweredby">Proudly published with <a class="icon-ghost" target="_blank" rel="noopener" href="http://zespia.tw/hexo/">Hexo</a></section>
+  </div>
+</footer>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+<script type="text/javascript" src="/js/jquery.fitvids.js"></script>
+<script type="text/javascript" src="/js/index.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>

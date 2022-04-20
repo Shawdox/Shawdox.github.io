@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <title>CSP复习-直线交点 | Shaw</title>
+  <meta name="description" content="@hust" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" type="text/css" href="/css/screen.css" />
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Noto+Serif:400,700,400italic|Open+Sans:700,400" />
+
+  <meta name="generator" content="Shaw">
+
+  
+  
+  
+
+  
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+
+<body class="post-template">
+
+  <header class="site-head"  style="background-image: url(//blog.ghost.org/content/images/2013/Nov/cover.png)" >
+    <div class="vertical">
+        <div class="site-head-content inner">
+             <a class="blog-logo" href="/"><img src="//blog.ghost.org/content/images/2013/Nov/bloglogo_1-1.png" alt="Blog Logo"/></a> 
+            <h1 class="blog-title">Shaw</h1>
+            <h2 class="blog-description">@hust</h2>
+        </div>
+    </div>
+</header>
+  
+
+<main class="content" role="main">
+  <article class="post">
+    <span class="post-meta">
+      <time datetime="2022-03-12T08:51:48.776Z" itemprop="datePublished">
+          2022-03-12
+      </time>
+    
+</span>
+    <h1 class="post-title">CSP复习-直线交点</h1>
+    <section class="post-content">
+      <h1 id="【CPS复习】直线交点"><a href="#【CPS复习】直线交点" class="headerlink" title="【CPS复习】直线交点"></a>【CPS复习】直线交点</h1><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220312165159.png" alt=""></p>
+<p>​    大体思路是将图案中所有的平行线分为一组，另外的直线分为另一组，则两组线有r<em>(N-r)个交点，因为平行线组内没有内部交点，故在有r条平行线的情况下，有r </em> (N-r) + [N^’^ == N-r时的方案]个交点。</p>
+<p>​    由于对某一N，其情况总和为从0条平行线到N条平行线，每一种子情况又分为N-r个方案，故不好用一个递归函数g(x)直接表示N=x时的种数，令函数g(n,k)代表一个处理过程，n表示待计算的线的条数，k代表以已经计算出的交点个数：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#include &quot;stdio.h&quot;
+bool f[1000000] &#x3D; &#123; 0, &#125;;
+int ans &#x3D; 0;
+void g(int n, int k) &#123;
+    if (n &#x3D;&#x3D; 0) &#123;
+        if (f[k] &#x3D;&#x3D; false) ans++;
+        f[k] &#x3D; true;
+    &#125;
+    else for (int i &#x3D; 1; i &lt;&#x3D; n; ++i) g(n - i, i * (n - i) + k);
+&#125;
+int main(void) &#123;
+    int N;
+    scanf(&quot;%d&quot;, &amp;N);
+    g(N, 0);
+    printf(&quot;%d\n&quot;, ans);
+    return 0;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+    </section>
+    <footer class="post-footer">
+      <section class="author">
+    <h4>Shaw</h4>
+    <p>A designer, developer and entrepreneur. Spends his time travelling the world with a bag of kites. Likes journalism and publishing platforms.</p>
+</section>
+      <section class="share">
+    <h4>Share this post</h4>
+    <a class="icon-twitter" target="_blank" rel="noopener" href="http://twitter.com/share?url=http://example.com/2022/03/12/CSP复习-直线交点/"
+       onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <span class="hidden">Twitter</span>
+    </a>
+    <a class="icon-facebook" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/2022/03/12/CSP复习-直线交点/"
+       onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <span class="hidden">Facebook</span>
+    </a>
+    <a class="icon-google-plus" target="_blank" rel="noopener" href="https://plus.google.com/share?url=http://example.com/2022/03/12/CSP复习-直线交点/"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <span class="hidden">Google+</span>
+    </a>
+</section>
+    </footer>
+  </article>
+  <nav class="pagination" role="pagination">
+    
+    <a class="newer-posts" href="/2022/03/13/CSP%E5%A4%8D%E4%B9%A0-%E7%BC%96%E7%A0%81/">
+        ← CSP复习-编码
+    </a>
+    
+    <span class="page-number">•</span>
+    
+    <a class="older-posts" href="/2022/03/12/CSP%E5%A4%8D%E4%B9%A0-%E7%BB%84%E5%90%88%E6%95%B0/">
+        CSP复习-组合数 →
+    </a>
+    
+</nav>
+  <div id="comment" class="comments-area">
+    <h1 class="title"><a href="#disqus_comments" name="disqus_comments">Comments</a></h1>
+
+    
+</div>
+</main>
+
+
+  
+<footer class="site-footer">
+  
+  <div class="inner">
+     <section class="copyright">All content copyright <a href="/">Shaw</a> &copy; 2014 &bull; All rights reserved.</section>
+     <section class="poweredby">Proudly published with <a class="icon-ghost" target="_blank" rel="noopener" href="http://zespia.tw/hexo/">Hexo</a></section>
+  </div>
+</footer>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+<script type="text/javascript" src="/js/jquery.fitvids.js"></script>
+<script type="text/javascript" src="/js/index.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>

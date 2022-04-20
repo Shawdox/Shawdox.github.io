@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <title>Archives: 2022 | Shaw</title>
+  <meta name="description" content="@hust" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" type="text/css" href="/css/screen.css" />
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Noto+Serif:400,700,400italic|Open+Sans:700,400" />
+
+  <meta name="generator" content="Shaw">
+
+  
+  
+  
+
+  
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+
+<body class="home-template">
+
+  <header class="site-head"  style="background-image: url(//blog.ghost.org/content/images/2013/Nov/cover.png)" >
+    <div class="vertical">
+        <div class="site-head-content inner">
+             <a class="blog-logo" href="/"><img src="//blog.ghost.org/content/images/2013/Nov/bloglogo_1-1.png" alt="Blog Logo"/></a> 
+            <h1 class="blog-title">Shaw</h1>
+            <h2 class="blog-description">@hust</h2>
+        </div>
+    </div>
+</header>
+  
+<main class="content" role="main">
+  
+  <article class="post">
+    <header class="post-header">
+      <span class="post-meta">
+      <time datetime="2022-03-14T07:23:03.904Z" itemprop="datePublished">
+          2022-03-14
+      </time>
+    
+</span>
+      <h2 class="post-title"><a href="/2022/03/14/CSP复习-拍头/">CSP复习-拍头</a></h2>
+    </header>
+    <section class="post-excerpt">
+      <p>
+      
+        【CPS复习】拍头
+
+​    直接暴力的时间复杂度是O(N^2^) = 1 × 10^10^，肯定超时。
+​    观察题目可以发现，某个奶牛需要拍头的数量=其A_i的所有约数A_j的数量和:
+​    例如A_i = 12 = 2  2  3，则奶牛i需要拍头的数量为:num[1]+num[2]+num[3]+num[4]+num[6]+num[12]-1，减一是为了防止自己拍自己的头。
+​    故如果能够在输入的时候用数组num
+      
+      </p>
+      
+      <p>
+          <a href="/2022/03/14/CSP复习-拍头/" class="excerpt-link">Read More...</a>
+      </p>
+      
+    </section>
+  </article>
+  
+  <article class="post">
+    <header class="post-header">
+      <span class="post-meta">
+      <time datetime="2022-03-13T07:14:26.935Z" itemprop="datePublished">
+          2022-03-13
+      </time>
+    
+</span>
+      <h2 class="post-title"><a href="/2022/03/13/CSP复习-编码/">CSP复习-编码</a></h2>
+    </header>
+    <section class="post-excerpt">
+      <p>
+      
+        【CPS复习】编码
+#include &quot;stdio.h&quot;
+#include &quot;iostream&quot;
+#include &quot;string&quot;
+using namespace std;
+unsigned long long C(int n, int m) &#123;
+    unsigned long long ans &#x3D; 1;
+    for (int i &#x3D; 1
+      
+      </p>
+      
+      <p>
+          <a href="/2022/03/13/CSP复习-编码/" class="excerpt-link">Read More...</a>
+      </p>
+      
+    </section>
+  </article>
+  
+  <article class="post">
+    <header class="post-header">
+      <span class="post-meta">
+      <time datetime="2022-03-12T08:51:48.776Z" itemprop="datePublished">
+          2022-03-12
+      </time>
+    
+</span>
+      <h2 class="post-title"><a href="/2022/03/12/CSP复习-直线交点/">CSP复习-直线交点</a></h2>
+    </header>
+    <section class="post-excerpt">
+      <p>
+      
+        【CPS复习】直线交点
+​    大体思路是将图案中所有的平行线分为一组，另外的直线分为另一组，则两组线有r(N-r)个交点，因为平行线组内没有内部交点，故在有r条平行线的情况下，有r  (N-r) + [N^’^ == N-r时的方案]个交点。
+​    由于对某一N，其情况总和为从0条平行线到N条平行线，每一种子情况又分为N-r个方案，故不好用一个递归函数g(x)直接表示N=x时的种数，令函数g(n,k)代表一个处理过程，n表示待计
+      
+      </p>
+      
+      <p>
+          <a href="/2022/03/12/CSP复习-直线交点/" class="excerpt-link">Read More...</a>
+      </p>
+      
+    </section>
+  </article>
+  
+  <article class="post">
+    <header class="post-header">
+      <span class="post-meta">
+      <time datetime="2022-03-12T07:05:39.272Z" itemprop="datePublished">
+          2022-03-12
+      </time>
+    
+</span>
+      <h2 class="post-title"><a href="/2022/03/12/CSP复习-组合数/">CSP复习-组合数</a></h2>
+    </header>
+    <section class="post-excerpt">
+      <p>
+      
+        【CPS复习】组合数
+
+阶乘的计算方法：
+
+套公式硬算：就算以long long 来存储数据，也只能存储到20！，这里m与n最高可以到2000，不可能套公式硬算。
+递推：
+
+
+C_{n}^{m} = C_{n-1}^{m}+C_{n-1}^{m-1}​    当m == n或者m== 0时组合数的值为1，此为递推边界，并且为了防止重复计算，可以得到以下递归代码：
+long long res[67][67] &#x3D; &#123;0&
+      
+      </p>
+      
+      <p>
+          <a href="/2022/03/12/CSP复习-组合数/" class="excerpt-link">Read More...</a>
+      </p>
+      
+    </section>
+  </article>
+  
+  <article class="post">
+    <header class="post-header">
+      <span class="post-meta">
+      <time datetime="2022-03-11T12:35:05.057Z" itemprop="datePublished">
+          2022-03-11
+      </time>
+    
+</span>
+      <h2 class="post-title"><a href="/2022/03/11/CSP复习-找筷子/">CSP复习-找筷子</a></h2>
+    </header>
+    <section class="post-excerpt">
+      <p>
+      
+        【CPS复习】找筷子
+​    
+开始的思路是用一个map存储ai与ai数量的关系，然后遍历map，找到对应的奇数ai即可：
+#include &quot;stdio.h&quot;
+#include &quot;iostream&quot;
+#include &quot;string&quot;
+#include &quot;vector&quot;
+#include &quot;map&quot;
+using namespace s
+      
+      </p>
+      
+      <p>
+          <a href="/2022/03/11/CSP复习-找筷子/" class="excerpt-link">Read More...</a>
+      </p>
+      
+    </section>
+  </article>
+  
+  <article class="post">
+    <header class="post-header">
+      <span class="post-meta">
+      <time datetime="2022-03-11T11:54:16.577Z" itemprop="datePublished">
+          2022-03-11
+      </time>
+    
+</span>
+      <h2 class="post-title"><a href="/2022/03/11/【CPS复习】进制转换/">CSP复习-进制转换</a></h2>
+    </header>
+    <section class="post-excerpt">
+      <p>
+      
+        【CPS复习】进制转换
+​    不同进制间转换的大致思路是先由x进制转换成10进制，再由10进制转换为y进制。
+​    参考《算法笔记》.P95
+​    
+#include &quot;stdio.h&quot;
+#include &quot;iostream&quot;
+#include &quot;string&quot;
+#include &quot;vector&quot;
+using namespace std;
+int
+      
+      </p>
+      
+      <p>
+          <a href="/2022/03/11/【CPS复习】进制转换/" class="excerpt-link">Read More...</a>
+      </p>
+      
+    </section>
+  </article>
+  
+  <article class="post">
+    <header class="post-header">
+      <span class="post-meta">
+      <time datetime="2022-03-10T02:48:58.825Z" itemprop="datePublished">
+          2022-03-10
+      </time>
+    
+</span>
+      <h2 class="post-title"><a href="/2022/03/10/【CSP复盘】202112-3-登机牌条码/">CSP复盘202112-3-登机牌条码</a></h2>
+    </header>
+    <section class="post-excerpt">
+      <p>
+      
+        CSP复盘202112-3-登机牌条码
+
+
+
+
+​    只考虑前40分，简单模拟即可，注意每个字符的编码前如果有状态转移，仅仅是多加了1-2个数字，vector+switch可以很好的避免使用过多的if-else：
+&#x2F;&#x2F; 202112-3 40分
+#define _CRT_SECURE_NO_WARNINGS
+#include &quot;stdio.h&quot;
+#include &quot;iostream&
+      
+      </p>
+      
+      <p>
+          <a href="/2022/03/10/【CSP复盘】202112-3-登机牌条码/" class="excerpt-link">Read More...</a>
+      </p>
+      
+    </section>
+  </article>
+  
+  <article class="post">
+    <header class="post-header">
+      <span class="post-meta">
+      <time datetime="2022-03-07T08:57:47.129Z" itemprop="datePublished">
+          2022-03-07
+      </time>
+    
+</span>
+      <h2 class="post-title"><a href="/2022/03/07/【CSP复盘】202112-2 序列查询新解/">CSP复盘202112-2-序列查询新解</a></h2>
+    </header>
+    <section class="post-excerpt">
+      <p>
+      
+        202112-2 序列查询新解
+​    注意到：
+
+​    要计算$error(A)$，如果将每一步的|g(i)-f(i)|都算出来则要计算10^9^次，但1s内最多算10^7^次。故如果不对最外层的大循环进行优化，无论对f(i)的计算如何优化结果都会超时，以下是70分代码：
+&#x2F;&#x2F; 202112-2 70分
+#include &quot;stdio.h&quot;
+using namespace std;
+int
+      
+      </p>
+      
+      <p>
+          <a href="/2022/03/07/【CSP复盘】202112-2 序列查询新解/" class="excerpt-link">Read More...</a>
+      </p>
+      
+    </section>
+  </article>
+  
+  <article class="post">
+    <header class="post-header">
+      <span class="post-meta">
+      <time datetime="2022-03-07T07:19:05.007Z" itemprop="datePublished">
+          2022-03-07
+      </time>
+    
+</span>
+      <h2 class="post-title"><a href="/2022/03/07/【CSP复盘】202112-1 序列查询/">CSP复盘-202112-1-序列查询</a></h2>
+    </header>
+    <section class="post-excerpt">
+      <p>
+      
+        【CSP复盘】202112-1 序列查询
+​    考试的时候满脑子都是dp，当时想：
+
+f(i+1)=
+   \begin{cases}
+   f(i)&\mbox{if A[f(i)] ​    然后用一个数组all_f[MAX_N]存储f(i)，然后dp：
+&#x2F;&#x2F;202112 -1
+#include &quot;stdio.h&quot;
+#include &quot;string.h&quot;
+#define
+      
+      </p>
+      
+      <p>
+          <a href="/2022/03/07/【CSP复盘】202112-1 序列查询/" class="excerpt-link">Read More...</a>
+      </p>
+      
+    </section>
+  </article>
+  
+  <article class="post">
+    <header class="post-header">
+      <span class="post-meta">
+      <time datetime="2022-03-04T08:24:55.254Z" itemprop="datePublished">
+          2022-03-04
+      </time>
+    
+    
+    | 
+    <a href='/tags/IDS/'>IDS</a>,
+    
+    <a href='/tags/DDoS/'>DDoS</a>
+    
+    
+</span>
+      <h2 class="post-title"><a href="/2022/03/04/A Survey of Defense Mechanisms Against Distributed Denial of Service (DDoS) Flooding Attacks/">A Survey of Defense Mechanisms Against Distributed Denial of Service (DDoS) Flooding Attacks</a></h2>
+    </header>
+    <section class="post-excerpt">
+      <p>
+      
+        A Survey of Defense Mechanisms Against Distributed Denial of Service (DDoS) Flooding Attacks
+时间：2013
+作者：Saman Taghavi Zargar，James Joshi， David Tipper
+期刊：IEEE COMMUNICATIONS SURVEYS &amp; TUTORIALS（中科院一区）
+
+ABSTRACT​    D
+      
+      </p>
+      
+      <p>
+          <a href="/2022/03/04/A Survey of Defense Mechanisms Against Distributed Denial of Service (DDoS) Flooding Attacks/" class="excerpt-link">Read More...</a>
+      </p>
+      
+    </section>
+  </article>
+  
+  <nav class="pagination" role="pagination">
+    <a class="newer-posts" href="/archives/2022/">← Newer Posts</a>
+    <span class="page-number">Page 2 of 2</span>
+    
+  </nav>
+</main>
+
+
+  
+<footer class="site-footer">
+  
+  <div class="inner">
+     <section class="copyright">All content copyright <a href="/">Shaw</a> &copy; 2014 &bull; All rights reserved.</section>
+     <section class="poweredby">Proudly published with <a class="icon-ghost" target="_blank" rel="noopener" href="http://zespia.tw/hexo/">Hexo</a></section>
+  </div>
+</footer>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+<script type="text/javascript" src="/js/jquery.fitvids.js"></script>
+<script type="text/javascript" src="/js/index.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>

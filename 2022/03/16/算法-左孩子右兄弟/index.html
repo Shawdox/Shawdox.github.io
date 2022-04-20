@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <title>算法-左孩子右兄弟 | Shaw</title>
+  <meta name="description" content="@hust" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" type="text/css" href="/css/screen.css" />
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Noto+Serif:400,700,400italic|Open+Sans:700,400" />
+
+  <meta name="generator" content="Shaw">
+
+  
+  
+  
+
+  
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+
+<body class="post-template">
+
+  <header class="site-head"  style="background-image: url(//blog.ghost.org/content/images/2013/Nov/cover.png)" >
+    <div class="vertical">
+        <div class="site-head-content inner">
+             <a class="blog-logo" href="/"><img src="//blog.ghost.org/content/images/2013/Nov/bloglogo_1-1.png" alt="Blog Logo"/></a> 
+            <h1 class="blog-title">Shaw</h1>
+            <h2 class="blog-description">@hust</h2>
+        </div>
+    </div>
+</header>
+  
+
+<main class="content" role="main">
+  <article class="post">
+    <span class="post-meta">
+      <time datetime="2022-03-16T03:01:09.261Z" itemprop="datePublished">
+          2022-03-16
+      </time>
+    
+</span>
+    <h1 class="post-title">算法-左孩子右兄弟</h1>
+    <section class="post-content">
+      <h1 id="【算法复习】左孩子右兄弟"><a href="#【算法复习】左孩子右兄弟" class="headerlink" title="【算法复习】左孩子右兄弟"></a>【算法复习】左孩子右兄弟</h1><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220316110129.png" style="zoom:67%;" /></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220316110146.png" alt="image-20220316110144669" style="zoom:67%;" /></p>
+<p>​    其实还是用DP的思想找规律，我们假设某个节点共有K个子节点，这K个子节点的最高高度分别为p1,p2,p3······pk，那么<strong>总树的最高高度为H = K + pk。</strong></p>
+<p>​    上式相当于将最高的子树放到最后，很好理解，如果最高的子树放在中间则会有部分长度被浪费（兄弟链的长度是确定的K）。</p>
+<p>​    用vector来表示邻接表存储树，很方便的就能实现：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#include &quot;stdio.h&quot;
+#include &quot;vector&quot;
+#include &quot;algorithm&quot;
+using namespace std;
+vector&lt;int&gt; leaves[100005];&#x2F;&#x2F;邻接表存储树
+int f[100005] &#x3D; &#123; 0, &#125;;&#x2F;&#x2F;存储子树高度，加快dp时间
+int H(int t) &#123;
+    if (leaves[t].size() &#x3D;&#x3D; 0) return 0;&#x2F;&#x2F;叶子结点返回0高度
+    else if (f[t] &#x3D;&#x3D; 0)&#123;&#x2F;&#x2F;非叶子结点
+        int m &#x3D; 0;
+        for (int i &#x3D; 0; i &lt; leaves[t].size(); ++i) m &#x3D; max(m, H(leaves[t][i]));
+        f[t] &#x3D; leaves[t].size() + m;&#x2F;&#x2F;兄弟链长度+子树最大长度
+    &#125;
+    return f[t];
+&#125;
+int main(void)&#123;
+    int N,t;
+    scanf(&quot;%d&quot;, &amp;N);
+    for (int i &#x3D; 2; i &lt;&#x3D; N; ++i) &#123;
+        scanf(&quot;%d&quot;, &amp;t);
+        leaves[t].push_back(i);
+    &#125;
+    printf(&quot;%d\n&quot;, H(1));
+    return 0;
+&#125;   <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+    </section>
+    <footer class="post-footer">
+      <section class="author">
+    <h4>Shaw</h4>
+    <p>A designer, developer and entrepreneur. Spends his time travelling the world with a bag of kites. Likes journalism and publishing platforms.</p>
+</section>
+      <section class="share">
+    <h4>Share this post</h4>
+    <a class="icon-twitter" target="_blank" rel="noopener" href="http://twitter.com/share?url=http://example.com/2022/03/16/算法-左孩子右兄弟/"
+       onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <span class="hidden">Twitter</span>
+    </a>
+    <a class="icon-facebook" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/2022/03/16/算法-左孩子右兄弟/"
+       onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <span class="hidden">Facebook</span>
+    </a>
+    <a class="icon-google-plus" target="_blank" rel="noopener" href="https://plus.google.com/share?url=http://example.com/2022/03/16/算法-左孩子右兄弟/"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <span class="hidden">Google+</span>
+    </a>
+</section>
+    </footer>
+  </article>
+  <nav class="pagination" role="pagination">
+    
+    <a class="newer-posts" href="/2022/03/16/%E7%AE%97%E6%B3%95-%E9%9D%9E%E9%9B%B6%E6%AE%B5%E5%88%92%E5%88%86/">
+        ← 算法-非零段划分
+    </a>
+    
+    <span class="page-number">•</span>
+    
+    <a class="older-posts" href="/2022/03/15/%E7%AE%97%E6%B3%95-%E5%BC%82%E6%88%96%E6%95%B0%E5%88%97/">
+        算法-异或数列 →
+    </a>
+    
+</nav>
+  <div id="comment" class="comments-area">
+    <h1 class="title"><a href="#disqus_comments" name="disqus_comments">Comments</a></h1>
+
+    
+</div>
+</main>
+
+
+  
+<footer class="site-footer">
+  
+  <div class="inner">
+     <section class="copyright">All content copyright <a href="/">Shaw</a> &copy; 2014 &bull; All rights reserved.</section>
+     <section class="poweredby">Proudly published with <a class="icon-ghost" target="_blank" rel="noopener" href="http://zespia.tw/hexo/">Hexo</a></section>
+  </div>
+</footer>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+<script type="text/javascript" src="/js/jquery.fitvids.js"></script>
+<script type="text/javascript" src="/js/index.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>

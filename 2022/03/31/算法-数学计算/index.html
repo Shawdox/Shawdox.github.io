@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <title>算法-数学计算 | Shaw</title>
+  <meta name="description" content="@hust" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" type="text/css" href="/css/screen.css" />
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Noto+Serif:400,700,400italic|Open+Sans:700,400" />
+
+  <meta name="generator" content="Shaw">
+
+  
+  
+  
+
+  
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+
+<body class="post-template">
+
+  <header class="site-head"  style="background-image: url(//blog.ghost.org/content/images/2013/Nov/cover.png)" >
+    <div class="vertical">
+        <div class="site-head-content inner">
+             <a class="blog-logo" href="/"><img src="//blog.ghost.org/content/images/2013/Nov/bloglogo_1-1.png" alt="Blog Logo"/></a> 
+            <h1 class="blog-title">Shaw</h1>
+            <h2 class="blog-description">@hust</h2>
+        </div>
+    </div>
+</header>
+  
+
+<main class="content" role="main">
+  <article class="post">
+    <span class="post-meta">
+      <time datetime="2022-03-31T12:56:47.787Z" itemprop="datePublished">
+          2022-03-31
+      </time>
+    
+</span>
+    <h1 class="post-title">算法-数学计算</h1>
+    <section class="post-content">
+      <h1 id="【算法复习】数学计算"><a href="#【算法复习】数学计算" class="headerlink" title="【算法复习】数学计算"></a>【算法复习】数学计算</h1><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220324161341.png" alt=""></p>
+<p>​    仔细读题，这题并不是一个简单的模拟题，因为：</p>
+<script type="math/tex; mode=display">
+(\frac{(x*m)\, mod\, M}{m})\, mod \, M \neq x\, mod\, M</script><p>​    故对于op=2的操作，没法直接除回去，这里可以想到不直接求模，而是求m的逆m^-1^ mod M：</p>
+<script type="math/tex; mode=display">
+(x*m ·m^{-1})\, mod \, M = x\, mod\, M</script><p>​    这样就可以了，但这就引出了另一个问题，M不一定是素数。故现有的定理得分情况讨论，这就变成了一道数论题，反而复杂化了。</p>
+<p>​    这里我们知道，对于某个op=1，m = m~k~的操作，我们需要求出$x = m{1}·m_2····m_k$;对于某个op=2，pos = i的操作，我们需要求出$x = m{1}·m_2····m_{i-1}·1·m_{i+1}·····m_k$ 。故完全可以建一颗N= Q，叶子结点都为1的线段树，op = 1时将对应的叶子结点改为m~k~，op = 2时将对应的叶子结点改为1即可，为了可读性这里没用位运算，写的比较长。</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#include &quot;stdio.h&quot;
+#include &quot;string.h&quot;
+typedef long long ll;
+#define MAX_M 100000
+int t, Q, M;
+struct node &#123;
+	ll l, r, pro &#x3D; 1;
+&#125;tree[MAX_M &lt;&lt; 2];
+void build(ll node,ll L,ll R) &#123;
+	tree[node].l &#x3D; L,tree[node].r &#x3D; R;
+	if (L &#x3D;&#x3D; R)&#123;
+		tree[node].pro &#x3D; 1;
+		return;
+	&#125;
+	ll mid &#x3D; (L + R) &#x2F; 2;
+	ll left_node &#x3D; node * 2;
+	ll right_node &#x3D; node * 2 + 1;
+	build(left_node, L, mid);
+	build(right_node, mid + 1, R);
+	tree[node].pro &#x3D; 1;
+&#125;
+void update(ll node, ll index, ll m) &#123;
+	if (tree[node].l &#x3D;&#x3D; tree[node].r) &#123;
+		tree[node].pro &#x3D; (tree[node].pro * m) % M;
+		return;
+	&#125;
+	ll mid &#x3D; (tree[node].l + tree[node].r) &#x2F; 2;
+	if (index &lt;&#x3D; mid) update(node &lt;&lt; 1, index, m);
+	else update(node &lt;&lt; 1 | 1, index, m);
+	tree[node].pro &#x3D; (tree[node &lt;&lt; 1].pro * tree[node &lt;&lt; 1 | 1].pro) % M;
+&#125;
+void re_update(ll node, ll index) &#123;
+	if (tree[node].l &#x3D;&#x3D; tree[node].r) &#123;
+		tree[node].pro &#x3D; 1;
+		return;
+	&#125;
+	ll mid &#x3D; (tree[node].l + tree[node].r) &#x2F; 2;
+	if (index &lt;&#x3D; mid) re_update(node &lt;&lt; 1, index);
+	else re_update(node &lt;&lt; 1 | 1, index);
+	tree[node].pro &#x3D; (tree[node &lt;&lt; 1].pro * tree[node &lt;&lt; 1 | 1].pro) % M;
+&#125;
+ll query(ll node, ll L, ll R) &#123;
+	if (L &lt;&#x3D; tree[node].l &amp;&amp; tree[node].r &lt;&#x3D; R) return tree[node].pro;
+	ll mid &#x3D; (tree[node].l + tree[node].r) &#x2F; 2;
+	ll left_node &#x3D; node * 2;
+	ll right_node &#x3D; node * 2 + 1;
+	if (L &gt; mid) return query(right_node, L, R);
+	else if (R &lt; mid + 1) return query(left_node, L, R);
+	else &#123;
+		return (query(left_node,L,mid)*query(right_node,mid+1,R)) % M;
+	&#125;
+&#125;
+int main(void) &#123;
+	scanf(&quot;%d&quot;, &amp;t);
+	for (int j &#x3D; 0; j &lt; t; ++j) &#123;
+		scanf(&quot;%d %d&quot;, &amp;Q, &amp;M);
+		memset(tree, 0, sizeof(tree));
+		build(1, 1, Q);
+		for (int i &#x3D; 1; i &lt;&#x3D; Q; ++i) &#123;
+			int op, m, pos;
+			scanf(&quot;%d %d&quot;, &amp;op,&amp;m);
+			if (op &#x3D;&#x3D; 1) update(1, i, m);
+			else if (op &#x3D;&#x3D; 2) re_update(1, m);
+               printf(&quot;%lld\n&quot;, tree[1].pro);
+		&#125;&#x2F;&#x2F;end of i
+	&#125;&#x2F;&#x2F;end of j
+	return 0;
+&#125;&#x2F;&#x2F;end of main<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+    </section>
+    <footer class="post-footer">
+      <section class="author">
+    <h4>Shaw</h4>
+    <p>A designer, developer and entrepreneur. Spends his time travelling the world with a bag of kites. Likes journalism and publishing platforms.</p>
+</section>
+      <section class="share">
+    <h4>Share this post</h4>
+    <a class="icon-twitter" target="_blank" rel="noopener" href="http://twitter.com/share?url=http://example.com/2022/03/31/算法-数学计算/"
+       onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <span class="hidden">Twitter</span>
+    </a>
+    <a class="icon-facebook" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/2022/03/31/算法-数学计算/"
+       onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <span class="hidden">Facebook</span>
+    </a>
+    <a class="icon-google-plus" target="_blank" rel="noopener" href="https://plus.google.com/share?url=http://example.com/2022/03/31/算法-数学计算/"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <span class="hidden">Google+</span>
+    </a>
+</section>
+    </footer>
+  </article>
+  <nav class="pagination" role="pagination">
+    
+    <a class="newer-posts" href="/2022/03/31/%E7%AE%97%E6%B3%95-%E5%AF%B9%E8%A7%92%E7%BA%BF/">
+        ← 算法-对角线
+    </a>
+    
+    <span class="page-number">•</span>
+    
+    <a class="older-posts" href="/2022/03/19/%E7%AE%97%E6%B3%95-%E5%8F%8C%E6%8C%87%E9%92%88/">
+         →
+    </a>
+    
+</nav>
+  <div id="comment" class="comments-area">
+    <h1 class="title"><a href="#disqus_comments" name="disqus_comments">Comments</a></h1>
+
+    
+</div>
+</main>
+
+
+  
+<footer class="site-footer">
+  
+  <div class="inner">
+     <section class="copyright">All content copyright <a href="/">Shaw</a> &copy; 2014 &bull; All rights reserved.</section>
+     <section class="poweredby">Proudly published with <a class="icon-ghost" target="_blank" rel="noopener" href="http://zespia.tw/hexo/">Hexo</a></section>
+  </div>
+</footer>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+<script type="text/javascript" src="/js/jquery.fitvids.js"></script>
+<script type="text/javascript" src="/js/index.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>

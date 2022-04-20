@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <title>CSP复习-编码 | Shaw</title>
+  <meta name="description" content="@hust" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" type="text/css" href="/css/screen.css" />
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Noto+Serif:400,700,400italic|Open+Sans:700,400" />
+
+  <meta name="generator" content="Shaw">
+
+  
+  
+  
+
+  
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+
+<body class="post-template">
+
+  <header class="site-head"  style="background-image: url(//blog.ghost.org/content/images/2013/Nov/cover.png)" >
+    <div class="vertical">
+        <div class="site-head-content inner">
+             <a class="blog-logo" href="/"><img src="//blog.ghost.org/content/images/2013/Nov/bloglogo_1-1.png" alt="Blog Logo"/></a> 
+            <h1 class="blog-title">Shaw</h1>
+            <h2 class="blog-description">@hust</h2>
+        </div>
+    </div>
+</header>
+  
+
+<main class="content" role="main">
+  <article class="post">
+    <span class="post-meta">
+      <time datetime="2022-03-13T07:14:26.935Z" itemprop="datePublished">
+          2022-03-13
+      </time>
+    
+</span>
+    <h1 class="post-title">CSP复习-编码</h1>
+    <section class="post-content">
+      <h1 id="【CPS复习】编码"><a href="#【CPS复习】编码" class="headerlink" title="【CPS复习】编码"></a>【CPS复习】编码</h1><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220313151442.png" alt=""></p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#include &quot;stdio.h&quot;
+#include &quot;iostream&quot;
+#include &quot;string&quot;
+using namespace std;
+unsigned long long C(int n, int m) &#123;
+    unsigned long long ans &#x3D; 1;
+    for (int i &#x3D; 1; i &lt;&#x3D; m; i++) ans &#x3D; ans * (n - m + i) &#x2F; i;
+    return ans;
+&#125;
+unsigned long long msum(int start, int end,int k) &#123;
+    unsigned long long ans &#x3D; 0;
+    if (start &lt; 0 || end &lt; 0) return 0;
+    for (int i &#x3D; start; i &lt;&#x3D; end; ++i) &#123;
+        ans +&#x3D; C(25 - i, k);
+    &#125;
+    return ans;
+&#125;
+int main(void) &#123;
+    string input;
+    cin &gt;&gt; input;
+    for (int i &#x3D; 1; i &lt; input.size(); ++i)
+        if (input[i] &lt;&#x3D; input[i - 1]) &#123;
+            printf(&quot;0&quot;); return 0;
+        &#125;
+    int start &#x3D; 0, end &#x3D; 25;
+    unsigned long long ans &#x3D; 0;
+    for (int j &#x3D; 0; j &lt; input.size(); ++j) &#123;
+        int k &#x3D; input.size() - 1 - j;
+        end &#x3D; input[j] - &#39;a&#39; - 1;
+        ans +&#x3D; msum(start, end, k);
+        start &#x3D; end + 2;
+    &#125;
+    for (int i &#x3D; 1; i &lt; input.size(); ++i) ans +&#x3D; C(26, i);
+    printf(&quot;%llu\n&quot;, ans+1);
+    return 0;
+&#125;   <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+    </section>
+    <footer class="post-footer">
+      <section class="author">
+    <h4>Shaw</h4>
+    <p>A designer, developer and entrepreneur. Spends his time travelling the world with a bag of kites. Likes journalism and publishing platforms.</p>
+</section>
+      <section class="share">
+    <h4>Share this post</h4>
+    <a class="icon-twitter" target="_blank" rel="noopener" href="http://twitter.com/share?url=http://example.com/2022/03/13/CSP复习-编码/"
+       onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <span class="hidden">Twitter</span>
+    </a>
+    <a class="icon-facebook" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/2022/03/13/CSP复习-编码/"
+       onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <span class="hidden">Facebook</span>
+    </a>
+    <a class="icon-google-plus" target="_blank" rel="noopener" href="https://plus.google.com/share?url=http://example.com/2022/03/13/CSP复习-编码/"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <span class="hidden">Google+</span>
+    </a>
+</section>
+    </footer>
+  </article>
+  <nav class="pagination" role="pagination">
+    
+    <a class="newer-posts" href="/2022/03/14/CSP%E5%A4%8D%E4%B9%A0-%E6%8B%8D%E5%A4%B4/">
+        ← CSP复习-拍头
+    </a>
+    
+    <span class="page-number">•</span>
+    
+    <a class="older-posts" href="/2022/03/12/CSP%E5%A4%8D%E4%B9%A0-%E7%9B%B4%E7%BA%BF%E4%BA%A4%E7%82%B9/">
+        CSP复习-直线交点 →
+    </a>
+    
+</nav>
+  <div id="comment" class="comments-area">
+    <h1 class="title"><a href="#disqus_comments" name="disqus_comments">Comments</a></h1>
+
+    
+</div>
+</main>
+
+
+  
+<footer class="site-footer">
+  
+  <div class="inner">
+     <section class="copyright">All content copyright <a href="/">Shaw</a> &copy; 2014 &bull; All rights reserved.</section>
+     <section class="poweredby">Proudly published with <a class="icon-ghost" target="_blank" rel="noopener" href="http://zespia.tw/hexo/">Hexo</a></section>
+  </div>
+</footer>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+<script type="text/javascript" src="/js/jquery.fitvids.js"></script>
+<script type="text/javascript" src="/js/index.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>
