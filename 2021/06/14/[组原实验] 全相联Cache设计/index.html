@@ -1,57 +1,294 @@
+
+
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
 
 <head>
-  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-  <title>【组原实验】全相联Cache设计 | Shaw</title>
-  <meta name="description" content="@hust" />
-  <meta name="HandheldFriendly" content="True" />
-  <meta name="MobileOptimized" content="320" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <link rel="stylesheet" type="text/css" href="/css/screen.css" />
-  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Noto+Serif:400,700,400italic|Open+Sans:700,400" />
-
-  <meta name="generator" content="Shaw">
-
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Shaw">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="【组原实验】全相联Cache设计1. 实验要求：“结合引脚功能说明，实现全相联 cache 模块，该 cache 模块共包括8个 cache 行，每个数据块包含包括4个字节共32位数据。”  2. 电路分析：2.1 读操作：2.1.1 Cache行：​    一个Cache行包括：&#x3D;&#x3D;有效位（1）+Tag（？）+数据位（32）&#x3D;&#x3D; ​    下面计算tag： ​    一个内存地址共有16位宽，由">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【组原实验】全相联Cache设计">
+<meta property="og:url" content="http://example.com/2021/06/14/[%E7%BB%84%E5%8E%9F%E5%AE%9E%E9%AA%8C]%20%E5%85%A8%E7%9B%B8%E8%81%94Cache%E8%AE%BE%E8%AE%A1/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="【组原实验】全相联Cache设计1. 实验要求：“结合引脚功能说明，实现全相联 cache 模块，该 cache 模块共包括8个 cache 行，每个数据块包含包括4个字节共32位数据。”  2. 电路分析：2.1 读操作：2.1.1 Cache行：​    一个Cache行包括：&#x3D;&#x3D;有效位（1）+Tag（？）+数据位（32）&#x3D;&#x3D; ​    下面计算tag： ​    一个内存地址共有16位宽，由">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/sswdqnxz/typora/raw/master/20210612105210.png">
+<meta property="og:image" content="https://gitee.com/sswdqnxz/typora/raw/master/20210612161048.png">
+<meta property="og:image" content="https://gitee.com/sswdqnxz/typora/raw/master/20210612161246.png">
+<meta property="og:image" content="https://gitee.com/sswdqnxz/typora/raw/master/20210612161515.png">
+<meta property="og:image" content="https://gitee.com/sswdqnxz/typora/raw/master/20210612161618.png">
+<meta property="og:image" content="https://gitee.com/sswdqnxz/typora/raw/master/20210612163240.png">
+<meta property="og:image" content="https://gitee.com/sswdqnxz/typora/raw/master/20210612165351.png">
+<meta property="og:image" content="https://gitee.com/sswdqnxz/typora/raw/master/20210612170621.png">
+<meta property="og:image" content="https://gitee.com/sswdqnxz/typora/raw/master/20210612175012.png">
+<meta property="og:image" content="https://gitee.com/sswdqnxz/typora/raw/master/20210612174946.png">
+<meta property="article:published_time" content="2021-06-14T12:13:56.128Z">
+<meta property="article:modified_time" content="2021-09-03T06:02:49.297Z">
+<meta property="article:author" content="Shaw">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://gitee.com/sswdqnxz/typora/raw/master/20210612105210.png">
   
   
   
+  <title>【组原实验】全相联Cache设计 - Shaw</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
 
   
 <!-- hexo injector head_end start -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
-<!-- hexo injector head_end end --></head>
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.1"></head>
 
 
-<body class="post-template">
-
-  <header class="site-head"  style="background-image: url(//blog.ghost.org/content/images/2013/Nov/cover.png)" >
-    <div class="vertical">
-        <div class="site-head-content inner">
-             <a class="blog-logo" href="/"><img src="//blog.ghost.org/content/images/2013/Nov/bloglogo_1-1.png" alt="Blog Logo"/></a> 
-            <h1 class="blog-title">Shaw</h1>
-            <h2 class="blog-description">@hust</h2>
-        </div>
-    </div>
-</header>
+<body>
   
 
-<main class="content" role="main">
-  <article class="post">
-    <span class="post-meta">
-      <time datetime="2021-06-14T12:13:56.128Z" itemprop="datePublished">
-          2021-06-14
-      </time>
+  <header>
     
-</span>
-    <h1 class="post-title">【组原实验】全相联Cache设计</h1>
-    <section class="post-content">
-      <h1 id="【组原实验】全相联Cache设计"><a href="#【组原实验】全相联Cache设计" class="headerlink" title="【组原实验】全相联Cache设计"></a>【组原实验】全相联Cache设计</h1><h3 id="1-实验要求："><a href="#1-实验要求：" class="headerlink" title="1. 实验要求："></a>1. 实验要求：</h3><p>“结合引脚功能说明，实现全相联 cache 模块，该 cache 模块共包括<strong>8个 cache 行</strong>，每个数据块包含包括<strong>4个字节共32位数据</strong>。”</p>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612105210.png" alt="image-20210612105209418"></p>
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="【组原实验】全相联Cache设计"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-06-14 20:13" pubdate>
+          2021年6月14日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          undefined 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          NaN 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">【组原实验】全相联Cache设计</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="【组原实验】全相联Cache设计"><a href="#【组原实验】全相联Cache设计" class="headerlink" title="【组原实验】全相联Cache设计"></a>【组原实验】全相联Cache设计</h1><h3 id="1-实验要求："><a href="#1-实验要求：" class="headerlink" title="1. 实验要求："></a>1. 实验要求：</h3><p>“结合引脚功能说明，实现全相联 cache 模块，该 cache 模块共包括<strong>8个 cache 行</strong>，每个数据块包含包括<strong>4个字节共32位数据</strong>。”</p>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612105210.png" srcset="/img/loading.gif" lazyload alt="image-20210612105209418"></p>
 <h3 id="2-电路分析："><a href="#2-电路分析：" class="headerlink" title="2. 电路分析："></a>2. 电路分析：</h3><h4 id="2-1-读操作："><a href="#2-1-读操作：" class="headerlink" title="2.1 读操作："></a>2.1 读操作：</h4><h5 id="2-1-1-Cache行："><a href="#2-1-1-Cache行：" class="headerlink" title="2.1.1 Cache行："></a>2.1.1 Cache行：</h5><p>​    一个Cache行包括：==有效位（1）+Tag（？）+数据位（32）==</p>
 <p>​    下面计算tag：</p>
 <p>​    一个内存地址共有16位宽，由于一块有4字节，故<strong>块内地址</strong>需要2位，所以有：</p>
@@ -76,13 +313,13 @@
 </table>
 </div>
 <p>故Cache行的设计如下：</p>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161048.png" alt="image-20210612161047398"></p>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161048.png" srcset="/img/loading.gif" lazyload alt="image-20210612161047398"></p>
 <h5 id="2-1-2-Cache存储体："><a href="#2-1-2-Cache存储体：" class="headerlink" title="2.1.2 Cache存储体："></a>2.1.2 Cache存储体：</h5><p>​    将2.1的cache行拓展到8行即可：</p>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161246.png" alt="image-20210612161245664"></p>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161246.png" srcset="/img/loading.gif" lazyload alt="image-20210612161245664"></p>
 <h5 id="2-1-3-多路并发比较电路："><a href="#2-1-3-多路并发比较电路：" class="headerlink" title="2.1.3 多路并发比较电路："></a>2.1.3 多路并发比较电路：</h5><p>​    多路并发比较使用8个比较器即可，加上V位，8路结果取或得到Hit信号，Hit去反得到Miss信号：</p>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161515.png" alt="image-20210612161514214"></p>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161515.png" srcset="/img/loading.gif" lazyload alt="image-20210612161514214"></p>
 <h5 id="2-1-4-选择输出电路："><a href="#2-1-4-选择输出电路：" class="headerlink" title="2.1.4 选择输出电路："></a>2.1.4 选择输出电路：</h5><p>​    选择输出电路将slotdata的32位信息送入多选择器中，由Hit和Block共同控制选择：</p>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161618.png" alt="image-20210612161617443"></p>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612161618.png" srcset="/img/loading.gif" lazyload alt="image-20210612161617443"></p>
 <hr>
 <h4 id="2-2-写操作："><a href="#2-2-写操作：" class="headerlink" title="2.2 写操作："></a>2.2 写操作：</h4><p>​    只有在Miss=1时才会出发写操作，写操作主要涉及到两部分：<strong>替换算法</strong>，<strong>数据写入</strong>。</p>
 <h5 id="2-2-1-替换算法："><a href="#2-2-1-替换算法：" class="headerlink" title="2.2.1 替换算法："></a>2.2.1 替换算法：</h5><p>​    在cache写入时：</p>
@@ -91,90 +328,355 @@
 <p>则直接使用优先编码器，按编码规则依次填充。</p>
 </li>
 </ol>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612163240.png" alt="image-20210612163238678"></p>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612163240.png" srcset="/img/loading.gif" lazyload alt="image-20210612163238678"></p>
 <p>​    其中，0-7个有效位取反输入，这样做的目的是可以得到一个full输出，full本来是多路选择器的Os位（使能端有效且输入全为0时输出1），当输入变量取反后则此位的含义表示当==使能信号有效==且==输入全1==时输出1。</p>
 <p>​    not_full是一个三位宽度的地址，其表示将要填充的空cache行的序号。</p>
 <ol>
 <li><p><em>cache行已满：</em></p>
 <p>若cache行已满，full=1，此时应比较各行计数器的值，替换数字计数值最大的一行。</p>
 <p>这里，可以利用自带的归并比较电路MAX3：3</p>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612165351.png" alt="image-20210612165350132"></p>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612165351.png" srcset="/img/loading.gif" lazyload alt="image-20210612165350132"></p>
 <p>比较8个计数值，输出数值最大的序号Max_cnt：</p>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612170621.png" alt="image-20210612170620445"></p>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612170621.png" srcset="/img/loading.gif" lazyload alt="image-20210612170620445"></p>
 </li>
 </ol>
 <ul>
 <li>至此，我们有两个写入选择组，full和not_full，故应使用一个二路选择器，在Miss和BlkReady同时为1时选择合适的写入信号组合：</li>
 </ul>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612175012.png" alt="image-20210612175011066"></p>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612175012.png" srcset="/img/loading.gif" lazyload alt="image-20210612175011066"></p>
 <hr>
 <p>​    BTW: ==由于每次写入对应行计数器值清零，其他行计数器的值加一，故计数器的清零信号连接在对应行的命中信号（Hi)上。==</p>
 <p>总：</p>
-<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612174946.png" alt="image-20210612174945662"></p>
+<p><img src="https://gitee.com/sswdqnxz/typora/raw/master/20210612174946.png" srcset="/img/loading.gif" lazyload alt="image-20210612174945662"></p>
 
-    </section>
-    <footer class="post-footer">
-      <section class="author">
-    <h4>Shaw</h4>
-    <p>A designer, developer and entrepreneur. Spends his time travelling the world with a bag of kites. Likes journalism and publishing platforms.</p>
-</section>
-      <section class="share">
-    <h4>Share this post</h4>
-    <a class="icon-twitter" target="_blank" rel="noopener" href="http://twitter.com/share?url=http://example.com/2021/06/14/[组原实验] 全相联Cache设计/"
-       onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
-        <span class="hidden">Twitter</span>
-    </a>
-    <a class="icon-facebook" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=http://example.com/2021/06/14/[组原实验] 全相联Cache设计/"
-       onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
-        <span class="hidden">Facebook</span>
-    </a>
-    <a class="icon-google-plus" target="_blank" rel="noopener" href="https://plus.google.com/share?url=http://example.com/2021/06/14/[组原实验] 全相联Cache设计/"
-       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
-        <span class="hidden">Google+</span>
-    </a>
-</section>
-    </footer>
-  </article>
-  <nav class="pagination" role="pagination">
-    
-    <a class="newer-posts" href="/2021/09/03/Welcome/">
-        ← More is different.
-    </a>
-    
-    <span class="page-number">•</span>
-    
-    <a class="older-posts" href="/2021/06/14/%5B%E5%AE%89%E5%85%A8%E6%94%BB%E9%98%B2%E5%AE%9E%E9%AA%8C%5D%20%E7%94%B5%E5%AD%90%E6%95%B0%E6%8D%AE%E5%8F%96%E8%AF%81/">
-        【安全攻防实验】电子数据取 →
-    </a>
-    
-</nav>
-  <div id="comment" class="comments-area">
-    <h1 class="title"><a href="#disqus_comments" name="disqus_comments">Comments</a></h1>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
 
+<span class="category-chains">
+  
+  
     
+      <span class="category-chain">
+        
+  <a href="/categories/%E2%97%8F%E8%AF%BE%E5%86%85/" class="category-chain-item">●	课内</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
 </div>
-</main>
 
 
+              
   
-<footer class="site-footer">
-  
-  <div class="inner">
-     <section class="copyright">All content copyright <a href="/">Shaw</a> &copy; 2014 &bull; All rights reserved.</section>
-     <section class="poweredby">Proudly published with <a class="icon-ghost" target="_blank" rel="noopener" href="http://zespia.tw/hexo/">Hexo</a></section>
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>【组原实验】全相联Cache设计</div>
+      <div>http://example.com/2021/06/14/[组原实验] 全相联Cache设计/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Shaw</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年6月14日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
   </div>
-</footer>
-
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-
-<script type="text/javascript" src="/js/jquery.fitvids.js"></script>
-<script type="text/javascript" src="/js/index.js"></script>
 
 
 
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/09/03/Welcome/" title="More is different.">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">More is different.</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/06/14/%5B%E5%AE%89%E5%85%A8%E6%94%BB%E9%98%B2%E5%AE%9E%E9%AA%8C%5D%20%E7%94%B5%E5%AD%90%E6%95%B0%E6%8D%AE%E5%8F%96%E8%AF%81/" title="【安全攻防实验】电子数据取">
+                        <span class="hidden-mobile">【安全攻防实验】电子数据取</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
 
 
 
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
 <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
         tex2jax: {
