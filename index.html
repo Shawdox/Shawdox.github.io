@@ -1,78 +1,30 @@
-
-
-<!DOCTYPE html>
-<html lang="zh-CN" data-default-color-scheme=auto>
-
-
-
+<!DOCTYPE HTML>
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
-  <link rel="icon" href="/img/fluid.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  
-  <meta name="theme-color" content="#2f4154">
-  <meta name="author" content="Shaw">
-  <meta name="keywords" content="">
-  
-    <meta name="description" content="随想随录">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Shaw">
-<meta property="og:url" content="http://example.com/index.html">
-<meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="随想随录">
-<meta property="og:locale" content="zh_CN">
-<meta property="article:author" content="Shaw">
-<meta name="twitter:card" content="summary_large_image">
-  
-  
+  <meta charset="utf-8">
   
   <title>Shaw</title>
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
-
-
-
-
-
-<!-- 主题依赖的图标库，不要自行修改 -->
-<!-- Do not modify the link that theme dependent icons -->
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
-
-
-
-<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
-
-
-<link  rel="stylesheet" href="/css/main.css" />
-
-
-  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  <meta name="author" content="Shaw">
   
-    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  <meta name="description" content="随想随录">
   
-
-
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
-
-    if (CONFIG.web_analytics.follow_dnt) {
-      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
-      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
-    }
-  </script>
-  <script  src="/js/utils.js" ></script>
-  <script  src="/js/color-schema.js" ></script>
-  
-
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
+  <meta property="og:site_name" content="Shaw"/>
+
+  
+    <meta property="og:image" content=""/>
+  
+
+  <link rel="shortcut icon" href="/favicon.png">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  <!--[if lt IE 9]><script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script><![endif]-->
+  
+
 <!-- hexo injector head_end start -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
 
@@ -81,785 +33,904 @@
 
 
 <body>
-  
-
-  <header>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">Shaw</a></h1>
+  <h2><a href="/">@hust</a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
     
-
-<div class="header-inner" style="height: 100vh;">
-  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="/">
-      <strong>Fluid</strong>
-    </a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/">
-                <i class="iconfont icon-home-fill"></i>
-                首页
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/archives/">
-                <i class="iconfont icon-archive-fill"></i>
-                归档
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/categories/">
-                <i class="iconfont icon-category-fill"></i>
-                分类
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/tags/">
-                <i class="iconfont icon-tags-fill"></i>
-                标签
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/about/">
-                <i class="iconfont icon-user-fill"></i>
-                关于
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
-            </a>
-          </li>
-          
-        
-        
-          <li class="nav-item" id="color-toggle-btn">
-            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
-                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
+      <li><a href="/null">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
 </nav>
-
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper">
+  <article id="post-Welcome" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time class="dt-published" datetime="2021-09-03T05:50:00.118Z"><a href="/2021/09/03/Welcome/">2021-09-03</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2021/09/03/Welcome/">More is different.</a></h1>
   
 
-<div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
-  <div class="full-bg-img">
-    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-      <div class="banner-text text-center fade-in-up">
-        <div class="h2">
-          
-            <span id="subtitle" data-typed-text="An elegant Material-Design theme for Hexo"></span>
-          
-        </div>
-
-        
-      </div>
-
+    </header>
+    <div class="e-content entry" itemprop="articleBody">
       
-        <div class="scroll-down-bar">
-          <i class="iconfont icon-arrowdown"></i>
-        </div>
+        <h6 id=""><a href="#" class="headerlink" title=" "></a> </h6><h5 id="More-is-different，宏观与微观的审视哲学，量变产生质变。"><a href="#More-is-different，宏观与微观的审视哲学，量变产生质变。" class="headerlink" title="More is different，宏观与微观的审视哲学，量变产生质变。"></a>More is different，宏观与微观的审视哲学，量变产生质变。</h5><p>​                                    ——Shaw的，一些记录，一些随手写。</p>
+
       
     </div>
-  </div>
-</div>
-
-</div>
-
-  </header>
-
-  <main>
-    
-      <div class="container nopadding-x-md">
-        <div id="board"
-          style="margin-top: 0">
-          
-          <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-10 m-auto">
-                
-
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
+    <footer>
+      
         
-        <a href="/2021/09/03/Welcome/" target="_self">
-          More is different.
-        </a>
-      </h1>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article id="post-算法-校门外的区间" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time class="dt-published" datetime="2022-04-14T11:32:08.138Z"><a href="/2022/04/14/%E7%AE%97%E6%B3%95-%E6%A0%A1%E9%97%A8%E5%A4%96%E7%9A%84%E5%8C%BA%E9%97%B4/">2022-04-14</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2022/04/14/%E7%AE%97%E6%B3%95-%E6%A0%A1%E9%97%A8%E5%A4%96%E7%9A%84%E5%8C%BA%E9%97%B4/">算法-校门外的区间</a></h1>
+  
+
+    </header>
+    <div class="e-content entry" itemprop="articleBody">
+      
+        <h1 id="【算法复习】校门外的区间"><a href="#【算法复习】校门外的区间" class="headerlink" title="【算法复习】校门外的区间"></a>【算法复习】校门外的区间</h1><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220414193231.png" alt=""></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220414193245.png" alt=""></p>
+<p>​    <u>这题细节太多，做的时候快哭了。</u></p>
+<h4 id="一、解题思路："><a href="#一、解题思路：" class="headerlink" title="一、解题思路："></a>一、解题思路：</h4><p>​    这题的<strong>思路</strong>并不是很复杂，只有两个方面：1. 集合运算到区间修改的转换；2. 如何用离散的整数表示连续的区间。</p>
+<p>​    对于前者，简单画个示意图就可以得出：</p>
+<pre class="line-numbers language-none"><code class="language-none">① U T： T全部置1；
+② I T： T外区间全部置0；
+③ D T： T全部置0；
+④ C T:  T外区间置0，T内区间翻转；
+⑤ S T： T内区间翻转。<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​    这样主需要完成区间覆盖与区间翻转即可，注意每次change时先覆盖，再翻转。</p>
+<h4 id="二、注意事项："><a href="#二、注意事项：" class="headerlink" title="二、注意事项："></a>二、注意事项：</h4><ol>
+<li><p>输出结果之前需要将所有的tag下放；</p>
+</li>
+<li><p>真实下标与线段树中下标的转换：</p>
+<p>2.1 一般线段树以1开头，这里区间可以为0；</p>
+<p>2.2 线段树下标是通过开闭区间+真实下标计算的；</p>
+</li>
+<li><p>可能出现一个小区间的线段树下标左边&gt;右边的情况（（3,3），（3，3]），要直接屏蔽，不然RE；</p>
+</li>
+</ol>
+<h4 id="三、AC代码："><a href="#三、AC代码：" class="headerlink" title="三、AC代码："></a>三、AC代码：</h4><pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#define MAX_N 65536
+#include &quot;bits&#x2F;stdc++.h&quot;
+using namespace std;
+typedef long long ll;
+struct Node &#123;
+	ll l, r, cov, rev;
+&#125;tree[MAX_N &lt;&lt; 3];
+int ans[MAX_N&lt;&lt;1+5];
+void Build(int node, int L, int R) &#123;
+	tree[node].l &#x3D; L, tree[node].r &#x3D; R,tree[node].cov &#x3D; -1;
+	if (L &#x3D;&#x3D; R) return;
+	Build(node &lt;&lt; 1, L, (L + R) &#x2F; 2);
+	Build(node &lt;&lt; 1 | 1, (L + R) &#x2F; 2 + 1, R);
+&#125;
+void change(int node) &#123;
+	if (tree[node].l !&#x3D; tree[node].r) &#123;
+		if (tree[node].cov !&#x3D; -1) &#123;
+			tree[node &lt;&lt; 1].cov &#x3D; tree[node &lt;&lt; 1 | 1].cov &#x3D; tree[node].cov;
+			tree[node &lt;&lt; 1].rev &#x3D; tree[node &lt;&lt; 1 | 1].rev &#x3D; 0;
+			tree[node].cov &#x3D; -1;
+		&#125;
+		if (tree[node].rev) &#123;
+			tree[node &lt;&lt; 1].rev ^&#x3D; 1;
+			tree[node &lt;&lt; 1 | 1].rev ^&#x3D; 1;
+			tree[node].rev &#x3D; 0;
+		&#125;
+	&#125;
+&#125;
+void Update(int node, int L, int R, int mode,int vul) &#123;&#x2F;&#x2F;mode &#x3D; 0,cov,1,rev
+	change(node);
+	if (L &lt;&#x3D; tree[node].l &amp;&amp; tree[node].r &lt;&#x3D; R) &#123;
+		if (mode &#x3D;&#x3D; 0) &#123;
+			tree[node].cov &#x3D; vul;
+			tree[node].rev &#x3D; 0;
+		&#125;
+		else tree[node].rev ^&#x3D; 1;
+		return;
+	&#125;
+	int mid &#x3D; (tree[node].l + tree[node].r) &#x2F; 2;
+	if (R &lt; mid + 1) Update(node &lt;&lt; 1, L, R, mode, vul);
+	else if (L &gt; mid) Update(node &lt;&lt; 1 | 1, L, R, mode, vul);
+	else &#123;
+		Update(node &lt;&lt; 1, L, mid, mode, vul);
+		Update(node &lt;&lt; 1|1, mid+1, R, mode, vul);
+	&#125;
+&#125;
+int query(int node, int index) &#123;
+	change(node);
+	if (tree[node].l &#x3D;&#x3D; tree[node].r) &#123;
+		if (tree[node].cov &#x3D;&#x3D; -1) return tree[node].rev;
+		else return tree[node].cov^ tree[node].rev;
+	&#125;
+	int mid &#x3D; (tree[node].l + tree[node].r) &#x2F; 2;
+	if (index &lt; mid + 1) return query(node &lt;&lt; 1, index);
+	else return query(node &lt;&lt; 1 | 1, index);
+&#125;
+
+void mprint() &#123;
+	int start, end;
+	string output &#x3D; &quot;&quot;;
+	for (int i &#x3D; 1; i &lt;&#x3D; MAX_N&lt;&lt;1 ; ++i) ans[i] &#x3D; query(1, i);&#x2F;&#x2F;将所有tag下放
+	for (int n &#x3D; 1; n &lt;&#x3D; MAX_N&lt;&lt;1 ; ++n) &#123;
+		int t &#x3D; ans[n];
+		while (n &lt;&#x3D; MAX_N&lt;&lt;1 &amp;&amp; !t) t &#x3D; ans[++n];
+		start &#x3D; n;
+		if (start &gt;&#x3D; MAX_N &lt;&lt; 1 &amp;&amp; t &#x3D;&#x3D; 0) break;
+		while(n &lt;&#x3D; MAX_N &lt;&lt; 1 &amp;&amp; t) t &#x3D;ans[(n++)+1];
+		end &#x3D; --n;
+		
+		if (start % 2 &#x3D;&#x3D;0 ) &#123;
+			output +&#x3D; &quot;[&quot;;
+			output +&#x3D; to_string(start &#x2F; 2 -1);&#x2F;&#x2F;数可能不止一位
+		&#125;
+		else &#123;
+			output +&#x3D; &quot;(&quot;;
+			output +&#x3D; to_string((start - 1) &#x2F; 2 -1);
+		&#125;
+		output +&#x3D; &#39;,&#39;;
+		if (end % 2 &#x3D;&#x3D; 0) &#123;
+			output +&#x3D; to_string(end &#x2F; 2 -1);
+			output +&#x3D; &#39;]&#39;;
+		&#125;
+		else &#123;
+			output +&#x3D; to_string((end + 1) &#x2F; 2 -1);
+			output +&#x3D; &#39;)&#39;;
+		&#125;
+		output +&#x3D; &#39; &#39;;
+	&#125;
+	if (output &#x3D;&#x3D; &quot;&quot;) printf(&quot;empty set\n&quot;);
+	else cout &lt;&lt; output &lt;&lt; endl;
+&#125;
+void str_to_int(string s,int *start,int *end) &#123;
+	int ans1 &#x3D; 0,ans2 &#x3D; 0;
+	int i;
+	for (i &#x3D; 1; s[i] !&#x3D; &#39;,&#39;; ++i) 
+		ans1 &#x3D; ans1 * 10 + s[i] - &#39;0&#39;;
+	++i;
+	for (; i &lt; s.size()-1; ++i)
+		ans2 &#x3D; ans2 * 10 + s[i] - &#39;0&#39;;
+	*start &#x3D; ans1, *end &#x3D; ans2;
+&#125;
+
+int main(void) &#123;
+	Build(1, 1, MAX_N &lt;&lt; 1);
+	char c;
+	string input;
+	int start, end;
+	while ((c &#x3D; getchar()) !&#x3D; EOF) &#123;
+		cin &gt;&gt; input;
+		getchar();
+		str_to_int(input, &amp;start, &amp;end);
+		start &#x3D; 2 * (start + 1);&#x2F;&#x2F;题目从零开始，建树从1开始
+		end &#x3D; 2 * (end + 1);
+		if (input[0] &#x3D;&#x3D; &#39;(&#39;) start++;
+		if (input[input.size()-1] &#x3D;&#x3D; &#39;)&#39;) end--;
+		if (start &gt; end) continue;&#x2F;&#x2F;这里尤其注意
+		switch (c)&#123;
+		case &#39;U&#39;:
+			Update(1, start, end, 0, 1);
+			break;
+		case &#39;I&#39;:
+			if (start &gt; 1) Update(1, 1, start - 1, 0, 0);
+			if (end &lt; MAX_N &lt;&lt; 1) Update(1, end + 1, MAX_N &lt;&lt; 1, 0, 0);
+			break;
+		case &#39;D&#39;:
+			Update(1, start, end, 0, 0);
+			break;
+		case &#39;C&#39;:
+			if (start &gt; 1) Update(1, 1, start - 1, 0, 0);
+			if (end &lt; MAX_N &lt;&lt; 1) Update(1, end + 1, MAX_N &lt;&lt; 1, 0, 0);
+			Update(1, start, end, 1, 0);
+			break;
+		case &#39;S&#39;:
+			Update(1, start, end, 1, 0);
+			break;
+		&#125;
+	&#125;
+	mprint();
+	return 0;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2021/09/03/Welcome/" target="_self">
-        <div>
-          More is different，宏观与微观的审视哲学，量变产生质变。​                                    ——Shaw的，一些记录，一些随手写。
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-09-03 13:50" pubdate>
-              2021-09-03
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/04/14/%E7%AE%97%E6%B3%95-%E6%A0%A1%E9%97%A8%E5%A4%96%E7%9A%84%E5%8C%BA%E9%97%B4/" target="_self">
-          算法-校门外的区间
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2022/04/14/%E7%AE%97%E6%B3%95-%E6%A0%A1%E9%97%A8%E5%A4%96%E7%9A%84%E5%8C%BA%E9%97%B4/" target="_self">
-        <div>
-          【算法复习】校门外的区间  ​    这题细节太多，做的时候快哭了。 一、解题思路：​    这题的思路并不是很复杂，只有两个方面：1. 集合运算到区间修改的转换；2. 如何用离散的整数表示连续的区间。 ​    对于前者，简单画个示意图就可以得出： ① U T： T全部置1； ② I T： T外区间全部置0； ③ D T： T全部置0； ④ C T:  T外区间置0，T内区间翻转； ⑤ S T：
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-04-14 19:32" pubdate>
-              2022-04-14
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/CSP/" class="category-chain-item">CSP</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/04/11/%E7%AE%97%E6%B3%95-%E7%93%B6%E9%A2%88%E7%94%9F%E6%88%90%E6%A0%91/" target="_self">
-          算法-瓶颈生成树
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2022/04/11/%E7%AE%97%E6%B3%95-%E7%93%B6%E9%A2%88%E7%94%9F%E6%88%90%E6%A0%91/" target="_self">
-        <div>
-          【算法复习】瓶颈生成树 1. 什么是瓶颈生成树？ 2. 此题思路：​    了解了瓶颈生成树的概念后，就可以发现，只需要求解最小生成树，然后去掉前S-1大的边（因为卫星电话可以给谁不是固定的，所以给最大的边）即可。 #include &quot;bits&#x2F;stdc++.h&quot; using namespace std; int parents[501]; int find_pare
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-04-11 17:28" pubdate>
-              2022-04-11
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/CSP/" class="category-chain-item">CSP</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/03/31/%E7%AE%97%E6%B3%95-%E5%AF%B9%E8%A7%92%E7%BA%BF/" target="_self">
-          算法-对角线
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2022/03/31/%E7%AE%97%E6%B3%95-%E5%AF%B9%E8%A7%92%E7%BA%BF/" target="_self">
-        <div>
-          【算法复习】对角线 ​    用DP递推不好做，逻辑推导题，任何三条对角线都不会交于一点，故一个交点有且仅有两条直线，唯一确定四个不同的顶点，故交点个数为C^4^ ~n~. ​    故ans &#x3D; n (n-1) (n-2) *(n-3)&#x2F;24，直接这么做long long 会爆： #include &quot;bits&#x2F;stdc++.h&quot; int main(void) &amp;#1
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-03-31 20:56" pubdate>
-              2022-03-31
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/CSP/" class="category-chain-item">CSP</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/03/31/%E7%AE%97%E6%B3%95-%E6%95%B0%E5%AD%A6%E8%AE%A1%E7%AE%97/" target="_self">
-          算法-数学计算
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2022/03/31/%E7%AE%97%E6%B3%95-%E6%95%B0%E5%AD%A6%E8%AE%A1%E7%AE%97/" target="_self">
-        <div>
-          【算法复习】数学计算 ​    仔细读题，这题并不是一个简单的模拟题，因为：  (\frac{(x*m)\, mod\, M}{m})\, mod \, M \neq x\, mod\, M​    故对于op&#x3D;2的操作，没法直接除回去，这里可以想到不直接求模，而是求m的逆m^-1^ mod M：  (x*m ·m^{-1})\, mod \, M &#x3D; x\, mod\, M​    这样就可以了
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-03-31 20:56" pubdate>
-              2022-03-31
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/CSP/" class="category-chain-item">CSP</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/03/19/%E7%AE%97%E6%B3%95-%E5%8F%8C%E6%8C%87%E9%92%88/" target="_self">
-          
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2022/03/19/%E7%AE%97%E6%B3%95-%E5%8F%8C%E6%8C%87%E9%92%88/" target="_self">
-        <div>
-          inline int read()&#x2F;&#x2F;快读 &amp;#123;     char ch&#x3D;getchar();int s&#x3D;0,w&#x3D;1;     while(ch&lt;48||ch&gt;57)&amp;#123;if(ch&#x3D;&#x3D;&#39;-&#39;)w&#x3D;-1;ch&#x3D;getchar();&amp;#125;     while(ch
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-03-19 21:09" pubdate>
-              2022-03-19
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/03/16/%E7%AE%97%E6%B3%95-%E9%9D%9E%E9%9B%B6%E6%AE%B5%E5%88%92%E5%88%86/" target="_self">
-          算法-非零段划分
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2022/03/16/%E7%AE%97%E6%B3%95-%E9%9D%9E%E9%9B%B6%E6%AE%B5%E5%88%92%E5%88%86/" target="_self">
-        <div>
-          【算法复习】非零段划分 ​    第二遍重做，暴力的解法是O（n^2^），必不可能过，用浮水法来解，但只有70分，后来发现是ans的判断放到了双循环的最里面，小错误调了1h： #include &quot;stdio.h&quot; #include &quot;vector&quot; #include &quot;algorithm&quot; using namespace std; int
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-03-16 15:33" pubdate>
-              2022-03-16
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/CSP/" class="category-chain-item">CSP</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/03/16/%E7%AE%97%E6%B3%95-%E5%B7%A6%E5%AD%A9%E5%AD%90%E5%8F%B3%E5%85%84%E5%BC%9F/" target="_self">
-          算法-左孩子右兄弟
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2022/03/16/%E7%AE%97%E6%B3%95-%E5%B7%A6%E5%AD%A9%E5%AD%90%E5%8F%B3%E5%85%84%E5%BC%9F/" target="_self">
-        <div>
-          【算法复习】左孩子右兄弟  ​    其实还是用DP的思想找规律，我们假设某个节点共有K个子节点，这K个子节点的最高高度分别为p1,p2,p3······pk，那么总树的最高高度为H &#x3D; K + pk。 ​    上式相当于将最高的子树放到最后，很好理解，如果最高的子树放在中间则会有部分长度被浪费（兄弟链的长度是确定的K）。 ​    用vector来表示邻接表存储树，很方便的就能实现： #inc
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-03-16 11:01" pubdate>
-              2022-03-16
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/LQB/" class="category-chain-item">LQB</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/03/15/%E7%AE%97%E6%B3%95-%E5%BC%82%E6%88%96%E6%95%B0%E5%88%97/" target="_self">
-          算法-异或数列
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2022/03/15/%E7%AE%97%E6%B3%95-%E5%BC%82%E6%88%96%E6%95%B0%E5%88%97/" target="_self">
-        <div>
-          【算法复习】异或数列  ​    博弈论问题，首先，数列中的每个数可以分成每一位来看待，某一位数，对应的数列应为一串0和1组成。在这一位上的博弈情况有： 1. 自己有奇数个1，对面有偶数个1，自己胜出；  2. 反过来对面奇数个1，自己偶数个1，对面胜出；  3. 平局时双方1的个数相同。 ​    由以上性质可以看出，博弈的关键是对1的抢占。  当数列中1的个数为偶数时，无论怎么划分要么两边分到
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-03-15 15:07" pubdate>
-              2022-03-15
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/LQB/" class="category-chain-item">LQB</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2022/03/14/LQB-%E7%A0%9D%E7%A0%81%E7%A7%B0%E9%87%8D/" target="_self">
-          LQB-砝码称重
-        </a>
-      </h1>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2022/03/14/LQB-%E7%A0%9D%E7%A0%81%E7%A7%B0%E9%87%8D/" target="_self">
-        <div>
-          【LQB复习】砝码称重 ​    经典DP问题，维护一个可称量数组f[]，每次新加一个重量wi后将其与其中每个重量都相加减，同时保证结果都大于0即可： #include &quot;stdio.h&quot; #include &quot;vector&quot; #include &quot;algorithm&quot; using namespace std; bool f[100001]
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2022-03-14 20:20" pubdate>
-              2022-03-14
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/LQB/" class="category-chain-item">LQB</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-
-
-  <nav aria-label="navigation">
-    <span class="pagination" id="pagination">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/#board">2</a><a class="page-number" href="/page/3/#board">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/#board">5</a><a class="extend next" rel="next" href="/page/2/#board"><i class="iconfont icon-arrowright"></i></a>
-    </span>
-  </nav>
-
-
-
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    
-
-    
-      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
-    
-
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
-        </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
     </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
   </div>
-</div>
+</article>
 
-    
 
-    
-  </main>
 
-  <footer>
-    <div class="footer-inner">
+
+  <article id="post-算法-瓶颈生成树" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   
-    <div class="footer-content">
-       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time class="dt-published" datetime="2022-04-11T09:28:15.214Z"><a href="/2022/04/11/%E7%AE%97%E6%B3%95-%E7%93%B6%E9%A2%88%E7%94%9F%E6%88%90%E6%A0%91/">2022-04-11</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2022/04/11/%E7%AE%97%E6%B3%95-%E7%93%B6%E9%A2%88%E7%94%9F%E6%88%90%E6%A0%91/">算法-瓶颈生成树</a></h1>
+  
+
+    </header>
+    <div class="e-content entry" itemprop="articleBody">
+      
+        <h1 id="【算法复习】瓶颈生成树"><a href="#【算法复习】瓶颈生成树" class="headerlink" title="【算法复习】瓶颈生成树"></a>【算法复习】瓶颈生成树</h1><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220411171152.png" alt=""></p>
+<h2 id="1-什么是瓶颈生成树？"><a href="#1-什么是瓶颈生成树？" class="headerlink" title="1. 什么是瓶颈生成树？"></a>1. 什么是瓶颈生成树？</h2><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220411171523.png" alt=""></p>
+<h2 id="2-此题思路："><a href="#2-此题思路：" class="headerlink" title="2. 此题思路："></a>2. 此题思路：</h2><p>​    了解了瓶颈生成树的概念后，就可以发现，只需要求解最小生成树，然后去掉前S-1大的边（因为卫星电话可以给谁不是固定的，所以给最大的边）即可。</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#include &quot;bits&#x2F;stdc++.h&quot;
+using namespace std;
+int parents[501];
+int find_parents(int x) &#123;
+	int a &#x3D; x;
+	while (x !&#x3D; parents[x]) x &#x3D; parents[x];
+	while (a !&#x3D; parents[a]) &#123;
+		int z &#x3D; a;
+		a &#x3D; parents[a];
+		parents[z] &#x3D; x;
+	&#125;
+	return x;
+&#125;
+struct Edge &#123;
+	int x, y;
+	double dis;
+&#125;;
+vector&lt;Edge&gt; E;
+vector&lt;pair&lt;int, int&gt;&gt; Node;
+bool cmp(struct Edge a, struct Edge b) &#123; return a.dis &lt; b.dis; &#125;
+double kruskal(int N,int M,int s) &#123;
+	for (int i &#x3D; 0; i &lt;&#x3D; N; ++i) parents[i] &#x3D; i;
+	int cnt &#x3D; 0;
+	vector&lt;double&gt; ans;
+	vector&lt;Edge&gt;::iterator it &#x3D; E.begin();
+	sort(it, it + M, cmp);
+	for (int i &#x3D; 0; i &lt; M; ++i) &#123;
+		int u &#x3D; E[i].x, v &#x3D; E[i].y;
+		int pu &#x3D; find_parents(u), pv &#x3D; find_parents(v);
+		if (pu !&#x3D; pv) &#123;
+			parents[pu] &#x3D; pv;
+			ans.push_back(E[i].dis);
+			cnt++;
+			if (cnt &#x3D;&#x3D; N - 1) break;
+		&#125;
+	&#125;
+	if (cnt !&#x3D; N - 1) return -1;
+	else return ans[N - s - 2];
+&#125;
+int main(void) &#123;
+	int S, P, x, y;
+	scanf(&quot;%d %d&quot;, &amp;S, &amp;P);
+	for (int i &#x3D; 1; i &lt;&#x3D; P; ++i) &#123;
+		scanf(&quot;%d %d&quot;, &amp;x, &amp;y);
+		for (int j &#x3D; 0; j &lt; Node.size(); ++j) &#123;
+			struct Edge p &#x3D; &#123;i,j+1,sqrt((x-Node[j].first)* (x - Node[j].first) + (y - Node[j].second)* (y - Node[j].second))&#125;;
+			E.push_back(p);
+		&#125;
+		Node.push_back(make_pair ( x, y ));
+	&#125;
+	printf(&quot;%.2lf&quot;, kruskal(P, E.size(), S-1));
+	return 0;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+      
     </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article id="post-算法-对角线" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time class="dt-published" datetime="2022-03-31T12:56:47.789Z"><a href="/2022/03/31/%E7%AE%97%E6%B3%95-%E5%AF%B9%E8%A7%92%E7%BA%BF/">2022-03-31</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2022/03/31/%E7%AE%97%E6%B3%95-%E5%AF%B9%E8%A7%92%E7%BA%BF/">算法-对角线</a></h1>
+  
+
+    </header>
+    <div class="e-content entry" itemprop="articleBody">
+      
+        <h1 id="【算法复习】对角线"><a href="#【算法复习】对角线" class="headerlink" title="【算法复习】对角线"></a>【算法复习】对角线</h1><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220324193057.png" alt=""></p>
+<p>​    用DP递推不好做，逻辑推导题，<strong><u>任何三条对角线都不会交于一点，故一个交点有且仅有两条直线，唯一确定四个不同的顶点，故交点个数为C^4^ ~n~</u></strong>.</p>
+<p>​    故ans = n<em> (n-1) </em>(n-2) *(n-3)/24，直接这么做long long 会爆：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#include &quot;bits&#x2F;stdc++.h&quot;
+int main(void) &#123;
+	unsigned long long ans &#x3D; 0,n;
+	scanf(&quot;%llu&quot;, &amp;n);
+	ans &#x3D; n * (n - 1) &#x2F; 2 * (n - 2) &#x2F; 3 * (n - 3) &#x2F; 4;
+	printf(&quot;%llu\n&quot;, ans);
+	return 0;
+&#125;&#x2F;&#x2F;end of main<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article id="post-算法-数学计算" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time class="dt-published" datetime="2022-03-31T12:56:47.787Z"><a href="/2022/03/31/%E7%AE%97%E6%B3%95-%E6%95%B0%E5%AD%A6%E8%AE%A1%E7%AE%97/">2022-03-31</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2022/03/31/%E7%AE%97%E6%B3%95-%E6%95%B0%E5%AD%A6%E8%AE%A1%E7%AE%97/">算法-数学计算</a></h1>
+  
+
+    </header>
+    <div class="e-content entry" itemprop="articleBody">
+      
+        <h1 id="【算法复习】数学计算"><a href="#【算法复习】数学计算" class="headerlink" title="【算法复习】数学计算"></a>【算法复习】数学计算</h1><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220324161341.png" alt=""></p>
+<p>​    仔细读题，这题并不是一个简单的模拟题，因为：</p>
+<script type="math/tex; mode=display">
+(\frac{(x*m)\, mod\, M}{m})\, mod \, M \neq x\, mod\, M</script><p>​    故对于op=2的操作，没法直接除回去，这里可以想到不直接求模，而是求m的逆m^-1^ mod M：</p>
+<script type="math/tex; mode=display">
+(x*m ·m^{-1})\, mod \, M = x\, mod\, M</script><p>​    这样就可以了，但这就引出了另一个问题，M不一定是素数。故现有的定理得分情况讨论，这就变成了一道数论题，反而复杂化了。</p>
+<p>​    这里我们知道，对于某个op=1，m = m~k~的操作，我们需要求出$x = m{1}·m_2····m_k$;对于某个op=2，pos = i的操作，我们需要求出$x = m{1}·m_2····m_{i-1}·1·m_{i+1}·····m_k$ 。故完全可以建一颗N= Q，叶子结点都为1的线段树，op = 1时将对应的叶子结点改为m~k~，op = 2时将对应的叶子结点改为1即可，为了可读性这里没用位运算，写的比较长。</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#include &quot;stdio.h&quot;
+#include &quot;string.h&quot;
+typedef long long ll;
+#define MAX_M 100000
+int t, Q, M;
+struct node &#123;
+	ll l, r, pro &#x3D; 1;
+&#125;tree[MAX_M &lt;&lt; 2];
+void build(ll node,ll L,ll R) &#123;
+	tree[node].l &#x3D; L,tree[node].r &#x3D; R;
+	if (L &#x3D;&#x3D; R)&#123;
+		tree[node].pro &#x3D; 1;
+		return;
+	&#125;
+	ll mid &#x3D; (L + R) &#x2F; 2;
+	ll left_node &#x3D; node * 2;
+	ll right_node &#x3D; node * 2 + 1;
+	build(left_node, L, mid);
+	build(right_node, mid + 1, R);
+	tree[node].pro &#x3D; 1;
+&#125;
+void update(ll node, ll index, ll m) &#123;
+	if (tree[node].l &#x3D;&#x3D; tree[node].r) &#123;
+		tree[node].pro &#x3D; (tree[node].pro * m) % M;
+		return;
+	&#125;
+	ll mid &#x3D; (tree[node].l + tree[node].r) &#x2F; 2;
+	if (index &lt;&#x3D; mid) update(node &lt;&lt; 1, index, m);
+	else update(node &lt;&lt; 1 | 1, index, m);
+	tree[node].pro &#x3D; (tree[node &lt;&lt; 1].pro * tree[node &lt;&lt; 1 | 1].pro) % M;
+&#125;
+void re_update(ll node, ll index) &#123;
+	if (tree[node].l &#x3D;&#x3D; tree[node].r) &#123;
+		tree[node].pro &#x3D; 1;
+		return;
+	&#125;
+	ll mid &#x3D; (tree[node].l + tree[node].r) &#x2F; 2;
+	if (index &lt;&#x3D; mid) re_update(node &lt;&lt; 1, index);
+	else re_update(node &lt;&lt; 1 | 1, index);
+	tree[node].pro &#x3D; (tree[node &lt;&lt; 1].pro * tree[node &lt;&lt; 1 | 1].pro) % M;
+&#125;
+ll query(ll node, ll L, ll R) &#123;
+	if (L &lt;&#x3D; tree[node].l &amp;&amp; tree[node].r &lt;&#x3D; R) return tree[node].pro;
+	ll mid &#x3D; (tree[node].l + tree[node].r) &#x2F; 2;
+	ll left_node &#x3D; node * 2;
+	ll right_node &#x3D; node * 2 + 1;
+	if (L &gt; mid) return query(right_node, L, R);
+	else if (R &lt; mid + 1) return query(left_node, L, R);
+	else &#123;
+		return (query(left_node,L,mid)*query(right_node,mid+1,R)) % M;
+	&#125;
+&#125;
+int main(void) &#123;
+	scanf(&quot;%d&quot;, &amp;t);
+	for (int j &#x3D; 0; j &lt; t; ++j) &#123;
+		scanf(&quot;%d %d&quot;, &amp;Q, &amp;M);
+		memset(tree, 0, sizeof(tree));
+		build(1, 1, Q);
+		for (int i &#x3D; 1; i &lt;&#x3D; Q; ++i) &#123;
+			int op, m, pos;
+			scanf(&quot;%d %d&quot;, &amp;op,&amp;m);
+			if (op &#x3D;&#x3D; 1) update(1, i, m);
+			else if (op &#x3D;&#x3D; 2) re_update(1, m);
+               printf(&quot;%lld\n&quot;, tree[1].pro);
+		&#125;&#x2F;&#x2F;end of i
+	&#125;&#x2F;&#x2F;end of j
+	return 0;
+&#125;&#x2F;&#x2F;end of main<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article id="post-算法-双指针" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time class="dt-published" datetime="2022-03-19T13:09:24.987Z"><a href="/2022/03/19/%E7%AE%97%E6%B3%95-%E5%8F%8C%E6%8C%87%E9%92%88/">2022-03-19</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2022/03/19/%E7%AE%97%E6%B3%95-%E5%8F%8C%E6%8C%87%E9%92%88/"></a></h1>
+  
+
+    </header>
+    <div class="e-content entry" itemprop="articleBody">
+      
+        <pre class="line-numbers language-none"><code class="language-none">inline int read()&#x2F;&#x2F;快读
+&#123;
+    char ch&#x3D;getchar();int s&#x3D;0,w&#x3D;1;
+    while(ch&lt;48||ch&gt;57)&#123;if(ch&#x3D;&#x3D;&#39;-&#39;)w&#x3D;-1;ch&#x3D;getchar();&#125;
+    while(ch&gt;&#x3D;48&amp;&amp;ch&lt;&#x3D;57)&#123;s&#x3D;(s&lt;&lt;1)+(s&lt;&lt;3)+ch-48;ch&#x3D;getchar();&#125;
+    return s*w;
+&#125;
+
+inline void write(int x)&#x2F;&#x2F;快写
+&#123;
+    if(x&lt;0)putchar(&#39;-&#39;),x&#x3D;-x;
+    if(x&gt;9)write(x&#x2F;10);
+    putchar(x%10+48);
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article id="post-算法-非零段划分" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time class="dt-published" datetime="2022-03-16T07:33:58.022Z"><a href="/2022/03/16/%E7%AE%97%E6%B3%95-%E9%9D%9E%E9%9B%B6%E6%AE%B5%E5%88%92%E5%88%86/">2022-03-16</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2022/03/16/%E7%AE%97%E6%B3%95-%E9%9D%9E%E9%9B%B6%E6%AE%B5%E5%88%92%E5%88%86/">算法-非零段划分</a></h1>
+  
+
+    </header>
+    <div class="e-content entry" itemprop="articleBody">
+      
+        <h1 id="【算法复习】非零段划分"><a href="#【算法复习】非零段划分" class="headerlink" title="【算法复习】非零段划分"></a>【算法复习】非零段划分</h1><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220316153408.png" alt=""></p>
+<p>​    第二遍重做，暴力的解法是O（n^2^），必不可能过，用浮水法来解，但只有70分，后来发现是ans的判断放到了双循环的最里面，小错误调了1h：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#include &quot;stdio.h&quot;
+#include &quot;vector&quot;
+#include &quot;algorithm&quot;
+using namespace std;
+int main(void)&#123;
+    int n, A[5005] &#x3D; &#123; 0, &#125;,m&#x3D;0,now &#x3D; 0,ans &#x3D; 0;
+    vector&lt;int&gt; B[1005];&#x2F;&#x2F;下标值索引
+    scanf(&quot;%d&quot;, &amp;n);
+    for (int i &#x3D; 1; i &lt;&#x3D; n; ++i) &#123;
+        scanf(&quot;%d&quot;, &amp;A[i]);
+        B[A[i]].push_back(i);
+        m &#x3D; max(m, A[i]);
+    &#125;
+    for (int p &#x3D; m; p &gt;&#x3D; 1; --p) &#123;
+        for (int i &#x3D; 0; i &lt; B[p].size(); ++i) &#123;
+            int left &#x3D; B[p][i] - 1,right;
+            while (i + 1 &lt; B[p].size() &amp;&amp; B[p][i] + 1 &#x3D;&#x3D; B[p][i + 1] ) i++;
+            right &#x3D; B[p][i] + 1;
+            if (A[left] &lt; p &amp;&amp; p &gt; A[right]) now++;                      
+            else if (A[left] &gt; p &amp;&amp; p &lt; A[right]) now--;
+        &#125;
+       ans &#x3D; max(ans, now);&#x2F;&#x2F;这个ans判断开始放到最里面了，导致70分，一个p的遍历过程可能有加有减
+    &#125;
+    printf(&quot;%d\n&quot;, ans);
+    return 0;
+&#125;   <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​    这次写的比上一次更短，主要思想没变，但还是有小错误，要是考试真不一定能拿满。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article id="post-算法-左孩子右兄弟" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time class="dt-published" datetime="2022-03-16T03:01:09.261Z"><a href="/2022/03/16/%E7%AE%97%E6%B3%95-%E5%B7%A6%E5%AD%A9%E5%AD%90%E5%8F%B3%E5%85%84%E5%BC%9F/">2022-03-16</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2022/03/16/%E7%AE%97%E6%B3%95-%E5%B7%A6%E5%AD%A9%E5%AD%90%E5%8F%B3%E5%85%84%E5%BC%9F/">算法-左孩子右兄弟</a></h1>
+  
+
+    </header>
+    <div class="e-content entry" itemprop="articleBody">
+      
+        <h1 id="【算法复习】左孩子右兄弟"><a href="#【算法复习】左孩子右兄弟" class="headerlink" title="【算法复习】左孩子右兄弟"></a>【算法复习】左孩子右兄弟</h1><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220316110129.png" style="zoom:67%;" /></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220316110146.png" alt="image-20220316110144669" style="zoom:67%;" /></p>
+<p>​    其实还是用DP的思想找规律，我们假设某个节点共有K个子节点，这K个子节点的最高高度分别为p1,p2,p3······pk，那么<strong>总树的最高高度为H = K + pk。</strong></p>
+<p>​    上式相当于将最高的子树放到最后，很好理解，如果最高的子树放在中间则会有部分长度被浪费（兄弟链的长度是确定的K）。</p>
+<p>​    用vector来表示邻接表存储树，很方便的就能实现：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#include &quot;stdio.h&quot;
+#include &quot;vector&quot;
+#include &quot;algorithm&quot;
+using namespace std;
+vector&lt;int&gt; leaves[100005];&#x2F;&#x2F;邻接表存储树
+int f[100005] &#x3D; &#123; 0, &#125;;&#x2F;&#x2F;存储子树高度，加快dp时间
+int H(int t) &#123;
+    if (leaves[t].size() &#x3D;&#x3D; 0) return 0;&#x2F;&#x2F;叶子结点返回0高度
+    else if (f[t] &#x3D;&#x3D; 0)&#123;&#x2F;&#x2F;非叶子结点
+        int m &#x3D; 0;
+        for (int i &#x3D; 0; i &lt; leaves[t].size(); ++i) m &#x3D; max(m, H(leaves[t][i]));
+        f[t] &#x3D; leaves[t].size() + m;&#x2F;&#x2F;兄弟链长度+子树最大长度
+    &#125;
+    return f[t];
+&#125;
+int main(void)&#123;
+    int N,t;
+    scanf(&quot;%d&quot;, &amp;N);
+    for (int i &#x3D; 2; i &lt;&#x3D; N; ++i) &#123;
+        scanf(&quot;%d&quot;, &amp;t);
+        leaves[t].push_back(i);
+    &#125;
+    printf(&quot;%d\n&quot;, H(1));
+    return 0;
+&#125;   <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article id="post-算法-异或数列" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time class="dt-published" datetime="2022-03-15T07:07:32.082Z"><a href="/2022/03/15/%E7%AE%97%E6%B3%95-%E5%BC%82%E6%88%96%E6%95%B0%E5%88%97/">2022-03-15</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2022/03/15/%E7%AE%97%E6%B3%95-%E5%BC%82%E6%88%96%E6%95%B0%E5%88%97/">算法-异或数列</a></h1>
+  
+
+    </header>
+    <div class="e-content entry" itemprop="articleBody">
+      
+        <h1 id="【算法复习】异或数列"><a href="#【算法复习】异或数列" class="headerlink" title="【算法复习】异或数列"></a>【算法复习】异或数列</h1><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220315150935.png" alt=""></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220315151000.png" alt=""></p>
+<p>​    博弈论问题，首先，数列中的每个数可以分成每一位来看待，某一位数，对应的数列应为一串0和1组成。在这一位上的博弈情况有：</p>
+<pre><code>1. 自己有奇数个1，对面有偶数个1，自己胜出；
+ 2. 反过来对面奇数个1，自己偶数个1，对面胜出；
+ 3. 平局时双方1的个数相同。
+</code></pre><p>​    由以上性质可以看出，博弈的关键是对1的抢占。</p>
+<ul>
+<li><strong><u>当数列中1的个数为偶数时，</u></strong>无论怎么划分要么两边分到的1都是偶数，要么两边分到的1都是奇数，故一定是<strong><u>平局</u></strong>。</li>
+<li><strong><u>当数列中的1的个数为奇数时，</u></strong>同理，不存在平局的情况，如果只有一个1，则先手必赢，若1的个数大于1：<ul>
+<li>若0的个数为奇数：若先手方一手抢‘1’，则还剩偶数个‘1’，后手方可以抢‘0’，来保证最后一个’1’一定在他手里，<strong><u>后手方胜利</u></strong>；</li>
+<li>若0的个数为偶数：同理，<strong><u>先手方手里</u></strong>。</li>
+</ul>
+</li>
+</ul>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#include &quot;stdio.h&quot;
+using namespace std;
+int main(void)&#123;
+    int T, n, c[21],ans;&#x2F;&#x2F;c[i]表示第i位1的个数
+    long t;
+    scanf(&quot;%d&quot;, &amp;T);
+    for (int i &#x3D; 0; i &lt; T; ++i) &#123;
+        scanf(&quot;%d&quot;, &amp;n);
+        memset(c, 0, sizeof(c));
+        ans &#x3D; 0;
+        for (int j &#x3D; 0; j &lt; n; ++j) &#123;
+            scanf(&quot;%ld&quot;, &amp;t);
+            for (int k &#x3D; 1; k &lt;&#x3D; 20; ++k) c[k] +&#x3D; (t &gt;&gt; (k - 1)) &amp; 1;
+        &#125;
+        for (int k &#x3D; 20; k &gt; 0; --k) &#123;
+            if (c[k] % 2 !&#x3D; 0) &#123;
+                if (n % 2 &#x3D;&#x3D; 0 &amp;&amp; c[k]!&#x3D; 1) ans &#x3D; -1; 
+                else ans &#x3D; 1;
+
+                break;
+            &#125;
+        &#125;
+        printf(&quot;%d\n&quot;, ans);
+    &#125;
+    return 0;
+&#125;   <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article id="post-LQB-砝码称重" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time class="dt-published" datetime="2022-03-14T12:20:56.932Z"><a href="/2022/03/14/LQB-%E7%A0%9D%E7%A0%81%E7%A7%B0%E9%87%8D/">2022-03-14</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2022/03/14/LQB-%E7%A0%9D%E7%A0%81%E7%A7%B0%E9%87%8D/">LQB-砝码称重</a></h1>
+  
+
+    </header>
+    <div class="e-content entry" itemprop="articleBody">
+      
+        <h1 id="【LQB复习】砝码称重"><a href="#【LQB复习】砝码称重" class="headerlink" title="【LQB复习】砝码称重"></a>【LQB复习】砝码称重</h1><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220314202115.png" alt=""></p>
+<p>​    经典DP问题，维护一个可称量数组f[]，每次新加一个重量wi后将其与其中每个重量都相加减，同时保证结果都大于0即可：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#include &quot;stdio.h&quot;
+#include &quot;vector&quot;
+#include &quot;algorithm&quot;
+using namespace std;
+bool f[100001] &#x3D; &#123; 0, &#125;;
+int main(void)&#123;
+    int N,t;
+    vector&lt;int&gt; now;
+    scanf(&quot;%d&quot;, &amp;N);
+    for (int i &#x3D; 0; i &lt; N; ++i) &#123;
+        scanf(&quot;%d&quot;, &amp;t);
+        int size &#x3D; now.size();&#x2F;&#x2F;尤其注意这里，不能直接用now.size()，循环中push_back会改变其值。
+        for (int j &#x3D; 0; j &lt; size; ++j) &#123;&#x2F;&#x2F;新加入的砝码与已称出的重量交互
+            int a &#x3D; now[j] + t, b &#x3D; max(now[j], t) - min(t,now[j]);
+            if (f[a] &#x3D;&#x3D; false) &#123;
+                now.push_back(a);
+                f[a] &#x3D; true;
+            &#125;
+            if (b !&#x3D; 0 &amp;&amp; f[b] &#x3D;&#x3D; false) &#123;&#x2F;&#x2F;注意称重量没有0
+                now.push_back(b);
+                f[b] &#x3D; true;
+            &#125;
+        &#125;
+        if (f[t] &#x3D;&#x3D; false)&#123;&#x2F;&#x2F;是否加入自己
+            f[t] &#x3D; true;
+            now.push_back(t);
+        &#125;
+    &#125;
+    printf(&quot;%d\n&quot;, now.size());
+    return 0;
+&#125;   <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+
+<nav id="pagination">
   
   
+    <a href="/page/2/" class="alignright next">下一页</a>
   
-  
+  <div class="clearfix"></div>
+</nav></div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="搜索">
+    <input type="hidden" name="as_sitesearch" value="example.com">
+  </form>
 </div>
 
-  </footer>
 
-  <!-- Scripts -->
   
-  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
-<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/js/events.js" ></script>
-<script  src="/js/plugins.js" ></script>
-
-
-  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var subtitle = document.getElementById('subtitle');
-      if (!subtitle || !typing) {
-        return;
-      }
-      var text = subtitle.getAttribute('data-typed-text');
-      
-        typing(text);
-      
-    })(window, document);
-  </script>
-
-
+<div class="widget tag">
+  <h3 class="title">分类</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/Book/">Book</a><small>1</small></li>
+  
+    <li><a href="/categories/CSP/">CSP</a><small>15</small></li>
+  
+    <li><a href="/categories/LQB/">LQB</a><small>3</small></li>
+  
+    <li><a href="/categories/Paper/">Paper</a><small>16</small></li>
+  
+    <li><a href="/categories/Something/">Something</a><small>3</small></li>
+  
+    <li><a href="/categories/%E2%97%8F%E8%AF%BE%E5%86%85/">●	课内</a><small>2</small></li>
+  
+  </ul>
+</div>
 
 
   
-    <script  src="/js/img-lazyload.js" ></script>
+<div class="widget tag">
+  <h3 class="title">标签</h3>
+  <ul class="entry">
   
-
-
-
-
-  <script  src="/js/local-search.js" ></script>
-
-
-
-
-
-<!-- 主题的启动项，将它保持在最底部 -->
-<!-- the boot of the theme, keep it at the bottom -->
-<script  src="/js/boot.js" ></script>
-
-
+    <li><a href="/tags/AD/">AD</a><small>10</small></li>
   
+    <li><a href="/tags/AD-training/">AD training</a><small>1</small></li>
+  
+    <li><a href="/tags/Android/">Android</a><small>1</small></li>
+  
+    <li><a href="/tags/Botnet/">Botnet</a><small>1</small></li>
+  
+    <li><a href="/tags/DDoS/">DDoS</a><small>1</small></li>
+  
+    <li><a href="/tags/DNN/">DNN</a><small>1</small></li>
+  
+    <li><a href="/tags/IDS/">IDS</a><small>2</small></li>
+  
+    <li><a href="/tags/Machine-Learning/">Machine Learning</a><small>2</small></li>
+  
+    <li><a href="/tags/Malware-Classifiers/">Malware Classifiers</a><small>5</small></li>
+  
+    <li><a href="/tags/Math/">Math</a><small>1</small></li>
+  
+    <li><a href="/tags/Mutiagent/">Mutiagent</a><small>1</small></li>
+  
+    <li><a href="/tags/NLP/">NLP</a><small>3</small></li>
+  
+    <li><a href="/tags/PDF/">PDF</a><small>1</small></li>
+  
+    <li><a href="/tags/RL/">RL</a><small>3</small></li>
+  
+    <li><a href="/tags/RNN/">RNN</a><small>1</small></li>
+  
+  </ul>
+</div>
 
-  <noscript>
-    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
-  </noscript>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2022 Shaw
+  
+</div>
+<div class="clearfix"></div></footer>
+  
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+<script src="/js/jquery.imagesloaded.min.js"></script>
+
+
+<script src="/js/gallery.js"></script>
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+<script>
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
 </body>
 </html>
