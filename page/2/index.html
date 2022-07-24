@@ -62,32 +62,10 @@
 
 
   
-  
-  <div class="site-header-image">
-    <img id="originBg" width="100%" alt="Hike News" src="">
-  </div>
-
-  <div id="header-blur" class="site-header-image blur" style="position: absolute; top:0; height: 207px; min-height: 207px; min-width: 100%;">
-    <img id="blurBg" width="100%" style="top: 96%" alt="Hike News" src="">
-  </div>
-
-  <script>
-        var imgUrls = "css/images/pose01.jpg,https://source.unsplash.com/collection/954550/1920x1080,https://source.unsplash.com/collection/954550/1920x1081".split(",");
-        var random = Math.floor((Math.random() * imgUrls.length ));
-        if (imgUrls[random].startsWith('http') || imgUrls[random].indexOf('://') >= 0) {
-          document.getElementById("originBg").src=imgUrls[random];
-          document.getElementById("blurBg").src=imgUrls[random];
-        } else {
-          document.getElementById("originBg").src='/' + imgUrls[random];
-          document.getElementById("blurBg").src='/' + imgUrls[random];
-        }
-    </script>
-
-
 
 
 <header id="allheader" class="site-header" role="banner" 
-   style="width: 100%; position: absolute; top:0; background: rgba(255,255,255,.8);"  >
+   >
   <div class="clearfix container">
       <div class="site-branding">
 
@@ -168,7 +146,7 @@
 
           
             <div class="entry-thumbnail">
-              <a href="/2021/09/16/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Learning%20to%20Communicate%20with%20Deep%20Multi-Agent%20Reinforcement%20Learning/"><img src="http://lorempixel.com/750/450/city/7" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2021/09/16/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Learning%20to%20Communicate%20with%20Deep%20Multi-Agent%20Reinforcement%20Learning/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -657,7 +635,7 @@ learning，指在已经做好标注的训练集上学习，为了叙述方便，
 
           
             <div class="entry-thumbnail">
-              <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/"><img src="http://lorempixel.com/750/450/city/4" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -738,7 +716,7 @@ the text items that are important for classifification‘？）
 
           
             <div class="entry-thumbnail">
-              <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Black-Box%20Attacks%20against%20RNN%20based%20Malware%20Detection%20Algorithms/"><img src="http://lorempixel.com/750/450/city/3" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Black-Box%20Attacks%20against%20RNN%20based%20Malware%20Detection%20Algorithms/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -939,7 +917,7 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194448.png" /></p>
 
           
             <div class="entry-thumbnail">
-              <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91AD%20nlp%20Survey/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91AD%20nlp%20Survey/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -1348,9 +1326,6 @@ Abstract:
 
 
     <!-- headerblur min height -->
-    
-      var headerblur = document.getElementById("header-blur");
-      headerblur.style.minHeight = window.getComputedStyle(document.getElementById("allheader"), null).height;
     
     
 </script>
