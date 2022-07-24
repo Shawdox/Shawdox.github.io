@@ -10,6 +10,88 @@ id="宏观与微观的审视哲学量变产生质变">宏观与微观的审视�
 ]]></content>
   </entry>
   <entry>
+    <title>Planning at Decision Time(决策时规划)</title>
+    <url>/2022/07/21/%E5%86%B3%E7%AD%96%E6%97%B6%E8%A7%84%E5%88%92/</url>
+    <content><![CDATA[<blockquote>
+<p><strong>参考资料：</strong></p>
+<ul>
+<li>Reinforcement Learining. Second Edition. Sutton.Page 180-193</li>
+<li>白板推导—强化学习.shuhuai008.Bilibili</li>
+<li>Easy RL.Qi Wang.Yang Yiyuan.Ji Jiang</li>
+</ul>
+</blockquote>
+<h1 id="Planning-at-Decision-Time（决策时规划）"><a href="#Planning-at-Decision-Time（决策时规划）" class="headerlink" title="Planning at Decision Time（决策时规划）"></a>Planning at Decision Time（决策时规划）</h1><p><strong>规划（Planning）至少有两种使用方式。</strong></p>
+<p>①<strong>一种</strong>在DP和Dyna中已经讨论过，通过从一个model（不论是sample model或是distribution model ）中获取模拟经验（simulated experience）的基础上来使用规划来逐渐提升一个policy或一个value function。</p>
+<p>然后，选择动作是一个比较当前状态的动作value问题，该value是在之前优化的表格中获取的；或者通过使用书中Part 2中考虑的近似方法来评估数学表达式。</p>
+<p>对于任意状态S~t~，在为其选择一个动作之前，其整个表格条目（例如Dyna-Q中的Q表）已经通过规划来优化过了。使用这种方式，规划并不是仅仅聚焦于当前的状态，我们称这种规划为<strong><em>background planning</em></strong>，后台规划。</p>
+<p>②<strong>另一种</strong>使用规划的方法就是在遇到每个新的状态S~t~后再开始一个完整的规划过程，其为每个当前状态选择一个动作A~t~，到下一个状态S~t+1~就选择一个动作A~t+1~，以此类推。</p>
+<p>一个使用这种规划最简单的例子：当state values可用时，通过比较当前model对执行每个动作后到达的新状态的value来选择一个动作。</p>
+<p>当然，更普遍的说，这种规划的用法可以比仅仅往后看一步（上面的例子就是）看得更深，评估动作的选择导致许多不同预测状态和奖励轨迹。</p>
+<p>不同于第一种用法，在这里，规划聚焦于一个特定的状态，我们称之为<strong><em>decision-time planning</em></strong>，决策时规划。</p>
+<p>这两种规划的方式可以用一种自然而有趣的方式结合在一起，不过一般二者被分开研究。</p>
+<p>如同background planning，我们仍可以将决策时规划看作一个从模拟经验中更新values，最后到更新policy的过程。只是基于当前状态所生成的values和policy会在做完动作选择决策后被丢弃，在很多应用场景中这么做并不算一个很大的损失，因为有非常多的状态存在，且不太可能在短时间内回到同一个状态，故重复计算导致的资源浪费会很少。</p>
+<p>一般来说，人们可能希望将两者结合起来：规划当前状态，并将规划的结果存储起来，以便在以后回到相同的状态时能走得更远。</p>
+<p><strong>Decision-time Planning，(决策时规划）在不需要快速反应的应用场景中作用最为显著。</strong></p>
+<p>决策时规划的常用算法有Heuristic Search（启发式搜索）、Rollout Algorithms（Rollout 算法）和Monte Carlo Tree Search（MCTS 蒙特卡洛树搜索）三种。</p>
+<span id="more"></span>
+<h2 id="Heuristic-Search（启发式搜索）"><a href="#Heuristic-Search（启发式搜索）" class="headerlink" title="Heuristic Search（启发式搜索）"></a><em>Heuristic Search（启发式搜索）</em></h2><p>在AI中一个经典的状态空间规划方法是decision-time planning方法，统称为<strong>Heuristic Search（启发式搜索）</strong>。</p>
+<p>在启发式搜索中，对每个遇到的状态都会生成一颗延续的搜索树，近似的value function会被在叶节点应用，然后反向传播到根节点。反向传播在当前状态停止。一旦这些节点的值被计算出来，就会选择其中最好的一个作为当前的行动，然后所有的值就会被丢弃。</p>
+<p>在传统的启发式搜索中，计算出的backed-up values并不会被通过修改近似value function来保存。实际上，价值函数一般都是由人设计的，绝不会因为搜索而改变。然而，一个自然而然的想法就是考虑改进value function，使用启发式搜索计算出的backed-up value或者其他方法。从某种意义上说，我们一直都采取这种方法。</p>
+<p>Greedy，ε-greedy和UCB动作选择方法与启发式搜索没什么不同，尽管是在一个更小的范围内。举个例子，为了计算greedy策略的state-value function，我们必须向前概览每个可能的动作，到达每个可能的下一个状态，考虑他们的reward和评估值，然后选择一个最好的动作。这就如同传统的启发式搜索，计算所有可能动作的backed-up values，但是不去保存他们。<strong>因此，启发式搜索可以被看作greedy策略在单步范围外的一种扩展。</strong></p>
+<p>搜索的更深是为了获得更好的动作选择策略。假设我们有一个完美的model和一个不完美的action-value function，如果一路搜索到底，那么不完美的value function的影响就会被消除。通过这种方式的搜索必须是optimal的。若搜索步骤k足够多，导致 γ^k^ 足够小，那么动作就会近似达到optimal。从另一个角度讲，搜索的越深所需的算力资源也越多，响应就越慢。</p>
+<p><strong>一个优秀的例子是是Tesauro提出的大师级双陆棋算法，TD-Gammon。</strong>该算法使用TD learning，通过与自己对弈来学习value function，其使用启发式搜索来选择动作。Tesauro发现启发式搜索的越深，TD-Gammon就会选择越好的动作，但是每走一步花的时间也越多。</p>
+<p>在更深入的搜索中观察到的性能改善并不是由于使用多步骤更新本身。相反，它是由于更新的重点集中在当前状态的下游的状态和行动上。通过投入大量与候选行动具体相关的计算，决策时规划可以产生比依靠无重点的更新所产生的更好的决策。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220722110302.png" alt="启发式搜索示意图"></p>
+<p>如上图所示，白圆点表示状态，黑圆点表示动作。以当前状态为根节点，遍历每一层所有的可能性，然后计算每个非叶节点的Q（s,a）。具体计算方法如下，将树按深度优先遍历，每个非叶节点使用公式：</p>
+<script type="math/tex; mode=display">
+Q(s,a) = \sum_{s',r}{p(s',r|s,a)(r + γmax_{a'}Q(s',a'))}</script><p>故按照图中的数字顺序（1-&gt;2-&gt;3-&gt;4-&gt;5……）依次计算<strong><u>q~*~的期望更新</u></strong>，得到当前状态（根节点）每个可能动作a’的对应的Q（s，a’），选择一个最好的即可。当然，在使用算法的过程中搜索层数K是可以控制的，故叶节点并不一定是终结状态S~T~。</p>
+<h2 id="Rollout-Algorithms（Rollout-算法）"><a href="#Rollout-Algorithms（Rollout-算法）" class="headerlink" title="Rollout Algorithms（Rollout 算法）"></a><em>Rollout Algorithms（Rollout 算法）</em></h2><p>Rollout算法是基于蒙特卡洛控制的决策时规划算法，其应用于从当前状态开始的一些模拟轨迹。对给定的policy进行动作评估的方式是将许多从各个可能的动作开始的模拟轨迹的返回值平均化。当action-value评估被认为足够准确了，被给分最高的动作就会被执行，之后，该过程（Rollout）将从产生的下一个状态重新进行。</p>
+<p>不同于蒙特卡洛控制算法，Rollout算法的目标不是评估一个最优的q*或qπ，而是根据一个给定的一般叫rollout policy的策略，来为每个当前状态生成蒙特卡洛评估。作为一个决策时规划算法，Rollout算法在当即使用这些action-value评估值之后就丢弃他们。这使得Rollout算法的实现相对较为简单，因为不都需要对每个<s , a>键值对都采样，并且不需要对状态空间或状态-动作空间拟合一个近似函数。</p>
+<p>Rollout算法什么时候停止？策略改进定理告诉我们给定两个几乎相同的策略π和π’，他们不同是对同一个状态S有: </p>
+<script type="math/tex; mode=display">
+π'(s) = a ≠ π(s)</script><p>如果：</p>
+<script type="math/tex; mode=display">
+q_{π}(s,a)\geq v_{π}(s)</script><p>那么策略π’就优于或等于策略π。</p>
+<p>在Rollout算法中，对状态s的每个可能的动作a’都计算其若干条模拟轨迹的平均返回值，得到$q_π(s,a’)$。接着选取评估值最大的那个action，随后的状态都继续遵循策略π，这就是一个很好的在π上的策略改进。</p>
+<p>换句话说，Rollout算法的目标就是在rollout policy上不断做改进，而不是去寻找一个最优策略。经验表明Rollout算法的效果非常惊艳。例如Tesauro和Galperin（1997）就表明rollout算法对于双陆西洋棋的提升效果非常显著。在一些应用中，即使rollout policy是完全随机的Rollout算法也可以有好的表现。但是policy的改进依靠rollout policy的性能和MC值评估得出的action排名。直觉表明，rollout policy越好、评估值越准确，Rollout算法给出的策略就越好。</p>
+<p>这其中包含了重要的权衡，因为一般来说越好的rollout policy意味着需要越多的时间来模拟足够的轨迹，以得到好的value评估效果。作为一个决策时评估方法，Rollout算法一般都会有严格的时间限制，其计算所需时间由待评估动作的数量、模拟轨迹中的步长、rollout policy做决策的时间和模拟轨迹的数量共同决定。</p>
+<p>虽然存在一些方法可以减轻这一难题，但在任何Rollout算法的应用中平衡这些因素都是很重要的。因为MC评估是相互独立的，故并行做这些评估是可能的。另外一种方法是可以缩减模拟轨迹的长度。</p>
+<p><strong>简单来说，不同于启发式搜索往下遍历所有的可行性然后进行q*期望更新，Rollout对每个可能的action进行若干条MC采样，以这些采样的平均值来评估这个aciton的好坏。</strong></p>
+<p><strong>Rollout 的意思是从当前帧去生成很多局的游戏。</strong></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220724094325.png" alt="可能的Rollout轨迹" style="zoom:80%;" /></p>
+<h2 id="Monte-Carlo-Tree-Search（MCTS-蒙特卡洛树搜索）"><a href="#Monte-Carlo-Tree-Search（MCTS-蒙特卡洛树搜索）" class="headerlink" title="Monte Carlo Tree Search（MCTS 蒙特卡洛树搜索）"></a><em>Monte Carlo Tree Search（MCTS 蒙特卡洛树搜索）</em></h2><p>Monte Carlo Tree Search (MCTS)，蒙特卡洛树搜索，是一个近年来非常成功的决策时规划算法。<strong>MCTS是一个rollout改进算法</strong>，其在Rollout的基础上增加了累计从MC模拟轨迹中获得value的方法，以便于模拟到有更高reward的轨迹。</p>
+<p>MCTS是近年来AI围棋从一个入门者（2005）发展到一个宗师级棋手（2015）的重要原因，2016年AlphaGo程序战胜了世界围棋冠军选手。MCTS被证明在许多竞争领域有显著效果，包括一般的游戏，但不局限于此。若环境model足够简单，可以进快速多步模拟，它对单智能体序列决策问题就非常有效。</p>
+<p><strong>MCTS的核心思想是从以往的模拟中，扩展初始部分已经获得高回报的轨迹，让算力聚焦于更可能获得高回报的模拟路线。</strong></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220724103456.png" alt="MCTS示意图" style="zoom:80%;" /></p>
+<p>在任何MC评估方法中，<s,a>键值对的评估值就是多对模拟轨迹的平均返回值，在这里，<u>只保留最有可能在几步内达到的<s,a>对的MC估计值（算出来的q（s,a））</u>。我们称这些节点加上根节点组成一个tree，使用一个tree policy遍历这个tree来选择一个用来扩展的叶子结点，<strong>构建一个tree帮助我们能选择一个更好的节点用来rollout而不是对每个节点都进行模拟</strong>。</p>
+<p>总的来说，MCTS总共分为四步：Selection，Expansion，Simulation和Backup。</p>
+<ul>
+<li>Selection就是用tree policy（例如ε-greedy）来选择一个叶节点，用于后续扩展；</li>
+<li>Expansion就是使用选择好的节点，用一些<u>未使用过</u>的actions来扩展一个或几个孩子节点；</li>
+<li>Simulation就是从选择的节点/扩展的节点上用rollout policy进行模拟，同rollout算法；</li>
+<li>Backup就是通过模拟得出的值来反向更新对应的action.</li>
+</ul>
+<p>在一个时间步骤内，MCTS反复做这四步，直到时间不够了或者其他计算资源不够了。然后，通过某种方法来为当前状态选择一个动作。例如，选择value最大的动作，或是，选择visit次数最多的动作来避免选到异常值。当到达下一个状态后，新一轮的MCTS又开始了。有时新一轮的MCTS从一个孤立的节点开始，但大多数情况下会从上一次MCTS中还留存的、有些后代的tree开始。</p>
+<p>MCTS最初被提出用于为一些双人竞技游戏选择动作，例如围棋。每个模拟过程都是一个完整的游戏过程，双方选手通过tree和rollout policy来选择动作。</p>
+<h2 id="相关概念解释："><a href="#相关概念解释：" class="headerlink" title="相关概念解释："></a>相关概念解释：</h2><h4 id="1-Distribution-model-and-Sample-model"><a href="#1-Distribution-model-and-Sample-model" class="headerlink" title="1. Distribution model and Sample model"></a>1. Distribution model and Sample model</h4><p>参考《Reinforcement Learning》Page159，Chapter 8，原文解释的很清楚：</p>
+<p><strong>“By a <em>model</em> of the environment we mean anything that an agent can use to predict how the environment will respond to its actions. Given a state and an action, a model produces a prediction of the resultant next state and next reward. ”</strong></p>
+<p>“我们所指的环境的model是一个agent可以用其预测环境会如何对其action作出反应的东西。给出一个state和一个action，model给出下一个state和返回的reward。”</p>
+<p><strong>“If the model is stochastic, then there are several possible next states and next rewards, each with some probability of occurring. ”</strong></p>
+<p>“如果model是随机的，那么下一个state与reward就有许多可能的情况，每个情况都有一定概率发生。”</p>
+<p><strong>“Some models produce a description of all possibilities and their probabilities; these we call <em>distribution models</em>. Other models produce just one of the possibilities, sampled according to the probabilities; these we call <em>sample models</em>.”</strong></p>
+<p>“一些models提供了一个对所有事件发生的可能性以及其概率的描述，这些models我们称其为<strong>distribution models</strong>（分布模型）；另外一些models仅提供这些可能发生的事件的其中一种，这些models我们称其为<strong>sample models</strong>（样本模型）”</p>
+<p><strong>“ For example, consider modeling the sum of a dozen dice. A distribution model would produce all possible sums and their probabilities of occurring, whereas a sample model would produce an individual sum drawn according to this probability distribution.”</strong></p>
+<p>“例如，考虑对一打骰子（dozen dice）的和进行建模，一个 distribution model 会产生所有可能的和，以及它们发生的概率，而一个 sample model 会根据这个概率分布产生一个单独的和。”</p>
+<p>例如，MDP中的$p(s^{‘},r|s,a)$就是一个典型的分布模型。在很多应用中，获取 sample models 比获取 distribution models 容易得多。dozen dice 就是这样一个例子。很容易写一个电脑程序仿真掷骰、返回和的过程，但是计算所有可能的和以及对应的概率很难，且容易出错。</p>
+]]></content>
+      <categories>
+        <category>Something</category>
+      </categories>
+      <tags>
+        <tag>RL</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>A Survey of Defense Mechanisms Against Distributed Denial of Service (DDoS) Flooding Attacks</title>
     <url>/2022/03/04/A%20Survey%20of%20Defense%20Mechanisms%20Against%20Distributed%20Denial%20of%20Service%20(DDoS)%20Flooding%20Attacks/</url>
     <content><![CDATA[<h1
@@ -1388,11 +1470,15 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211009200856.png" /></p>
   <entry>
     <title>近似误差与估计误差</title>
     <url>/2021/09/05/%E3%80%90%E9%9A%8F%E6%89%8B%E5%86%99%E3%80%91%E8%BF%91%E4%BC%BC%E8%AF%AF%E5%B7%AE%E4%B8%8E%E4%BC%B0%E8%AE%A1%E8%AF%AF%E5%B7%AE/</url>
-    <content><![CDATA[<h1 id="【随手写】近似误差与估计误差"><a href="#【随手写】近似误差与估计误差" class="headerlink" title="【随手写】近似误差与估计误差"></a>【随手写】近似误差与估计误差</h1><p>​    在读《统计学习方法》中关于k-邻近算法的介绍时，发现了这么一段话：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905153525.png" alt=""></p>
-<p>​        <strong>近似误差（<em>Approximation Error</em>）:</strong> 训练时，训练集与当前模型的误差；</p>
-<p>​        <strong>估计误差（<em>Estimation Error</em>）：</strong> 训练完成后，所选择的模型已经固定，模型对未知数据拟合时的误差。</p>
-<p>​        近似误差与估计误差二者不可兼得，此消彼长，需要取其平衡。</p>
+    <content><![CDATA[<h1 id="随手写近似误差与估计误差">【随手写】近似误差与估计误差</h1>
+<p>​ 在读《统计学习方法》中关于k-邻近算法的介绍时，发现了这么一段话：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210905153525.png" /></p>
+<p>​ <strong>近似误差（<em>Approximation Error</em>）:</strong>
+训练时，训练集与当前模型的误差；</p>
+<p>​ <strong>估计误差（<em>Estimation Error</em>）：</strong>
+训练完成后，所选择的模型已经固定，模型对未知数据拟合时的误差。</p>
+<p>​ 近似误差与估计误差二者不可兼得，此消彼长，需要取其平衡。</p>
 ]]></content>
       <categories>
         <category>Something</category>
@@ -1404,15 +1490,25 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211009200856.png" /></p>
   <entry>
     <title>极大似然估计</title>
     <url>/2021/09/04/%E3%80%90%E9%9A%8F%E5%86%99%E3%80%91%E6%9E%81%E5%A4%A7%E4%BC%BC%E7%84%B6%E4%BC%B0%E8%AE%A1/</url>
-    <content><![CDATA[<h1 id="【随写】极大似然估计（Maximum-Likelihood-Estimate，MLE）"><a href="#【随写】极大似然估计（Maximum-Likelihood-Estimate，MLE）" class="headerlink" title="【随写】极大似然估计（Maximum Likelihood Estimate，MLE）"></a>【随写】极大似然估计（<em>Maximum Likelihood Estimate，MLE</em>）</h1><p>​    “模型已定，参数未知。”</p>
-<p>​    极大似然估计，<strong>就是利用已知的样本结果信息，反推最具有可能（<u>最大概率</u>）导致这些样本结果出现的模型参数值。</strong></p>
-<p>​    </p>
-<p>​    对于这个函数：$P(x|θ)$，</p>
-<p>​    输入有两个：x表示某一个具体的数据；θ表示模型的参数。</p>
-<p>​    如果θ是已知确定的，x是变量，这个函数叫做<strong>概率函数(probability function)</strong>，它描述对于不同的样本点x，其出现概率是多少。</p>
-<p>​    如果x是已知确定的，θ 是变量，这个函数叫做<strong>似然函数(likelihood function)</strong>, 它描述对于不同的模型参数，出现x这个样本点的概率是多少。</p>
-<p>​    </p>
-<p>​    一般说来，事件A发生的概率与某一未知参数θ有关，θ取值不同，则事件A发生的概率$P(A|θ)$也不同，当我们在一次试验中事件A发生了，则认为此时的θ值应是t的一切可能取值中使$P(A|θ)$达到最大的那一个，极大似然估计法就是要选取这样的t值作为参数t的估计值，使所选取的样本在被选的总体中出现的可能性为最大。</p>
+    <content><![CDATA[<h1
+id="随写极大似然估计maximum-likelihood-estimatemle">【随写】极大似然估计（<em>Maximum
+Likelihood Estimate，MLE</em>）</h1>
+<p>​ “模型已定，参数未知。”</p>
+<p>​
+极大似然估计，<strong>就是利用已知的样本结果信息，反推最具有可能（<u>最大概率</u>）导致这些样本结果出现的模型参数值。</strong></p>
+<p>​</p>
+<p>​ 对于这个函数：<span class="math inline">\(P(x|θ)\)</span>，</p>
+<p>​ 输入有两个：x表示某一个具体的数据；θ表示模型的参数。</p>
+<p>​ 如果θ是已知确定的，x是变量，这个函数叫做<strong>概率函数(probability
+function)</strong>，它描述对于不同的样本点x，其出现概率是多少。</p>
+<p>​ 如果x是已知确定的，θ 是变量，这个函数叫做<strong>似然函数(likelihood
+function)</strong>,
+它描述对于不同的模型参数，出现x这个样本点的概率是多少。</p>
+<p>​</p>
+<p>​
+一般说来，事件A发生的概率与某一未知参数θ有关，θ取值不同，则事件A发生的概率<span
+class="math inline">\(P(A|θ)\)</span>也不同，当我们在一次试验中事件A发生了，则认为此时的θ值应是t的一切可能取值中使<span
+class="math inline">\(P(A|θ)\)</span>达到最大的那一个，极大似然估计法就是要选取这样的t值作为参数t的估计值，使所选取的样本在被选的总体中出现的可能性为最大。</p>
 ]]></content>
       <categories>
         <category>Something</category>
@@ -1424,79 +1520,136 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211009200856.png" /></p>
   <entry>
     <title>Adversarial Training with Fast Gradient Projection Method against Synonym Substitution Based Text Attacks</title>
     <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Adversarial%20Training%20with%20Fast%20Gradient%20Projection%20Method%20against%20Synonym%20Substitution%20Based%20Text%20Attacks/</url>
-    <content><![CDATA[<h1 id="【论文阅读】Adversarial-Training-with-Fast-Gradient-Projection-Method-against-Synonym-Substitution-Based-Text-Attacks"><a href="#【论文阅读】Adversarial-Training-with-Fast-Gradient-Projection-Method-against-Synonym-Substitution-Based-Text-Attacks" class="headerlink" title="【论文阅读】Adversarial Training with Fast Gradient Projection Method against Synonym Substitution Based Text Attacks"></a>【论文阅读】Adversarial Training with Fast Gradient Projection Method against Synonym Substitution Based Text Attacks</h1><blockquote>
+    <content><![CDATA[<h1
+id="论文阅读adversarial-training-with-fast-gradient-projection-method-against-synonym-substitution-based-text-attacks">【论文阅读】Adversarial
+Training with Fast Gradient Projection Method against Synonym
+Substitution Based Text Attacks</h1>
+<blockquote>
 <p><strong>时间：2020</strong></p>
-<p><strong>作者：王晓森，杨逸辰等      </strong>华中科技大学</p>
+<p><strong>作者：王晓森，杨逸辰等 </strong>华中科技大学</p>
 <p><strong>会议：AAAI</strong></p>
 </blockquote>
-<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><ol>
+<h3 id="总结">总结：</h3>
+<ol type="1">
 <li><p><strong>做了什么？</strong></p>
 <ul>
-<li><p>提出了一种速度更快的，更容易应用在复杂神经网络和大数据集上的，基于同义词替换的NLP对抗样本生成方法，FGPM；</p>
-</li>
-<li><p>将FGPM纳入对抗训练中，以提高深度神经网络的鲁棒性。</p>
-</li>
-</ul>
-</li>
-<li><p><strong>怎么做的？</strong></p>
-</li>
-</ol>
-<ol>
+<li><p>提出了一种速度更快的，更容易应用在复杂神经网络和大数据集上的，基于同义词替换的NLP对抗样本生成方法，FGPM；</p></li>
+<li><p>将FGPM纳入对抗训练中，以提高深度神经网络的鲁棒性。</p></li>
+</ul></li>
+<li><p><strong>怎么做的？</strong></p></li>
 <li><p><strong>实验结果？</strong></p>
 <ul>
 <li>FGPM的效果不是最高的，但也跟最高的差不多，但生成对抗样本的时间对比同类方法，缩减了1-3个数量级。</li>
 <li>ATFL的对抗样本防御能力和抗转移能力很强。</li>
-</ul>
-</li>
+</ul></li>
 </ol>
-<hr>
-<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract:"></a>Abstract:</h3><p>​    对抗训练是对于提升图像分类深度神经网络鲁棒性的，基于实验的最成功的进步所在。</p>
-<p>​    然而，对于文本分类，现有的基于同义词替换的对抗样本攻击十分奏效，但却没有被很有效地合并入实际的文本对抗训练中。</p>
-<p>​    基于梯度的攻击对于图像很有效，但因为文本的词汇，语法，语义结构的限制以及离散的文本输入空间，不能很好的应用于基于近义词替换的文本攻击中。</p>
-<p>​    因此，我们提出了一个基于同义词的替换的快速的文本对抗抗攻击方法名为<strong><em>Fast Gradient Projection Method (FGPM)</em></strong>。它的速度是已有文本攻击方法的20余倍，攻击效果也跟这些方法差不多。</p>
-<p>​    我们接着将FGPM合并入对抗训练中，提出了一个文本防御方法，<strong><em>Adversarial Training with FGPM enhanced by Logit pairing</em>(ATFL)</strong>。</p>
-<p>​    实验结果表明ATFL可以显著提高模型的鲁棒性，破坏对抗样本的可转移性。</p>
-<hr>
-<h3 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction:"></a>1 Introduction:</h3><p>​    现有的针对NLP的攻击方法包括了：字符等级攻击，单词等级攻击，句子等级攻击。</p>
-<p>​    对于字符等级的攻击，最近的工作（<em>Pruthi, Dhingra, and Lipton 2019</em>）表明了拼写检查器很容易修正样本中的扰动；</p>
-<p>​    对于句子等级的攻击，其一般需要基于改述，故需要更长的时间来生成对抗样本；</p>
-<p>​    对于单词等级的攻击，基于嵌入扰动的替换（<em>replacing word based on embedding perturbation</em>），添加，删除单词都会很容易改变句子的语法语义结构与正确性，<strong>故同义词替换的方法可以更好的处理上述问题，同时保证对抗样本更难被人类观察者发现</strong>。</p>
-<p>​    但不幸的是，基于同义词替换的攻击相较于如今对图像的攻击展现出了更低的功效。</p>
-<p>​    </p>
-<p>​    据我们所知，对抗训练，对图像数据最有效的防御方法之一，并没有在对抗基于同义词替换的攻击上很好的实施过。</p>
-<p>​    一方面，现有的基于同义词替换的攻击方法通常效率要低得多，难以纳入对抗训练。另一方面，尽管对图像的方法很有效，但其并不能直接移植到文本数据上。</p>
-<p>​    </p>
-<h4 id="1-1-Adversarial-Defense"><a href="#1-1-Adversarial-Defense" class="headerlink" title="1.1 Adversarial Defense:"></a>1.1 Adversarial Defense:</h4><p>​    有一系列工作对词嵌入进行扰动，并将扰动作为正则化策略用于对抗训练(<em>Miyato, Dai, and Goodfellow</em></p>
-<p><em>2016; Sato et al. 2018; Barham and Feizi 2019</em>) 。这些工作目的是提高模型对于原始数据集的表现，并不是为了防御对抗样本攻击，因此，我们不会考虑这些工作。</p>
-<p>​        不同于如今现有的防御方法，我们的工作聚焦于快速对抗样本生成，容易应用在复杂的神经网络和大数据集上的防御方法。</p>
-<hr>
-<h3 id="2-Fast-Gradient-Projection-Method（FGPM）"><a href="#2-Fast-Gradient-Projection-Method（FGPM）" class="headerlink" title="2 Fast Gradient Projection Method（FGPM）:"></a>2 Fast Gradient Projection Method（FGPM）:</h3><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904144444.png" alt=""></p>
-<hr>
-<h3 id="3-Adversarial-Training-with-FGPM："><a href="#3-Adversarial-Training-with-FGPM：" class="headerlink" title="3 Adversarial Training with FGPM："></a>3 Adversarial Training with FGPM：</h3><p>​    具体算法中文描述见：</p>
-<p><a href="https://zhuanlan.zhihu.com/p/248425749">《基于同义词替换的快速梯度映射（FGPM）文本对抗攻击方法》阅读笔记 - 知乎 (zhihu.com)</a></p>
-<hr>
-<h3 id="4-Experimental-Results："><a href="#4-Experimental-Results：" class="headerlink" title="4 Experimental Results："></a>4 Experimental Results：</h3><p>​    我们衡量FGPM使用四种攻击准则，衡量ATFL使用两种防御准则。</p>
-<p>​    我们在三个很受欢迎的基准数据集上，同时包括CNN和RNN模型上进行测试，代码开源：<a href="https://github.com/JHL-HUST/FGPM">https://github.com/JHL-HUST/FGPM</a></p>
-<h4 id="4-1-Baselines"><a href="#4-1-Baselines" class="headerlink" title="4.1 Baselines:"></a>4.1 Baselines:</h4><p>​    为了评估FGPM的攻击效能，我们将其与Papernot’、GSA ( Kuleshov等人的4种对抗性攻击进行了比较。2018 )、PWWS ( Ren et al . 2019 )和Iga ( Wang，jin，and he 2019 )。</p>
-<p>​    此外，为了验证我们的ATFL的防御能力，我们采用了SEM ( Wang，Jin，He 2019 )和IBP ( Jia et al . 2019 )，针对上述Word-Level攻击。由于攻击基线的效率很低，我们在每个数据集上随机抽取200个示例，并在各种模型上生成对抗样本。</p>
-<h4 id="4-2-Datasets"><a href="#4-2-Datasets" class="headerlink" title="4.2 Datasets:"></a>4.2 Datasets:</h4><p>​    <em>AG’s News</em>, <em>DBPedia ontology</em> and <em>Yahoo! Answers</em> (Zhang,Zhao, and LeCun 2015).</p>
-<h4 id="4-3-Models"><a href="#4-3-Models" class="headerlink" title="4.3 Models:"></a>4.3 Models:</h4><p>​    我们使用了CNNs,RNNs,来达到主流的文本分类表现，所有模型的嵌入维度均为300。</p>
-<h4 id="4-4-Evaluation-on-Attack-Effectiveness："><a href="#4-4-Evaluation-on-Attack-Effectiveness：" class="headerlink" title="4.4 Evaluation on Attack Effectiveness："></a>4.4 Evaluation on Attack Effectiveness：</h4><p>​    我们评估模型在攻击下的准确率和转移率：</p>
-<p>​    <strong>准确率：</strong></p>
-<p>​        <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904134852.png" alt=""></p>
-<p>​    <strong>转移率：</strong></p>
-<p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904135419.png" alt=""></p>
-<h4 id="4-4-Evaluation-on-Attack-Efficiency："><a href="#4-4-Evaluation-on-Attack-Efficiency：" class="headerlink" title="4.4 Evaluation on Attack Efficiency："></a>4.4 Evaluation on Attack Efficiency：</h4><p>​        对抗训练需要高效率的生成对抗样本以有效地提升模型鲁棒性。因此，我们评估了不同攻击方法在三个数据集上生成生成200个对抗样本的总时间。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904135842.png" alt=""></p>
-<h4 id="4-5-Evaluation-on-Adversarial-Training："><a href="#4-5-Evaluation-on-Adversarial-Training：" class="headerlink" title="4.5 Evaluation on Adversarial Training："></a>4.5 Evaluation on Adversarial Training：</h4><p>​        我们评估ATFL的对抗样本防御能力和抗转移能力：</p>
-<p>​    <strong>对抗样本防御能力：</strong></p>
-<p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904140647.png" alt=""></p>
-<p>​    <strong>抗转移能力：</strong></p>
-<p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904141719.png" alt=""></p>
-<h4 id="4-6-Evaluation-on-Adversarial-Training-Variants"><a href="#4-6-Evaluation-on-Adversarial-Training-Variants" class="headerlink" title="4.6 Evaluation on Adversarial Training Variants:"></a>4.6 Evaluation on Adversarial Training Variants:</h4><p>​        许多对抗训练的变体，例如CLP和ALP，TRADES等，已经尝试采用不同的正则化方法来提高针对图像数据的对抗训练准确率。</p>
-<p>​        在这里，我们回答一个问题：这些变体方法也可以提高文本数据准确率吗？</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904142406.png" alt=""></p>
-<p>​        从表中可以看出，只有ALP可以长远地提升对抗训练的表现。</p>
+<hr />
+<h3 id="abstract">Abstract:</h3>
+<p>​
+对抗训练是对于提升图像分类深度神经网络鲁棒性的，基于实验的最成功的进步所在。</p>
+<p>​
+然而，对于文本分类，现有的基于同义词替换的对抗样本攻击十分奏效，但却没有被很有效地合并入实际的文本对抗训练中。</p>
+<p>​
+基于梯度的攻击对于图像很有效，但因为文本的词汇，语法，语义结构的限制以及离散的文本输入空间，不能很好的应用于基于近义词替换的文本攻击中。</p>
+<p>​
+因此，我们提出了一个基于同义词的替换的快速的文本对抗抗攻击方法名为<strong><em>Fast
+Gradient Projection Method
+(FGPM)</em></strong>。它的速度是已有文本攻击方法的20余倍，攻击效果也跟这些方法差不多。</p>
+<p>​
+我们接着将FGPM合并入对抗训练中，提出了一个文本防御方法，<strong><em>Adversarial
+Training with FGPM enhanced by Logit pairing</em>(ATFL)</strong>。</p>
+<p>​
+实验结果表明ATFL可以显著提高模型的鲁棒性，破坏对抗样本的可转移性。</p>
+<hr />
+<h3 id="introduction">1 Introduction:</h3>
+<p>​
+现有的针对NLP的攻击方法包括了：字符等级攻击，单词等级攻击，句子等级攻击。</p>
+<p>​ 对于字符等级的攻击，最近的工作（<em>Pruthi, Dhingra, and Lipton
+2019</em>）表明了拼写检查器很容易修正样本中的扰动；</p>
+<p>​
+对于句子等级的攻击，其一般需要基于改述，故需要更长的时间来生成对抗样本；</p>
+<p>​ 对于单词等级的攻击，基于嵌入扰动的替换（<em>replacing word based on
+embedding
+perturbation</em>），添加，删除单词都会很容易改变句子的语法语义结构与正确性，<strong>故同义词替换的方法可以更好的处理上述问题，同时保证对抗样本更难被人类观察者发现</strong>。</p>
+<p>​
+但不幸的是，基于同义词替换的攻击相较于如今对图像的攻击展现出了更低的功效。</p>
+<p>​</p>
+<p>​
+据我们所知，对抗训练，对图像数据最有效的防御方法之一，并没有在对抗基于同义词替换的攻击上很好的实施过。</p>
+<p>​
+一方面，现有的基于同义词替换的攻击方法通常效率要低得多，难以纳入对抗训练。另一方面，尽管对图像的方法很有效，但其并不能直接移植到文本数据上。</p>
+<p>​</p>
+<h4 id="adversarial-defense">1.1 Adversarial Defense:</h4>
+<p>​
+有一系列工作对词嵌入进行扰动，并将扰动作为正则化策略用于对抗训练(<em>Miyato,
+Dai, and Goodfellow</em></p>
+<p><em>2016; Sato et al. 2018; Barham and Feizi 2019</em>)
+。这些工作目的是提高模型对于原始数据集的表现，并不是为了防御对抗样本攻击，因此，我们不会考虑这些工作。</p>
+<p>​
+不同于如今现有的防御方法，我们的工作聚焦于快速对抗样本生成，容易应用在复杂的神经网络和大数据集上的防御方法。</p>
+<hr />
+<h3 id="fast-gradient-projection-methodfgpm">2 Fast Gradient Projection
+Method（FGPM）:</h3>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904144444.png" /></p>
+<hr />
+<h3 id="adversarial-training-with-fgpm">3 Adversarial Training with
+FGPM：</h3>
+<p>​ 具体算法中文描述见：</p>
+<p><a
+href="https://zhuanlan.zhihu.com/p/248425749">《基于同义词替换的快速梯度映射（FGPM）文本对抗攻击方法》阅读笔记
+- 知乎 (zhihu.com)</a></p>
+<hr />
+<h3 id="experimental-results">4 Experimental Results：</h3>
+<p>​ 我们衡量FGPM使用四种攻击准则，衡量ATFL使用两种防御准则。</p>
+<p>​
+我们在三个很受欢迎的基准数据集上，同时包括CNN和RNN模型上进行测试，代码开源：https://github.com/JHL-HUST/FGPM</p>
+<h4 id="baselines">4.1 Baselines:</h4>
+<p>​ 为了评估FGPM的攻击效能，我们将其与Papernot’、GSA (
+Kuleshov等人的4种对抗性攻击进行了比较。2018 )、PWWS ( Ren et al . 2019
+)和Iga ( Wang，jin，and he 2019 )。</p>
+<p>​ 此外，为了验证我们的ATFL的防御能力，我们采用了SEM ( Wang，Jin，He
+2019 )和IBP ( Jia et al . 2019
+)，针对上述Word-Level攻击。由于攻击基线的效率很低，我们在每个数据集上随机抽取200个示例，并在各种模型上生成对抗样本。</p>
+<h4 id="datasets">4.2 Datasets:</h4>
+<p>​ <em>AG’s News</em>, <em>DBPedia ontology</em> and <em>Yahoo!
+Answers</em> (Zhang,Zhao, and LeCun 2015).</p>
+<h4 id="models">4.3 Models:</h4>
+<p>​
+我们使用了CNNs,RNNs,来达到主流的文本分类表现，所有模型的嵌入维度均为300。</p>
+<h4 id="evaluation-on-attack-effectiveness">4.4 Evaluation on Attack
+Effectiveness：</h4>
+<p>​ 我们评估模型在攻击下的准确率和转移率：</p>
+<p>​ <strong>准确率：</strong></p>
+<p>​ <img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904134852.png" /></p>
+<p>​ <strong>转移率：</strong></p>
+<p>​ <img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904135419.png" /></p>
+<h4 id="evaluation-on-attack-efficiency">4.4 Evaluation on Attack
+Efficiency：</h4>
+<p>​
+对抗训练需要高效率的生成对抗样本以有效地提升模型鲁棒性。因此，我们评估了不同攻击方法在三个数据集上生成生成200个对抗样本的总时间。</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904135842.png" /></p>
+<h4 id="evaluation-on-adversarial-training">4.5 Evaluation on
+Adversarial Training：</h4>
+<p>​ 我们评估ATFL的对抗样本防御能力和抗转移能力：</p>
+<p>​ <strong>对抗样本防御能力：</strong></p>
+<p>​ <img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904140647.png" /></p>
+<p>​ <strong>抗转移能力：</strong></p>
+<p>​ <img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904141719.png" /></p>
+<h4 id="evaluation-on-adversarial-training-variants">4.6 Evaluation on
+Adversarial Training Variants:</h4>
+<p>​
+许多对抗训练的变体，例如CLP和ALP，TRADES等，已经尝试采用不同的正则化方法来提高针对图像数据的对抗训练准确率。</p>
+<p>​
+在这里，我们回答一个问题：这些变体方法也可以提高文本数据准确率吗？</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904142406.png" /></p>
+<p>​ 从表中可以看出，只有ALP可以长远地提升对抗训练的表现。</p>
 ]]></content>
       <categories>
         <category>Paper</category>
@@ -1981,49 +2134,74 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830140545.png" /></p>
   <entry>
     <title>Automatically Evading Classififiers----A Case Study on PDF Malware Classififiers</title>
     <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Automatically%20Evading%20Classififiers----A%20Case%20Study%20on%20PDF%20Malware%20Classififiers/</url>
-    <content><![CDATA[<h1 id="【论文阅读】Automatically-Evading-Classififiers——A-Case-Study-on-PDF-Malware-Classififiers"><a href="#【论文阅读】Automatically-Evading-Classififiers——A-Case-Study-on-PDF-Malware-Classififiers" class="headerlink" title="【论文阅读】Automatically Evading Classififiers——A Case Study on PDF Malware Classififiers"></a>【论文阅读】Automatically Evading Classififiers——A Case Study on PDF Malware Classififiers</h1><blockquote>
+    <content><![CDATA[<h1
+id="论文阅读automatically-evading-classififiers----a-case-study-on-pdf-malware-classififiers">【论文阅读】Automatically
+Evading Classififiers----A Case Study on PDF Malware Classififiers</h1>
+<blockquote>
 <p><strong>时间：2016</strong></p>
-<p><strong>作者：Weilin Xu, Yanjun Qi, and David Evans    弗吉尼亚大学</strong></p>
+<p><strong>作者：Weilin Xu, Yanjun Qi, and David Evans
+弗吉尼亚大学</strong></p>
 <p><strong>会议：NDSS（ccf_B类）</strong></p>
 </blockquote>
-<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><ol>
+<h3 id="总结">总结：</h3>
+<ol type="1">
 <li><p><strong>白盒黑盒？</strong></p>
-<p><strong>黑盒攻击</strong>，需要知道生成样本在目标模型中的输出（分类分数）和目标模型所使用的特征（粗略知道）；</p>
-</li>
+<p><strong>黑盒攻击</strong>，需要知道生成样本在目标模型中的输出（分类分数）和目标模型所使用的特征（粗略知道）；</p></li>
 <li><p><strong>针对什么目标？</strong></p>
-<p>仅仅使用表层特征的分类器；</p>
-</li>
+<p>仅仅使用表层特征的分类器；</p></li>
 <li><p><strong>攻击方法？</strong></p>
 <p>3.1 <strong>如何制造对抗样本？</strong></p>
-<p>​    使用<strong>遗传算法（GP-BASED）</strong>进行随机扰动</p>
+<p>​ 使用<strong>遗传算法（GP-BASED）</strong>进行随机扰动</p>
 <p>3.2 <strong>如何判别对抗样本的恶意能力？</strong></p>
-<p>​    使用<strong><em>oracle</em></strong></p>
-</li>
+<p>​ 使用<strong><em>oracle</em></strong></p></li>
 </ol>
-<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract:"></a>Abstract:</h3><p>​    在本文，我们提出了一个一般化的方法来检验分类器的鲁棒性，通过在两个PDF恶意样本分类器，PDFrate和Hidost上来检验。其关键就是随机控制一个恶意样本来找到一个对抗样本。</p>
-<p>​    我们的方法可以自动地对500个恶意样本种子中找到对于两个PDF分类器的对抗样本，我们的结果提出了一个严重的疑问，基于表面特征的分类器在面对对抗样本时是否还有效？</p>
-<hr>
-<h3 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction:"></a>1. Introduction:</h3><p>​    主要贡献：</p>
+<h3 id="abstract">Abstract:</h3>
+<p>​
+在本文，我们提出了一个一般化的方法来检验分类器的鲁棒性，通过在两个PDF恶意样本分类器，PDFrate和Hidost上来检验。其关键就是随机控制一个恶意样本来找到一个对抗样本。</p>
+<p>​
+我们的方法可以自动地对500个恶意样本种子中找到对于两个PDF分类器的对抗样本，我们的结果提出了一个严重的疑问，基于表面特征的分类器在面对对抗样本时是否还有效？</p>
+<hr />
+<h3 id="introduction">1. Introduction:</h3>
+<p>​ 主要贡献：</p>
 <pre><code>1. 提出了一个一般化的方法用于自动寻找分类器的对抗样本；
 2. 制作了一个原型系统用于自动生成对抗样本；
-3. 我们的系统在对500个恶意样本种子寻找对抗样本的过程中，达到了100%的准确率。
-</code></pre><hr>
-<h3 id="2-Overview："><a href="#2-Overview：" class="headerlink" title="2. Overview："></a>2. Overview：</h3><h4 id="2-1-Finding-Evasive-Samples："><a href="#2-1-Finding-Evasive-Samples：" class="headerlink" title="2.1 Finding Evasive Samples："></a><em>2.1 Finding Evasive Samples</em>：</h4><p>​    <strong>整体思路：</strong></p>
-<p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901185852.png" alt=""></p>
-<p>​    <strong><em>oracle</em></strong>用于判断一个样本是否具有恶意行为；</p>
-<hr>
-<h3 id="3-PDF-Malware-and-Classifiers"><a href="#3-PDF-Malware-and-Classifiers" class="headerlink" title="3. PDF Malware and Classifiers"></a>3. PDF Malware and Classifiers</h3><h4 id="3-1-PDFmalware"><a href="#3-1-PDFmalware" class="headerlink" title="3.1 PDFmalware:"></a><em>3.1 PDFmalware:</em></h4><p>​    PDF文件的整体结构：</p>
-<p>​        <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901191527.png" alt=""></p>
-<p>​    早些的PDF恶意样本一般使用JavaScript嵌入，用户双击打开时出发执行恶意脚本。</p>
-<p>​    因为不是所有的PDF恶意样本都是嵌入了JavaScript代码，最近的一些PDF恶意分类器就着重于PDF文件的结构化特征。在本文，我们的目标就是攻击这些有代表性的基于文件结构化特征的分类器。</p>
-<h4 id="3-2-Target-Classififiers："><a href="#3-2-Target-Classififiers：" class="headerlink" title="3.2 Target Classififiers："></a><em>3.2 Target Classififiers：</em></h4><p>​    <strong>PDFrate：</strong>一个使用随机森林算法的分类器。</p>
-<p>​    <strong>Hidost:</strong>一个SVM分类器。</p>
-<p>​    </p>
-<hr>
-<h3 id="4-Evading-PDF-Malware-Classifiers："><a href="#4-Evading-PDF-Malware-Classifiers：" class="headerlink" title="4.  Evading PDF Malware Classifiers："></a>4.  Evading PDF Malware Classifiers：</h3><hr>
-<h3 id="5-Experiment"><a href="#5-Experiment" class="headerlink" title="5.  Experiment:"></a>5.  Experiment:</h3><h4 id="5-1-Dataset"><a href="#5-1-Dataset" class="headerlink" title="5.1 Dataset:"></a><em>5.1 Dataset:</em></h4><p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194138.png" alt=""></p>
-<h4 id="5-2-Test："><a href="#5-2-Test：" class="headerlink" title="5.2 Test："></a><em>5.2 Test：</em></h4><p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194328.png" alt=""></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194448.png" alt=""></p>
+3. 我们的系统在对500个恶意样本种子寻找对抗样本的过程中，达到了100%的准确率。</code></pre>
+<hr />
+<h3 id="overview">2. Overview：</h3>
+<h4 id="finding-evasive-samples"><em>2.1 Finding Evasive
+Samples</em>：</h4>
+<p>​ <strong>整体思路：</strong></p>
+<p>​ <img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901185852.png" /></p>
+<p>​
+<strong><em>oracle</em></strong>用于判断一个样本是否具有恶意行为；</p>
+<hr />
+<h3 id="pdf-malware-and-classifiers">3. PDF Malware and Classifiers</h3>
+<h4 id="pdfmalware"><em>3.1 PDFmalware:</em></h4>
+<p>​ PDF文件的整体结构：</p>
+<p>​ <img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901191527.png" /></p>
+<p>​
+早些的PDF恶意样本一般使用JavaScript嵌入，用户双击打开时出发执行恶意脚本。</p>
+<p>​
+因为不是所有的PDF恶意样本都是嵌入了JavaScript代码，最近的一些PDF恶意分类器就着重于PDF文件的结构化特征。在本文，我们的目标就是攻击这些有代表性的基于文件结构化特征的分类器。</p>
+<h4 id="target-classififiers"><em>3.2 Target Classififiers：</em></h4>
+<p>​ <strong>PDFrate：</strong>一个使用随机森林算法的分类器。</p>
+<p>​ <strong>Hidost:</strong>一个SVM分类器。</p>
+<p>​</p>
+<hr />
+<h3 id="evading-pdf-malware-classifiers">4. Evading PDF Malware
+Classifiers：</h3>
+<hr />
+<h3 id="experiment">5. Experiment:</h3>
+<h4 id="dataset"><em>5.1 Dataset:</em></h4>
+<p>​ <img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194138.png" /></p>
+<h4 id="test"><em>5.2 Test：</em></h4>
+<p>​ <img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194328.png" /></p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194448.png" /></p>
 ]]></content>
       <categories>
         <category>Paper</category>
@@ -2688,54 +2866,99 @@ src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210716172518.png" /></p>
   <entry>
     <title>Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers</title>
     <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/</url>
-    <content><![CDATA[<h1 id="【论文阅读】Generic-Black-Box-End-to-End-Attack-Against-State-of-the-art-API-Call-Based-Malware-Classifiers"><a href="#【论文阅读】Generic-Black-Box-End-to-End-Attack-Against-State-of-the-art-API-Call-Based-Malware-Classifiers" class="headerlink" title="【论文阅读】Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers"></a>【论文阅读】Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers</h1><blockquote>
+    <content><![CDATA[<h1
+id="论文阅读generic-black-box-end-to-end-attack-against-state-of-the-art-api-call-based-malware-classifiers">【论文阅读】Generic
+Black-Box End-to-End Attack Against State of the art API Call Based
+Malware Classifiers</h1>
+<blockquote>
 <p><strong>作者：Ishai Rosenberg </strong></p>
 <p><strong>大学：Ben-Gurion University of the Negev</strong></p>
 <p><strong>时间：2018.6.4</strong></p>
 </blockquote>
-<h3 id="1-做了什么？"><a href="#1-做了什么？" class="headerlink" title="1. 做了什么？"></a>1. 做了什么？</h3><ul>
-<li><p>​    对一个通过机器学习训练的，通过API调用来分类恶意软件的分类器的攻击。</p>
-<p>​    这个攻击可以使分类器不能成功识别恶意软件，并且不改变原有软件的功能。</p>
-</li>
-<li><p>​    实现了<strong>GADGET</strong>，一个可以直接将二进制恶意软件文件转换为分类器无法检测的二进制文件，<strong>并不需要访问文件源代码。</strong></p>
-</li>
+<h3 id="做了什么">1. 做了什么？</h3>
+<ul>
+<li><p>​
+对一个通过机器学习训练的，通过API调用来分类恶意软件的分类器的攻击。</p>
+<p>​
+这个攻击可以使分类器不能成功识别恶意软件，并且不改变原有软件的功能。</p></li>
+<li><p>​
+实现了<strong>GADGET</strong>，一个可以直接将二进制恶意软件文件转换为分类器无法检测的二进制文件，<strong>并不需要访问文件源代码。</strong></p></li>
 </ul>
-<h3 id="2-一些概念："><a href="#2-一些概念：" class="headerlink" title="2. 一些概念："></a>2. 一些概念：</h3><h4 id="2-1-Machine-learning-malware-classififiers（基于机器学习的恶意软件分类器）"><a href="#2-1-Machine-learning-malware-classififiers（基于机器学习的恶意软件分类器）" class="headerlink" title="2.1 Machine learning malware classififiers（基于机器学习的恶意软件分类器）"></a>2.1 Machine learning malware classififiers（基于机器学习的恶意软件分类器）</h4><p>​    优点：1. 可以自动训练，节省时间；</p>
-<p>​                2. 只要分类器并不是基于指纹特征或者某个特定的特征（如Hash值）来分类，面对不可见威胁时泛化能力较强。</p>
-<h4 id="2-2-Adversarial-Examples（对抗样本）"><a href="#2-2-Adversarial-Examples（对抗样本）" class="headerlink" title="2.2 Adversarial Examples（对抗样本）"></a>2.2 Adversarial Examples（对抗样本）</h4><p><strong>对输入样本故意添加一些人无法察觉的细微的干扰，导致模型以高置信度给出一个错误的输出。</strong></p>
-<ol>
+<h3 id="一些概念">2. 一些概念：</h3>
+<h4
+id="machine-learning-malware-classififiers基于机器学习的恶意软件分类器">2.1
+Machine learning malware
+classififiers（基于机器学习的恶意软件分类器）</h4>
+<p>​ 优点：1. 可以自动训练，节省时间；</p>
+<p>​ 2.
+只要分类器并不是基于指纹特征或者某个特定的特征（如Hash值）来分类，面对不可见威胁时泛化能力较强。</p>
+<h4 id="adversarial-examples对抗样本">2.2 Adversarial
+Examples（对抗样本）</h4>
+<p><strong>对输入样本故意添加一些人无法察觉的细微的干扰，导致模型以高置信度给出一个错误的输出。</strong></p>
+<ol type="1">
 <li><strong>可以针对一张已经有正确分类的image，对其进行细微的像素修改，可以在DNN下被错分为其他label。</strong></li>
 </ol>
-<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-ed60089ae25c81ba2677ec34ffa2a47f_720w.jpg" alt=""></p>
-<p>​    样本x的label为熊猫，在对x添加部分干扰后，在人眼中仍然分为熊猫，但对深度模型，却将其错分为长臂猿，且给出了高达99.3%的置信度。</p>
-<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-59a3afcc069df94927ffe1efd62822e9_720w.jpg" alt=""></p>
+<p><img
+src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-ed60089ae25c81ba2677ec34ffa2a47f_720w.jpg" /></p>
+<p>​
+样本x的label为熊猫，在对x添加部分干扰后，在人眼中仍然分为熊猫，但对深度模型，却将其错分为长臂猿，且给出了高达99.3%的置信度。</p>
+<p><img
+src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-59a3afcc069df94927ffe1efd62822e9_720w.jpg" /></p>
 <p>像素攻击：改动图片上的一个像素，就能让神经网络认错图，甚至还可以诱导它返回特定的结果。</p>
 <p>改动图片上的一个像素，就能让神经网络认错图，甚至还可以诱导它返回特定的结果</p>
-<p><strong>2. 同样，根据DNN，很容易产生一张在人眼下毫无意义的image，但是在DNN中能够获得高confidence的label。</strong></p>
-<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-0390bba1f2c35220c8b099b8ab0f4ebc_720w.jpg" alt=""></p>
+<p><strong>2.
+同样，根据DNN，很容易产生一张在人眼下毫无意义的image，但是在DNN中能够获得高confidence的label。</strong></p>
+<p><img
+src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-0390bba1f2c35220c8b099b8ab0f4ebc_720w.jpg" /></p>
 <p>两种EA算法生成的样本，这些样本人类完全无法识别，但深度学习模型会以高置信度对它们进行分类，例如将噪声识别为狮子。</p>
-<h5 id="2-2-1：-Adversarial-examples-for-API-sequences-生成API序列对抗样本与生成图像对抗样本并不同"><a href="#2-2-1：-Adversarial-examples-for-API-sequences-生成API序列对抗样本与生成图像对抗样本并不同" class="headerlink" title="2.2.1： Adversarial examples for API sequences(生成API序列对抗样本与生成图像对抗样本并不同):"></a>2.2.1： Adversarial examples for API sequences(生成API序列对抗样本与生成图像对抗样本并不同):</h5><ol>
+<h5
+id="adversarial-examples-for-api-sequences生成api序列对抗样本与生成图像对抗样本并不同">2.2.1：
+Adversarial examples for API
+sequences(生成API序列对抗样本与生成图像对抗样本并不同):</h5>
+<ol type="1">
 <li>API序列由长度可变的离散符号组成，但图像可以用固定维度的矩阵表示为矩阵，且矩阵的值是连续的。</li>
 <li>对于对抗API序列，其必须验证原始的恶意功能是完整的。</li>
 <li><strong>对抗样本的迁移性</strong>：针对一种模型的对抗样本通常对另一种模型也奏效，即使这两个模型不是用同一数据集训练的。</li>
 </ol>
-<h4 id="2-3-几种攻击方法："><a href="#2-3-几种攻击方法：" class="headerlink" title="2.3 几种攻击方法："></a>2.3 几种攻击方法：</h4><blockquote>
-<p><strong>White-box attack</strong>：白盒攻击，对模型和训练集完全了解。</p>
-<p><strong>Black-box attack</strong>：黑盒攻击：对模型不了解，对训练集不了解或了解很少。</p>
-<p><strong>Real-word attack</strong>：在真实世界攻击。如将对抗样本打印出来，用手机拍照识别。</p>
+<h4 id="几种攻击方法">2.3 几种攻击方法：</h4>
+<blockquote>
+<p><strong>White-box
+attack</strong>：白盒攻击，对模型和训练集完全了解。</p>
+<p><strong>Black-box
+attack</strong>：黑盒攻击：对模型不了解，对训练集不了解或了解很少。</p>
+<p><strong>Real-word
+attack</strong>：在真实世界攻击。如将对抗样本打印出来，用手机拍照识别。</p>
 <p><strong>targeted attack</strong>：使得图像都被错分到给定类别上。</p>
-<p><strong>non-target attack</strong>：事先不知道需要攻击的网络细节，也不指定预测的类别，生成对抗样本来欺骗防守方的网络。</p>
-<p><strong>mimicry attack</strong>: 编写恶意的exploit，该exp模拟良性代码系统调用的痕迹，因为能够逃逸检测。</p>
-<p><strong>disguise attack:</strong> 仅修改系统调用的参数使良性系统调用生成恶意行为 。</p>
-<p><strong>No-op attack</strong>: 添加语义的no-ops-系统调用，其没有影响，或者是不相干的影响，即，打开一个不存在的文件。</p>
-<p><strong>Equivalence attack</strong>: 使用一个不同的系统调用来达到恶意的目的.</p>
+<p><strong>non-target
+attack</strong>：事先不知道需要攻击的网络细节，也不指定预测的类别，生成对抗样本来欺骗防守方的网络。</p>
+<p><strong>mimicry attack</strong>:
+编写恶意的exploit，该exp模拟良性代码系统调用的痕迹，因为能够逃逸检测。</p>
+<p><strong>disguise attack:</strong>
+仅修改系统调用的参数使良性系统调用生成恶意行为 。</p>
+<p><strong>No-op attack</strong>:
+添加语义的no-ops-系统调用，其没有影响，或者是不相干的影响，即，打开一个不存在的文件。</p>
+<p><strong>Equivalence attack</strong>:
+使用一个不同的系统调用来达到恶意的目的.</p>
 </blockquote>
-<h4 id="2-4-decision-boundary-决策界限"><a href="#2-4-decision-boundary-决策界限" class="headerlink" title="2.4 decision boundary(决策界限)"></a>2.4 decision boundary(决策界限)</h4><h4 id="2-5-end-to-end"><a href="#2-5-end-to-end" class="headerlink" title="2.5 end-to-end:"></a>2.5 end-to-end:</h4><h4 id="2-6-结果分类："><a href="#2-6-结果分类：" class="headerlink" title="2.6 结果分类："></a>2.6 结果分类：</h4><p>虑一个二分问题，即将实例分成正类（positive）或负类（negative）。对一个二分问题来说，会出现四种情况。如果一个实例是正类并且也被 预测成正类，即为真正类（True positive）,如果实例是负类被预测成正类，称之为假正类（False positive）。相应地，如果实例是负类被预测成负类，称之为真负类（True negative）,正类被预测成负类则为假负类（false negative）。</p>
+<h4 id="decision-boundary决策界限">2.4 decision boundary(决策界限)</h4>
+<h4 id="end-to-end">2.5 end-to-end:</h4>
+<h4 id="结果分类">2.6 结果分类：</h4>
+<p>虑一个二分问题，即将实例分成正类（positive）或负类（negative）。对一个二分问题来说，会出现四种情况。如果一个实例是正类并且也被
+预测成正类，即为真正类（True
+positive）,如果实例是负类被预测成正类，称之为假正类（False
+positive）。相应地，如果实例是负类被预测成负类，称之为真负类（True
+negative）,正类被预测成负类则为假负类（false negative）。</p>
 <p>列联表如下表所示，1代表正类，0代表负类。（预测正确：true，预测是正类：positive）</p>
-<div class="table-container">
 <table>
+<colgroup>
+<col style="width: 5%" />
+<col style="width: 5%" />
+<col style="width: 31%" />
+<col style="width: 31%" />
+<col style="width: 27%" />
+</colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th></th>
 <th></th>
 <th>预测</th>
@@ -2744,28 +2967,28 @@ src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210716172518.png" /></p>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td></td>
 <td></td>
 <td>1</td>
 <td>0</td>
 <td>合计</td>
 </tr>
-<tr>
+<tr class="even">
 <td>实际</td>
 <td>1</td>
 <td>True Positive（TP）</td>
 <td>False Negative（FN）</td>
 <td>Actual Positive(TP+FN)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td></td>
 <td>0</td>
 <td>False Positive（FP)</td>
 <td>True Negative(TN)</td>
 <td>Actual Negative(FP+TN)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>合计</td>
 <td></td>
 <td>Predicted Positive(TP+FP)</td>
@@ -2774,12 +2997,17 @@ src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210716172518.png" /></p>
 </tr>
 </tbody>
 </table>
-</div>
 <p>从列联表引入两个新名词。</p>
-<p>其一是真正类率(true positive rate ,TPR), 计算公式为 <em>TPR=TP</em>/ ( <em>TP</em>+ <em>FN</em>)，刻画的是分类器所识别出的 正实例占所有正实例的比例。</p>
-<p>另外一个是负正类率(false positive rate, FPR),计算公式为 <em>FPR= FP / (FP + TN)，</em>计算的是分类器错认为负类的正实例占所有负实例的比例。</p>
-<p>还有一个真负类率（True Negative Rate，TNR），也称为specificity,计算公式为TNR= <em>TN</em>/ ( <em>FP</em>+ <em>TN</em>) = 1 - <em>FPR</em>。</p>
-<h3 id="3-如何实现？"><a href="#3-如何实现？" class="headerlink" title="3. 如何实现？"></a>3. 如何实现？</h3><p>一些问题：程序调用API的过程；</p>
+<p>其一是真正类率(true positive rate ,TPR), 计算公式为 <em>TPR=TP</em>/
+( <em>TP</em>+ <em>FN</em>)，刻画的是分类器所识别出的
+正实例占所有正实例的比例。</p>
+<p>另外一个是负正类率(false positive rate, FPR),计算公式为 <em>FPR= FP /
+(FP + TN)，</em>计算的是分类器错认为负类的正实例占所有负实例的比例。</p>
+<p>还有一个真负类率（True Negative
+Rate，TNR），也称为specificity,计算公式为TNR= <em>TN</em>/ (
+<em>FP</em>+ <em>TN</em>) = 1 - <em>FPR</em>。</p>
+<h3 id="如何实现">3. 如何实现？</h3>
+<p>一些问题：程序调用API的过程；</p>
 ]]></content>
       <categories>
         <category>Paper</category>
