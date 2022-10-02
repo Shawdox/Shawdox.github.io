@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Function-level obfuscation detection method based on Graph Convolutional Networks | Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Malware Classifiersobfuscation" />
+  
+  
+  
+  
+  <meta name="description" content="【论文阅读】Function-level obfuscation detection method based on Graph Convolutional Networks  时间：2021 作者：Shuai Jiang , Yao Hong, Cai Fu（华科） 期刊：Journal of Information Security and Applications（中科院三区）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Function-level obfuscation detection method based on Graph Convolutional Networks">
+<meta property="og:url" content="http://example.com/2022/10/01/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Function-level%20obfuscation%20detection%20method%20based%20on%20Graph%20Convolutional%20Networks/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="【论文阅读】Function-level obfuscation detection method based on Graph Convolutional Networks  时间：2021 作者：Shuai Jiang , Yao Hong, Cai Fu（华科） 期刊：Journal of Information Security and Applications（中科院三区）">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002140822.png">
+<meta property="og:image" content="http://example.com/2022/10/01/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Function-level%20obfuscation%20detection%20method%20based%20on%20Graph%20Convolutional%20Networks/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Function-level%20obfuscation%20detection%20method%20based%20on%20Graph%20Convolutional%20Networks/image-20221002140952651.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002141244.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002141504.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002141517.png">
+<meta property="article:published_time" content="2022-10-01T12:37:04.833Z">
+<meta property="article:modified_time" content="2022-10-02T06:23:32.301Z">
+<meta property="article:author" content="Shaw">
+<meta property="article:tag" content="Malware Classifiers">
+<meta property="article:tag" content="obfuscation">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002140822.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-【论文阅读】Function-level obfuscation detection method based on Graph Convolutional Networks" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Function-level obfuscation detection method based on Graph Convolutional Networks
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2022/10/01/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Function-level%20obfuscation%20detection%20method%20based%20on%20Graph%20Convolutional%20Networks/" class="article-date">
+	  <time datetime="2022-10-01T12:37:04.833Z" itemprop="datePublished">十月 1, 2022</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1
+id="论文阅读function-level-obfuscation-detection-method-based-on-graph-convolutional-networks">【论文阅读】Function-level
+obfuscation detection method based on Graph Convolutional Networks</h1>
+<blockquote>
+<p>时间：2021</p>
+<p>作者：Shuai Jiang , Yao Hong, Cai Fu（华科）</p>
+<p>期刊：Journal of Information Security and
+Applications（中科院三区）</p>
+</blockquote>
+<h2 id="abstract">1.ABSTRACT</h2>
+<p>​
+在恶意样本检测中<strong>代码混淆检测技术</strong>是一个重要的辅助手段，对于安全从业者来说，其可以在人工逆向分析前来实施自动化混淆检测，这有助于逆向工程师更具体地进行逆向分析。</p>
+<p>​
+目前存在的混淆检测方法主要作用于Android应用，并基于传统的机器学习方法。其检测颗粒度很差，总体效果不佳。为了解决这些问题，<u>在本篇文章，我们提出了一个应用于X86汇编和Android应用的、function
+level的、基于GCN的混淆检测方法。</u></p>
+<pre><code>1. 首先，我们的方法是function-level的。我们提取每个函数的CFG作为其特征（包括邻接矩阵和基本代码块的特征矩阵）；
+2. 我们构建一个GCN-LSTM神经网络作为混淆检测模型；
+3. 最后，对于function-level的检测我们的方法准确率是94.7575%（X86汇编）和98.9457%（安卓应用），比baseline方法好。实验证明我们的方法不论是在function-levle还是APK-level上的检测准确率都好于baseline。</code></pre>
+<h2 id="introduction">2. INTRODUCTION</h2>
+<h3 id="obfuscation代码混淆">2.1 Obfuscation–代码混淆</h3>
+<p>​
+代码保护技术，用于增加逆向难度，防止代码篡改，最开始用于版权保护，后被用于恶意代码的躲避检测。</p>
+<p>​
+由于动态检测恶意代码的高昂成本，主流的恶意样本检测技术仍在提取代码的静态特征。然而由于混淆技术的发展，恶意样本的编写者经常在保留其恶意功能的同时通过使用混淆技术来修改其静态特征。经过混淆的恶意代码可以规避相关工具的检测。</p>
+<p>​ 最近混淆检测技术开始出现，在此领域有一些工作：</p>
+<pre><code>1. [2018]Alessandro等人：使用静态分析和机器学习分类算法来分析Android应用是否被混淆的技术（ http://dx.doi.org/10.1145/3230833.3232823）；
+2. [2020]Crincoli等人：利用weak bisimulation来检测代码是否被code reordering(http://dx.doi.org/10.1007/978-3-030-44041-1_116)；
+3. [2020]Caijun Sun等人：一个Android打包检测框架DroidPDF( http://dx.doi.org/10.1109/ACCESS.2020.3010588);
+4. [2019]Omid等人：AndrODet，一个检测三种Android混淆技术的检测机制（重命名、字符串加密和控制流混淆）（ http://dx.doi.org/10.1016/j.future.2018.07.066）；
+5. [2019]Alireza等人：Android字符串混淆检测技术（ http://dx.doi.org/10.1145/3338501.3357373）;</code></pre>
+<h3 id="目前方法的缺点">2.2 <strong>目前方法的缺点</strong>：</h3>
+<pre><code>1. 检测颗粒度不够，检测对象往往是一个APK包，缺乏可行性；
+2. 检测效果不佳，从样本中提取的特征相对简单，只有统计学特征和opcode语句被提取。大多数使用简单的机器学习方法，表现一般；
+3. 缺乏可用性和适应性，传统方法往往会为不同的混淆方法提取不同的特征，或者为每个混淆方法训练一个二分类器，枯燥且不便。同时若需要添加新数据，模型经常需要重头训练。</code></pre>
+<h3 id="我们的方法">2.3 我们的方法：</h3>
+<ol type="1">
+<li>从开源平台获取一些未经混淆的代码（X86汇编和Android），通过混淆器生成混淆后程序；</li>
+<li>逆向这些程序，用邻接矩阵和基本代码块特征矩阵的形式提取每个函数的CFG；</li>
+<li>根据我们提取到的特征，构建GCN-LSTM。这个模型同时服务于X86汇编和Android，但他们分别训练和测试；</li>
+</ol>
+<h2 id="method-overview">3. METHOD OVERVIEW</h2>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221001213243.png" /></p>
+<pre><code>1. X86的混淆器：OLLVM；Android的混淆器：Obfuscapk；
+2. 逆向工具：IDA PRO；由于X86与Android指令集与混淆技术不同，二者被分别提取CFG；
+3. 多分类问题，检测出混淆技术种类，故使用传统多分类评估方法来评估检测效果。</code></pre>
+<h2 id="obfuscation-dection-method">4. OBFUSCATION DECTION METHOD</h2>
+<h3 id="ollvm">4.1 OLLVM</h3>
+<p>​ OLLVM包括以下三种混淆技术：</p>
+<ol type="1">
+<li><strong>Instructions Substitution
+(SUB)，指令替换</strong>。将简单指令替换为同语义的复杂指令，特别是二进制加减乘除。这项技术会增加算术指令但很少影响CFG；</li>
+<li><strong>Bogus Control Flow
+(BCF)，虚假控制流</strong>。在CFG中添加大量无关的随机代码块和分支，并分割、融合、重排原始代码块，在其中插入随机选择的无用指令。这项技术破坏了CFG和代码块的完整性，增加控制流复杂性；</li>
+<li><strong>Control Flow
+Flattening（FLA）</strong>，<strong>控制流平坦化</strong>。简单来讲就是将代码块之间的关系打断，由一个分发器来控制代码块的跳转：</li>
+</ol>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002134210.png" /></p>
+<h3 id="obfuscapk">4.2 Obfuscapk</h3>
+<p>​ Obfuscapk包括以下三种混淆技术：</p>
+<ol type="1">
+<li>Identifier Renaming，标识符重命名；</li>
+<li>String
+Encryption，字符串加密。字符串常量可以揭示很多代码敏感信息；</li>
+<li>Control Flow
+Obfuscation，控制流混淆。通过扩展或平坦化CFG来混淆，同样还有注入垃圾代码，扩展循环，添加无关操作等；</li>
+</ol>
+<h3 id="feature-extraction">4.3 Feature extraction</h3>
+<p>​ 提取的特征包括代码的结构化CFG信息和基本代码块特征：</p>
+<ul>
+<li>对于邻接矩阵：</li>
+</ul>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002135214.png" />
+如图，邻接矩阵代码了不同代码块之间的转移关系。</p>
+<ul>
+<li><p>​ 对于基本代码块特征：</p>
+<p>将X86汇编代码分为27类，对于一个代码块的特征向量就是27维。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002140822.png" style="zoom:80%;" /></p>
+<p>将Dalvik指令分为15类，对于一个代码块的特征向量就是15维。</p></li>
+</ul>
+<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Function-level%20obfuscation%20detection%20method%20based%20on%20Graph%20Convolutional%20Networks/image-20221002140952651.png" alt="image-20221002140952651" style="zoom:80%;" /></p>
+<h3 id="obfuscation-detection-model">4.4 Obfuscation detection
+model</h3>
+<p>​ 在得到CFG邻接矩阵和基本代码块特征矩阵后，构建GCN-LSTM。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002141244.png" alt="image-20221002141239002" style="zoom:80%;" /></p>
+<h2 id="experimental-evaluation">5.EXPERIMENTAL EVALUATION</h2>
+<h3 id="datasets">5.1 Datasets</h3>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002141504.png" style="zoom:80%;" /></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002141517.png" style="zoom:80%;" /></p>
+<h3 id="baseline-methods">5.2 Baseline methods</h3>
+<p>​ function-level的baseline方法如下：</p>
+<p>​ AdaBoost, GaussianNaiveBayes, GradientBoosting, KNeighbors, MLP,
+SGDClass, SVM, Xgboost and LSTM</p>
+<h3 id="evaluation-metrics">5.3 Evaluation metrics</h3>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002142217.png" /></p>
+<p>​ <img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002142325.png" /></p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Malware-Classifiers/" rel="tag">Malware Classifiers</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/obfuscation/" rel="tag">obfuscation</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2022/07/21/%E5%86%B3%E7%AD%96%E6%97%B6%E8%A7%84%E5%88%92/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Planning at Decision Time(决策时规划)</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BBfunction-level-obfuscation-detection-method-based-on-graph-convolutional-networks"><span class="nav-number">1.</span> <span class="nav-text">【论文阅读】Function-level
+obfuscation detection method based on Graph Convolutional Networks</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#abstract"><span class="nav-number">1.1.</span> <span class="nav-text">1.ABSTRACT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#introduction"><span class="nav-number">1.2.</span> <span class="nav-text">2. INTRODUCTION</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#obfuscation%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 Obfuscation–代码混淆</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%AE%E5%89%8D%E6%96%B9%E6%B3%95%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 目前方法的缺点：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%88%91%E4%BB%AC%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 我们的方法：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#method-overview"><span class="nav-number">1.3.</span> <span class="nav-text">3. METHOD OVERVIEW</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#obfuscation-dection-method"><span class="nav-number">1.4.</span> <span class="nav-text">4. OBFUSCATION DECTION METHOD</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ollvm"><span class="nav-number">1.4.1.</span> <span class="nav-text">4.1 OLLVM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#obfuscapk"><span class="nav-number">1.4.2.</span> <span class="nav-text">4.2 Obfuscapk</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#feature-extraction"><span class="nav-number">1.4.3.</span> <span class="nav-text">4.3 Feature extraction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#obfuscation-detection-model"><span class="nav-number">1.4.4.</span> <span class="nav-text">4.4 Obfuscation detection
+model</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#experimental-evaluation"><span class="nav-number">1.5.</span> <span class="nav-text">5.EXPERIMENTAL EVALUATION</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#datasets"><span class="nav-number">1.5.1.</span> <span class="nav-text">5.1 Datasets</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#baseline-methods"><span class="nav-number">1.5.2.</span> <span class="nav-text">5.2 Baseline methods</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#evaluation-metrics"><span class="nav-number">1.5.3.</span> <span class="nav-text">5.3 Evaluation metrics</span></a></li></ol></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2022 Shaw All Rights Reserved.
+        
+            <span id="busuanzi_container_site_uv">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次  
+              本站总访问量<span id="busuanzi_value_site_pv"></span>次
+            </span>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>
