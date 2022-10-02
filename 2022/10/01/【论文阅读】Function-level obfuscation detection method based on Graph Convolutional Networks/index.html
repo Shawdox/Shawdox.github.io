@@ -11,30 +11,25 @@
   
   
   
-  <meta name="description" content="【论文阅读】Function-level obfuscation detection method based on Graph Convolutional Networks 时间：2021 作者：Shuai Jiang , Yao Hong, Cai Fu（华科） 期刊：Journal of Information Security and Applications（中科院三区）  1.ABST">
+  <meta name="description" content="【论文阅读】Function-level obfuscation detection method based on Graph Convolutional Networks  时间：2021 作者：Shuai Jiang , Yao Hong, Cai Fu（华科） 期刊：Journal of Information Security and Applications（中科院三区）">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Function-level obfuscation detection method based on Graph Convolutional Networks">
 <meta property="og:url" content="http://example.com/2022/10/01/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Function-level%20obfuscation%20detection%20method%20based%20on%20Graph%20Convolutional%20Networks/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="【论文阅读】Function-level obfuscation detection method based on Graph Convolutional Networks 时间：2021 作者：Shuai Jiang , Yao Hong, Cai Fu（华科） 期刊：Journal of Information Security and Applications（中科院三区）  1.ABST">
+<meta property="og:description" content="【论文阅读】Function-level obfuscation detection method based on Graph Convolutional Networks  时间：2021 作者：Shuai Jiang , Yao Hong, Cai Fu（华科） 期刊：Journal of Information Security and Applications（中科院三区）">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221001213243.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002134210.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002135214.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002140822.png">
-<meta property="og:image" content="http://example.com/2022/10/01/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Function-level%20obfuscation%20detection%20method%20based%20on%20Graph%20Convolutional%20Networks/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Function-level%20obfuscation%20detection%20method%20based%20on%20Graph%20Convolutional%20Networks/image-20221002140952651.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002142628.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002141244.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002141504.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002141517.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002142217.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002142325.png">
 <meta property="article:published_time" content="2022-10-01T12:37:04.833Z">
-<meta property="article:modified_time" content="2022-10-02T06:25:31.932Z">
+<meta property="article:modified_time" content="2022-10-02T06:26:35.439Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="Malware Classifiers">
 <meta property="article:tag" content="obfuscation">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221001213243.png">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002140822.png">
   
     <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
   
@@ -161,71 +156,107 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="【论文阅读】Function-level-obfuscation-detection-method-based-on-Graph-Convolutional-Networks"><a href="#【论文阅读】Function-level-obfuscation-detection-method-based-on-Graph-Convolutional-Networks" class="headerlink" title="【论文阅读】Function-level obfuscation detection method based on Graph Convolutional Networks"></a>【论文阅读】Function-level obfuscation detection method based on Graph Convolutional Networks</h1><blockquote>
+        <h1
+id="论文阅读function-level-obfuscation-detection-method-based-on-graph-convolutional-networks">【论文阅读】Function-level
+obfuscation detection method based on Graph Convolutional Networks</h1>
+<blockquote>
 <p>时间：2021</p>
 <p>作者：Shuai Jiang , Yao Hong, Cai Fu（华科）</p>
-<p>期刊：Journal of Information Security and Applications（中科院三区）</p>
+<p>期刊：Journal of Information Security and
+Applications（中科院三区）</p>
 </blockquote>
-<h2 id="1-ABSTRACT"><a href="#1-ABSTRACT" class="headerlink" title="1.ABSTRACT"></a>1.ABSTRACT</h2><p>​    在恶意样本检测中<strong>代码混淆检测技术</strong>是一个重要的辅助手段，对于安全从业者来说，其可以在人工逆向分析前来实施自动化混淆检测，这有助于逆向工程师更具体地进行逆向分析。</p>
-<p>​    目前存在的混淆检测方法主要作用于Android应用，并基于传统的机器学习方法。其检测颗粒度很差，总体效果不佳。为了解决这些问题，<u>在本篇文章，我们提出了一个应用于X86汇编和Android应用的、function level的、基于GCN的混淆检测方法。</u></p>
+<h2 id="abstract">1.ABSTRACT</h2>
+<p>​
+在恶意样本检测中<strong>代码混淆检测技术</strong>是一个重要的辅助手段，对于安全从业者来说，其可以在人工逆向分析前来实施自动化混淆检测，这有助于逆向工程师更具体地进行逆向分析。</p>
+<p>​
+目前存在的混淆检测方法主要作用于Android应用，并基于传统的机器学习方法。其检测颗粒度很差，总体效果不佳。为了解决这些问题，<u>在本篇文章，我们提出了一个应用于X86汇编和Android应用的、function
+level的、基于GCN的混淆检测方法。</u></p>
 <pre><code>1. 首先，我们的方法是function-level的。我们提取每个函数的CFG作为其特征（包括邻接矩阵和基本代码块的特征矩阵）；
- 2. 我们构建一个GCN-LSTM神经网络作为混淆检测模型；
- 3. 最后，对于function-level的检测我们的方法准确率是94.7575%（X86汇编）和98.9457%（安卓应用），比baseline方法好。实验证明我们的方法不论是在function-levle还是APK-level上的检测准确率都好于baseline。
-</code></pre><span id="more"></span>
-<h2 id="2-INTRODUCTION"><a href="#2-INTRODUCTION" class="headerlink" title="2. INTRODUCTION"></a>2. INTRODUCTION</h2><h3 id="2-1-Obfuscation–代码混淆"><a href="#2-1-Obfuscation–代码混淆" class="headerlink" title="2.1 Obfuscation–代码混淆"></a>2.1 Obfuscation–代码混淆</h3><p>​    代码保护技术，用于增加逆向难度，防止代码篡改，最开始用于版权保护，后被用于恶意代码的躲避检测。</p>
-<p>​    由于动态检测恶意代码的高昂成本，主流的恶意样本检测技术仍在提取代码的静态特征。然而由于混淆技术的发展，恶意样本的编写者经常在保留其恶意功能的同时通过使用混淆技术来修改其静态特征。经过混淆的恶意代码可以规避相关工具的检测。</p>
-<p>​    最近混淆检测技术开始出现，在此领域有一些工作：</p>
+2. 我们构建一个GCN-LSTM神经网络作为混淆检测模型；
+3. 最后，对于function-level的检测我们的方法准确率是94.7575%（X86汇编）和98.9457%（安卓应用），比baseline方法好。实验证明我们的方法不论是在function-levle还是APK-level上的检测准确率都好于baseline。</code></pre>
+<span id="more"></span>
+<h2 id="introduction">2. INTRODUCTION</h2>
+<h3 id="obfuscation代码混淆">2.1 Obfuscation–代码混淆</h3>
+<p>​
+代码保护技术，用于增加逆向难度，防止代码篡改，最开始用于版权保护，后被用于恶意代码的躲避检测。</p>
+<p>​
+由于动态检测恶意代码的高昂成本，主流的恶意样本检测技术仍在提取代码的静态特征。然而由于混淆技术的发展，恶意样本的编写者经常在保留其恶意功能的同时通过使用混淆技术来修改其静态特征。经过混淆的恶意代码可以规避相关工具的检测。</p>
+<p>​ 最近混淆检测技术开始出现，在此领域有一些工作：</p>
 <pre><code>1. [2018]Alessandro等人：使用静态分析和机器学习分类算法来分析Android应用是否被混淆的技术（ http://dx.doi.org/10.1145/3230833.3232823）；
- 2. [2020]Crincoli等人：利用weak bisimulation来检测代码是否被code reordering(http://dx.doi.org/10.1007/978-3-030-44041-1_116)；
- 3. [2020]Caijun Sun等人：一个Android打包检测框架DroidPDF( http://dx.doi.org/10.1109/ACCESS.2020.3010588);
- 4. [2019]Omid等人：AndrODet，一个检测三种Android混淆技术的检测机制（重命名、字符串加密和控制流混淆）（ http://dx.doi.org/10.1016/j.future.2018.07.066）；
- 5. [2019]Alireza等人：Android字符串混淆检测技术（ http://dx.doi.org/10.1145/3338501.3357373）;
-</code></pre><h3 id="2-2-目前方法的缺点："><a href="#2-2-目前方法的缺点：" class="headerlink" title="2.2 目前方法的缺点："></a>2.2 <strong>目前方法的缺点</strong>：</h3><pre><code>1. 检测颗粒度不够，检测对象往往是一个APK包，缺乏可行性；
- 2. 检测效果不佳，从样本中提取的特征相对简单，只有统计学特征和opcode语句被提取。大多数使用简单的机器学习方法，表现一般；
- 3. 缺乏可用性和适应性，传统方法往往会为不同的混淆方法提取不同的特征，或者为每个混淆方法训练一个二分类器，枯燥且不便。同时若需要添加新数据，模型经常需要重头训练。
-</code></pre><h3 id="2-3-我们的方法："><a href="#2-3-我们的方法：" class="headerlink" title="2.3 我们的方法："></a>2.3 我们的方法：</h3><ol>
+2. [2020]Crincoli等人：利用weak bisimulation来检测代码是否被code reordering(http://dx.doi.org/10.1007/978-3-030-44041-1_116)；
+3. [2020]Caijun Sun等人：一个Android打包检测框架DroidPDF( http://dx.doi.org/10.1109/ACCESS.2020.3010588);
+4. [2019]Omid等人：AndrODet，一个检测三种Android混淆技术的检测机制（重命名、字符串加密和控制流混淆）（ http://dx.doi.org/10.1016/j.future.2018.07.066）；
+5. [2019]Alireza等人：Android字符串混淆检测技术（ http://dx.doi.org/10.1145/3338501.3357373）;</code></pre>
+<h3 id="目前方法的缺点">2.2 <strong>目前方法的缺点</strong>：</h3>
+<pre><code>1. 检测颗粒度不够，检测对象往往是一个APK包，缺乏可行性；
+2. 检测效果不佳，从样本中提取的特征相对简单，只有统计学特征和opcode语句被提取。大多数使用简单的机器学习方法，表现一般；
+3. 缺乏可用性和适应性，传统方法往往会为不同的混淆方法提取不同的特征，或者为每个混淆方法训练一个二分类器，枯燥且不便。同时若需要添加新数据，模型经常需要重头训练。</code></pre>
+<h3 id="我们的方法">2.3 我们的方法：</h3>
+<ol type="1">
 <li>从开源平台获取一些未经混淆的代码（X86汇编和Android），通过混淆器生成混淆后程序；</li>
 <li>逆向这些程序，用邻接矩阵和基本代码块特征矩阵的形式提取每个函数的CFG；</li>
 <li>根据我们提取到的特征，构建GCN-LSTM。这个模型同时服务于X86汇编和Android，但他们分别训练和测试；</li>
 </ol>
-<h2 id="3-METHOD-OVERVIEW"><a href="#3-METHOD-OVERVIEW" class="headerlink" title="3. METHOD OVERVIEW"></a>3. METHOD OVERVIEW</h2><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221001213243.png" alt=""></p>
+<h2 id="method-overview">3. METHOD OVERVIEW</h2>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221001213243.png" /></p>
 <pre><code>1. X86的混淆器：OLLVM；Android的混淆器：Obfuscapk；
- 2. 逆向工具：IDA PRO；由于X86与Android指令集与混淆技术不同，二者被分别提取CFG；
- 3. 多分类问题，检测出混淆技术种类，故使用传统多分类评估方法来评估检测效果。
-</code></pre><h2 id="4-OBFUSCATION-DECTION-METHOD"><a href="#4-OBFUSCATION-DECTION-METHOD" class="headerlink" title="4. OBFUSCATION DECTION METHOD"></a>4. OBFUSCATION DECTION METHOD</h2><h3 id="4-1-OLLVM"><a href="#4-1-OLLVM" class="headerlink" title="4.1 OLLVM"></a>4.1 OLLVM</h3><p>​    OLLVM包括以下三种混淆技术：</p>
-<ol>
-<li><strong>Instructions Substitution (SUB)，指令替换</strong>。将简单指令替换为同语义的复杂指令，特别是二进制加减乘除。这项技术会增加算术指令但很少影响CFG；</li>
-<li><strong>Bogus Control Flow (BCF)，虚假控制流</strong>。在CFG中添加大量无关的随机代码块和分支，并分割、融合、重排原始代码块，在其中插入随机选择的无用指令。这项技术破坏了CFG和代码块的完整性，增加控制流复杂性；</li>
-<li><strong>Control Flow Flattening（FLA）</strong>，<strong>控制流平坦化</strong>。简单来讲就是将代码块之间的关系打断，由一个分发器来控制代码块的跳转：</li>
+2. 逆向工具：IDA PRO；由于X86与Android指令集与混淆技术不同，二者被分别提取CFG；
+3. 多分类问题，检测出混淆技术种类，故使用传统多分类评估方法来评估检测效果。</code></pre>
+<h2 id="obfuscation-dection-method">4. OBFUSCATION DECTION METHOD</h2>
+<h3 id="ollvm">4.1 OLLVM</h3>
+<p>​ OLLVM包括以下三种混淆技术：</p>
+<ol type="1">
+<li><strong>Instructions Substitution
+(SUB)，指令替换</strong>。将简单指令替换为同语义的复杂指令，特别是二进制加减乘除。这项技术会增加算术指令但很少影响CFG；</li>
+<li><strong>Bogus Control Flow
+(BCF)，虚假控制流</strong>。在CFG中添加大量无关的随机代码块和分支，并分割、融合、重排原始代码块，在其中插入随机选择的无用指令。这项技术破坏了CFG和代码块的完整性，增加控制流复杂性；</li>
+<li><strong>Control Flow
+Flattening（FLA）</strong>，<strong>控制流平坦化</strong>。简单来讲就是将代码块之间的关系打断，由一个分发器来控制代码块的跳转：</li>
 </ol>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002134210.png" alt=""></p>
-<h3 id="4-2-Obfuscapk"><a href="#4-2-Obfuscapk" class="headerlink" title="4.2 Obfuscapk"></a>4.2 Obfuscapk</h3><p>​    Obfuscapk包括以下三种混淆技术：</p>
-<ol>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002134210.png" /></p>
+<h3 id="obfuscapk">4.2 Obfuscapk</h3>
+<p>​ Obfuscapk包括以下三种混淆技术：</p>
+<ol type="1">
 <li>Identifier Renaming，标识符重命名；</li>
-<li>String Encryption，字符串加密。字符串常量可以揭示很多代码敏感信息；</li>
-<li>Control Flow Obfuscation，控制流混淆。通过扩展或平坦化CFG来混淆，同样还有注入垃圾代码，扩展循环，添加无关操作等；</li>
+<li>String
+Encryption，字符串加密。字符串常量可以揭示很多代码敏感信息；</li>
+<li>Control Flow
+Obfuscation，控制流混淆。通过扩展或平坦化CFG来混淆，同样还有注入垃圾代码，扩展循环，添加无关操作等；</li>
 </ol>
-<h3 id="4-3-Feature-extraction"><a href="#4-3-Feature-extraction" class="headerlink" title="4.3 Feature extraction"></a>4.3 Feature extraction</h3><p>​    提取的特征包括代码的结构化CFG信息和基本代码块特征：</p>
+<h3 id="feature-extraction">4.3 Feature extraction</h3>
+<p>​ 提取的特征包括代码的结构化CFG信息和基本代码块特征：</p>
 <ul>
 <li>对于邻接矩阵：</li>
 </ul>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002135214.png" alt="">    如图，邻接矩阵代码了不同代码块之间的转移关系。</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002135214.png" />
+如图，邻接矩阵代码了不同代码块之间的转移关系。</p>
 <ul>
-<li><p>​    对于基本代码块特征：</p>
+<li><p>​ 对于基本代码块特征：</p>
 <p>将X86汇编代码分为27类，对于一个代码块的特征向量就是27维。</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002140822.png" style="zoom:80%;" /></p>
-<p>将Dalvik指令分为15类，对于一个代码块的特征向量就是15维。</p>
-</li>
+<p>将Dalvik指令分为15类，对于一个代码块的特征向量就是15维。</p></li>
 </ul>
-<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Function-level%20obfuscation%20detection%20method%20based%20on%20Graph%20Convolutional%20Networks/image-20221002140952651.png" alt="image-20221002140952651" style="zoom:80%;" /></p>
-<h3 id="4-4-Obfuscation-detection-model"><a href="#4-4-Obfuscation-detection-model" class="headerlink" title="4.4 Obfuscation detection model"></a>4.4 Obfuscation detection model</h3><p>​    在得到CFG邻接矩阵和基本代码块特征矩阵后，构建GCN-LSTM。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002142628.png" alt="image-20221002140952651" style="zoom:80%;" /></p>
+<h3 id="obfuscation-detection-model">4.4 Obfuscation detection
+model</h3>
+<p>​ 在得到CFG邻接矩阵和基本代码块特征矩阵后，构建GCN-LSTM。</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002141244.png" alt="image-20221002141239002" style="zoom:80%;" /></p>
-<h2 id="5-EXPERIMENTAL-EVALUATION"><a href="#5-EXPERIMENTAL-EVALUATION" class="headerlink" title="5.EXPERIMENTAL EVALUATION"></a>5.EXPERIMENTAL EVALUATION</h2><h3 id="5-1-Datasets"><a href="#5-1-Datasets" class="headerlink" title="5.1 Datasets"></a>5.1 Datasets</h3><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002141504.png" style="zoom:80%;" /></p>
+<h2 id="experimental-evaluation">5.EXPERIMENTAL EVALUATION</h2>
+<h3 id="datasets">5.1 Datasets</h3>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002141504.png" style="zoom:80%;" /></p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002141517.png" style="zoom:80%;" /></p>
-<h3 id="5-2-Baseline-methods"><a href="#5-2-Baseline-methods" class="headerlink" title="5.2 Baseline methods"></a>5.2 Baseline methods</h3><p>​    function-level的baseline方法如下：</p>
-<p>​    AdaBoost, GaussianNaiveBayes, GradientBoosting, KNeighbors, MLP, SGDClass, SVM, Xgboost and LSTM</p>
-<h3 id="5-3-Evaluation-metrics"><a href="#5-3-Evaluation-metrics" class="headerlink" title="5.3 Evaluation metrics"></a>5.3 Evaluation metrics</h3><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002142217.png" alt=""></p>
-<p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002142325.png" alt=""></p>
+<h3 id="baseline-methods">5.2 Baseline methods</h3>
+<p>​ function-level的baseline方法如下：</p>
+<p>​ AdaBoost, GaussianNaiveBayes, GradientBoosting, KNeighbors, MLP,
+SGDClass, SVM, Xgboost and LSTM</p>
+<h3 id="evaluation-metrics">5.3 Evaluation metrics</h3>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002142217.png" /></p>
+<p>​ <img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002142325.png" /></p>
 
       
     </div>
@@ -263,7 +294,9 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Function-level-obfuscation-detection-method-based-on-Graph-Convolutional-Networks"><span class="nav-number">1.</span> <span class="nav-text">【论文阅读】Function-level obfuscation detection method based on Graph Convolutional Networks</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-ABSTRACT"><span class="nav-number">1.1.</span> <span class="nav-text">1.ABSTRACT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-INTRODUCTION"><span class="nav-number">1.2.</span> <span class="nav-text">2. INTRODUCTION</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-Obfuscation%E2%80%93%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 Obfuscation–代码混淆</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E7%9B%AE%E5%89%8D%E6%96%B9%E6%B3%95%E7%9A%84%E7%BC%BA%E7%82%B9%EF%BC%9A"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 目前方法的缺点：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-%E6%88%91%E4%BB%AC%E7%9A%84%E6%96%B9%E6%B3%95%EF%BC%9A"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 我们的方法：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-METHOD-OVERVIEW"><span class="nav-number">1.3.</span> <span class="nav-text">3. METHOD OVERVIEW</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-OBFUSCATION-DECTION-METHOD"><span class="nav-number">1.4.</span> <span class="nav-text">4. OBFUSCATION DECTION METHOD</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-OLLVM"><span class="nav-number">1.4.1.</span> <span class="nav-text">4.1 OLLVM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-Obfuscapk"><span class="nav-number">1.4.2.</span> <span class="nav-text">4.2 Obfuscapk</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-Feature-extraction"><span class="nav-number">1.4.3.</span> <span class="nav-text">4.3 Feature extraction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-Obfuscation-detection-model"><span class="nav-number">1.4.4.</span> <span class="nav-text">4.4 Obfuscation detection model</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-EXPERIMENTAL-EVALUATION"><span class="nav-number">1.5.</span> <span class="nav-text">5.EXPERIMENTAL EVALUATION</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-Datasets"><span class="nav-number">1.5.1.</span> <span class="nav-text">5.1 Datasets</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-Baseline-methods"><span class="nav-number">1.5.2.</span> <span class="nav-text">5.2 Baseline methods</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-Evaluation-metrics"><span class="nav-number">1.5.3.</span> <span class="nav-text">5.3 Evaluation metrics</span></a></li></ol></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BBfunction-level-obfuscation-detection-method-based-on-graph-convolutional-networks"><span class="nav-number">1.</span> <span class="nav-text">【论文阅读】Function-level
+obfuscation detection method based on Graph Convolutional Networks</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#abstract"><span class="nav-number">1.1.</span> <span class="nav-text">1.ABSTRACT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#introduction"><span class="nav-number">1.2.</span> <span class="nav-text">2. INTRODUCTION</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#obfuscation%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 Obfuscation–代码混淆</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%AE%E5%89%8D%E6%96%B9%E6%B3%95%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 目前方法的缺点：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%88%91%E4%BB%AC%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 我们的方法：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#method-overview"><span class="nav-number">1.3.</span> <span class="nav-text">3. METHOD OVERVIEW</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#obfuscation-dection-method"><span class="nav-number">1.4.</span> <span class="nav-text">4. OBFUSCATION DECTION METHOD</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ollvm"><span class="nav-number">1.4.1.</span> <span class="nav-text">4.1 OLLVM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#obfuscapk"><span class="nav-number">1.4.2.</span> <span class="nav-text">4.2 Obfuscapk</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#feature-extraction"><span class="nav-number">1.4.3.</span> <span class="nav-text">4.3 Feature extraction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#obfuscation-detection-model"><span class="nav-number">1.4.4.</span> <span class="nav-text">4.4 Obfuscation detection
+model</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#experimental-evaluation"><span class="nav-number">1.5.</span> <span class="nav-text">5.EXPERIMENTAL EVALUATION</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#datasets"><span class="nav-number">1.5.1.</span> <span class="nav-text">5.1 Datasets</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#baseline-methods"><span class="nav-number">1.5.2.</span> <span class="nav-text">5.2 Baseline methods</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#evaluation-metrics"><span class="nav-number">1.5.3.</span> <span class="nav-text">5.3 Evaluation metrics</span></a></li></ol></li></ol></li></ol>
     
     </div>
   </aside>
@@ -398,5 +431,20 @@
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>

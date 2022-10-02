@@ -11,23 +11,20 @@
   
   
   
-  <meta name="description" content="HydraText: Multi-objective Optimization for Adversarial Textual Attack 作者：Shengcai Liu，Ning Lu，Cheng Chen，Chao Qian，Ke Tang 时间：2021  ABSTRACT​    文字(text)（word-level）对抗样本黑盒攻击。在这项工作中，同时考虑攻击效率+可辨认性，并提出一">
+  <meta name="description" content="HydraText: Multi-objective Optimization for Adversarial Textual Attack  作者：Shengcai Liu，Ning Lu，Cheng Chen，Chao Qian，Ke Tang 时间：2021  ABSTRACT ​ 文字(text)（word-level）对抗样本黑盒攻击。在这项工作中，同时考虑攻击效率+可">
 <meta property="og:type" content="article">
 <meta property="og:title" content="HydraText-Multi-objective Optimization for Adversarial Textual Attack">
 <meta property="og:url" content="http://example.com/2021/11/14/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="HydraText: Multi-objective Optimization for Adversarial Textual Attack 作者：Shengcai Liu，Ning Lu，Cheng Chen，Chao Qian，Ke Tang 时间：2021  ABSTRACT​    文字(text)（word-level）对抗样本黑盒攻击。在这项工作中，同时考虑攻击效率+可辨认性，并提出一">
+<meta property="og:description" content="HydraText: Multi-objective Optimization for Adversarial Textual Attack  作者：Shengcai Liu，Ning Lu，Cheng Chen，Chao Qian，Ke Tang 时间：2021  ABSTRACT ​ 文字(text)（word-level）对抗样本黑盒攻击。在这项工作中，同时考虑攻击效率+可">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2021/11/14/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/u=968937333,2137978646&amp;fm=26&amp;fmt=auto">
-<meta property="og:image" content="http://example.com/2021/11/14/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/image-20211114162251176.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211114162738.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211114165103.png">
 <meta property="article:published_time" content="2021-11-14T06:08:02.217Z">
 <meta property="article:modified_time" content="2022-07-15T08:30:58.064Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="AD">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2021/11/14/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/u=968937333,2137978646&amp;fm=26&amp;fmt=auto">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211114162738.png">
   
     <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
   
@@ -154,35 +151,67 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="HydraText-Multi-objective-Optimization-for-Adversarial-Textual-Attack"><a href="#HydraText-Multi-objective-Optimization-for-Adversarial-Textual-Attack" class="headerlink" title="HydraText: Multi-objective Optimization for Adversarial Textual Attack"></a>HydraText: Multi-objective Optimization for Adversarial Textual Attack</h1><blockquote>
-<p><strong>作者：Shengcai Liu，Ning Lu，Cheng Chen，Chao Qian，Ke Tang</strong></p>
+        <h1
+id="hydratext-multi-objective-optimization-for-adversarial-textual-attack">HydraText:
+Multi-objective Optimization for Adversarial Textual Attack</h1>
+<blockquote>
+<p><strong>作者：Shengcai Liu，Ning Lu，Cheng Chen，Chao Qian，Ke
+Tang</strong></p>
 <p><strong>时间：2021</strong></p>
 </blockquote>
-<h3 id="ABSTRACT"><a href="#ABSTRACT" class="headerlink" title="ABSTRACT"></a>ABSTRACT</h3><p>​    <strong><u>文字(text)（word-level）对抗样本黑盒攻击。</u></strong>在这项工作中，同时考虑<strong>攻击效率+可辨认性</strong>，并提出一种新的具有可证明性能保证的多优化方法(称为HydraText )，以实现具有高隐蔽性的成功攻击。</p>
-<p>​    为了测试HydraText的功效，我们在<strong>score-based</strong> 和<strong>decision-based</strong>的黑盒攻击下，使用5个NLP模型+5个数据集。</p>
-<p>（PS：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/377633699">[论文总结] Boundary Attack - 知乎 (zhihu.com)</a>）</p>
-<p>​    一项人类观察评价研究表明，Hydra Text制作的对抗样本很好地保持了有效性和自然性。最后，这些实例还表现出良好的可迁移性，可以通过对抗训练给目标模型带来显著的鲁棒性提升。</p>
-<hr>
+<h3 id="abstract">ABSTRACT</h3>
+<p>​
+<strong><u>文字(text)（word-level）对抗样本黑盒攻击。</u></strong>在这项工作中，同时考虑<strong>攻击效率+可辨认性</strong>，并提出一种新的具有可证明性能保证的多优化方法(称为HydraText
+)，以实现具有高隐蔽性的成功攻击。</p>
+<p>​ 为了测试HydraText的功效，我们在<strong>score-based</strong>
+和<strong>decision-based</strong>的黑盒攻击下，使用5个NLP模型+5个数据集。</p>
+<p>（PS：[<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/377633699">论文总结]
+Boundary Attack - 知乎 (zhihu.com)</a>）</p>
+<p>​ 一项人类观察评价研究表明，Hydra
+Text制作的对抗样本很好地保持了有效性和自然性。最后，这些实例还表现出良好的可迁移性，可以通过对抗训练给目标模型带来显著的鲁棒性提升。</p>
+<hr />
 <span id="more"></span>
-<h3 id="INTRODUCTION"><a href="#INTRODUCTION" class="headerlink" title="INTRODUCTION"></a>INTRODUCTION</h3><p>​    我们仔细地设计了目标函数，并进一步构建了一个多目标优化问题（<strong><em>multi-objective optimization problem</em></strong>，MOP），该问题一旦被解决，将产生与原始文本相似度高的单个成功对抗样本。</p>
-<p>​    然后我们原创了一个多目标优化方法（ <strong><em>multi-objective optimization approach</em></strong>），叫做<strong>HydraText</strong>。这个名字的灵感来自于海蛇许德拉，这是一种神话动物，它使用多个头部攻击对手。它可以同时用在<strong>score-based</strong> 和<strong>decision-based</strong>的黑盒攻击下。</p>
-<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/u=968937333,2137978646&amp;fm=26&amp;fmt=auto" alt=""></p>
-<p>​    </p>
-<hr>
-<h3 id="METHODS"><a href="#METHODS" class="headerlink" title="METHODS"></a>METHODS</h3><p>​    基于word-level 的替换操作。每个单词有一个自己的候选表，然后将每个单词与候选表中被选中的词替换（也可以不选，原单词不变）。</p>
-<p>​    但这样的方法有个问题，如下图：</p>
-<p>​     <img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/image-20211114162251176.png" alt=""></p>
-<p>​    如图所示，句子的语义与替换的单词数量是成反比的，上文需要考虑的准确率+可辨认性二者其实是互相矛盾的。为了解决这个问题，我们在生成的过程中也考虑X~adv~的修改率，使用MOP来解决它。</p>
-<p>​    </p>
-<h4 id="1-The-HydraText-Approach"><a href="#1-The-HydraText-Approach" class="headerlink" title="1.The HydraText Approach"></a>1.<em>The HydraText Approach</em></h4><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211114162738.png" style="zoom:80%;" /></p>
-<hr>
-<h3 id="EXPERIMENTS"><a href="#EXPERIMENTS" class="headerlink" title="EXPERIMENTS"></a>EXPERIMENTS</h3><h4 id="1-Datasets-and-Target-Models"><a href="#1-Datasets-and-Target-Models" class="headerlink" title="1. Datasets and Target Models"></a>1. <em>Datasets and Target Models</em></h4><p>​    <strong>模型种类：</strong>文本分类和文本推理</p>
-<p>​    三个数据集：AG News，IMDB ， Movie Reviews，Stanford Natural Language Inference，multi-genre NLI corpus（前三个文本分类，后三个文本推理）</p>
-<p>​    两个模型：WordCNN，WordLSTM，BERT base-uncased，ESIM ，Infersent ，BERT base-uncased(前三个文本分类，后三个文本推理)</p>
-<h4 id="2-Baselines-and-Algorithm"><a href="#2-Baselines-and-Algorithm" class="headerlink" title="2.Baselines and Algorithm"></a>2.<em>Baselines and Algorithm</em></h4><p>​    <strong>攻击方法：</strong>PSO,GA,TextFooler,PWWS,GADe(baseline)</p>
-<h4 id="3-Evaluation"><a href="#3-Evaluation" class="headerlink" title="3.Evaluation"></a>3.<em>Evaluation</em></h4><p>​    以攻击成功的百分率来判定攻击能力。</p>
-<p>​    以修改百分率和语义相似性来判定攻击的可辨识性。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211114165103.png" alt=""></p>
+<h3 id="introduction">INTRODUCTION</h3>
+<p>​
+我们仔细地设计了目标函数，并进一步构建了一个多目标优化问题（<strong><em>multi-objective
+optimization
+problem</em></strong>，MOP），该问题一旦被解决，将产生与原始文本相似度高的单个成功对抗样本。</p>
+<p>​ 然后我们原创了一个多目标优化方法（ <strong><em>multi-objective
+optimization
+approach</em></strong>），叫做<strong>HydraText</strong>。这个名字的灵感来自于海蛇许德拉，这是一种神话动物，它使用多个头部攻击对手。它可以同时用在<strong>score-based</strong>
+和<strong>decision-based</strong>的黑盒攻击下。</p>
+<p><img
+src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/u=968937333,2137978646&amp;fm=26&amp;fmt=auto" /></p>
+<p>​</p>
+<hr />
+<h3 id="methods">METHODS</h3>
+<p>​ 基于word-level
+的替换操作。每个单词有一个自己的候选表，然后将每个单词与候选表中被选中的词替换（也可以不选，原单词不变）。</p>
+<p>​ 但这样的方法有个问题，如下图：</p>
+<p>​ <img
+src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/image-20211114162251176.png" /></p>
+<p>​
+如图所示，句子的语义与替换的单词数量是成反比的，上文需要考虑的准确率+可辨认性二者其实是互相矛盾的。为了解决这个问题，我们在生成的过程中也考虑X<sub>adv</sub>的修改率，使用MOP来解决它。</p>
+<p>​</p>
+<h4 id="the-hydratext-approach">1.<em>The HydraText Approach</em></h4>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211114162738.png" style="zoom:80%;" /></p>
+<hr />
+<h3 id="experiments">EXPERIMENTS</h3>
+<h4 id="datasets-and-target-models">1. <em>Datasets and Target
+Models</em></h4>
+<p>​ <strong>模型种类：</strong>文本分类和文本推理</p>
+<p>​ 三个数据集：AG News，IMDB ， Movie Reviews，Stanford Natural
+Language Inference，multi-genre NLI
+corpus（前三个文本分类，后三个文本推理）</p>
+<p>​ 两个模型：WordCNN，WordLSTM，BERT base-uncased，ESIM ，Infersent
+，BERT base-uncased(前三个文本分类，后三个文本推理)</p>
+<h4 id="baselines-and-algorithm">2.<em>Baselines and Algorithm</em></h4>
+<p>​ <strong>攻击方法：</strong>PSO,GA,TextFooler,PWWS,GADe(baseline)</p>
+<h4 id="evaluation">3.<em>Evaluation</em></h4>
+<p>​ 以攻击成功的百分率来判定攻击能力。</p>
+<p>​ 以修改百分率和语义相似性来判定攻击的可辨识性。</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211114165103.png" /></p>
 
       
     </div>
@@ -229,7 +258,9 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#HydraText-Multi-objective-Optimization-for-Adversarial-Textual-Attack"><span class="nav-number">1.</span> <span class="nav-text">HydraText: Multi-objective Optimization for Adversarial Textual Attack</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ABSTRACT"><span class="nav-number">1.0.1.</span> <span class="nav-text">ABSTRACT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#INTRODUCTION"><span class="nav-number">1.0.2.</span> <span class="nav-text">INTRODUCTION</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#METHODS"><span class="nav-number">1.0.3.</span> <span class="nav-text">METHODS</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-The-HydraText-Approach"><span class="nav-number">1.0.3.1.</span> <span class="nav-text">1.The HydraText Approach</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EXPERIMENTS"><span class="nav-number">1.0.4.</span> <span class="nav-text">EXPERIMENTS</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-Datasets-and-Target-Models"><span class="nav-number">1.0.4.1.</span> <span class="nav-text">1. Datasets and Target Models</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-Baselines-and-Algorithm"><span class="nav-number">1.0.4.2.</span> <span class="nav-text">2.Baselines and Algorithm</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-Evaluation"><span class="nav-number">1.0.4.3.</span> <span class="nav-text">3.Evaluation</span></a></li></ol></li></ol></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#hydratext-multi-objective-optimization-for-adversarial-textual-attack"><span class="nav-number">1.</span> <span class="nav-text">HydraText:
+Multi-objective Optimization for Adversarial Textual Attack</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#abstract"><span class="nav-number">1.0.1.</span> <span class="nav-text">ABSTRACT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#introduction"><span class="nav-number">1.0.2.</span> <span class="nav-text">INTRODUCTION</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#methods"><span class="nav-number">1.0.3.</span> <span class="nav-text">METHODS</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#the-hydratext-approach"><span class="nav-number">1.0.3.1.</span> <span class="nav-text">1.The HydraText Approach</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#experiments"><span class="nav-number">1.0.4.</span> <span class="nav-text">EXPERIMENTS</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#datasets-and-target-models"><span class="nav-number">1.0.4.1.</span> <span class="nav-text">1. Datasets and Target
+Models</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#baselines-and-algorithm"><span class="nav-number">1.0.4.2.</span> <span class="nav-text">2.Baselines and Algorithm</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#evaluation"><span class="nav-number">1.0.4.3.</span> <span class="nav-text">3.Evaluation</span></a></li></ol></li></ol></li></ol></li></ol>
     
     </div>
   </aside>
@@ -364,5 +395,20 @@
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>

@@ -139,7 +139,9 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h5 id="宏观与微观的审视哲学，量变产生质变。"><a href="#宏观与微观的审视哲学，量变产生质变。" class="headerlink" title="宏观与微观的审视哲学，量变产生质变。"></a>宏观与微观的审视哲学，量变产生质变。</h5><p>一些记录，</p>
+        <h5
+id="宏观与微观的审视哲学量变产生质变">宏观与微观的审视哲学，量变产生质变。</h5>
+<p>一些记录，</p>
 <p>一些随手写。</p>
 
       
@@ -189,21 +191,27 @@
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/10/01/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Function-level%20obfuscation%20detection%20method%20based%20on%20Graph%20Convolutional%20Networks/"><img src="http://lorempixel.com/750/450/city/3" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/10/01/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Function-level%20obfuscation%20detection%20method%20based%20on%20Graph%20Convolutional%20Networks/"><img src="http://lorempixel.com/750/450/city/7" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          【论文阅读】Function-level obfuscation detection method based on Graph Convolutional Networks
+          【论文阅读】Function-level
+obfuscation detection method based on Graph Convolutional Networks
+
 时间：2021
 作者：Shuai Jiang , Yao Hong, Cai Fu（华科）
-期刊：Journal of Information Security and Applications（中科院三区）
+期刊：Journal of Information Security and
+Applications（中科院三区）
 
-1.ABSTRACT​    在恶意样本检测中代码混淆检测技术是一个重要的辅助手段，对于安全从业者来说，其可以在人工逆向分析前来实施自动化混淆检测，这有助于逆向工程师更具体地进行逆向分析。
-​    目前存在的混淆检测方法主要作用于Android应用，并基于传统的机器学习方法。其检测颗粒度很差，总体效果不佳。为了解决这些问题，在本篇文章，我们提出了一个应用于X86汇编和Android应用的、function level的、基于GCN的混淆检测方法。
+1.ABSTRACT
+​
+在恶意样本检测中代码混淆检测技术是一个重要的辅助手段，对于安全从业者来说，其可以在人工逆向分析前来实施自动化混淆检测，这有助于逆向工程师更具体地进行逆向分析。
+​
+目前存在的混淆检测方法主要作用于Android应用，并基于传统的机器学习方法。其检测颗粒度很差，总体效果不佳。为了解决这些问题，在本篇文章，我们提出了一个应用于X86汇编和Android应用的、function
+level的、基于GCN的混淆检测方法。
 1. 首先，我们的方法是function-level的。我们提取每个函数的CFG作为其特征（包括邻接矩阵和基本代码块的特征矩阵）；
- 2. 我们构建一个GCN-LSTM神经网络作为混淆检测模型；
- 3. 最后，对于function-level的检测我们的方法准确率是94.7575%（X86汇编）和98.9457%（安卓应用），比baseline方法好。实验证明我们的方法不论是在function-levle还是APK-level上的检测准确率都好于baseline。
-
+2. 我们构建一个GCN-LSTM神经网络作为混淆检测模型；
+3. 最后，对于function-level的检测我们的方法准确率是94.7575%（X86汇编）和98.9457%（安卓应用），比baseline方法好。实验证明我们的方法不论是在function-levle还是APK-level上的检测准确率都好于baseline。
 
         
           <p class="article-more-link">
@@ -263,7 +271,7 @@
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/07/21/%E5%86%B3%E7%AD%96%E6%97%B6%E8%A7%84%E5%88%92/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/07/21/%E5%86%B3%E7%AD%96%E6%97%B6%E8%A7%84%E5%88%92/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -271,23 +279,36 @@
 参考资料：
 
 Reinforcement Learining. Second Edition. Sutton.Page 180-193
-白板推导—强化学习.shuhuai008.Bilibili
+白板推导--强化学习.shuhuai008.Bilibili
 Easy RL.Qi Wang.Yang Yiyuan.Ji Jiang
 
 
-Planning at Decision Time（决策时规划）规划（Planning）至少有两种使用方式。
-①一种在DP和Dyna中已经讨论过，通过从一个model（不论是sample model或是distribution model ）中获取模拟经验（simulated experience）的基础上来使用规划来逐渐提升一个policy或一个value function。
-然后，选择动作是一个比较当前状态的动作value问题，该value是在之前优化的表格中获取的；或者通过使用书中Part 2中考虑的近似方法来评估数学表达式。
-对于任意状态S~t~，在为其选择一个动作之前，其整个表格条目（例如Dyna-Q中的Q表）已经通过规划来优化过了。使用这种方式，规划并不是仅仅聚焦于当前的状态，我们称这种规划为background planning，后台规划。
-②另一种使用规划的方法就是在遇到每个新的状态S~t~后再开始一个完整的规划过程，其为每个当前状态选择一个动作A~t~，到下一个状态S~t+1~就选择一个动作A~t+1~，以此类推。
-一个使用这种规划最简单的例子：当state values可用时，通过比较当前model对执行每个动作后到达的新状态的value来选择一个动作。
+Planning at Decision
+Time（决策时规划）
+规划（Planning）至少有两种使用方式。
+①一种在DP和Dyna中已经讨论过，通过从一个model（不论是sample
+model或是distribution model ）中获取模拟经验（simulated
+experience）的基础上来使用规划来逐渐提升一个policy或一个value
+function。
+然后，选择动作是一个比较当前状态的动作value问题，该value是在之前优化的表格中获取的；或者通过使用书中Part
+2中考虑的近似方法来评估数学表达式。
+对于任意状态St，在为其选择一个动作之前，其整个表格条目（例如Dyna-Q中的Q表）已经通过规划来优化过了。使用这种方式，规划并不是仅仅聚焦于当前的状态，我们称这种规划为background
+planning，后台规划。
+②另一种使用规划的方法就是在遇到每个新的状态St后再开始一个完整的规划过程，其为每个当前状态选择一个动作At，到下一个状态St+1就选择一个动作At+1，以此类推。
+一个使用这种规划最简单的例子：当state
+values可用时，通过比较当前model对执行每个动作后到达的新状态的value来选择一个动作。
 当然，更普遍的说，这种规划的用法可以比仅仅往后看一步（上面的例子就是）看得更深，评估动作的选择导致许多不同预测状态和奖励轨迹。
-不同于第一种用法，在这里，规划聚焦于一个特定的状态，我们称之为decision-time planning，决策时规划。
+不同于第一种用法，在这里，规划聚焦于一个特定的状态，我们称之为decision-time
+planning，决策时规划。
 这两种规划的方式可以用一种自然而有趣的方式结合在一起，不过一般二者被分开研究。
-如同background planning，我们仍可以将决策时规划看作一个从模拟经验中更新values，最后到更新policy的过程。只是基于当前状态所生成的values和policy会在做完动作选择决策后被丢弃，在很多应用场景中这么做并不算一个很大的损失，因为有非常多的状态存在，且不太可能在短时间内回到同一个状态，故重复计算导致的资源浪费会很少。
+如同background
+planning，我们仍可以将决策时规划看作一个从模拟经验中更新values，最后到更新policy的过程。只是基于当前状态所生成的values和policy会在做完动作选择决策后被丢弃，在很多应用场景中这么做并不算一个很大的损失，因为有非常多的状态存在，且不太可能在短时间内回到同一个状态，故重复计算导致的资源浪费会很少。
 一般来说，人们可能希望将两者结合起来：规划当前状态，并将规划的结果存储起来，以便在以后回到相同的状态时能走得更远。
-Decision-time Planning，(决策时规划）在不需要快速反应的应用场景中作用最为显著。
-决策时规划的常用算法有Heuristic Search（启发式搜索）、Rollout Algorithms（Rollout 算法）和Monte Carlo Tree Search（MCTS 蒙特卡洛树搜索）三种。
+Decision-time
+Planning，(决策时规划）在不需要快速反应的应用场景中作用最为显著。
+决策时规划的常用算法有Heuristic Search（启发式搜索）、Rollout
+Algorithms（Rollout 算法）和Monte Carlo Tree Search（MCTS
+蒙特卡洛树搜索）三种。
 
         
           <p class="article-more-link">
@@ -347,18 +368,27 @@ Decision-time Planning，(决策时规划）在不需要快速反应的应用场
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/03/04/A%20Survey%20of%20Defense%20Mechanisms%20Against%20Distributed%20Denial%20of%20Service%20(DDoS)%20Flooding%20Attacks/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/03/04/A%20Survey%20of%20Defense%20Mechanisms%20Against%20Distributed%20Denial%20of%20Service%20(DDoS)%20Flooding%20Attacks/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          A Survey of Defense Mechanisms Against Distributed Denial of Service (DDoS) Flooding Attacks
-时间：2013
-作者：Saman Taghavi Zargar，James Joshi， David Tipper
-期刊：IEEE COMMUNICATIONS SURVEYS &amp; TUTORIALS（中科院一区）
+          A
+Survey of Defense Mechanisms Against Distributed Denial of Service
+(DDoS) Flooding Attacks
 
-ABSTRACT​    DDoS攻击是安全专业人员最关心的问题之一，其通常是为了扰乱合法用户对服务的访问而进行的显式尝试。攻击者通常通过攻击漏洞来获取到一大批电脑，以此来组建一个网络攻击军队（也就是僵尸网络），一旦组建了攻击部队，攻击者就可以对一个或多个目标发起协调一致、大规模的攻击。开发针对已识别和预期的DDoS泛洪攻击的综合防御机制，是入侵检测和预防研究界所期望的目标。然而，这种机制的发展需要对问题和迄今为止在预防、检测和应对各种DDoS洪泛攻击方面所采用的技术有一个全面的了解。
-​    在本文，我们对DDoS洪泛攻击进行分类，并根据它们在何时何地预防、检测和应对DDoS洪泛攻击对现有的对策进行分类。
-​    此外，我们强调需要一种全面的分布式协同防御方法。我们的主要目的是激发研究人员开发出创造性的、有效的、高效的、综合的预防、检测和响应机制来解决实际攻击前、中和后的DDoS泛洪问题。
+时间：2013
+作者：Saman Taghavi Zargar，James Joshi， David
+Tipper
+期刊：IEEE COMMUNICATIONS SURVEYS &amp;
+TUTORIALS（中科院一区）
+
+ABSTRACT
+​
+DDoS攻击是安全专业人员最关心的问题之一，其通常是为了扰乱合法用户对服务的访问而进行的显式尝试。攻击者通常通过攻击漏洞来获取到一大批电脑，以此来组建一个网络攻击军队（也就是僵尸网络），一旦组建了攻击部队，攻击者就可以对一个或多个目标发起协调一致、大规模的攻击。开发针对已识别和预期的DDoS泛洪攻击的综合防御机制，是入侵检测和预防研究界所期望的目标。然而，这种机制的发展需要对问题和迄今为止在预防、检测和应对各种DDoS洪泛攻击方面所采用的技术有一个全面的了解。
+​
+在本文，我们对DDoS洪泛攻击进行分类，并根据它们在何时何地预防、检测和应对DDoS洪泛攻击对现有的对策进行分类。
+​
+此外，我们强调需要一种全面的分布式协同防御方法。我们的主要目的是激发研究人员开发出创造性的、有效的、高效的、综合的预防、检测和响应机制来解决实际攻击前、中和后的DDoS泛洪问题。
 
 
         
@@ -419,18 +449,27 @@ ABSTRACT​    DDoS攻击是安全专业人员最关心的问题之一，其通�
 
           
             <div class="entry-thumbnail">
-              <a href="/2021/11/14/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/"><img src="http://lorempixel.com/750/450/city/3" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2021/11/14/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          HydraText: Multi-objective Optimization for Adversarial Textual Attack
-作者：Shengcai Liu，Ning Lu，Cheng Chen，Chao Qian，Ke Tang
+          HydraText:
+Multi-objective Optimization for Adversarial Textual Attack
+
+作者：Shengcai Liu，Ning Lu，Cheng Chen，Chao Qian，Ke
+Tang
 时间：2021
 
-ABSTRACT​    文字(text)（word-level）对抗样本黑盒攻击。在这项工作中，同时考虑攻击效率+可辨认性，并提出一种新的具有可证明性能保证的多优化方法(称为HydraText )，以实现具有高隐蔽性的成功攻击。
-​    为了测试HydraText的功效，我们在score-based 和decision-based的黑盒攻击下，使用5个NLP模型+5个数据集。
-（PS：[论文总结] Boundary Attack - 知乎 (zhihu.com)）
-​    一项人类观察评价研究表明，Hydra Text制作的对抗样本很好地保持了有效性和自然性。最后，这些实例还表现出良好的可迁移性，可以通过对抗训练给目标模型带来显著的鲁棒性提升。
+ABSTRACT
+​
+文字(text)（word-level）对抗样本黑盒攻击。在这项工作中，同时考虑攻击效率+可辨认性，并提出一种新的具有可证明性能保证的多优化方法(称为HydraText
+)，以实现具有高隐蔽性的成功攻击。
+​ 为了测试HydraText的功效，我们在score-based
+和decision-based的黑盒攻击下，使用5个NLP模型+5个数据集。
+（PS：[论文总结]
+Boundary Attack - 知乎 (zhihu.com)）
+​ 一项人类观察评价研究表明，Hydra
+Text制作的对抗样本很好地保持了有效性和自然性。最后，这些实例还表现出良好的可迁移性，可以通过对抗训练给目标模型带来显著的鲁棒性提升。
 
 
         
@@ -491,17 +530,30 @@ ABSTRACT​    文字(text)（word-level）对抗样本黑盒攻击。在这项�
 
           
             <div class="entry-thumbnail">
-              <a href="/2021/11/06/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Semantic%20Host-free%20Trojan%20Attack/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2021/11/06/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Semantic%20Host-free%20Trojan%20Attack/"><img src="http://lorempixel.com/750/450/city/7" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          Semantic Host-free Trojan Attack
-作者：Haripriya Harikumar , Kien Do, Santu Rana , Sunil Gupta , Svetha Venkatesh（迪肯大学.澳大利亚）
+          Semantic Host-free Trojan
+Attack
+
+作者：Haripriya Harikumar , Kien Do, Santu Rana , Sunil Gupta
+, Svetha Venkatesh（迪肯大学.澳大利亚）
 时间：2021.10.27
 
-ABSTRACT​    在本文中，我们提出了一种新颖的host-free木马攻击，其触发器(trigger)固定在语义空间(semantic)，但不一定在像素空间(pixel)。
-​    与现有的木马攻击使用干净的输入图像作为宿主来携带小的、没有意义的trigger不同，我们的攻击将trigger看作是属于语义上有意义的对象类的整个图像。
-​    由于在我们的攻击中，与任何特定的固定模式相比，分类器被鼓励记忆触发图像的抽象语义。因此它可以在以后由语义相似但看起来不同的图像触发。这使得我们的攻击更实际地被应用于现实世界中，更难以防御。广泛的实验结果表明，仅用少量的特洛伊木马模式进行训练，我们的攻击能很好地推广到同一特洛伊木马类的新模式，并且可以绕过目前的防御方法。
+ABSTRACT
+​
+在本文中，我们提出了一种新颖的host-free木马攻击，其触发器(trigger)固定在语义空间(semantic)，但不一定在像素空间(pixel)。
+​
+与现有的木马攻击使用干净的输入图像作为宿主来携带小的、没有意义的trigger不同，我们的攻击将trigger看作是属于语义上有意义的对象类的整个图像。
+​
+由于在我们的攻击中，与任何特定的固定模式相比，分类器被鼓励记忆触发图像的抽象语义。因此它可以在以后由语义相似但看起来不同的图像触发。这使得我们的攻击更实际地被应用于现实世界中，更难以防御。广泛的实验结果表明，仅用少量的特洛伊木马模式进行训练，我们的攻击能很好地推广到同一特洛伊木马类的新模式，并且可以绕过目前的防御方法。
+
+
+
+
+
+
 
 
         
@@ -562,16 +614,27 @@ ABSTRACT​    在本文中，我们提出了一种新颖的host-free木马攻�
 
           
             <div class="entry-thumbnail">
-              <a href="/2021/11/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Intrusion%20detection%20system%20A%20comprehensive%20review/"><img src="http://lorempixel.com/750/450/city/3" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2021/11/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Intrusion%20detection%20system%20A%20comprehensive%20review/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          Intrusion detection system: A comprehensive review
-作者：Hung-Jen Liao a , Chun-Hung Richard Lin a,n , Ying-Chih Lin a,b , Kuang-Yuan Tung a（国立中山大学，正修科技大学）
+          Intrusion
+detection system: A comprehensive review
+
+作者：Hung-Jen Liao a , Chun-Hung Richard Lin a,n , Ying-Chih
+Lin a,b , Kuang-Yuan Tung a（国立中山大学，正修科技大学）
 时间：2012
 
-ABSTRACT​    一个IDS综述。
-PS：(17条消息) 防火墙、IDS和IPS之间的区别（浅谈）_淡风wisdon－大大的博客-CSDN博客
+ABSTRACT
+​ 一个IDS综述。
+PS：(17条消息)
+防火墙、IDS和IPS之间的区别（浅谈）_淡风wisdon－大大的博客-CSDN博客
+
+
+
+
+
+
 
 
         
@@ -632,17 +695,33 @@ PS：(17条消息) 防火墙、IDS和IPS之间的区别（浅谈）_淡风wisdon
 
           
             <div class="entry-thumbnail">
-              <a href="/2021/11/01/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Def-IDS%20An%20Ensemble%20Defense%20Mechanism%20Against%20Adversarial%20Attacks%20for%20Deep%20Learning-based%20Network%20Intrusion%20Detection/"><img src="http://lorempixel.com/750/450/city/3" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2021/11/01/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Def-IDS%20An%20Ensemble%20Defense%20Mechanism%20Against%20Adversarial%20Attacks%20for%20Deep%20Learning-based%20Network%20Intrusion%20Detection/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          Def-IDS: An Ensemble Defense Mechanism Against Adversarial Attacks for Deep Learning-based Network Intrusion Detection
-作者：Jianyu Wang，Jianli Pan，Ismail AlQerm，（密苏里大学圣路易斯分校，重庆大学）
-时间：2021
-ICCCN，ccf—C类
+          Def-IDS:
+An Ensemble Defense Mechanism Against Adversarial Attacks for Deep
+Learning-based Network Intrusion Detection
 
-ABSTRACT​    提出了Def-IDS，一个为NIDS准备的组合防御机制。它是一个由两个模块组成的训练框架，组合了multi-class generative adversarial networks（MGANs）和multi-soutce adversarial retraining（MAT）。
-​    在CSE-CIC-IDS2018数据集上测试了该机制，并与3个其它方法进行了比较。结果表明Def-IDS可以以更高的precision, recall, F1 score, and accuracy来识别对抗样本。
+作者：Jianyu Wang，Jianli Pan，Ismail
+AlQerm，（密苏里大学圣路易斯分校，重庆大学）
+时间：2021
+ICCCN，ccf--C类
+
+ABSTRACT
+​
+提出了Def-IDS，一个为NIDS准备的组合防御机制。它是一个由两个模块组成的训练框架，组合了multi-class
+generative adversarial networks（MGANs）和multi-soutce
+adversarial retraining（MAT）。
+​
+在CSE-CIC-IDS2018数据集上测试了该机制，并与3个其它方法进行了比较。结果表明Def-IDS可以以更高的precision,
+recall, F1 score, and accuracy来识别对抗样本。
+
+
+
+
+
+
 
 
         
@@ -703,36 +782,58 @@ ABSTRACT​    提出了Def-IDS，一个为NIDS准备的组合防御机制。它
 
           
             <div class="entry-thumbnail">
-              <a href="/2021/10/30/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Crafting%20Adversarial%20Example%20to%20Bypass%20Flow-&ML-%20based%20Botnet%20Detector%20via%20RL/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2021/10/30/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Crafting%20Adversarial%20Example%20to%20Bypass%20Flow-&ML-%20based%20Botnet%20Detector%20via%20RL/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          Crafting Adversarial Example to Bypass Flow-&amp;ML- based Botnet Detector via RL
-作者：Junnan Wang，Qixu Liu，Di Wu，Ying Dong，Xiang Cui（中国科学院大学，华为科技，北京维纳斯纲科技，广州大学）
+          Crafting
+Adversarial Example to Bypass Flow-&amp;ML- based Botnet Detector via
+RL
+
+作者：Junnan Wang，Qixu Liu，Di Wu，Ying Dong，Xiang
+Cui（中国科学院大学，华为科技，北京维纳斯纲科技，广州大学）
 时间：2021.10.6
 会议：RAID(CCF_B)
 
-1. Botnet(僵尸网络)：1.1 定义：​    Botnet = robot + network。
+1. Botnet(僵尸网络)：
+1.1 定义：
+​ Botnet = robot + network。
 
 
 
-——参考《软件安全》.彭国军
+----参考《软件安全》.彭国军
 
-1.2 如何攻击？​    一个僵尸网络的生存周期包括形成、C&amp;C、攻击、后攻击四个阶段。
-​    形成阶段由攻击者入侵有漏洞的主机，并在其上执行恶意程序，使之成为僵尸主机。
-​    一旦成为僵尸主机之后，botmaster会通过各种方式与之通信。
-​    之后根据botmaster的指令执行攻击行为。后攻击阶段是指botmaster对僵尸网络进行升级更新。
-2. Botnet Detector(僵尸网络检测器)：2.1 传统方法：​    从检测原理上来说，大致可以分为三类方法：
+1.2 如何攻击？
+​
+一个僵尸网络的生存周期包括形成、C&amp;C、攻击、后攻击四个阶段。
+​
+形成阶段由攻击者入侵有漏洞的主机，并在其上执行恶意程序，使之成为僵尸主机。
+​ 一旦成为僵尸主机之后，botmaster会通过各种方式与之通信。
+​
+之后根据botmaster的指令执行攻击行为。后攻击阶段是指botmaster对僵尸网络进行升级更新。
+2. Botnet
+Detector(僵尸网络检测器)：
+2.1 传统方法：
+​ 从检测原理上来说，大致可以分为三类方法：
 　　·行为特征统计分析
 　　·bot行为仿真以监控
 　　·流量数据特征匹配
-​    传统的检测僵尸网络的方法一般在形成、攻击阶段，利用僵尸主机存在的行为特征，例如通信的数据内容。一些基于网络流量行为分析的方法可以检测僵尸网络，主要是从通信流量特征的角度去检测的，例如流量的通信周期，这种方法可以检测出一些加密的僵尸主机流量，同时还可以检测出新型的僵尸网络。
+​
+传统的检测僵尸网络的方法一般在形成、攻击阶段，利用僵尸主机存在的行为特征，例如通信的数据内容。一些基于网络流量行为分析的方法可以检测僵尸网络，主要是从通信流量特征的角度去检测的，例如流量的通信周期，这种方法可以检测出一些加密的僵尸主机流量，同时还可以检测出新型的僵尸网络。
 
-——参考：解析：僵尸网络（Botnet）的检测方法-西湖泛舟-ChinaUnix博客
+----参考：解析：僵尸网络（Botnet）的检测方法-西湖泛舟-ChinaUnix博客
 
 
-ABSTRACT​    提出了一个基于RL的方法来对基于ML的僵尸网络追踪器做逃逸攻击，并且可以保留僵尸网络的恶意功能。
-​    黑盒攻击，不用改变追踪器本身。
+ABSTRACT
+​
+提出了一个基于RL的方法来对基于ML的僵尸网络追踪器做逃逸攻击，并且可以保留僵尸网络的恶意功能。
+​ 黑盒攻击，不用改变追踪器本身。
+
+
+
+
+
+
 
 
         
@@ -793,17 +894,21 @@ ABSTRACT​    提出了一个基于RL的方法来对基于ML的僵尸网络追�
 
           
             <div class="entry-thumbnail">
-              <a href="/2021/10/12/The%20Last%20Question/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2021/10/12/The%20Last%20Question/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          THE LAST QUESTION最后的问题第一次被半开玩笑地提出是在2061年的5月21日。那时人类文明刚刚步入曙光中。这个问题源起于酒酣之中一个五美元的赌，它是这么发生的：
+          THE LAST QUESTION
+最后的问题第一次被半开玩笑地提出是在2061年的5月21日。那时人类文明刚刚步入曙光中。这个问题源起于酒酣之中一个五美元的赌，它是这么发生的：
 亚历山大•阿代尔与贝特伦•卢泊夫是Multivac的两个忠实的管理员。像任何其他人一样，他们知道在那台巨大的计算机数英里冰冷、闪烁、滴答作响的面庞后藏着什么。那些电子回路早已发展到任何个别的人都无法完全掌握的地步，但他们至少对它的大致蓝图有个基本的概念。
-Multivac能自我调节和自我修正。这对它是必要的，因为人类当中没有谁能够快甚至够好地对它进行调节和修正。所以实际上阿代尔与卢泊夫对这个庞然大 物只进行一些非常轻松和肤浅的管理，任何其他人也都只能做到这个程度。他们给它输送数据，根据它所需的格式修改问题，然后翻译给出的答案。当然，他们以及 其他管理员们完全有资格分享属于Multivac的荣誉。
+Multivac能自我调节和自我修正。这对它是必要的，因为人类当中没有谁能够快甚至够好地对它进行调节和修正。所以实际上阿代尔与卢泊夫对这个庞然大
+物只进行一些非常轻松和肤浅的管理，任何其他人也都只能做到这个程度。他们给它输送数据，根据它所需的格式修改问题，然后翻译给出的答案。当然，他们以及
+其他管理员们完全有资格分享属于Multivac的荣誉。
 几十年中，在Multivac的帮助下人类建造了宇宙飞船，计算出航行路径，从而得以登陆月球、火星和金星。但是更远的航行需要大量的能量，地球上可怜的资源不足以支持这些飞船。尽管人类不断地提高煤炭和核能的利用效率，但煤和铀都是有限的。
 但是慢慢地Multivac学会了如何从根本上解决某些深层次问题。2061年5月14日，理论成为了现实。
 太阳的能量被储存和转化，得以被全球规模地直接利用。整个地球熄灭了燃烧的煤炭，关闭了核反应炉，打开了连接到那个小小的太阳能空间站的开关。这个空间站直径一英里，在到月球的距离一半处环绕着地球。看不见的太阳的光束支撑着整个地球社会的运行。
-七天的庆祝还不足以暗淡这创举的光辉。阿代尔与卢泊夫总算逃脱了公众事务，悄悄地相聚在这个谁也想不到的荒僻的地下室。在这里Multivac埋藏着的庞 大身躯露出了一部分。它正独自闲暇地整理着数据，发出满足的、慵懒的滴答声——它也得到了假期。他们了解这一点，一开始他们并没打算打扰它。
+七天的庆祝还不足以暗淡这创举的光辉。阿代尔与卢泊夫总算逃脱了公众事务，悄悄地相聚在这个谁也想不到的荒僻的地下室。在这里Multivac埋藏着的庞
+大身躯露出了一部分。它正独自闲暇地整理着数据，发出满足的、慵懒的滴答声——它也得到了假期。他们了解这一点，一开始他们并没打算打扰它。
 他们带来了一瓶酒。这会儿他们想做的只是在一起，喝喝酒，放松放松。
 你想一想就会觉得很神奇，”阿代尔说。他宽阔的脸庞已有了疲倦的纹路。他慢慢地用玻璃棒搅动着酒，看着冰块笨拙地滑动。“从此我们所用的所有能量都是免费的。只要我们愿意，我们能把地球熔化成一颗液态大铁球——还能毫不在乎花掉的能量。够我们永远永远永远用下去的能量。”
 卢泊夫将头歪向一边，这是当他想要反驳对方时的习惯动作。他现在确实想要反驳，部分原因是他在负责拿着冰和杯子。他说：“不是永远。”
@@ -1190,5 +1295,20 @@ Multivac能自我调节和自我修正。这对它是必要的，因为人类当
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>
