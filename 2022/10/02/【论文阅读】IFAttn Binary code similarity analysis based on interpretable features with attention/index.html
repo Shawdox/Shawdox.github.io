@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>IFAttn-Binary code similarity analysis based on interpretable features with attention | Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Malware ClassifiersBCSA" />
+  
+  
+  
+  
+  <meta name="description" content="【论文阅读】IFAttn-Binary code similarity analysis based on interpretable features with attention  时间：2021 作者：Shuai Jianga , Cai Fua , Yekui Qian（华科） 期刊：Computers &amp; Security（中科院三区）  1.ABSTRACT">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IFAttn-Binary code similarity analysis based on interpretable features with attention">
+<meta property="og:url" content="http://example.com/2022/10/02/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91IFAttn%20Binary%20code%20similarity%20analysis%20based%20on%20interpretable%20features%20with%20attention/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="【论文阅读】IFAttn-Binary code similarity analysis based on interpretable features with attention  时间：2021 作者：Shuai Jianga , Cai Fua , Yekui Qian（华科） 期刊：Computers &amp; Security（中科院三区）  1.ABSTRACT">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003205006.png">
+<meta property="article:published_time" content="2022-10-02T06:29:22.023Z">
+<meta property="article:modified_time" content="2022-10-03T12:58:53.044Z">
+<meta property="article:author" content="Shaw">
+<meta property="article:tag" content="Malware Classifiers">
+<meta property="article:tag" content="BCSA">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003205006.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-【论文阅读】IFAttn Binary code similarity analysis based on interpretable features with attention" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      IFAttn-Binary code similarity analysis based on interpretable features with attention
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2022/10/02/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91IFAttn%20Binary%20code%20similarity%20analysis%20based%20on%20interpretable%20features%20with%20attention/" class="article-date">
+	  <time datetime="2022-10-02T06:29:22.023Z" itemprop="datePublished">十月 2, 2022</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1
+id="论文阅读ifattn-binary-code-similarity-analysis-based-on-interpretable-features-with-attention">【论文阅读】IFAttn-Binary
+code similarity analysis based on interpretable features with
+attention</h1>
+<blockquote>
+<p>时间：2021</p>
+<p>作者：Shuai Jianga , Cai Fua , Yekui Qian（华科）</p>
+<p>期刊：Computers &amp; Security（中科院三区）</p>
+</blockquote>
+<h2 id="abstract">1.ABSTRACT</h2>
+<p>二进制代码相似性分析（Binary code similarity analysis
+，BCSA）是一项有意义的软件安全分析技术，包括漏洞挖掘、代码克隆检测和恶意代码检测。</p>
+<p>尽管近年来出现了很多基于神经网络的很多BCSA研究成果，仍有一些问题未被解决。首先，大多数方法更聚焦于function
+pair similarity detection task (FPSDT)，而忽略了function search task
+(FST)，后者对漏洞挖掘更为重要。还有，现有方法为了提高FPSDT的准确率使用了一些无法解释的神经网络；最后，大多数现有方法无法抵抗BCSA中的交叉优化和交叉混淆。</p>
+<p>为了解决这些问题，我们首次提出了一个结合了可解释特征工程和可学习注意力机制的适应性BCSA架构。我们设计了一个具有适应性的、富有可解释性特征的模型。测试结果表明对于FPSDT和FST的效果比state-of-the-art效果更好。</p>
+<p>另外，我们还发现注意机制在功能语义表达方面具有突出的优势。</p>
+<p>评估表明我们的方法可以显著提升FST在cross-architecture,
+cross-optimization, cross-obfuscation and cross-compiler
+binaries上的表现。</p>
+<span id="more"></span>
+<p>为了提高开发效率，开发者通常会使用开源代码来开发新软件。如果一个开发者使用了一个存在漏洞的函数，则这个漏洞就会被继承且很难被发现。代码克隆这种现象对软件的安全可靠性造成了很大影响。</p>
+<p>不幸的是，直接对二进制代码使用同源性分析并不够直接明了，二进制代码缺乏语义抽象，很难从函数中提取语义信息来做同源性分析。另外，分割函数的边界也是个问题。</p>
+<p>所以在代码克隆、恶意样本追踪、库函数发掘和漏洞发掘领域对二进制代码做同源性分析一直是个重要的方向。</p>
+<p>根据已有方法的颗粒度分类，现存成果可以分为：</p>
+<ol type="1">
+<li>基于基本静态特征的方法；</li>
+<li>基于代码图结构（例如CFG）的方法；</li>
+<li>基于代码张量的方法；</li>
+<li>基于深度学习生成函数嵌入的方法；</li>
+</ol>
+<p><strong>现有方法存在的问题：</strong></p>
+<ol type="1">
+<li><p>大多数方法更聚焦于function pair similarity detection task
+(FPSDT)，而忽略了function search task
+(FST)，后者对漏洞挖掘更为重要；</p>
+<p>FPSDT指对比两个函数的相似度，FST指在函数库中寻找与某个函数最相似的函数。</p></li>
+<li><p>现有方法为了提高FPSDT的准确率使用了一些无法解释的神经网络，设计一个复杂的分析过程；</p></li>
+<li><p>因为编译器的优化和混淆会显著修改代码结构，大多数方法在这些条件下表现不佳。</p></li>
+</ol>
+<p><strong>我们的方法解决的：</strong></p>
+<ol type="1">
+<li><p>如何利用可解释的基本特征来生成二进制代码的语义特征；</p>
+<p>用注意力机制来聚焦于在不同编译环境下仍起作用的特征，学习基本特征之间的联系。</p></li>
+<li><p>如何设计一个适应不同编译选项的通用BCSA模型框架。</p>
+<p>我们重新设计了Transformer的编码部分，使用孪生神经网络来判断两个函数的相似度，在attention
+layer使用KFM来处理不动的编译选项。</p></li>
+</ol>
+<p><strong>注意力机制的优点：</strong></p>
+<p>下图是同一个函数在同一个编译选项（X86_32_00）下通过混淆技术BCF前后的CFG图：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003195749.png" /></p>
+<p>下图是TIKNIB和IFAttn两个模型在对同一个函数混淆前后抓取的特征向量值：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003195945.png" /></p>
+<p><strong>可以看到，在混淆前后basic features有明显不同，而semantic
+features则总体上更为稳定。</strong></p>
+<p>​
+下图表明了TIKNIB和IFAttn在对不同函数，一个混淆一个不混淆的前提下提取到的特征向量值：</p>
+<p>​ <img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003200537.png" /></p>
+<p><strong>可以看到，与之前相反，在混淆前后basic
+features较为稳定，而semantic features变化更大。</strong></p>
+<p>​ semantic features更能体现函数本身语义，而不受混淆技术的影响。</p>
+<p><strong>一些定义：</strong></p>
+<ul>
+<li><strong>Presemantic
+features：</strong>直接或间接从代码语法和结构分析出的特征；</li>
+</ul>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003204439.png" /></p>
+<ul>
+<li><strong>Semantic features：</strong>本文通过注意机制分析了base
+feature形成的内在关联，并将base feature融合生成语义嵌入</li>
+<li><strong>KFM scaled dot-product
+attention:</strong><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003205006.png" style="zoom: 67%;" /></li>
+<li><strong>Multi-head
+attention:</strong>Transformer的一种注意力机制。</li>
+</ul>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003205126.png" /></p>
+<p><strong>系统结构：</strong>IFAttn (Interpretable Features with
+Attention)</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003205326.png" /></p>
+<p><strong>测试结果：</strong></p>
+<p>数据集：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003205708.png" /></p>
+<p>测试结果：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003205759.png" /></p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/BCSA/" rel="tag">BCSA</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Malware-Classifiers/" rel="tag">Malware Classifiers</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2022/10/01/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Function-level%20obfuscation%20detection%20method%20based%20on%20Graph%20Convolutional%20Networks/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Function-level obfuscation detection method based on Graph Convolutional Networks</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BBifattn-binary-code-similarity-analysis-based-on-interpretable-features-with-attention"><span class="nav-number">1.</span> <span class="nav-text">【论文阅读】IFAttn-Binary
+code similarity analysis based on interpretable features with
+attention</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#abstract"><span class="nav-number">1.1.</span> <span class="nav-text">1.ABSTRACT</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2022 Shaw All Rights Reserved.
+        
+            <span id="busuanzi_container_site_uv">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次  
+              本站总访问量<span id="busuanzi_value_site_pv"></span>次
+            </span>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>
