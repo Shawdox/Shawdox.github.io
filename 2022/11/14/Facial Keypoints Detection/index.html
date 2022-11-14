@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Facial Keypoints Detection | Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="CVPytorch" />
+  
+  
+  
+  
+  <meta name="description" content="Facial Keypoints Detection  Time: 2022.11.11 Author: Shaw Facial Keypoints Detection | Kaggle  一、任务简介：  ​ 任务：正确标注所给图片的人脸关键位置；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Facial Keypoints Detection">
+<meta property="og:url" content="http://example.com/2022/11/14/Facial%20Keypoints%20Detection/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="Facial Keypoints Detection  Time: 2022.11.11 Author: Shaw Facial Keypoints Detection | Kaggle  一、任务简介：  ​ 任务：正确标注所给图片的人脸关键位置；">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-11-14T03:24:28.500Z">
+<meta property="article:modified_time" content="2022-11-14T03:24:02.826Z">
+<meta property="article:author" content="Shaw">
+<meta property="article:tag" content="CV">
+<meta property="article:tag" content="Pytorch">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Facial Keypoints Detection" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Facial Keypoints Detection
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2022/11/14/Facial%20Keypoints%20Detection/" class="article-date">
+	  <time datetime="2022-11-14T03:24:28.500Z" itemprop="datePublished">十一月 14, 2022</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Kaggle/">Kaggle</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="facial-keypoints-detection">Facial Keypoints Detection</h1>
+<blockquote>
+<p>Time: 2022.11.11</p>
+<p>Author: Shaw</p>
+<p><a
+target="_blank" rel="noopener" href="https://www.kaggle.com/competitions/facial-keypoints-detection/overview">Facial
+Keypoints Detection | Kaggle</a></p>
+</blockquote>
+<h2 id="一任务简介">一、任务简介：</h2>
+<ul>
+<li>​ <strong>任务</strong>：正确标注所给图片的人脸关键位置；</li>
+</ul>
+<span id="more"></span>
+<ul>
+<li>​ <strong>关键位置（keypoint）</strong>：</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>字段</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>left_eye_center</td>
+<td>左眼中心</td>
+</tr>
+<tr class="even">
+<td>right_eye_center</td>
+<td>右眼中心</td>
+</tr>
+<tr class="odd">
+<td>left_eye_inner_corner</td>
+<td>左眼内眼角</td>
+</tr>
+<tr class="even">
+<td>left_eye_outer_corner</td>
+<td>左眼外眼角</td>
+</tr>
+<tr class="odd">
+<td>right_eye_inner_corner</td>
+<td>右眼内眼角</td>
+</tr>
+<tr class="even">
+<td>right_eye_outer_corner</td>
+<td>右眼外眼角</td>
+</tr>
+<tr class="odd">
+<td>left_eyebrow_inner_end</td>
+<td>左眉内侧</td>
+</tr>
+<tr class="even">
+<td>left_eyebrow_outer_end</td>
+<td>左眉外侧</td>
+</tr>
+<tr class="odd">
+<td>right_eyebrow_inner_end</td>
+<td>右眉内侧</td>
+</tr>
+<tr class="even">
+<td>right_eyebrow_outer_end</td>
+<td>右眉外侧</td>
+</tr>
+<tr class="odd">
+<td>nose_tip</td>
+<td>鼻尖</td>
+</tr>
+<tr class="even">
+<td>mouth_left_corner</td>
+<td>嘴左角</td>
+</tr>
+<tr class="odd">
+<td>mouth_right_corner</td>
+<td>嘴右角</td>
+</tr>
+<tr class="even">
+<td>mouth_center_top_lip</td>
+<td>上唇中心</td>
+</tr>
+<tr class="odd">
+<td>mouth_center_bottom_lip</td>
+<td>下唇中心</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>​ <strong>数据组成</strong>：
+<ul>
+<li><strong>training.csv:</strong>
+包含7049张训练图片，每张图片有15个keypoint坐标（每个坐标用x,y两列数据表示，<u>有些数值缺失</u>），图像数据作为按行排序的像素列表。故表格中的数据标签有30列，图片数据一列共31列；</li>
+<li><strong>test.csv:</strong> 包含1783张测试图片；</li>
+<li><strong>ubmissionFileFormat.csv:</strong> 待提交的测试结果。</li>
+</ul></li>
+<li><strong>样例</strong>：</li>
+</ul>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221113142355.png" /></p>
+<h2 id="二数据分析处理">二、数据分析处理</h2>
+<p>首先加载训练数据与测试数据：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment">#Load the data</span>
+train_data <span class="token operator">=</span> pd<span class="token punctuation">.</span>read_csv<span class="token punctuation">(</span>TRAIN_PATH<span class="token punctuation">)</span>
+test_data <span class="token operator">=</span> pd<span class="token punctuation">.</span>read_csv<span class="token punctuation">(</span>TEST_PATH<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>train_data<span class="token punctuation">.</span>columns<span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>test_data<span class="token punctuation">.</span>columns<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="空值填补">2.1 空值填补</h3>
+<p>因为数据中存在缺失值，故统计分析存在缺失值的列：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">train_data<span class="token punctuation">.</span>isnull<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token builtin">any</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>value_counts<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment">#out:</span>
+<span class="token triple-quoted-string string">'''
+True     28
+False     3
+dtype: int64
+'''</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>故28个属性列都存在缺失值，接下来填补缺失，‘ffill’方法表示用前面一列的值填补当前位置的值：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">train_data<span class="token punctuation">.</span>fillna<span class="token punctuation">(</span>method <span class="token operator">=</span> <span class="token string">'ffill'</span><span class="token punctuation">,</span>inplace <span class="token operator">=</span> <span class="token boolean">True</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>同时，Image列中的部分数值由‘ ’空格替代，这里将其替换为0：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">train_data<span class="token punctuation">[</span><span class="token string">'Image_new'</span><span class="token punctuation">]</span> <span class="token operator">=</span> train_data<span class="token punctuation">[</span><span class="token string">'Image'</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token builtin">map</span><span class="token punctuation">(</span><span class="token keyword">lambda</span> x<span class="token punctuation">:</span><span class="token punctuation">[</span><span class="token string">'0'</span> <span class="token keyword">if</span> i <span class="token operator">==</span> <span class="token string">' '</span> <span class="token keyword">else</span> i <span class="token keyword">for</span> i <span class="token keyword">in</span> x<span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">' '</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+image_list <span class="token operator">=</span> np<span class="token punctuation">.</span>array<span class="token punctuation">(</span>train_data<span class="token punctuation">[</span><span class="token string">'Image_new'</span><span class="token punctuation">]</span><span class="token punctuation">.</span>to_list<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>dtype<span class="token operator">=</span><span class="token string">'float'</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<h3 id="相关图片处理函数编写">2.2 相关图片处理函数编写</h3>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">IMG_SIZE <span class="token operator">=</span> <span class="token number">96</span>  <span class="token comment"># image size 96 x 96 pixels</span>
+
+<span class="token keyword">def</span> <span class="token function">show_keypoints</span><span class="token punctuation">(</span>image<span class="token punctuation">,</span> keypoints<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">'''
+    Show image with keypoints
+    Args:
+        image (array-like or PIL image): The image data. (M, N)
+        keypoints (array-like): The keypoits data. (N, 2)
+    '''</span>
+    plt<span class="token punctuation">.</span>imshow<span class="token punctuation">(</span>image<span class="token punctuation">,</span> cmap<span class="token operator">=</span><span class="token string">'gray'</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> <span class="token builtin">len</span><span class="token punctuation">(</span>keypoints<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        plt<span class="token punctuation">.</span>scatter<span class="token punctuation">(</span>keypoints<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> keypoints<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span> s<span class="token operator">=</span><span class="token number">24</span><span class="token punctuation">,</span> marker<span class="token operator">=</span><span class="token string">'.'</span><span class="token punctuation">,</span> c<span class="token operator">=</span><span class="token string">'r'</span><span class="token punctuation">)</span>
+
+<span class="token keyword">def</span> <span class="token function">show_images</span><span class="token punctuation">(</span>df<span class="token punctuation">,</span> indxs<span class="token punctuation">,</span> ncols<span class="token operator">=</span><span class="token number">5</span><span class="token punctuation">,</span> figsize<span class="token operator">=</span><span class="token punctuation">(</span><span class="token number">15</span><span class="token punctuation">,</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">,</span> with_keypoints<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">'''
+    Show images with keypoints in grids
+    Args:
+        df (DataFrame): data (M x N)
+        idxs (iterators): list, Range, Indexes
+        ncols (integer): number of columns (images by rows)
+        figsize (float, float): width, height in inches
+        with_keypoints (boolean): True if show image with keypoints
+    '''</span>
+    plt<span class="token punctuation">.</span>figure<span class="token punctuation">(</span>figsize<span class="token operator">=</span>figsize<span class="token punctuation">)</span>
+    nrows <span class="token operator">=</span> <span class="token builtin">len</span><span class="token punctuation">(</span>indxs<span class="token punctuation">)</span> <span class="token operator">//</span> ncols <span class="token operator">+</span> <span class="token number">1</span>
+    <span class="token keyword">for</span> i<span class="token punctuation">,</span> idx <span class="token keyword">in</span> <span class="token builtin">enumerate</span><span class="token punctuation">(</span>indxs<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        image <span class="token operator">=</span> np<span class="token punctuation">.</span>fromstring<span class="token punctuation">(</span>df<span class="token punctuation">.</span>loc<span class="token punctuation">[</span>idx<span class="token punctuation">,</span> <span class="token string">'Image'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> sep<span class="token operator">=</span><span class="token string">' '</span><span class="token punctuation">)</span><span class="token punctuation">.</span>astype<span class="token punctuation">(</span>np<span class="token punctuation">.</span>float32<span class="token punctuation">)</span>\
+                <span class="token punctuation">.</span>reshape<span class="token punctuation">(</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span> IMG_SIZE<span class="token punctuation">)</span>
+        <span class="token keyword">if</span> with_keypoints<span class="token punctuation">:</span>
+            keypoints <span class="token operator">=</span> df<span class="token punctuation">.</span>loc<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>drop<span class="token punctuation">(</span><span class="token string">'Image'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>values<span class="token punctuation">.</span>astype<span class="token punctuation">(</span>np<span class="token punctuation">.</span>float32<span class="token punctuation">)</span>\
+                        <span class="token punctuation">.</span>reshape<span class="token punctuation">(</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span>
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            keypoints <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+        plt<span class="token punctuation">.</span>subplot<span class="token punctuation">(</span>nrows<span class="token punctuation">,</span> ncols<span class="token punctuation">,</span> i <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span>
+        plt<span class="token punctuation">.</span>title<span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f'Sample #</span><span class="token interpolation"><span class="token punctuation">&#123;</span>idx<span class="token punctuation">&#125;</span></span><span class="token string">'</span></span><span class="token punctuation">)</span>
+        plt<span class="token punctuation">.</span>axis<span class="token punctuation">(</span><span class="token string">'off'</span><span class="token punctuation">)</span>                 <span class="token comment">#关闭坐标轴</span>
+        plt<span class="token punctuation">.</span>tight_layout<span class="token punctuation">(</span><span class="token punctuation">)</span>              <span class="token comment"># tight_layout会自动调整子图参数，使之填充整个图像区域</span>
+        show_keypoints<span class="token punctuation">(</span>image<span class="token punctuation">,</span> keypoints<span class="token punctuation">)</span>
+    plt<span class="token punctuation">.</span>show<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="分割数据集">2.3 分割数据集</h3>
+<p>使用Dataset和DataLoader相关pytorch类来加载数据集。</p>
+<p>定义数据集子类用于自动处理dataframe数据，返回{'image': image,
+'keypoints': keypoints}类型的数据：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">FaceKeypointsDataset</span><span class="token punctuation">(</span>Dataset<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">'''Face Keypoints Dataset'''</span>
+
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> dataframe<span class="token punctuation">,</span> train<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span> transform<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">'''
+        Args:
+            dataframe (DataFrame): data in pandas dataframe format.
+            train (Boolean) : True for train data with keypoints, default is True
+            transform (callable, optional): Optional transform to be applied on 
+            sample
+        '''</span>
+        self<span class="token punctuation">.</span>dataframe <span class="token operator">=</span> dataframe
+        self<span class="token punctuation">.</span>train <span class="token operator">=</span> train
+        self<span class="token punctuation">.</span>transform <span class="token operator">=</span> transform
+
+    <span class="token keyword">def</span> <span class="token function">__len__</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> <span class="token builtin">len</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>dataframe<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">__getitem__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> idx<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        image <span class="token operator">=</span> np<span class="token punctuation">.</span>fromstring<span class="token punctuation">(</span>self<span class="token punctuation">.</span>dataframe<span class="token punctuation">.</span>iloc<span class="token punctuation">[</span>idx<span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span> sep<span class="token operator">=</span><span class="token string">' '</span><span class="token punctuation">)</span>\
+            <span class="token punctuation">.</span>astype<span class="token punctuation">(</span>np<span class="token punctuation">.</span>float32<span class="token punctuation">)</span><span class="token punctuation">.</span>reshape<span class="token punctuation">(</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span> IMG_SIZE<span class="token punctuation">)</span>
+        <span class="token keyword">if</span> self<span class="token punctuation">.</span>train<span class="token punctuation">:</span>
+            keypoints <span class="token operator">=</span> self<span class="token punctuation">.</span>dataframe<span class="token punctuation">.</span>iloc<span class="token punctuation">[</span>idx<span class="token punctuation">,</span> <span class="token punctuation">:</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span>values<span class="token punctuation">.</span>astype<span class="token punctuation">(</span>np<span class="token punctuation">.</span>float32<span class="token punctuation">)</span>
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            keypoints <span class="token operator">=</span> <span class="token boolean">None</span>
+        sample <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token string">'image'</span><span class="token punctuation">:</span> image<span class="token punctuation">,</span> <span class="token string">'keypoints'</span><span class="token punctuation">:</span> keypoints<span class="token punctuation">&#125;</span>
+        <span class="token keyword">if</span> self<span class="token punctuation">.</span>transform<span class="token punctuation">:</span>
+            sample <span class="token operator">=</span> self<span class="token punctuation">.</span>transform<span class="token punctuation">(</span>sample<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> sample<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>将数据正则化，转化为tensor：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">Normalize</span><span class="token punctuation">(</span><span class="token builtin">object</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">'''Normalize input images'''</span>
+    <span class="token keyword">def</span> <span class="token function">__call__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> sample<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        image<span class="token punctuation">,</span> keypoints <span class="token operator">=</span> sample<span class="token punctuation">[</span><span class="token string">'image'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> sample<span class="token punctuation">[</span><span class="token string">'keypoints'</span><span class="token punctuation">]</span>
+        <span class="token keyword">return</span> <span class="token punctuation">&#123;</span><span class="token string">'image'</span><span class="token punctuation">:</span> image <span class="token operator">/</span> <span class="token number">255</span><span class="token punctuation">.</span><span class="token punctuation">,</span> <span class="token comment"># scale to [0, 1]</span>
+                <span class="token string">'keypoints'</span><span class="token punctuation">:</span> keypoints<span class="token punctuation">&#125;</span>
+                
+<span class="token keyword">class</span> <span class="token class-name">ToTensor</span><span class="token punctuation">(</span><span class="token builtin">object</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">'''Convert ndarrays in sample to Tensors.'''</span>
+    <span class="token keyword">def</span> <span class="token function">__call__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> sample<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        image<span class="token punctuation">,</span> keypoints <span class="token operator">=</span> sample<span class="token punctuation">[</span><span class="token string">'image'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> sample<span class="token punctuation">[</span><span class="token string">'keypoints'</span><span class="token punctuation">]</span>
+        <span class="token comment"># swap color axis because</span>
+        <span class="token comment"># numpy image: H x W x C</span>
+        <span class="token comment"># torch image: C X H X W</span>
+        image <span class="token operator">=</span> image<span class="token punctuation">.</span>reshape<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> IMG_SIZE<span class="token punctuation">,</span> IMG_SIZE<span class="token punctuation">)</span>
+        image <span class="token operator">=</span> torch<span class="token punctuation">.</span>from_numpy<span class="token punctuation">(</span>image<span class="token punctuation">)</span>
+        <span class="token keyword">if</span> keypoints <span class="token keyword">is</span> <span class="token keyword">not</span> <span class="token boolean">None</span><span class="token punctuation">:</span>
+            keypoints <span class="token operator">=</span> torch<span class="token punctuation">.</span>from_numpy<span class="token punctuation">(</span>keypoints<span class="token punctuation">)</span>
+            <span class="token keyword">return</span> <span class="token punctuation">&#123;</span><span class="token string">'image'</span><span class="token punctuation">:</span> image<span class="token punctuation">,</span> <span class="token string">'keypoints'</span><span class="token punctuation">:</span> keypoints<span class="token punctuation">&#125;</span>
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> <span class="token punctuation">&#123;</span><span class="token string">'image'</span><span class="token punctuation">:</span> image<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>利用SubsetRandomSampler构建采样器，并使用Dataloader构建数据加载器：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> torch<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>data<span class="token punctuation">.</span>sampler <span class="token keyword">import</span> SubsetRandomSampler
+
+<span class="token keyword">def</span> <span class="token function">prepare_train_valid_loaders</span><span class="token punctuation">(</span>trainset<span class="token punctuation">,</span>valid_size <span class="token operator">=</span> <span class="token number">0.2</span><span class="token punctuation">,</span>batch_size <span class="token operator">=</span> <span class="token number">128</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+
+    <span class="token comment"># obtain training indices that will be used for validation</span>
+    <span class="token comment"># 这里保障了训练集和测试集的随机划分</span>
+    num_train <span class="token operator">=</span> <span class="token builtin">len</span><span class="token punctuation">(</span>trainset<span class="token punctuation">)</span>
+    indices <span class="token operator">=</span> <span class="token builtin">list</span><span class="token punctuation">(</span><span class="token builtin">range</span><span class="token punctuation">(</span>num_train<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    np<span class="token punctuation">.</span>random<span class="token punctuation">.</span>shuffle<span class="token punctuation">(</span>indices<span class="token punctuation">)</span>
+    split <span class="token operator">=</span> <span class="token builtin">int</span><span class="token punctuation">(</span>np<span class="token punctuation">.</span>floot<span class="token punctuation">(</span>valid_size<span class="token operator">*</span>num_train<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    train_idx<span class="token punctuation">,</span> valid_idx <span class="token operator">=</span> indices<span class="token punctuation">[</span>split<span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token punctuation">,</span> indices<span class="token punctuation">[</span><span class="token punctuation">:</span>split<span class="token punctuation">]</span>
+
+    <span class="token comment"># define samplers for obtaining training and validation batches</span>
+    <span class="token comment"># 这里保障了一轮epoch中每次生成的batch是随机的，避免模型学习到数据的顺序特征</span>
+    train_sampler <span class="token operator">=</span> SubsetRandomSampler<span class="token punctuation">(</span>train_idx<span class="token punctuation">)</span>
+    valid_sampler <span class="token operator">=</span> SubsetRandomSampler<span class="token punctuation">(</span>valid_idx<span class="token punctuation">)</span>
+
+    <span class="token comment"># prepare data loaders</span>
+    train_loader <span class="token operator">=</span> torch<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>data<span class="token punctuation">.</span>DataLoader<span class="token punctuation">(</span>trainset<span class="token punctuation">,</span> batch_size<span class="token operator">=</span>batch_size<span class="token punctuation">,</span>
+                                               sampler<span class="token operator">=</span>train_sampler<span class="token punctuation">)</span>
+    valid_loader <span class="token operator">=</span> torch<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>data<span class="token punctuation">.</span>DataLoader<span class="token punctuation">(</span>trainset<span class="token punctuation">,</span> batch_size<span class="token operator">=</span>batch_size<span class="token punctuation">,</span>
+                                               sampler<span class="token operator">=</span>valid_sampler<span class="token punctuation">)</span>
+
+    <span class="token keyword">return</span> train_loader<span class="token punctuation">,</span> valid_loader<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>正式加载数据：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> torchvision <span class="token keyword">import</span> transforms
+
+<span class="token comment"># how many samples per batch to load</span>
+batch_size <span class="token operator">=</span> <span class="token number">128</span>
+<span class="token comment"># percentage of training set to use as validation</span>
+valid_size <span class="token operator">=</span> <span class="token number">0.2</span>
+
+<span class="token comment"># Define a transform to normalize the data</span>
+tsfm <span class="token operator">=</span> transforms<span class="token punctuation">.</span>Compose<span class="token punctuation">(</span><span class="token punctuation">[</span>Normalize<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> ToTensor<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+<span class="token comment"># Load the training data and test data</span>
+trainset <span class="token operator">=</span> FaceKeypointsDataset<span class="token punctuation">(</span>train_data<span class="token punctuation">,</span> transform<span class="token operator">=</span>tsfm<span class="token punctuation">)</span>
+testset <span class="token operator">=</span> FaceKeypointsDataset<span class="token punctuation">(</span>test_data<span class="token punctuation">,</span> train<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span> transform<span class="token operator">=</span>tsfm<span class="token punctuation">)</span>
+
+<span class="token comment"># prepare data loaders</span>
+train_loader<span class="token punctuation">,</span> valid_loader <span class="token operator">=</span> prepare_train_valid_loaders<span class="token punctuation">(</span>trainset<span class="token punctuation">,</span>
+                                                         valid_size<span class="token punctuation">,</span>
+                                                         batch_size<span class="token punctuation">)</span>
+
+test_loader <span class="token operator">=</span> torch<span class="token punctuation">.</span>utils<span class="token punctuation">.</span>data<span class="token punctuation">.</span>DataLoader<span class="token punctuation">(</span>testset<span class="token punctuation">,</span> batch_size<span class="token operator">=</span>batch_size<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="三模型搭建">三、模型搭建</h2>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment">#Model</span>
+<span class="token keyword">class</span> <span class="token class-name">CNN</span><span class="token punctuation">(</span>nn<span class="token punctuation">.</span>Module<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>outputs <span class="token operator">=</span> <span class="token number">30</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token builtin">super</span><span class="token punctuation">(</span>CNN<span class="token punctuation">,</span>self<span class="token punctuation">)</span><span class="token punctuation">.</span>__init__<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>conv1 <span class="token operator">=</span> nn<span class="token punctuation">.</span>Conv2d<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">16</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> padding<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>conv2 <span class="token operator">=</span> nn<span class="token punctuation">.</span>Conv2d<span class="token punctuation">(</span><span class="token number">16</span><span class="token punctuation">,</span> <span class="token number">32</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> padding<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>conv3 <span class="token operator">=</span> nn<span class="token punctuation">.</span>Conv2d<span class="token punctuation">(</span><span class="token number">32</span><span class="token punctuation">,</span> <span class="token number">64</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> padding<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>pool <span class="token operator">=</span> nn<span class="token punctuation">.</span>MaxPool2d<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>fc1 <span class="token operator">=</span> nn<span class="token punctuation">.</span>Linear<span class="token punctuation">(</span><span class="token number">64</span><span class="token operator">*</span><span class="token number">12</span><span class="token operator">*</span><span class="token number">12</span><span class="token punctuation">,</span> <span class="token number">1024</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>fc2 <span class="token operator">=</span> nn<span class="token punctuation">.</span>Linear<span class="token punctuation">(</span><span class="token number">1024</span><span class="token punctuation">,</span> outputs<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>dropout <span class="token operator">=</span> nn<span class="token punctuation">.</span>Dropout<span class="token punctuation">(</span><span class="token number">0.3</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">forward</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>x<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        x <span class="token operator">=</span> self<span class="token punctuation">.</span>pool<span class="token punctuation">(</span>F<span class="token punctuation">.</span>relu<span class="token punctuation">(</span>self<span class="token punctuation">.</span>conv1<span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        x <span class="token operator">=</span> self<span class="token punctuation">.</span>pool<span class="token punctuation">(</span>F<span class="token punctuation">.</span>relu<span class="token punctuation">(</span>self<span class="token punctuation">.</span>conv2<span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        x <span class="token operator">=</span> self<span class="token punctuation">.</span>pool<span class="token punctuation">(</span>F<span class="token punctuation">.</span>relu<span class="token punctuation">(</span>self<span class="token punctuation">.</span>conv3<span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        x <span class="token operator">=</span> x<span class="token punctuation">.</span>view<span class="token punctuation">(</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">64</span><span class="token operator">*</span><span class="token number">12</span><span class="token operator">*</span><span class="token number">12</span><span class="token punctuation">)</span>
+        x <span class="token operator">=</span> F<span class="token punctuation">.</span>relu<span class="token punctuation">(</span>self<span class="token punctuation">.</span>fc1<span class="token punctuation">(</span>self<span class="token punctuation">.</span>dropout<span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        x <span class="token operator">=</span> self<span class="token punctuation">.</span>fc2<span class="token punctuation">(</span>self<span class="token punctuation">.</span>dropout<span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> x<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="四训练与测试">四、训练与测试</h2>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment">#Train &amp; Validate</span>
+device <span class="token operator">=</span>  torch<span class="token punctuation">.</span>device<span class="token punctuation">(</span><span class="token string">'cuda'</span> <span class="token keyword">if</span> torch<span class="token punctuation">.</span>cuda<span class="token punctuation">.</span>is_available<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">else</span> <span class="token string">'cpu'</span><span class="token punctuation">)</span>
+model <span class="token operator">=</span> CNN<span class="token punctuation">(</span>outputs <span class="token operator">=</span> <span class="token number">30</span><span class="token punctuation">)</span>
+model <span class="token operator">=</span> model<span class="token punctuation">.</span>to<span class="token punctuation">(</span>device<span class="token punctuation">)</span>
+
+criterion <span class="token operator">=</span> nn<span class="token punctuation">.</span>MSELoss<span class="token punctuation">(</span><span class="token punctuation">)</span>
+optimizer <span class="token operator">=</span> optim<span class="token punctuation">.</span>Adam<span class="token punctuation">(</span>model<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> lr<span class="token operator">=</span><span class="token number">0.003</span><span class="token punctuation">)</span>
+
+<span class="token keyword">def</span> <span class="token function">train</span><span class="token punctuation">(</span>train_loader<span class="token punctuation">,</span>valid_loader<span class="token punctuation">,</span>model<span class="token punctuation">,</span>criterion<span class="token punctuation">,</span>optimizer<span class="token punctuation">,</span>n_epochs <span class="token operator">=</span> <span class="token number">50</span><span class="token punctuation">,</span>saved_model <span class="token operator">=</span> <span class="token string">'cv_model.pt'</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    valid_loss_min <span class="token operator">=</span> np<span class="token punctuation">.</span>Inf
+    train_losses <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+    valid_losses <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+
+    <span class="token keyword">for</span> epoch <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>n_epochs<span class="token punctuation">)</span><span class="token punctuation">:</span>
+
+        train_loss <span class="token operator">=</span> <span class="token number">0.0</span>
+        valid_loss <span class="token operator">=</span> <span class="token number">0.0</span>
+
+        <span class="token comment">#training</span>
+        model<span class="token punctuation">.</span>train<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">for</span> batch <span class="token keyword">in</span> train_loader<span class="token punctuation">:</span>
+            optimizer<span class="token punctuation">.</span>zero_grad<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+            output <span class="token operator">=</span> model<span class="token punctuation">(</span>batch<span class="token punctuation">[</span><span class="token string">'image'</span><span class="token punctuation">]</span><span class="token punctuation">.</span>to<span class="token punctuation">(</span>device<span class="token punctuation">)</span><span class="token punctuation">)</span>
+            loss <span class="token operator">=</span> criterion<span class="token punctuation">(</span>output<span class="token punctuation">,</span>batch<span class="token punctuation">[</span><span class="token string">'keypoints'</span><span class="token punctuation">]</span><span class="token punctuation">.</span>to<span class="token punctuation">(</span>device<span class="token punctuation">)</span><span class="token punctuation">)</span>
+            loss<span class="token punctuation">.</span>backward<span class="token punctuation">(</span><span class="token punctuation">)</span>
+            optimizer<span class="token punctuation">.</span>step<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+            train_loss <span class="token operator">+=</span> loss<span class="token punctuation">.</span>item<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">*</span>batch<span class="token punctuation">[</span><span class="token string">'image'</span><span class="token punctuation">]</span><span class="token punctuation">.</span>size<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+        
+        <span class="token comment">#validating</span>
+        model<span class="token punctuation">.</span><span class="token builtin">eval</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">for</span> batch <span class="token keyword">in</span> valid_loader<span class="token punctuation">:</span>
+            output <span class="token operator">=</span> model<span class="token punctuation">(</span>batch<span class="token punctuation">[</span><span class="token string">'image'</span><span class="token punctuation">]</span><span class="token punctuation">.</span>to<span class="token punctuation">(</span>device<span class="token punctuation">)</span><span class="token punctuation">)</span>
+            loss <span class="token operator">=</span> criterion<span class="token punctuation">(</span>output<span class="token punctuation">,</span> batch<span class="token punctuation">[</span><span class="token string">'keypoints'</span><span class="token punctuation">]</span><span class="token punctuation">.</span>to<span class="token punctuation">(</span>device<span class="token punctuation">)</span><span class="token punctuation">)</span>
+            valid_loss <span class="token operator">+=</span> loss<span class="token punctuation">.</span>item<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">*</span>batch<span class="token punctuation">[</span><span class="token string">'image'</span><span class="token punctuation">]</span><span class="token punctuation">.</span>size<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+
+        train_loss <span class="token operator">=</span> np<span class="token punctuation">.</span>sqrt<span class="token punctuation">(</span>train_loss<span class="token operator">/</span><span class="token builtin">len</span><span class="token punctuation">(</span>train_loader<span class="token punctuation">.</span>sampler<span class="token punctuation">.</span>indices<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        valid_loss <span class="token operator">=</span> np<span class="token punctuation">.</span>sqrt<span class="token punctuation">(</span>valid_loss<span class="token operator">/</span><span class="token builtin">len</span><span class="token punctuation">(</span>valid_loader<span class="token punctuation">.</span>sampler<span class="token punctuation">.</span>indices<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+        train_losses<span class="token punctuation">.</span>append<span class="token punctuation">(</span>train_loss<span class="token punctuation">)</span>
+        valid_losses<span class="token punctuation">.</span>append<span class="token punctuation">(</span>valid_loss<span class="token punctuation">)</span>
+
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'Epoch: &#123;&#125; \tTraining Loss: &#123;:.6f&#125; \tValidation Loss: &#123;:.6f&#125;'</span>
+              <span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>epoch<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">,</span> train_loss<span class="token punctuation">,</span> valid_loss<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+        <span class="token comment"># save model if validation loss has decreased</span>
+        <span class="token keyword">if</span> valid_loss <span class="token operator">&lt;=</span> valid_loss_min<span class="token punctuation">:</span>
+            <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'Validation loss decreased (&#123;:.6f&#125; --> &#123;:.6f&#125;).  Saving model ...'</span>
+                  <span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>valid_loss_min<span class="token punctuation">,</span> valid_loss<span class="token punctuation">)</span><span class="token punctuation">)</span>
+            torch<span class="token punctuation">.</span>save<span class="token punctuation">(</span>model<span class="token punctuation">.</span>state_dict<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> saved_model<span class="token punctuation">)</span>
+            valid_loss_min <span class="token operator">=</span> valid_loss
+
+    <span class="token keyword">return</span> train_losses<span class="token punctuation">,</span> valid_losses<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>定义测试函数：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">predict</span><span class="token punctuation">(</span>data_loader<span class="token punctuation">,</span> model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">'''
+    Predict keypoints
+    Args:
+        data_loader (DataLoader): DataLoader for Dataset
+        model (nn.Module): trained model for prediction.
+    Return:
+        predictions (array-like): keypoints in float (no. of images x keypoints).
+    '''</span>
+
+    model<span class="token punctuation">.</span><span class="token builtin">eval</span><span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token comment"># prep model for evaluation</span>
+
+    <span class="token keyword">with</span> torch<span class="token punctuation">.</span>no_grad<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">for</span> i<span class="token punctuation">,</span> batch <span class="token keyword">in</span> <span class="token builtin">enumerate</span><span class="token punctuation">(</span>data_loader<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token comment"># forward pass: compute predicted outputs by passing inputs to the model</span>
+            output <span class="token operator">=</span> model<span class="token punctuation">(</span>batch<span class="token punctuation">[</span><span class="token string">'image'</span><span class="token punctuation">]</span><span class="token punctuation">.</span>to<span class="token punctuation">(</span>device<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span>cpu<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>numpy<span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token keyword">if</span> i <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">:</span>
+                predictions <span class="token operator">=</span> output
+            <span class="token keyword">else</span><span class="token punctuation">:</span>
+                predictions <span class="token operator">=</span> np<span class="token punctuation">.</span>vstack<span class="token punctuation">(</span><span class="token punctuation">(</span>predictions<span class="token punctuation">,</span> output<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">return</span> predictions<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>定义测试结果展示函数：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">view_pred_df</span><span class="token punctuation">(</span>columns<span class="token punctuation">,</span> test_df<span class="token punctuation">,</span> predictions<span class="token punctuation">,</span> image_ids<span class="token operator">=</span><span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">6</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">'''
+    Display predicted keypoints
+    Args:
+        columns (array-like): column names
+        test_df (DataFrame): dataframe with ImageId and Image columns
+        predictions (array-like): keypoints in float (no. of images x keypoints)
+        image_id (array-like): list or range of ImageIds begin at 1
+    '''</span>
+    pred_df <span class="token operator">=</span> pd<span class="token punctuation">.</span>DataFrame<span class="token punctuation">(</span>predictions<span class="token punctuation">,</span> columns<span class="token operator">=</span>columns<span class="token punctuation">)</span>
+    pred_df <span class="token operator">=</span> pd<span class="token punctuation">.</span>concat<span class="token punctuation">(</span><span class="token punctuation">[</span>pred_df<span class="token punctuation">,</span> test_df<span class="token punctuation">]</span><span class="token punctuation">,</span> axis<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+    pred_df <span class="token operator">=</span> pred_df<span class="token punctuation">.</span>set_index<span class="token punctuation">(</span><span class="token string">'ImageId'</span><span class="token punctuation">)</span>
+    show_images<span class="token punctuation">(</span>pred_df<span class="token punctuation">,</span> image_ids<span class="token punctuation">)</span>  <span class="token comment"># ImageId as index begin at 1</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>定义测试结果上交文件生成函数：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">create_submission</span><span class="token punctuation">(</span>predictions<span class="token punctuation">,</span> pred_file<span class="token operator">=</span><span class="token string">'data/preds.csv'</span><span class="token punctuation">,</span> sub_file<span class="token operator">=</span><span class="token string">'data/submission.csv'</span><span class="token punctuation">,</span> columns<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">'''
+    Create csv file for submission from predictions
+    Args:
+        predictions (array-like): prediction (no. fo images x 30 keypoints)
+        pred_file (string): file path for prediction csv file
+        sub_file (string): file path for submission csv file
+        columns (dict): provided column names for submission file
+    '''</span>
+    lookup <span class="token operator">=</span> pd<span class="token punctuation">.</span>read_csv<span class="token punctuation">(</span><span class="token string">'data/IdLookupTable.csv'</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> columns <span class="token operator">==</span> <span class="token boolean">None</span><span class="token punctuation">:</span>
+        columns <span class="token operator">=</span> train_data<span class="token punctuation">.</span>columns<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span>
+    preds <span class="token operator">=</span> pd<span class="token punctuation">.</span>DataFrame<span class="token punctuation">(</span>predictions<span class="token punctuation">,</span>
+                         index<span class="token operator">=</span>np<span class="token punctuation">.</span>arange<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token builtin">len</span><span class="token punctuation">(</span>predictions<span class="token punctuation">)</span><span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                         columns<span class="token operator">=</span>columns<span class="token punctuation">)</span>
+    preds<span class="token punctuation">.</span>to_csv<span class="token punctuation">(</span>pred_file<span class="token punctuation">)</span>
+    locations <span class="token operator">=</span> <span class="token punctuation">[</span>preds<span class="token punctuation">.</span>loc<span class="token punctuation">[</span>image_id<span class="token punctuation">,</span> feature_name<span class="token punctuation">]</span>
+                 <span class="token keyword">for</span> image_id<span class="token punctuation">,</span> feature_name
+                 <span class="token keyword">in</span> lookup<span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token string">'ImageId'</span><span class="token punctuation">,</span> <span class="token string">'FeatureName'</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">.</span>values<span class="token punctuation">]</span>
+    locations <span class="token operator">=</span> <span class="token punctuation">[</span>location <span class="token keyword">if</span> location <span class="token operator">&lt;</span>
+                 IMG_SIZE <span class="token keyword">else</span> IMG_SIZE <span class="token keyword">for</span> location <span class="token keyword">in</span> locations<span class="token punctuation">]</span>
+    lookup<span class="token punctuation">.</span>Location <span class="token operator">=</span> pd<span class="token punctuation">.</span>Series<span class="token punctuation">(</span>locations<span class="token punctuation">)</span>
+    lookup<span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token string">'RowId'</span><span class="token punctuation">,</span> <span class="token string">'Location'</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">.</span>to_csv<span class="token punctuation">(</span>sub_file<span class="token punctuation">,</span> index<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>训练 and 预测：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment">#Train &amp; Validate</span>
+train<span class="token punctuation">(</span>train_loader<span class="token punctuation">,</span> valid_loader<span class="token punctuation">,</span> model<span class="token punctuation">,</span> criterion<span class="token punctuation">,</span>  optimizer<span class="token punctuation">,</span> n_epochs<span class="token operator">=</span><span class="token number">50</span><span class="token punctuation">,</span> saved_model<span class="token operator">=</span><span class="token string">'aug_cnn.pt'</span><span class="token punctuation">)</span>
+
+<span class="token comment">#Predict</span>
+model<span class="token punctuation">.</span>load_state_dict<span class="token punctuation">(</span>torch<span class="token punctuation">.</span>load<span class="token punctuation">(</span><span class="token string">'aug_cnn.pt'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+predictions <span class="token operator">=</span> predict<span class="token punctuation">(</span>test_loader<span class="token punctuation">,</span>model<span class="token punctuation">)</span>
+create_submission<span class="token punctuation">(</span>predictions<span class="token punctuation">,</span>
+                  pred_file<span class="token operator">=</span><span class="token string">'data/aug_cnn_preds.csv'</span><span class="token punctuation">,</span>
+                  sub_file<span class="token operator">=</span><span class="token string">'data/aug_cnn_submission.csv'</span><span class="token punctuation">)</span>
+columns <span class="token operator">=</span> train_data<span class="token punctuation">.</span>drop<span class="token punctuation">(</span><span class="token string">'Image'</span><span class="token punctuation">,</span> axis<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">.</span>columns
+view_pred_df<span class="token punctuation">(</span>columns<span class="token punctuation">,</span> test_data<span class="token punctuation">,</span> predictions<span class="token punctuation">,</span><span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">11</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>预测结果：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221113170335.png" /></p>
+<p>将submission文件上交到Kaggle评分:</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221113170259.png" /></p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Kaggle/">Kaggle</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CV/" rel="tag">CV</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2022/10/02/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91IFAttn%20Binary%20code%20similarity%20analysis%20based%20on%20interpretable%20features%20with%20attention/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">IFAttn-Binary code similarity analysis based on interpretable features with attention</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#facial-keypoints-detection"><span class="nav-number">1.</span> <span class="nav-text">Facial Keypoints Detection</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BB%BB%E5%8A%A1%E7%AE%80%E4%BB%8B"><span class="nav-number">1.1.</span> <span class="nav-text">一、任务简介：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E5%A4%84%E7%90%86"><span class="nav-number">1.2.</span> <span class="nav-text">二、数据分析处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A9%BA%E5%80%BC%E5%A1%AB%E8%A1%A5"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 空值填补</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E5%9B%BE%E7%89%87%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0%E7%BC%96%E5%86%99"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 相关图片处理函数编写</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%89%B2%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 分割数据集</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E6%A8%A1%E5%9E%8B%E6%90%AD%E5%BB%BA"><span class="nav-number">1.3.</span> <span class="nav-text">三、模型搭建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%B5%8B%E8%AF%95"><span class="nav-number">1.4.</span> <span class="nav-text">四、训练与测试</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2022 Shaw All Rights Reserved.
+        
+            <span id="busuanzi_container_site_uv">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次  
+              本站总访问量<span id="busuanzi_value_site_pv"></span>次
+            </span>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>
