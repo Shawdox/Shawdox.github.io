@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>强化学习之ConnectX四子棋游戏 | Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="PytorchRL" />
+  
+  
+  
+  
+  <meta name="description" content="Connect X  Time: 2022.11.14 Author: Shaw Connect X | Kaggle ConnectX Getting Started | Kaggle  一、任务简介：  任务：强化学习任务，类似五子棋的规则（但每一步只能下某一列的最底端的空位），每人一步，先于对手横竖或斜角连成4个即可获胜。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="强化学习之ConnectX四子棋游戏">
+<meta property="og:url" content="http://example.com/2022/12/01/Connect%20X/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="Connect X  Time: 2022.11.14 Author: Shaw Connect X | Kaggle ConnectX Getting Started | Kaggle  一、任务简介：  任务：强化学习任务，类似五子棋的规则（但每一步只能下某一列的最底端的空位），每人一步，先于对手横竖或斜角连成4个即可获胜。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221114140309.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221118103237.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221118103237.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221118115042.png">
+<meta property="article:published_time" content="2022-12-01T14:11:52.779Z">
+<meta property="article:modified_time" content="2022-12-01T14:10:34.196Z">
+<meta property="article:author" content="Shaw">
+<meta property="article:tag" content="Pytorch">
+<meta property="article:tag" content="RL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221114140309.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Connect X" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      强化学习之ConnectX四子棋游戏
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2022/12/01/Connect%20X/" class="article-date">
+	  <time datetime="2022-12-01T14:11:52.779Z" itemprop="datePublished">十二月 1, 2022</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Kaggle/">Kaggle</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="connect-x">Connect X</h1>
+<blockquote>
+<p>Time: 2022.11.14</p>
+<p>Author: Shaw</p>
+<p><a target="_blank" rel="noopener" href="https://www.kaggle.com/competitions/connectx">Connect X |
+Kaggle</a></p>
+<p><a
+target="_blank" rel="noopener" href="https://www.kaggle.com/code/ajeffries/connectx-getting-started/notebook">ConnectX
+Getting Started | Kaggle</a></p>
+</blockquote>
+<h2 id="一任务简介">一、任务简介：</h2>
+<ul>
+<li><strong>任务：</strong>强化学习任务，类似五子棋的规则（但每一步只能下某一列的最底端的空位），每人一步，先于对手横竖或斜角连成4个即可获胜。</li>
+</ul>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221114140309.png" style="zoom:50%;" /></p>
+<span id="more"></span>
+<ul>
+<li><p><strong>评估方法：</strong></p>
+<p>每个提交给Kaggle的结果（一个py文件，包含了agent如何下棋的规则）在跟自己下一次棋，证明其工作正常后，会被赋予一个skill等级。</p>
+<p>相近skill等级的提交结果之间会进行持续不断下棋PK。</p>
+<p>每次PK结束后就会更新双方的等级，赢加输减。</p></li>
+</ul>
+<h2 id="二环境准备">二、环境准备</h2>
+<p>安装kaggle相关的强化学习环境：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">pip <span class="token function">install</span> kaggle-environments<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>创建Connect X环境：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> kaggle_environments <span class="token keyword">import</span> evaluate<span class="token punctuation">,</span> make<span class="token punctuation">,</span> utils
+
+env <span class="token operator">=</span> make<span class="token punctuation">(</span><span class="token string">"connectx"</span><span class="token punctuation">,</span>debug<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>   <span class="token comment">#创建connectx环境</span>
+env<span class="token punctuation">.</span>render<span class="token punctuation">(</span><span class="token punctuation">)</span>                        <span class="token comment">#以图形化的形式显示当前环境</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>创建Submission提交函数：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> inspect
+<span class="token keyword">import</span> os
+
+<span class="token keyword">def</span> <span class="token function">write_agent_to_file</span><span class="token punctuation">(</span>function<span class="token punctuation">,</span> <span class="token builtin">file</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">with</span> <span class="token builtin">open</span><span class="token punctuation">(</span><span class="token builtin">file</span><span class="token punctuation">,</span> <span class="token string">"a"</span> <span class="token keyword">if</span> os<span class="token punctuation">.</span>path<span class="token punctuation">.</span>exists<span class="token punctuation">(</span><span class="token builtin">file</span><span class="token punctuation">)</span> <span class="token keyword">else</span> <span class="token string">"w"</span><span class="token punctuation">)</span> <span class="token keyword">as</span> f<span class="token punctuation">:</span>
+        f<span class="token punctuation">.</span>write<span class="token punctuation">(</span>inspect<span class="token punctuation">.</span>getsource<span class="token punctuation">(</span>function<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span>function<span class="token punctuation">,</span> <span class="token string">"written to"</span><span class="token punctuation">,</span> <span class="token builtin">file</span><span class="token punctuation">)</span>
+
+write_agent_to_file<span class="token punctuation">(</span>my_agent<span class="token punctuation">,</span> <span class="token string">"submission.py"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="三q-learning">三、Q-learning</h2>
+<p>对于简单的下棋问题，这里选择Q-learning算法进行学习。</p>
+<p>创建connectX类：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">ConnectX</span><span class="token punctuation">(</span>gym<span class="token punctuation">.</span>Env<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> switch_prob<span class="token operator">=</span><span class="token number">0.5</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>env <span class="token operator">=</span> make<span class="token punctuation">(</span><span class="token string">'connectx'</span><span class="token punctuation">,</span> debug<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>pair <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token boolean">None</span><span class="token punctuation">,</span> <span class="token string">'negamax'</span><span class="token punctuation">]</span>
+        self<span class="token punctuation">.</span>trainer <span class="token operator">=</span> self<span class="token punctuation">.</span>env<span class="token punctuation">.</span>train<span class="token punctuation">(</span>self<span class="token punctuation">.</span>pair<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>switch_prob <span class="token operator">=</span> switch_prob
+        
+        <span class="token comment"># Define required gym fields (examples):</span>
+        config <span class="token operator">=</span> self<span class="token punctuation">.</span>env<span class="token punctuation">.</span>configuration
+        self<span class="token punctuation">.</span>action_space <span class="token operator">=</span> gym<span class="token punctuation">.</span>spaces<span class="token punctuation">.</span>Discrete<span class="token punctuation">(</span>config<span class="token punctuation">.</span>columns<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>observation_space <span class="token operator">=</span> gym<span class="token punctuation">.</span>spaces<span class="token punctuation">.</span>Discrete<span class="token punctuation">(</span>config<span class="token punctuation">.</span>columns <span class="token operator">*</span> config<span class="token punctuation">.</span>rows<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">switch_trainer</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>pair <span class="token operator">=</span> self<span class="token punctuation">.</span>pair<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span>
+        self<span class="token punctuation">.</span>trainer <span class="token operator">=</span> self<span class="token punctuation">.</span>env<span class="token punctuation">.</span>train<span class="token punctuation">(</span>self<span class="token punctuation">.</span>pair<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">step</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> action<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> self<span class="token punctuation">.</span>trainer<span class="token punctuation">.</span>step<span class="token punctuation">(</span>action<span class="token punctuation">)</span>
+    
+    <span class="token keyword">def</span> <span class="token function">reset</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>							<span class="token comment"># 有switch_prob的几率更换先手顺序</span>
+        <span class="token keyword">if</span> random<span class="token punctuation">.</span>uniform<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> self<span class="token punctuation">.</span>switch_prob<span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>switch_trainer<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> self<span class="token punctuation">.</span>trainer<span class="token punctuation">.</span>reset<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    
+    <span class="token keyword">def</span> <span class="token function">render</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> <span class="token operator">**</span>kwargs<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> self<span class="token punctuation">.</span>env<span class="token punctuation">.</span>render<span class="token punctuation">(</span><span class="token operator">**</span>kwargs<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>创建Q表，由于棋盘状态较多，这里使用动态Q表（shape = （n，7））：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">QTable</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> action_space<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>table <span class="token operator">=</span> <span class="token builtin">dict</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>action_space <span class="token operator">=</span> action_space
+
+    <span class="token keyword">def</span> <span class="token function">add_item</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> state_key<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>table<span class="token punctuation">[</span>state_key<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token builtin">list</span><span class="token punctuation">(</span>np<span class="token punctuation">.</span>zeros<span class="token punctuation">(</span>self<span class="token punctuation">.</span>action_space<span class="token punctuation">.</span>n<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">__call__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> state<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        board <span class="token operator">=</span> state<span class="token punctuation">[</span><span class="token string">'board'</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">]</span>  				<span class="token comment"># 复制一份</span>
+        board<span class="token punctuation">.</span>append<span class="token punctuation">(</span>state<span class="token punctuation">.</span>mark<span class="token punctuation">)</span> 					<span class="token comment"># 加入mark标志着先手还是后手</span>
+        state_key <span class="token operator">=</span> np<span class="token punctuation">.</span>array<span class="token punctuation">(</span>board<span class="token punctuation">)</span><span class="token punctuation">.</span>astype<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">)</span>	
+        state_key <span class="token operator">=</span> <span class="token builtin">hex</span><span class="token punctuation">(</span><span class="token builtin">int</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">.</span>join<span class="token punctuation">(</span>state_key<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token comment"># 转为16进制编码，去掉前缀</span>
+        <span class="token keyword">if</span> state_key <span class="token keyword">not</span> <span class="token keyword">in</span> self<span class="token punctuation">.</span>table<span class="token punctuation">.</span>keys<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>add_item<span class="token punctuation">(</span>state_key<span class="token punctuation">)</span>
+
+        <span class="token keyword">return</span> self<span class="token punctuation">.</span>table<span class="token punctuation">[</span>state_key<span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>定义相关超参数：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">alpha <span class="token operator">=</span> <span class="token number">0.1</span>				<span class="token comment"># 学习率</span>
+gamma <span class="token operator">=</span> <span class="token number">0.6</span>				<span class="token comment"># discount factor γ</span>
+epsilon <span class="token operator">=</span> <span class="token number">0.99</span>				<span class="token comment"># ε-greedy策略的ε</span>
+min_epsilon <span class="token operator">=</span> <span class="token number">0.1</span>			<span class="token comment"># 最小ε</span>
+
+episodes <span class="token operator">=</span> <span class="token number">10000</span>			<span class="token comment"># 采样轮数</span>
+
+alpha_decay_step <span class="token operator">=</span> <span class="token number">1000</span>
+alpha_decay_rate <span class="token operator">=</span> <span class="token number">0.9</span>		<span class="token comment"># α衰减率</span>
+epsilon_decay_rate <span class="token operator">=</span> <span class="token number">0.9999</span>	<span class="token comment"># ε衰减率</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>定义训练过程：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">q_table <span class="token operator">=</span> QTable<span class="token punctuation">(</span>env<span class="token punctuation">.</span>action_space<span class="token punctuation">)</span>
+
+all_epochs <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+all_total_rewards <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+all_avg_rewards <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token comment"># Last 100 steps</span>
+all_qtable_rows <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+all_epsilons <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+
+<span class="token keyword">for</span> i <span class="token keyword">in</span> tqdm<span class="token punctuation">(</span><span class="token builtin">range</span><span class="token punctuation">(</span>episodes<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    state <span class="token operator">=</span> env<span class="token punctuation">.</span>reset<span class="token punctuation">(</span><span class="token punctuation">)</span>     <span class="token comment"># 清空棋盘</span>
+    epochs<span class="token punctuation">,</span>total_rewards <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span>
+    epsilon <span class="token operator">=</span> <span class="token builtin">max</span><span class="token punctuation">(</span>min_epsilon<span class="token punctuation">,</span>epsilon<span class="token operator">*</span>epsilon_decay_rate<span class="token punctuation">)</span>   <span class="token comment"># ε每轮衰减</span>
+    done <span class="token operator">=</span> <span class="token boolean">False</span>
+
+    <span class="token keyword">while</span> <span class="token keyword">not</span> done <span class="token punctuation">:</span>    <span class="token comment"># 开始一轮采样</span>
+        <span class="token comment"># 某列不能下的情况 == 此列的第一个位置有棋子 == (state.board[c] == 0)</span>
+        space_list <span class="token operator">=</span> <span class="token punctuation">[</span>c <span class="token keyword">for</span> c <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>env<span class="token punctuation">.</span>action_space<span class="token punctuation">.</span>n<span class="token punctuation">)</span> <span class="token keyword">if</span> state<span class="token punctuation">[</span><span class="token string">'board'</span><span class="token punctuation">]</span><span class="token punctuation">[</span>c<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">]</span>
+
+        <span class="token keyword">if</span> random<span class="token punctuation">.</span>uniform<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&lt;=</span> epsilon <span class="token punctuation">:</span><span class="token comment"># ε-greedy-->选择随机策略</span>
+            action <span class="token operator">=</span> choice<span class="token punctuation">(</span>space_list<span class="token punctuation">)</span>
+        <span class="token keyword">else</span> <span class="token punctuation">:</span> 					   <span class="token comment"># ε-greedy-->选择贪心策略</span>
+            row <span class="token operator">=</span> np<span class="token punctuation">.</span>array<span class="token punctuation">(</span>q_table<span class="token punctuation">(</span>state<span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+            row<span class="token punctuation">[</span><span class="token punctuation">[</span>c <span class="token keyword">for</span> c <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>env<span class="token punctuation">.</span>action_space<span class="token punctuation">.</span>n<span class="token punctuation">)</span>
+                 <span class="token keyword">if</span> state<span class="token punctuation">[</span><span class="token string">'board'</span><span class="token punctuation">]</span><span class="token punctuation">[</span>c<span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span>
+            action <span class="token operator">=</span> <span class="token builtin">int</span><span class="token punctuation">(</span>np<span class="token punctuation">.</span>argmax<span class="token punctuation">(</span>row<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        
+        next_state<span class="token punctuation">,</span>reward<span class="token punctuation">,</span>done<span class="token punctuation">,</span>info <span class="token operator">=</span> env<span class="token punctuation">.</span>step<span class="token punctuation">(</span>action<span class="token punctuation">)</span>
+
+        <span class="token keyword">if</span> done<span class="token punctuation">:</span>
+            <span class="token keyword">if</span> reward <span class="token operator">==</span> <span class="token number">1</span><span class="token punctuation">:</span> <span class="token comment"># Won</span>
+                reward <span class="token operator">=</span> <span class="token number">20</span>
+            <span class="token keyword">elif</span> reward <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">:</span> <span class="token comment"># Lost</span>
+                reward <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">20</span>
+            <span class="token keyword">else</span><span class="token punctuation">:</span> 
+                reward <span class="token operator">=</span> <span class="token number">1</span>
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            reward <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">0.01</span>
+
+        old_value <span class="token operator">=</span> q_table<span class="token punctuation">(</span>state<span class="token punctuation">)</span><span class="token punctuation">[</span>action<span class="token punctuation">]</span>
+        next_max <span class="token operator">=</span> np<span class="token punctuation">.</span><span class="token builtin">max</span><span class="token punctuation">(</span>q_table<span class="token punctuation">(</span>next_state<span class="token punctuation">)</span><span class="token punctuation">)</span>
+	   <span class="token comment"># Q-Learning 更新</span>
+        new_value <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">-</span> alpha<span class="token punctuation">)</span> <span class="token operator">*</span> old_value <span class="token operator">+</span> alpha <span class="token operator">*</span> <span class="token punctuation">(</span>reward <span class="token operator">+</span> gamma <span class="token operator">*</span> next_max<span class="token punctuation">)</span>
+        q_table<span class="token punctuation">(</span>state<span class="token punctuation">)</span><span class="token punctuation">[</span>action<span class="token punctuation">]</span> <span class="token operator">=</span> new_value
+
+        state <span class="token operator">=</span> next_state
+        epochs <span class="token operator">+=</span> <span class="token number">1</span>
+        total_rewards <span class="token operator">+=</span> reward
+
+    all_epochs<span class="token punctuation">.</span>append<span class="token punctuation">(</span>epochs<span class="token punctuation">)</span>
+    all_total_rewards<span class="token punctuation">.</span>append<span class="token punctuation">(</span>total_rewards<span class="token punctuation">)</span>
+    avg_rewards <span class="token operator">=</span> np<span class="token punctuation">.</span>mean<span class="token punctuation">(</span>all_total_rewards<span class="token punctuation">[</span><span class="token builtin">max</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> i<span class="token operator">-</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token punctuation">(</span>i<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+    all_avg_rewards<span class="token punctuation">.</span>append<span class="token punctuation">(</span>avg_rewards<span class="token punctuation">)</span>
+    all_qtable_rows<span class="token punctuation">.</span>append<span class="token punctuation">(</span><span class="token builtin">len</span><span class="token punctuation">(</span>q_table<span class="token punctuation">.</span>table<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    all_epsilons<span class="token punctuation">.</span>append<span class="token punctuation">(</span>epsilon<span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>i<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">%</span> alpha_decay_step <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">:</span>
+        alpha <span class="token operator">*=</span> alpha_decay_rate
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>根据Q表生成Agent： <pre class="line-numbers language-python" data-language="python"><code class="language-python">my_agent <span class="token operator">=</span> <span class="token triple-quoted-string string">'''def my_agent(observation, configuration):
+    from random import choice
+
+    q_table = '''</span> \
+    <span class="token operator">+</span> <span class="token builtin">str</span><span class="token punctuation">(</span>dict_q_table<span class="token punctuation">)</span><span class="token punctuation">.</span>replace<span class="token punctuation">(</span><span class="token string">' '</span><span class="token punctuation">,</span> <span class="token string">''</span><span class="token punctuation">)</span> \
+    <span class="token operator">+</span> <span class="token triple-quoted-string string">'''
+
+    board = observation.board[:]
+    board.append(observation.mark)
+    state_key = list(map(str, board))
+    state_key = hex(int(''.join(state_key), 3))[2:]
+
+    if state_key not in q_table.keys():
+        return choice([c for c in range(configuration.columns) if observation.board[c] == 0])
+
+    action = q_table[state_key]
+
+    if observation.board[action] != 0:
+        return choice([c for c in range(configuration.columns) if observation.board[c] == 0])
+
+    return action
+    '''</span>
+    
+<span class="token keyword">with</span> <span class="token builtin">open</span><span class="token punctuation">(</span><span class="token string">'submission.py'</span><span class="token punctuation">,</span> <span class="token string">'w'</span><span class="token punctuation">)</span> <span class="token keyword">as</span> f<span class="token punctuation">:</span>
+    f<span class="token punctuation">.</span>write<span class="token punctuation">(</span>my_agent<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></p>
+<p>上交到Kaggle后经过一晚上的博弈，分数很低，直接倒数：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221117111813.png" /></p>
+<p>尝试评估其效果：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> submission <span class="token keyword">import</span> my_agent
+
+<span class="token keyword">def</span> <span class="token function">mean_reward</span><span class="token punctuation">(</span>rewards<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    win <span class="token operator">=</span> <span class="token builtin">sum</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token keyword">if</span> r<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token operator">></span><span class="token number">0</span> <span class="token keyword">else</span> <span class="token number">0</span> <span class="token keyword">for</span> r <span class="token keyword">in</span> rewards<span class="token punctuation">)</span>
+    loss <span class="token operator">=</span> <span class="token builtin">sum</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token keyword">if</span> r<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token operator">></span><span class="token number">0</span> <span class="token keyword">else</span> <span class="token number">0</span> <span class="token keyword">for</span> r <span class="token keyword">in</span> rewards<span class="token punctuation">)</span>
+    draw <span class="token operator">=</span> <span class="token builtin">sum</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token keyword">if</span> r<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">==</span> r<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token keyword">else</span> <span class="token number">0</span> <span class="token keyword">for</span> r <span class="token keyword">in</span> rewards<span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token string">'&#123;0&#125; episodes- won: &#123;1&#125; | loss: &#123;2&#125; | draw: &#123;3&#125; | winning rate: &#123;4&#125;%'</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>
+        <span class="token builtin">len</span><span class="token punctuation">(</span>rewards<span class="token punctuation">)</span><span class="token punctuation">,</span>
+        win<span class="token punctuation">,</span>
+        loss<span class="token punctuation">,</span>
+        draw<span class="token punctuation">,</span>
+        <span class="token punctuation">(</span>win <span class="token operator">/</span> <span class="token builtin">len</span><span class="token punctuation">(</span>rewards<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">100</span>
+    <span class="token punctuation">)</span>
+
+<span class="token comment"># Run multiple episodes to estimate agent's performance.</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"My Agent vs Random Agent:"</span><span class="token punctuation">,</span> mean_reward<span class="token punctuation">(</span>
+    evaluate<span class="token punctuation">(</span><span class="token string">"connectx"</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>my_agent<span class="token punctuation">,</span> <span class="token string">"random"</span><span class="token punctuation">]</span><span class="token punctuation">,</span> num_episodes<span class="token operator">=</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"My Agent vs Negamax Agent:"</span><span class="token punctuation">,</span> mean_reward<span class="token punctuation">(</span>
+    evaluate<span class="token punctuation">(</span><span class="token string">"connectx"</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>my_agent<span class="token punctuation">,</span> <span class="token string">"negamax"</span><span class="token punctuation">]</span><span class="token punctuation">,</span> num_episodes<span class="token operator">=</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221118103237.png" style="zoom:80%;" /></p>
+<h2 id="四dqn">四、DQN</h2>
+<p>在尝试了简单的强化学习算法后，这里将深度学习与强化学习结合起来，用DQN进行训练：</p>
+<p>DQN使用了神经网络来代替Q表，使用函数替代表格，以此解决Q表过大的问题：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">ConnectX</span><span class="token punctuation">(</span>gym<span class="token punctuation">.</span>Env<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> switch_prob<span class="token operator">=</span><span class="token number">0.5</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>env <span class="token operator">=</span> make<span class="token punctuation">(</span><span class="token string">'connectx'</span><span class="token punctuation">,</span> debug<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>pair <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token boolean">None</span><span class="token punctuation">,</span> <span class="token string">'random'</span><span class="token punctuation">]</span>
+        self<span class="token punctuation">.</span>trainer <span class="token operator">=</span> self<span class="token punctuation">.</span>env<span class="token punctuation">.</span>train<span class="token punctuation">(</span>self<span class="token punctuation">.</span>pair<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>switch_prob <span class="token operator">=</span> switch_prob
+
+        <span class="token comment"># Define required gym fields (examples):</span>
+        config <span class="token operator">=</span> self<span class="token punctuation">.</span>env<span class="token punctuation">.</span>configuration
+        self<span class="token punctuation">.</span>action_space <span class="token operator">=</span> gym<span class="token punctuation">.</span>spaces<span class="token punctuation">.</span>Discrete<span class="token punctuation">(</span>config<span class="token punctuation">.</span>columns<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>observation_space <span class="token operator">=</span> gym<span class="token punctuation">.</span>spaces<span class="token punctuation">.</span>Discrete<span class="token punctuation">(</span>config<span class="token punctuation">.</span>columns <span class="token operator">*</span> config<span class="token punctuation">.</span>rows<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">switch_trainer</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>pair <span class="token operator">=</span> self<span class="token punctuation">.</span>pair<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span>
+        self<span class="token punctuation">.</span>trainer <span class="token operator">=</span> self<span class="token punctuation">.</span>env<span class="token punctuation">.</span>train<span class="token punctuation">(</span>self<span class="token punctuation">.</span>pair<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">step</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> action<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> self<span class="token punctuation">.</span>trainer<span class="token punctuation">.</span>step<span class="token punctuation">(</span>action<span class="token punctuation">)</span>
+    
+    <span class="token keyword">def</span> <span class="token function">reset</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> np<span class="token punctuation">.</span>random<span class="token punctuation">.</span>random<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> self<span class="token punctuation">.</span>switch_prob<span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>switch_trainer<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> self<span class="token punctuation">.</span>trainer<span class="token punctuation">.</span>reset<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    
+    <span class="token keyword">def</span> <span class="token function">render</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> <span class="token operator">**</span>kwargs<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> self<span class="token punctuation">.</span>env<span class="token punctuation">.</span>render<span class="token punctuation">(</span><span class="token operator">**</span>kwargs<span class="token punctuation">)</span>
+
+<span class="token keyword">class</span> <span class="token class-name">DeepModel</span><span class="token punctuation">(</span>torch<span class="token punctuation">.</span>nn<span class="token punctuation">.</span>Module<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>num_states<span class="token punctuation">,</span>hidden_units<span class="token punctuation">,</span>num_actions<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token builtin">super</span><span class="token punctuation">(</span>DeepModel<span class="token punctuation">,</span>self<span class="token punctuation">)</span><span class="token punctuation">.</span>__init__<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>hidden_layers <span class="token operator">=</span> nn<span class="token punctuation">.</span>ModuleList<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+        <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token builtin">len</span><span class="token punctuation">(</span>hidden_units<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token keyword">if</span> i <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">:</span>
+                self<span class="token punctuation">.</span>hidden_layers<span class="token punctuation">.</span>append<span class="token punctuation">(</span>nn<span class="token punctuation">.</span>Linear<span class="token punctuation">(</span>num_states<span class="token punctuation">,</span>hidden_units<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token keyword">else</span> <span class="token punctuation">:</span>
+                self<span class="token punctuation">.</span>hidden_layers<span class="token punctuation">.</span>append<span class="token punctuation">(</span>nn<span class="token punctuation">.</span>Linear<span class="token punctuation">(</span>hidden_units<span class="token punctuation">[</span>i<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span>hidden_units<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>output_layers <span class="token operator">=</span> nn<span class="token punctuation">.</span>Linear<span class="token punctuation">(</span>hidden_units<span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span>num_actions<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">forward</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>x<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">for</span> layer <span class="token keyword">in</span> self<span class="token punctuation">.</span>hidden_layers<span class="token punctuation">:</span>
+            x <span class="token operator">=</span> torch<span class="token punctuation">.</span>sigmoid<span class="token punctuation">(</span>layer<span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        x <span class="token operator">=</span> self<span class="token punctuation">.</span>output_layers<span class="token punctuation">(</span>x<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> x<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">DQN</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>num_states<span class="token punctuation">,</span>num_actions<span class="token punctuation">,</span>hidden_units<span class="token punctuation">,</span>gamma<span class="token punctuation">,</span>max_experiences<span class="token punctuation">,</span>min_experiences<span class="token punctuation">,</span>batch_size<span class="token punctuation">,</span>lr<span class="token punctuation">)</span><span class="token punctuation">:</span>
+
+        self<span class="token punctuation">.</span>num_actions <span class="token operator">=</span> num_actions
+        self<span class="token punctuation">.</span>batch_size <span class="token operator">=</span> batch_size
+        self<span class="token punctuation">.</span>gamma <span class="token operator">=</span> gamma
+        self<span class="token punctuation">.</span>model <span class="token operator">=</span> DeepModel<span class="token punctuation">(</span>num_states<span class="token punctuation">,</span>hidden_units<span class="token punctuation">,</span>num_actions<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>optimizer <span class="token operator">=</span> optim<span class="token punctuation">.</span>Adam<span class="token punctuation">(</span>self<span class="token punctuation">.</span>model<span class="token punctuation">.</span>parameters<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> lr <span class="token operator">=</span> lr<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>criterion <span class="token operator">=</span> nn<span class="token punctuation">.</span>MSELoss<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>experience <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token string">'s'</span><span class="token punctuation">:</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+                           <span class="token string">'a'</span><span class="token punctuation">:</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+                           <span class="token string">'r'</span><span class="token punctuation">:</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+                           <span class="token string">'s2'</span><span class="token punctuation">:</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+                           <span class="token string">'done'</span><span class="token punctuation">:</span><span class="token punctuation">[</span><span class="token punctuation">]</span>
+                          <span class="token punctuation">&#125;</span>
+        self<span class="token punctuation">.</span>max_experiences <span class="token operator">=</span> max_experiences
+        self<span class="token punctuation">.</span>min_experiences <span class="token operator">=</span> min_experiences
+
+    <span class="token keyword">def</span> <span class="token function">preprocess</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> state<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        result <span class="token operator">=</span> state<span class="token punctuation">.</span>board<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">]</span>
+        result<span class="token punctuation">.</span>append<span class="token punctuation">(</span>state<span class="token punctuation">.</span>mark<span class="token punctuation">)</span>
+        <span class="token keyword">return</span> result
+
+    <span class="token keyword">def</span> <span class="token function">predict</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>inputs<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> self<span class="token punctuation">.</span>model<span class="token punctuation">(</span>torch<span class="token punctuation">.</span>from_numpy<span class="token punctuation">(</span>inputs<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token builtin">float</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">train</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>TargetNet<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> <span class="token builtin">len</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>experience<span class="token punctuation">[</span><span class="token string">'s'</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> self<span class="token punctuation">.</span>min_experiences<span class="token punctuation">:</span>
+            <span class="token keyword">return</span> <span class="token number">0</span>
+
+        ids <span class="token operator">=</span> np<span class="token punctuation">.</span>random<span class="token punctuation">.</span>randint<span class="token punctuation">(</span>low<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> high<span class="token operator">=</span><span class="token builtin">len</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>experience<span class="token punctuation">[</span><span class="token string">'s'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span> size<span class="token operator">=</span>self<span class="token punctuation">.</span>batch_size<span class="token punctuation">)</span>
+        states <span class="token operator">=</span> np<span class="token punctuation">.</span>asarray<span class="token punctuation">(</span><span class="token punctuation">[</span>self<span class="token punctuation">.</span>preprocess<span class="token punctuation">(</span>self<span class="token punctuation">.</span>experience<span class="token punctuation">[</span><span class="token string">'s'</span><span class="token punctuation">]</span><span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token keyword">for</span> i <span class="token keyword">in</span> ids<span class="token punctuation">]</span><span class="token punctuation">)</span>
+        actions <span class="token operator">=</span> np<span class="token punctuation">.</span>asarray<span class="token punctuation">(</span><span class="token punctuation">[</span>self<span class="token punctuation">.</span>experience<span class="token punctuation">[</span><span class="token string">'a'</span><span class="token punctuation">]</span><span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token keyword">for</span> i <span class="token keyword">in</span> ids<span class="token punctuation">]</span><span class="token punctuation">)</span>
+        rewards <span class="token operator">=</span> np<span class="token punctuation">.</span>asarray<span class="token punctuation">(</span><span class="token punctuation">[</span>self<span class="token punctuation">.</span>experience<span class="token punctuation">[</span><span class="token string">'r'</span><span class="token punctuation">]</span><span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token keyword">for</span> i <span class="token keyword">in</span> ids<span class="token punctuation">]</span><span class="token punctuation">)</span>
+        states_next <span class="token operator">=</span> np<span class="token punctuation">.</span>asarray<span class="token punctuation">(</span><span class="token punctuation">[</span>self<span class="token punctuation">.</span>preprocess<span class="token punctuation">(</span>self<span class="token punctuation">.</span>experience<span class="token punctuation">[</span><span class="token string">'s2'</span><span class="token punctuation">]</span><span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token keyword">for</span> i <span class="token keyword">in</span> ids<span class="token punctuation">]</span><span class="token punctuation">)</span>
+        dones <span class="token operator">=</span> np<span class="token punctuation">.</span>asarray<span class="token punctuation">(</span><span class="token punctuation">[</span>self<span class="token punctuation">.</span>experience<span class="token punctuation">[</span><span class="token string">'done'</span><span class="token punctuation">]</span><span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token keyword">for</span> i <span class="token keyword">in</span> ids<span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+        value_next <span class="token operator">=</span> np<span class="token punctuation">.</span><span class="token builtin">max</span><span class="token punctuation">(</span>TargetNet<span class="token punctuation">.</span>predict<span class="token punctuation">(</span>states_next<span class="token punctuation">)</span><span class="token punctuation">.</span>detach<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>numpy<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> axis<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+        actual_values <span class="token operator">=</span> np<span class="token punctuation">.</span>where<span class="token punctuation">(</span>dones<span class="token punctuation">,</span> rewards<span class="token punctuation">,</span> rewards<span class="token operator">+</span>self<span class="token punctuation">.</span>gamma<span class="token operator">*</span>value_next<span class="token punctuation">)</span>
+
+        actions <span class="token operator">=</span> np<span class="token punctuation">.</span>expand_dims<span class="token punctuation">(</span>actions<span class="token punctuation">,</span> axis<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+        actions_one_hot <span class="token operator">=</span> torch<span class="token punctuation">.</span>FloatTensor<span class="token punctuation">(</span>self<span class="token punctuation">.</span>batch_size<span class="token punctuation">,</span> self<span class="token punctuation">.</span>num_actions<span class="token punctuation">)</span><span class="token punctuation">.</span>zero_<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        actions_one_hot <span class="token operator">=</span> actions_one_hot<span class="token punctuation">.</span>scatter_<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> torch<span class="token punctuation">.</span>LongTensor<span class="token punctuation">(</span>actions<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span>
+        selected_action_values <span class="token operator">=</span> torch<span class="token punctuation">.</span><span class="token builtin">sum</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>predict<span class="token punctuation">(</span>states<span class="token punctuation">)</span> <span class="token operator">*</span> actions_one_hot<span class="token punctuation">,</span> dim<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+        actual_values <span class="token operator">=</span> torch<span class="token punctuation">.</span>FloatTensor<span class="token punctuation">(</span>actual_values<span class="token punctuation">)</span>
+
+        self<span class="token punctuation">.</span>optimizer<span class="token punctuation">.</span>zero_grad<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        loss <span class="token operator">=</span> self<span class="token punctuation">.</span>criterion<span class="token punctuation">(</span>selected_action_values<span class="token punctuation">,</span> actual_values<span class="token punctuation">)</span>
+        loss<span class="token punctuation">.</span>backward<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>optimizer<span class="token punctuation">.</span>step<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">get_action</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span>state<span class="token punctuation">,</span>epsilon<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> np<span class="token punctuation">.</span>random<span class="token punctuation">.</span>random<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> epsilon<span class="token punctuation">:</span>
+            <span class="token keyword">return</span> <span class="token builtin">int</span><span class="token punctuation">(</span>np<span class="token punctuation">.</span>random<span class="token punctuation">.</span>choice<span class="token punctuation">(</span><span class="token punctuation">[</span>c <span class="token keyword">for</span> c <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>num_actions<span class="token punctuation">)</span> <span class="token keyword">if</span> state<span class="token punctuation">.</span>board<span class="token punctuation">[</span>c<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">else</span> <span class="token punctuation">:</span>
+            prediction <span class="token operator">=</span> self<span class="token punctuation">.</span>predict<span class="token punctuation">(</span>np<span class="token punctuation">.</span>atleast_2d<span class="token punctuation">(</span>self<span class="token punctuation">.</span>preprocess<span class="token punctuation">(</span>state<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>detach<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>numpy<span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>num_actions<span class="token punctuation">)</span><span class="token punctuation">:</span>
+                <span class="token keyword">if</span> state<span class="token punctuation">.</span>board<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">:</span>
+                    prediction<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1e7</span>
+            <span class="token keyword">return</span> <span class="token builtin">int</span><span class="token punctuation">(</span>np<span class="token punctuation">.</span>argmax<span class="token punctuation">(</span>prediction<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">add_experience</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> exp<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> <span class="token builtin">len</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>experience<span class="token punctuation">[</span><span class="token string">'s'</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">>=</span> self<span class="token punctuation">.</span>max_experiences<span class="token punctuation">:</span>
+            <span class="token keyword">for</span> key <span class="token keyword">in</span> self<span class="token punctuation">.</span>experience<span class="token punctuation">.</span>keys<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+                self<span class="token punctuation">.</span>experience<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">.</span>pop<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token keyword">for</span> key<span class="token punctuation">,</span> value <span class="token keyword">in</span> exp<span class="token punctuation">.</span>items<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            self<span class="token punctuation">.</span>experience<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">.</span>append<span class="token punctuation">(</span>value<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">copy_weights</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> TrainNet<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>model<span class="token punctuation">.</span>load_state_dict<span class="token punctuation">(</span>TrainNet<span class="token punctuation">.</span>state_dict<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">save_weights</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> path<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        torch<span class="token punctuation">.</span>save<span class="token punctuation">(</span>self<span class="token punctuation">.</span>model<span class="token punctuation">.</span>state_dict<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> path<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">load_weights</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> path<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>model<span class="token punctuation">.</span>load_state_dict<span class="token punctuation">(</span>torch<span class="token punctuation">.</span>load<span class="token punctuation">(</span>path<span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>训练时，将采样的s,r,a,s'存储下来，等到积累到一定数量后再以batch的形式输入神经网路（这里是全连接层），训练，测试。</p>
+<p>通过这种方式，可以极大的增加训练的轮数，这里尝试十万轮（训练时间四小时）：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221124114413.png" /></p>
+<h2 id="五rollout">五、RollOut</h2>
+<p>RollOut算法是典型的决策时规划算法，其思路是：</p>
+<blockquote>
+<ol type="1">
+<li>对当前状态S的所有可能取值&lt;s,a'&gt;，模拟计算若干次，取得每个&lt;s,a'&gt;的平均Reward；</li>
+<li>选取Reward最大的动作A；</li>
+</ol>
+</blockquote>
+<p>模拟计算时使用的策略称之为rollout策略，这里直接采用随机策略。</p>
+<p>使用如下类进行蒙特卡洛采样：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">MonteCarlo</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> env<span class="token punctuation">,</span> gamma<span class="token punctuation">,</span> episodes<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">'''
+        env是当前需要进行模拟采样的状态
+        gamma用于计算Reward
+        episodes是每个(s,a)的采样次数
+        '''</span>
+        self<span class="token punctuation">.</span>state <span class="token operator">=</span> deepcopy<span class="token punctuation">(</span>env<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>all_rewards <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">]</span>
+        self<span class="token punctuation">.</span>gamma <span class="token operator">=</span> gamma
+        self<span class="token punctuation">.</span>episodes <span class="token operator">=</span> episodes
+    <span class="token keyword">def</span> <span class="token function">rollout</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> env<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token comment"># 对当前状态进行rollout采样</span>
+        mean_reward <span class="token operator">=</span> <span class="token number">0</span>
+        ini_state <span class="token operator">=</span> env<span class="token punctuation">.</span>env<span class="token punctuation">.</span>state<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'observation'</span><span class="token punctuation">]</span>
+        <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>self<span class="token punctuation">.</span>episodes<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            r <span class="token operator">=</span> <span class="token number">0</span>
+            gamma <span class="token operator">=</span> <span class="token number">1</span>
+            env<span class="token punctuation">.</span>set_state<span class="token punctuation">(</span>ini_state<span class="token punctuation">)</span>
+            state <span class="token operator">=</span> deepcopy<span class="token punctuation">(</span>ini_state<span class="token punctuation">)</span>
+            done <span class="token operator">=</span> <span class="token boolean">False</span>
+            <span class="token keyword">while</span> <span class="token keyword">not</span> done<span class="token punctuation">:</span>
+                space_list <span class="token operator">=</span> <span class="token punctuation">[</span>c <span class="token keyword">for</span> c <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span> <span class="token keyword">if</span> state<span class="token punctuation">[</span><span class="token string">'board'</span><span class="token punctuation">]</span><span class="token punctuation">[</span>c<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">]</span>
+                action <span class="token operator">=</span> choice<span class="token punctuation">(</span>space_list<span class="token punctuation">)</span>
+                next_state<span class="token punctuation">,</span> reward<span class="token punctuation">,</span> done<span class="token punctuation">,</span> info <span class="token operator">=</span> env<span class="token punctuation">.</span>step<span class="token punctuation">(</span>action<span class="token punctuation">)</span>
+                <span class="token keyword">if</span> done<span class="token punctuation">:</span>
+                    <span class="token keyword">if</span> reward <span class="token operator">==</span> <span class="token number">1</span><span class="token punctuation">:</span>
+                        r <span class="token operator">+=</span> <span class="token number">20</span><span class="token operator">*</span>gamma
+                    <span class="token keyword">elif</span> reward <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">:</span>
+                        r <span class="token operator">-=</span> <span class="token number">20</span><span class="token operator">*</span>gamma
+                    <span class="token keyword">else</span><span class="token punctuation">:</span>
+                        r <span class="token operator">+=</span> <span class="token number">1</span><span class="token operator">*</span>gamma
+                    mean_reward <span class="token operator">+=</span> r
+                <span class="token keyword">else</span><span class="token punctuation">:</span>
+                    r <span class="token operator">-=</span> <span class="token number">0.05</span><span class="token operator">*</span>gamma
+                gamma <span class="token operator">*=</span> self<span class="token punctuation">.</span>gamma
+                state <span class="token operator">=</span> next_state
+        <span class="token keyword">return</span> mean_reward<span class="token operator">/</span>self<span class="token punctuation">.</span>episodes<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>因为MC采样需要在采样后将环境状态恢复，故在原本的ConnectX类中添加设置状态方法，并删除swicth_trainer：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">ConnectX</span><span class="token punctuation">(</span>gym<span class="token punctuation">.</span>Env<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> switch_prob<span class="token operator">=</span><span class="token number">0.5</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>env <span class="token operator">=</span> make<span class="token punctuation">(</span><span class="token string">'connectx'</span><span class="token punctuation">,</span> debug<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>pair <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token boolean">None</span><span class="token punctuation">,</span> <span class="token string">'random'</span><span class="token punctuation">]</span>
+        self<span class="token punctuation">.</span>trainer <span class="token operator">=</span> self<span class="token punctuation">.</span>env<span class="token punctuation">.</span>train<span class="token punctuation">(</span>self<span class="token punctuation">.</span>pair<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>switch_prob <span class="token operator">=</span> switch_prob
+        config <span class="token operator">=</span> self<span class="token punctuation">.</span>env<span class="token punctuation">.</span>configuration
+        self<span class="token punctuation">.</span>action_space <span class="token operator">=</span> gym<span class="token punctuation">.</span>spaces<span class="token punctuation">.</span>Discrete<span class="token punctuation">(</span>config<span class="token punctuation">.</span>columns<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>observation_space <span class="token operator">=</span> gym<span class="token punctuation">.</span>spaces<span class="token punctuation">.</span>Discrete<span class="token punctuation">(</span>
+            config<span class="token punctuation">.</span>columns <span class="token operator">*</span> config<span class="token punctuation">.</span>rows<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">step</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> action<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> self<span class="token punctuation">.</span>trainer<span class="token punctuation">.</span>step<span class="token punctuation">(</span>action<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">set_state</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> init_state<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>env<span class="token punctuation">.</span>reset<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>env<span class="token punctuation">.</span>state<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'observation'</span><span class="token punctuation">]</span> <span class="token operator">=</span> deepcopy<span class="token punctuation">(</span>init_state<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">reset</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> self<span class="token punctuation">.</span>trainer<span class="token punctuation">.</span>reset<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">render</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> <span class="token operator">**</span>kwargs<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> self<span class="token punctuation">.</span>env<span class="token punctuation">.</span>render<span class="token punctuation">(</span><span class="token operator">**</span>kwargs<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>调试时设置play函数：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">play</span><span class="token punctuation">(</span>num<span class="token punctuation">,</span>env<span class="token punctuation">,</span>gamma<span class="token punctuation">,</span>episodes<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    result <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token string">'win'</span><span class="token punctuation">:</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token string">'loss'</span><span class="token punctuation">:</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token string">'draw'</span><span class="token punctuation">:</span><span class="token number">0</span><span class="token punctuation">&#125;</span>
+    <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span>num<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token comment">#print('[GAME&#123;&#125;]:'.format(i))</span>
+        done <span class="token operator">=</span> <span class="token boolean">False</span>
+        state <span class="token operator">=</span> env<span class="token punctuation">.</span>reset<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">while</span> <span class="token keyword">not</span> done<span class="token punctuation">:</span>
+            ini_state <span class="token operator">=</span> env<span class="token punctuation">.</span>env<span class="token punctuation">.</span>state<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'observation'</span><span class="token punctuation">]</span>
+            space_list <span class="token operator">=</span> <span class="token punctuation">[</span>c <span class="token keyword">for</span> c <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span> <span class="token keyword">if</span> ini_state<span class="token punctuation">[</span><span class="token string">'board'</span><span class="token punctuation">]</span><span class="token punctuation">[</span>c<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">]</span>
+            R <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+            <span class="token keyword">for</span> action <span class="token keyword">in</span> space_list<span class="token punctuation">:</span>  <span class="token comment"># rollout模拟采样</span>
+                env<span class="token punctuation">.</span>set_state<span class="token punctuation">(</span>ini_state<span class="token punctuation">)</span>
+                next_state<span class="token punctuation">,</span> reward<span class="token punctuation">,</span> done<span class="token punctuation">,</span> info <span class="token operator">=</span> env<span class="token punctuation">.</span>step<span class="token punctuation">(</span>action<span class="token punctuation">)</span>
+                mc <span class="token operator">=</span> MonteCarlo<span class="token punctuation">(</span>env<span class="token punctuation">,</span> gamma<span class="token punctuation">,</span> episodes<span class="token punctuation">)</span>
+                reward <span class="token operator">=</span> reward <span class="token operator">+</span> gamma<span class="token operator">*</span>mc<span class="token punctuation">.</span>rollout<span class="token punctuation">(</span>env<span class="token punctuation">)</span>
+                R<span class="token punctuation">.</span>append<span class="token punctuation">(</span>reward<span class="token punctuation">)</span>
+
+            Action <span class="token operator">=</span> <span class="token builtin">int</span><span class="token punctuation">(</span>np<span class="token punctuation">.</span>argmax<span class="token punctuation">(</span>R<span class="token punctuation">)</span><span class="token punctuation">)</span>  <span class="token comment"># 根据采样结果选择动作</span>
+
+            env<span class="token punctuation">.</span>set_state<span class="token punctuation">(</span>ini_state<span class="token punctuation">)</span>
+            next_state<span class="token punctuation">,</span> reward<span class="token punctuation">,</span> done<span class="token punctuation">,</span> info <span class="token operator">=</span> env<span class="token punctuation">.</span>step<span class="token punctuation">(</span>Action<span class="token punctuation">)</span>
+
+            <span class="token comment">#print('R = ', R)</span>
+            <span class="token comment">#print('Action = ', Action)</span>
+            <span class="token comment">#print(env.render(mode="ansi"))</span>
+
+            <span class="token keyword">if</span> done<span class="token punctuation">:</span>
+                <span class="token keyword">if</span> reward <span class="token operator">==</span> <span class="token number">1</span><span class="token punctuation">:</span>  <span class="token comment"># Won</span>
+                    result<span class="token punctuation">[</span><span class="token string">'win'</span><span class="token punctuation">]</span> <span class="token operator">+=</span> <span class="token number">1</span>
+                    <span class="token comment">#print('you win!')</span>
+                <span class="token keyword">elif</span> reward <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">:</span>  <span class="token comment"># Lost</span>
+                    result<span class="token punctuation">[</span><span class="token string">'loss'</span><span class="token punctuation">]</span> <span class="token operator">+=</span> <span class="token number">1</span>
+                    <span class="token comment">#print('you loss!')</span>
+                <span class="token keyword">else</span><span class="token punctuation">:</span>
+                    result<span class="token punctuation">[</span><span class="token string">'draw'</span><span class="token punctuation">]</span> <span class="token operator">+=</span> <span class="token number">1</span>
+                    <span class="token comment">#print('draw!')</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'My Agent vs Random Agent:'</span><span class="token punctuation">,</span> <span class="token string">'&#123;0&#125; episodes- won: &#123;1&#125; | loss: &#123;2&#125; | draw: &#123;3&#125; | winning rate: &#123;4&#125;%'</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>
+        num<span class="token punctuation">,</span>
+        result<span class="token punctuation">[</span><span class="token string">'win'</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+        result<span class="token punctuation">[</span><span class="token string">'loss'</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+        result<span class="token punctuation">[</span><span class="token string">'draw'</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+        <span class="token punctuation">(</span>result<span class="token punctuation">[</span><span class="token string">'win'</span><span class="token punctuation">]</span> <span class="token operator">/</span> num<span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">100</span>
+    <span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="六问题总结">六、问题总结</h2>
+<h4 id="训练时间过长">1. 训练时间过长</h4>
+<p>以Q-Learning为例，一个10000个episodes的训练要耗时2小时+，对于一个简单的四子棋过于耗时。</p>
+<p><strong>尝试：</strong></p>
+<ul>
+<li>尝试在python文件中而不是jupter中训练：训练总时间减少了约2/5，有一定效果；</li>
+<li>使用DQN时训练速度明显大于Q-leraning（训练十万轮耗时3小时40分钟），猜想可能是神经网络可以使用GPU加速，‘查表’速度更快；</li>
+</ul>
+<h4 id="q-learning训练效果不佳">2. Q-Learning训练效果不佳</h4>
+<p>在经过10000个episode训练后，Q-Learning的表现如下：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221118103237.png" style="zoom:80%;" /></p>
+<p>通过如下的代码，你可以跟自己的agent下一局，可以发现，经过一万轮训练后的Agent棋力很一般，新手人类也能轻松胜利：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">while</span> <span class="token keyword">not</span> done<span class="token punctuation">:</span>
+    sys<span class="token punctuation">.</span>stdout<span class="token punctuation">.</span>flush<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span>env<span class="token punctuation">.</span>render<span class="token punctuation">(</span>mode<span class="token operator">=</span><span class="token string">"ansi"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    action <span class="token operator">=</span> <span class="token builtin">int</span><span class="token punctuation">(</span><span class="token builtin">input</span><span class="token punctuation">(</span><span class="token string">'Input your action:(0-6)'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    next_state<span class="token punctuation">,</span> reward<span class="token punctuation">,</span> done<span class="token punctuation">,</span> info <span class="token operator">=</span> env<span class="token punctuation">.</span>step<span class="token punctuation">(</span>action<span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> done<span class="token punctuation">:</span>
+        <span class="token keyword">if</span> reward <span class="token operator">==</span> <span class="token number">1</span><span class="token punctuation">:</span> <span class="token comment"># Won</span>
+            <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'you win!'</span><span class="token punctuation">)</span>
+        <span class="token keyword">elif</span> reward <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">:</span> <span class="token comment"># Lost</span>
+            <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'you loss!'</span><span class="token punctuation">)</span>
+        <span class="token keyword">else</span><span class="token punctuation">:</span> 
+            <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'draw!'</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221118115042.png" style="zoom:80%;" /></p>
+<p>观察训练时平均Reward、Q表长度和ε的变化：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221118114510.png" /></p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221118114512.png" /></p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221118114526.png" /></p>
+<p>可以发现，在10000轮episode的训练中，平均奖励始终在围绕0.8上下波动，Q表长度一直在平稳增加，这说明直到训练结束Agent仍有大量未见过的state进入Q表，模型训练轮数不足。</p>
+<p>实际上 <strong><u>Connect
+4有四百万兆不同的状态，Q-learning显然在有限的时间空间下是取得不了什么有效学习的</u></strong>。</p>
+<h4 id="dqn的不足">3. DQN的不足</h4>
+<p>即使使用DQN进行了十万轮的训练，耗时近4小时，DQN的结果仍不理想：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221124153505.png" /></p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221124153516.png" /></p>
+<p>其实不难理解，对于四百万兆个state的棋盘，十万轮也不过是<span
+class="math display">\[1/10^{13}\]</span>，仍过于渺小。</p>
+<p>并且，Q-learning以及DQN都是background
+planning，其算法倾向于将所有可能的状态的最佳策略都计算出来。实际上，在下棋的时候几乎绝大多数状态都不会出现第二次，但相似的棋谱格局却会经常出现。</p>
+<p>显然，相较于background planning，<strong><em>decision-time
+planning（决策时规划）</em></strong>算法是个更合适的算法。</p>
+<p>decision-time
+planning在遇到每个新的状态St后再开始一个完整的规划过程，其为每个当前状态选择一个动作At，到下一个状态St+1就选择一个动作At+1，以此类推。基于当前状态所生成的values和policy会在做完动作选择决策后被丢弃，在很多应用场景中这么做并不算一个很大的损失，因为有非常多的状态存在，且不太可能在短时间内回到同一个状态，故重复计算导致的资源浪费会很少。</p>
+<h4 id="随机rollout">4. 随机Rollout</h4>
+<p>这里尝试使用简单的RollOut算法后发现，<strong><u>即使在rollout算法中使用最简单的随机rollout策略，并且每轮模拟仅仅采样1次，所取得的的结果就比训练了4个小时的DQN好很多。</u></strong></p>
+<p>在模拟采样轮数为1（对每个&lt;s,a&gt;键值对只采样1次）、gamma为1的条件下，与Random和Negmax分别下100局的胜率：</p>
+<table>
+<thead>
+<tr class="header">
+<th>模型</th>
+<th>VS Random</th>
+<th>VS Negmax</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Q-Learning(一万轮)</td>
+<td>61%</td>
+<td>3%</td>
+</tr>
+<tr class="even">
+<td>DQN(十万轮)</td>
+<td>70%</td>
+<td>6%</td>
+</tr>
+<tr class="odd">
+<td>随机Rollout</td>
+<td>94%</td>
+<td>95%平局</td>
+</tr>
+</tbody>
+</table>
+<p>但Rollout算法的问题也很明显，其应用的过程就是‘训练’的过程，每次需要等模拟采样完成后再选择，故其反应时间会比DQN长很多。</p>
+<table>
+<thead>
+<tr class="header">
+<th>时间</th>
+<th>DQN</th>
+<th>随机Rollout</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>训练所需时间</td>
+<td>4h</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>下100局所需时间</td>
+<td>1m</td>
+<td>40m</td>
+</tr>
+</tbody>
+</table>
+<p>但即使这样，我们也能看出，决策时规划比后台规划算法更适合棋类场景，由于棋类几乎无限的状态数量，决策时规划虽然反应更慢，但结果也更为合理有效。</p>
+<h4 id="展望">5. 展望</h4>
+<p>本次的小比赛从最简单的Q-Learning算法入手，到引入了神经网络的DQN，最后从后台规划引入到决策时规划，并实现了一个简单的Rollout算法。</p>
+<p><strong>首先，Q-learning以及DQN这类后台规划算法无法有效处理状态过多的环境</strong>。Q-learning在时间以及空间上都存在溢出问题，DQN虽然引入了深度神经网络来替代Q表，解决了空间不足的问题，但由于其训练速度没有质的改变，训练时间仍不可估量的长。</p>
+<p><strong>决策时规划面对状态过多的问题有明显提升。</strong>即使在rollout算法中使用最简单的随机rollout策略，并且每轮模拟仅仅采样1次，所取得的的结果就比训练了4个小时的DQN好很多。</p>
+<p>除了使用简单的随机Rollout算法，这里可以替换rollout策略来进一步提升结果，减少rollout的反应时间。以及，可以使用MCTS，蒙特卡洛树搜索的方法再进一步提升结果（kaggle中已有Notebook，且分数不错），这里篇幅以及时间有限，仅做展望。</p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Kaggle/">Kaggle</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RL/" rel="tag">RL</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2022/11/14/Facial%20Keypoints%20Detection/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Facial Keypoints Detection</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#connect-x"><span class="nav-number">1.</span> <span class="nav-text">Connect X</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BB%BB%E5%8A%A1%E7%AE%80%E4%BB%8B"><span class="nav-number">1.1.</span> <span class="nav-text">一、任务简介：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="nav-number">1.2.</span> <span class="nav-text">二、环境准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89q-learning"><span class="nav-number">1.3.</span> <span class="nav-text">三、Q-learning</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9Bdqn"><span class="nav-number">1.4.</span> <span class="nav-text">四、DQN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94rollout"><span class="nav-number">1.5.</span> <span class="nav-text">五、RollOut</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93"><span class="nav-number">1.6.</span> <span class="nav-text">六、问题总结</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E6%97%B6%E9%97%B4%E8%BF%87%E9%95%BF"><span class="nav-number">1.6.0.1.</span> <span class="nav-text">1. 训练时间过长</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#q-learning%E8%AE%AD%E7%BB%83%E6%95%88%E6%9E%9C%E4%B8%8D%E4%BD%B3"><span class="nav-number">1.6.0.2.</span> <span class="nav-text">2. Q-Learning训练效果不佳</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#dqn%E7%9A%84%E4%B8%8D%E8%B6%B3"><span class="nav-number">1.6.0.3.</span> <span class="nav-text">3. DQN的不足</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9A%8F%E6%9C%BArollout"><span class="nav-number">1.6.0.4.</span> <span class="nav-text">4. 随机Rollout</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B1%95%E6%9C%9B"><span class="nav-number">1.6.0.5.</span> <span class="nav-text">5. 展望</span></a></li></ol></li></ol></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2022 Shaw All Rights Reserved.
+        
+            <span id="busuanzi_container_site_uv">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次  
+              本站总访问量<span id="busuanzi_value_site_pv"></span>次
+            </span>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>
