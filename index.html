@@ -159,6 +159,365 @@ id="宏观与微观的审视哲学量变产生质变">宏观与微观的审视�
 <!-- Table of Contents -->
 
   
+    <article id="post-How-Machine-Learning-Is-Solving-the-Binary-Function-Similarity-Problem"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2022/12/08/How-Machine-Learning-Is-Solving-the-Binary-Function-Similarity-Problem/">How Machine Learning Is Solving the Binary Function Similarity Problem</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2022/12/08/How-Machine-Learning-Is-Solving-the-Binary-Function-Similarity-Problem/" class="article-date">
+	  <time datetime="2022-12-08T08:20:40.777Z" itemprop="datePublished">十二月 8, 2022</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1
+id="论文阅读how-machine-learning-is-solving-the-binary-function-similarity-problem">【论文阅读】How
+Machine Learning Is Solving the Binary Function Similarity Problem</h1>
+<blockquote>
+<p><strong>时间：</strong>2022.8</p>
+<p><strong>作者：</strong>Andrea Marcelli, Mariano Graziano , Xabier
+Ugarte-Pedrero, Yanick Fratantonio , Mohamad Mansouri and Davide
+Balzarotti(思科，欧洲电信学院)</p>
+<p><strong>会议：</strong>usenix 2022</p>
+</blockquote>
+<h2 id="abstract">ABSTRACT</h2>
+<p>对于二进制相似性问题的研究，人们会期望到现在为止，有可能回答一些研究问题，这些问题超出了论文中提出的非常具体的技术，但可以推广到整个研究领域。不幸的是，该问题受到许多挑战，从可重复性问题到研究结果的不透明性，阻碍了研究有意义和有效地进展。</p>
+<p>在本文，<strong><u>我们开始着手于对state-of-the-art做这个领域的第一个测试性研究。</u></strong></p>
+<ol type="1">
+<li>首先，我们系统化了现存的研究成果；</li>
+<li>我们选定了一些相关方法，这些方法代表了三个不同研究社区最近提出的各种解决方案；</li>
+<li>针对现有的方案，<u>我们重构了方法并构建了新的数据集</u>，以便实现更为公平的对比效果。</li>
+</ol>
+<h2 id="introduction">INTRODUCTION</h2>
+<ol type="1">
+<li><p><strong>Binary function
+similarity：</strong>将一对函数的二进制表示作为输入，它们之间的相似性值作为输出。</p></li>
+<li><p><strong>Binary function similarity技术面临的挑战</strong>：</p>
+<ul>
+<li><p>实际情况下，软件会被不同编译器、链接工具以及优化器编译；</p></li>
+<li><p>特殊情况下，例如IoT，软件会被编译为不同架构的指令；</p></li>
+</ul></li>
+<li><p><strong>Binary function similarity的作用：</strong></p>
+<p>在系统安全研究领域，许多研究问题需要以Binary function
+similarity作为核心构件。</p>
+<ul>
+<li><p><strong>节省逆向时间。</strong>在逆向工程中经常需要处理静态链接的stripped
+binaries，Binary function
+similarity可用于将一个未知的函数与先前生成的数据库中的（有标签的）函数进行匹配，对应到先前生成的数据库中，从而节省大量的时间；</p>
+<p>（<strong>stripped
+binaries</strong>：编译后的二进制文件可以包含调试信息，这些信息对于程序的执行是没有必要的，相反，它对于调试和发现程序中的问题或漏洞是很有用的。剥离的二进制文件（<strong>stripped
+binaries</strong>）是一个没有这些调试符号的二进制文件，因此体积较小，而且可能比没有剥离的二进制文件有更好的性能。剥离后的二进制文件很难被反汇编或逆向工程，这也使其难以发现程序中的问题或漏洞。）</p></li>
+<li><p><strong>用于高校检索第三方库中的漏洞函数。</strong>给定一个有问题的函数，Binary
+function similarity可用于在第三方库中快速检索相似函数；</p></li>
+<li><p><strong>用于软件分析以及恶意软件分类。</strong></p></li>
+</ul></li>
+<li><p><strong>提出问题：</strong></p>
+<blockquote>
+<ol type="1">
+<li>在使用相同评估标准、相同数据集的前提下，不同的方法如何比较？</li>
+<li>与简单的模糊哈希算法相比，原创的机器学习算法的主要贡献在哪？</li>
+<li>不同特征集的作用是什么？</li>
+<li>不同的方法在不同的任务中是否效果更好？</li>
+<li>相较于同一架构指令下，不同架构指令编译的二进制的比较是否更困难？</li>
+<li>是否有任何具体的研究方向看起来更有希望成为设计新技术的未来方向？</li>
+</ol>
+</blockquote>
+<p>很遗憾，我们发现目前的研究并不能回答上述问题。</p></li>
+<li><p><strong>现有研究存在的不足：</strong></p>
+<blockquote>
+<ol type="1">
+<li><p><strong>实验方法、实验结果不透明，难复现</strong>。实验所需的工具、超参数以及数据集通常都是不公开的，一些工作的横向比较太少甚至跟自己以前发的文章比；</p></li>
+<li><p><strong>现有工作的评估方法往往也是模糊不清的。</strong>不同的论文中，任务目标、环境设置、概念、颗粒度、数据集的大小和特性以及评估方法往往都不同，因此，即使是论文中最基础的图像也基本不能直接比较。所以，当新的工作声称比旧工作表现更好时，这个优越性是否仅仅是针对某个特殊的领域不得而知。更糟糕的是，一些工作函数对的选择方法以及训练集的构成并没有详细说明，使得复现变得更加困难。一个方法结果更优秀的原因是因为其原创性还是其他因素不得而知；</p></li>
+<li><p><strong>领域整体较为混乱。</strong>每个新的解决方案都采用了更复杂的技术，或多种技术的新组合。新方法的成功很难确定是由较简单的方法的实际局限性导致的，还是其创新性。现有几十种方法存在，但是并不能确定哪些方法在哪些环境设置下是有效的，而哪些不行。</p></li>
+</ol>
+<p>“每个人都声称他们的方法最好。”</p>
+</blockquote></li>
+<li><p><strong>本文贡献</strong>：</p>
+<blockquote>
+<p>​
+实现了在本领域第一个系统化的评估。在相同的工具框架下复现了10个有代表性的方法（及其变种方法），并使用新定义的同一数据集测试。</p>
+</blockquote>
+<p>一些结论：</p>
+<ul>
+<li>简单的方法（例如模糊哈希）在简单的环境下表现很好，但难以应对复杂的环境；</li>
+<li>GNN几乎在所有任务里都取得了最好的成绩；</li>
+<li>许多最近发表的论文在同一数据集上测试时，都有非常相似的准确性，尽管他们之中的一些声称自己有了提高。</li>
+</ul></li>
+</ol>
+<h2 id="measuring-function-similarity领域基础知识"><strong>Measuring
+Function Similarity（领域基础知识）</strong></h2>
+<h4 id="函数相似度评估方法"><strong>1. 函数相似度评估方法</strong></h4>
+<h5 id="直接评估direct-comparsion">1.1 直接评估（<strong><em>Direct
+Comparsion</em></strong>）：</h5>
+<p>用机器学习/深度学习模型做相似性函数，通过对模型的训练来使其输入两个函数，输出两个函数的相似性。</p>
+<h5 id="间接评估indirect-comparsion">1.1 间接评估（<strong><em>Indirect
+Comparsion</em></strong>）：</h5>
+<p>间接评估将输入函数的特征压缩到低维度表示，这些表示可以使用简单的距离测量方法评估相似度，例如欧氏距离或余弦距离。</p>
+<p><strong>Fuzzy
+hashes</strong>：一个很典型的低维度特征表示方法就是哈希模糊。特殊的fuzzy
+hashes，如ssdeep，用于判断两个文件是否近似的hash。如果一个文件比另一个文件多一个空格，普通的hash是会完全不同，而模糊hash
+可能会很相似或者完全一样。</p>
+<p><strong>Code
+embedding：</strong>代码嵌入，应用NLP的方法，将汇编看做文本，对每个代码块或者指令做embedding。</p>
+<p><strong>Graph embedding：</strong>
+图嵌入，使用代码图结构，通过传统方法或者GNN来生成embedding。</p>
+<h4 id="函数表示方法">2. 函数表示方法</h4>
+<ol type="1">
+<li>直接使用raw bytes；</li>
+<li>使用通过raw bytes反编译得到的汇编代码；</li>
+<li><strong>Normalized
+assembly</strong>，将汇编代码中的常数等替换，减轻操作数与操作之间的联系；</li>
+<li><strong>Intermediate representations</strong>，中间表示；</li>
+<li>图结构，例如CFG，DFG等；</li>
+<li>动态分析，通过运行中的函数来比较；</li>
+<li><strong>Symbolic execution</strong>，通过符号执行分析；</li>
+</ol>
+<h2 id="筛选现有方法">筛选现有方法</h2>
+<p>尽管现有数百篇的论文，但其中的很多方法都是对某个技术做微调，故该领域的原创方法并不是很多。</p>
+<h4 id="筛选标准">1. 筛选标准</h4>
+<ul>
+<li><strong>Scalability and real-world
+applicability</strong>（<em>可扩展性和现实世界的适用性</em>）：不关注天生速度较慢的方法，只关注诸如那些基于动态分析、符号执行或高复杂度图相关算法的方法；</li>
+<li><strong>Focus on representative approaches and not on specifific
+papers</strong>：只关注有代表性的方法；</li>
+<li><strong>Cover different
+communities</strong>：在我们的评估中，我们希望包括来自系统安全、编程语言分析和机器学习社区的代表性研究。为了完整性，我们还考虑了行业提出的方法；</li>
+<li><strong>Prioritize latest
+trends</strong>：考虑最新的，尤其是AI方法。</li>
+</ul>
+<h4 id="筛选方法">2. 筛选方法</h4>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221210161628.png" /></p>
+<p>上图选定了30个方法，接着我们会从这30个方法中筛选出10个最有代表性的方法来测试。</p>
+<ul>
+<li><p>该图的左侧对不同研究机构提出的方法进行了分类，由学术界和工业界（腾讯、谷歌），箭头代表了指向的一方拿被指向一方的结果进行了比较；</p></li>
+<li><p>该图的右侧Y轴代表出版时间，X轴代表函数的输入形式，不同的色块代表不同的相似度计算方式；</p></li>
+<li><p>中括号[]代表的tag标注了不同的研究群体，例如S代表Security，SE代表Software
+eng。</p></li>
+</ul>
+<p><strong>从该图中可以得出：</strong></p>
+<ul>
+<li><p>左图中间的二进制比较工具都是为直接比较两个<u>完整二进制文件</u>而设计的（例如，它们使用图结构），并且它们都是针对<u>单指令集结构</u>的。<strong>但是一些做了跨指令集和函数比较的paper仍拿这些方法来比较，显然会得出不正确的结论</strong>；</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221210164050.png" style="zoom: 50%;" /></p></li>
+<li><p>从左图可以得出，不同研究机构之间很少跨领域比较；</p></li>
+<li><p>从右图可以看出，随着时间推移，算法的复杂性以及AI算法的使用比例都在增加。</p></li>
+</ul>
+<h4 id="筛选结果">3. 筛选结果</h4>
+<table>
+<colgroup>
+<col style="width: 72%" />
+<col style="width: 28%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>方法类型</th>
+<th>方法/作者名称</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Bytes fuzzy hashing</strong></td>
+<td>Catalog1</td>
+</tr>
+<tr class="even">
+<td><strong>CFG fuzzy hashing</strong></td>
+<td>FunctionSimSearch</td>
+</tr>
+<tr class="odd">
+<td><strong>Attributed CFG and GNN</strong></td>
+<td>Gemini</td>
+</tr>
+<tr class="even">
+<td><strong>Attributed CFG, GNN, and GMN</strong></td>
+<td>Li et al. 2019</td>
+</tr>
+<tr class="odd">
+<td><strong>IR, data flflow analysis and neural network</strong></td>
+<td>Zeek</td>
+</tr>
+<tr class="even">
+<td><strong>Assembly code embedding</strong></td>
+<td>Asm2Vec</td>
+</tr>
+<tr class="odd">
+<td><strong>Assembly code embedding and self-attentive
+encoder</strong></td>
+<td>SAFE</td>
+</tr>
+<tr class="even">
+<td><strong>Assembly code embedding, CFG and GNN</strong></td>
+<td>Massarelli et al.2019</td>
+</tr>
+<tr class="odd">
+<td><strong>CodeCMR</strong></td>
+<td>BinaryAI</td>
+</tr>
+<tr class="even">
+<td><strong>hierarchical transformer and micro-traces</strong></td>
+<td>Trex</td>
+</tr>
+</tbody>
+</table>
+<h2 id="测试">测试</h2>
+<h4 id="复现方法">1. 复现方法</h4>
+<p>复现的几个阶段：<strong>binary analysis</strong>，<strong>the feature
+extraction</strong>，<strong>the machine-learning
+implementations</strong>.</p>
+<p>二进制分析以及特征提取使用的是IDA Pro 7.3以及其Python接口。</p>
+<p>有关我们所有实现的其他技术细节，以及有关我们努力联系相应作者的信息以及有关使用预训练模型的注意事项，请参见：</p>
+<p>How Machine Learning Is Solving the Binary Function Similarity
+Problem — Artifacts and Additional Technical Details.
+https://github.com/Cisco-Talos/binary_function_similarity.</p>
+<h4 id="数据集">2. 数据集</h4>
+<p>为了与现实世界的复杂性与变数相匹配，我们创建了两个新的数据集Dataset-1和Dataset-2，其包含了二进制检测领域的问题：</p>
+<ul>
+<li>​ 多种编译器和版本；</li>
+<li>​ 多种编译优化器；</li>
+<li>​ 多种指令集架构和bitness(32位还是64位)；</li>
+<li>​ 不同种类的代码（命令行 or GUI）；</li>
+</ul>
+<p><strong>Dataset-1用于训练，Dataset-1和Dataset-2用于测试。</strong></p>
+<h4 id="实验环境设置">3. 实验环境设置</h4>
+<h6 id="定义6个检测任务">3.1 定义6个检测任务</h6>
+<table>
+<colgroup>
+<col style="width: 11%" />
+<col style="width: 83%" />
+<col style="width: 5%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">序号</th>
+<th style="text-align: center;">任务名称</th>
+<th style="text-align: center;">作用</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">XO</td>
+<td
+style="text-align: center;">待测函数对仅优化器不同，编译器，编译器版本、指令集架构和bitness都相同</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">XC</td>
+<td
+style="text-align: center;">待测函数对优化器，编译器和编译器版本不同，指令集架构和bitness相同</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">XC+XB</td>
+<td
+style="text-align: center;">待测函数对优化器，编译器和编译器版本以及bitness不同，指令集架构相同</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">XA</td>
+<td
+style="text-align: center;">待测函数对指令集架构和bitness不同，其他相同</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">XA+XO</td>
+<td
+style="text-align: center;">待测函数对指令集架构、bitness和优化器不用，其他相同</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">XM</td>
+<td style="text-align: center;">待测函数对所有性质都可能不同</td>
+</tr>
+</tbody>
+</table>
+<h6 id="测试方法">3.2 测试方法</h6>
+<p>每种方法的测试包含两个过程：</p>
+<ol type="1">
+<li>AUC和ROC图；</li>
+<li>MRR和Recall@K。</li>
+</ol>
+<h4 id="模糊哈希方法比较结果">4. 模糊哈希方法比较结果</h4>
+<p>比较了两个方法：<strong>Catalog1</strong>和<strong>FunctionSimSearch</strong>。</p>
+<h6 id="首先每次只变动一个变量">4.1 首先每次只变动一个变量：</h6>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221212161639.png" style="zoom: 33%;" /></p>
+<p>B：Row Bytes；G：graphlets，连通图结构； M： mnemonics；符号
+I：immediates 。</p>
+<p>由图可知，在单指令集架构的条件下即使简单的row
+bytes输入也能取得较好效果，在多指令集架构下代码图结构明显更好。</p>
+<h6 id="测试3.1中的6个任务">4.2 测试3.1中的6个任务</h6>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221212162636.png" /></p>
+<p>可以看到：</p>
+<ol type="1">
+<li><p>当面对多变量不同的任务时简单的方法开始变得不奏效了，同时FSS在面对大函数时可能由于其图结构的输入也更为有效；</p></li>
+<li><p>同时，GMI的三个特征引入并没有比最基础的G配置输入更为有效；</p></li>
+<li><p>Catalog1速度更快，因为FSS的特征提取更耗时。</p></li>
+</ol>
+<h4 id="机器学习方法比较结果">5. 机器学习方法比较结果</h4>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221212165733.png" /></p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221212215209.png" /></p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221212220321.png" /></p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221212224409.png" /></p>
+<p>结论：</p>
+<ul>
+<li>GMN几乎在所有的测试下表现都最好，而且运行时间也很短；</li>
+<li>语言模型相关的方法在同一指令集架构下的表现都很不错，transformer在跨指令集架构的表现也不错；</li>
+<li>由Li等人提出的GNN变式相较于GNN（s2v）的表现有明显提升；</li>
+<li>GNN（s2v）相关的实验表明更复杂的特征提取不一定更有效，且使用instruction
+embedding也不一定效果更好；</li>
+<li>相较于GNN，使用了编码器的SAFE在小函数上的表现更好，但其存在OOV问题；</li>
+</ul>
+<h4 id="漏洞发掘的样例">6. 漏洞发掘的样例</h4>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221212232550.png" /></p>
+<h2 id="问题">问题</h2>
+<ol type="1">
+<li>测试的时候使用的Ranking measures（MRR10与Recall@K）的作用？</li>
+<li></li>
+</ol>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Binary/" rel="tag">Binary</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ML/" rel="tag">ML</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
     <article id="post-Connect X"  class="article article-type-post" itemscope itemprop="blogPost" >
   <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
     
@@ -191,7 +550,7 @@ id="宏观与微观的审视哲学量变产生质变">宏观与微观的审视�
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/12/01/Connect%20X/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/12/01/Connect%20X/"><img src="http://lorempixel.com/750/450/city/7" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -268,7 +627,7 @@ Getting Started | Kaggle
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/11/14/Facial%20Keypoints%20Detection/"><img src="http://lorempixel.com/750/450/city/3" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/11/14/Facial%20Keypoints%20Detection/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -342,7 +701,7 @@ Keypoints Detection | Kaggle
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/10/02/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91IFAttn%20Binary%20code%20similarity%20analysis%20based%20on%20interpretable%20features%20with%20attention/"><img src="http://lorempixel.com/750/450/city/3" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/10/02/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91IFAttn%20Binary%20code%20similarity%20analysis%20based%20on%20interpretable%20features%20with%20attention/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -424,7 +783,7 @@ binaries上的表现。
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/10/01/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Function-level%20obfuscation%20detection%20method%20based%20on%20Graph%20Convolutional%20Networks/"><img src="http://lorempixel.com/750/450/city/3" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/10/01/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Function-level%20obfuscation%20detection%20method%20based%20on%20Graph%20Convolutional%20Networks/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -504,7 +863,7 @@ level的、基于GCN的混淆检测方法。
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/07/21/%E5%86%B3%E7%AD%96%E6%97%B6%E8%A7%84%E5%88%92/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/07/21/%E5%86%B3%E7%AD%96%E6%97%B6%E8%A7%84%E5%88%92/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -601,7 +960,7 @@ Algorithms（Rollout 算法）和Monte Carlo Tree Search（MCTS
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/03/04/A%20Survey%20of%20Defense%20Mechanisms%20Against%20Distributed%20Denial%20of%20Service%20(DDoS)%20Flooding%20Attacks/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/03/04/A%20Survey%20of%20Defense%20Mechanisms%20Against%20Distributed%20Denial%20of%20Service%20(DDoS)%20Flooding%20Attacks/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -682,7 +1041,7 @@ DDoS攻击是安全专业人员最关心的问题之一，其通常是为了扰�
 
           
             <div class="entry-thumbnail">
-              <a href="/2021/11/14/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/"><img src="http://lorempixel.com/750/450/city/7" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2021/11/14/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -763,7 +1122,7 @@ Text制作的对抗样本很好地保持了有效性和自然性。最后，这�
 
           
             <div class="entry-thumbnail">
-              <a href="/2021/11/06/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Semantic%20Host-free%20Trojan%20Attack/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2021/11/06/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Semantic%20Host-free%20Trojan%20Attack/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -804,87 +1163,6 @@ ABSTRACT
       
   <span class="ico-tags"></span>
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AD/" rel="tag">AD</a></li></ul>
-
-      
-    </footer>
-    <hr class="entry-footer-hr">
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
-    <article id="post-【论文阅读】Intrusion detection system A comprehensive review"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2021/11/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Intrusion%20detection%20system%20A%20comprehensive%20review/">Intrusion detection system-A comprehensive review</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2021/11/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Intrusion%20detection%20system%20A%20comprehensive%20review/" class="article-date">
-	  <time datetime="2021-11-03T01:58:09.557Z" itemprop="datePublished">十一月 3, 2021</time>
-	</a>
-
-      
-	<span class="ico-folder"></span>
-    <a class="article-category-link" href="/categories/Paper/">Paper</a>
- 
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-
-          
-            <div class="entry-thumbnail">
-              <a href="/2021/11/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Intrusion%20detection%20system%20A%20comprehensive%20review/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
-            </div>
-          
-          <div class="entry-summary">
-          Intrusion
-detection system: A comprehensive review
-
-作者：Hung-Jen Liao a , Chun-Hung Richard Lin a,n , Ying-Chih
-Lin a,b , Kuang-Yuan Tung a（国立中山大学，正修科技大学）
-时间：2012
-
-ABSTRACT
-​ 一个IDS综述。
-PS：(17条消息)
-防火墙、IDS和IPS之间的区别（浅谈）_淡风wisdon－大大的博客-CSDN博客
-
-
-
-
-
-
-
-
-        
-          <p class="article-more-link">
-            <a href="/2021/11/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Intrusion%20detection%20system%20A%20comprehensive%20review/#more">阅读全文</a>
-          </p>
-        </div>
-      
-    </div>
-    <footer class="entry-meta entry-footer">
-      
-	<span class="ico-folder"></span>
-    <a class="article-category-link" href="/categories/Paper/">Paper</a>
-
-      
-  <span class="ico-tags"></span>
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/IDS/" rel="tag">IDS</a></li></ul>
 
       
     </footer>
@@ -1005,6 +1283,18 @@ PS：(17条消息)
               <div class="widget-entry-summary" style="margin: 0;">
             
 
+              <h6 style="margin: 0;"><a href="/2022/12/08/How-Machine-Learning-Is-Solving-the-Binary-Function-Similarity-Problem/">How Machine Learning Is Solving the Binary Function Similarity Problem</a></h6>
+              <span>十二月 8, 2022</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
               <h6 style="margin: 0;"><a href="/2022/12/01/Connect%20X/">强化学习之ConnectX四子棋游戏</a></h6>
               <span>十二月 1, 2022</span>
             </div>
@@ -1059,18 +1349,6 @@ PS：(17条消息)
 
           </li>
         
-          <li class="clearfix">
-
-            
-              <div class="widget-entry-summary" style="margin: 0;">
-            
-
-              <h6 style="margin: 0;"><a href="/2022/03/04/A%20Survey%20of%20Defense%20Mechanisms%20Against%20Distributed%20Denial%20of%20Service%20(DDoS)%20Flooding%20Attacks/">A Survey of Defense Mechanisms Against Distributed Denial of Service (DDoS) Flooding Attacks</a></h6>
-              <span>三月 4, 2022</span>
-            </div>
-
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -1080,7 +1358,7 @@ PS：(17条消息)
   <div class="widget-wrap">
     <h3 class="widget-title">分类</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Book/">Book</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kaggle/">Kaggle</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Paper/">Paper</a><span class="category-list-count">18</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Something/">Something</a><span class="category-list-count">4</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Book/">Book</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kaggle/">Kaggle</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Paper/">Paper</a><span class="category-list-count">19</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Something/">Something</a><span class="category-list-count">4</span></li></ul>
     </div>
   </div>
 
@@ -1090,7 +1368,7 @@ PS：(17条消息)
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD/" rel="tag">AD</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD-training/" rel="tag">AD training</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BCSA/" rel="tag">BCSA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Botnet/" rel="tag">Botnet</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CV/" rel="tag">CV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNN/" rel="tag">DNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDS/" rel="tag">IDS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Malware-Classifiers/" rel="tag">Malware Classifiers</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Math/" rel="tag">Math</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mutiagent/" rel="tag">Mutiagent</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/" rel="tag">NLP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDF/" rel="tag">PDF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RL/" rel="tag">RL</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RNN/" rel="tag">RNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/obfuscation/" rel="tag">obfuscation</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD/" rel="tag">AD</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD-training/" rel="tag">AD training</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BCSA/" rel="tag">BCSA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary/" rel="tag">Binary</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Botnet/" rel="tag">Botnet</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CV/" rel="tag">CV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNN/" rel="tag">DNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDS/" rel="tag">IDS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ML/" rel="tag">ML</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Malware-Classifiers/" rel="tag">Malware Classifiers</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Math/" rel="tag">Math</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mutiagent/" rel="tag">Mutiagent</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/" rel="tag">NLP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDF/" rel="tag">PDF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RL/" rel="tag">RL</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RNN/" rel="tag">RNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/obfuscation/" rel="tag">obfuscation</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1100,7 +1378,7 @@ PS：(17条消息)
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/AD/" style="font-size: 20px;">AD</a> <a href="/tags/AD-training/" style="font-size: 10px;">AD training</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/BCSA/" style="font-size: 10px;">BCSA</a> <a href="/tags/Botnet/" style="font-size: 10px;">Botnet</a> <a href="/tags/CV/" style="font-size: 10px;">CV</a> <a href="/tags/DDoS/" style="font-size: 10px;">DDoS</a> <a href="/tags/DNN/" style="font-size: 10px;">DNN</a> <a href="/tags/IDS/" style="font-size: 12px;">IDS</a> <a href="/tags/Machine-Learning/" style="font-size: 12px;">Machine Learning</a> <a href="/tags/Malware-Classifiers/" style="font-size: 18px;">Malware Classifiers</a> <a href="/tags/Math/" style="font-size: 10px;">Math</a> <a href="/tags/Mutiagent/" style="font-size: 10px;">Mutiagent</a> <a href="/tags/NLP/" style="font-size: 14px;">NLP</a> <a href="/tags/PDF/" style="font-size: 10px;">PDF</a> <a href="/tags/Pytorch/" style="font-size: 12px;">Pytorch</a> <a href="/tags/RL/" style="font-size: 16px;">RL</a> <a href="/tags/RNN/" style="font-size: 10px;">RNN</a> <a href="/tags/obfuscation/" style="font-size: 10px;">obfuscation</a>
+      <a href="/tags/AD/" style="font-size: 20px;">AD</a> <a href="/tags/AD-training/" style="font-size: 10px;">AD training</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/BCSA/" style="font-size: 10px;">BCSA</a> <a href="/tags/Binary/" style="font-size: 10px;">Binary</a> <a href="/tags/Botnet/" style="font-size: 10px;">Botnet</a> <a href="/tags/CV/" style="font-size: 10px;">CV</a> <a href="/tags/DDoS/" style="font-size: 10px;">DDoS</a> <a href="/tags/DNN/" style="font-size: 10px;">DNN</a> <a href="/tags/IDS/" style="font-size: 12px;">IDS</a> <a href="/tags/ML/" style="font-size: 10px;">ML</a> <a href="/tags/Machine-Learning/" style="font-size: 12px;">Machine Learning</a> <a href="/tags/Malware-Classifiers/" style="font-size: 18px;">Malware Classifiers</a> <a href="/tags/Math/" style="font-size: 10px;">Math</a> <a href="/tags/Mutiagent/" style="font-size: 10px;">Mutiagent</a> <a href="/tags/NLP/" style="font-size: 14px;">NLP</a> <a href="/tags/PDF/" style="font-size: 10px;">PDF</a> <a href="/tags/Pytorch/" style="font-size: 12px;">Pytorch</a> <a href="/tags/RL/" style="font-size: 16px;">RL</a> <a href="/tags/RNN/" style="font-size: 10px;">RNN</a> <a href="/tags/obfuscation/" style="font-size: 10px;">obfuscation</a>
     </div>
   </div>
 
@@ -1110,7 +1388,7 @@ PS：(17条消息)
     <h3 class="widget-title">归档</h3>
 
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">14</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">14</span></li></ul>
     </div>
   </div>
 
