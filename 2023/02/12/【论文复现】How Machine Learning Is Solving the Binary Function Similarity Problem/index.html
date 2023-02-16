@@ -17,7 +17,7 @@
 <meta property="og:description" content="【论文复现】How Machine Learning Is Solving the Binary Function Similarity Problem 一、模糊哈希（Fuzzy Hashing） 1. Bytes fuzzy hashing——Catalog1  出处： ​ 1. xorpd | FCatalog ​ 2. binary_function_similarity&#x2F;">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-02-12T02:04:09.593Z">
-<meta property="article:modified_time" content="2023-02-13T12:31:49.384Z">
+<meta property="article:modified_time" content="2023-02-16T11:57:26.847Z">
 <meta property="article:author" content="Shaw">
 <meta name="twitter:card" content="summary">
   
@@ -165,6 +165,7 @@ J（S(a),S(b)）=\frac {S(a)\cap S(b)}{S(a)\cup S(b)}
 </ul>
 <p>​
 Catalog1算法利用minhash，使用哈希近似替代两个S集合，以此来估算其Jaccard系数，从而达到高效率地比较两个集合。</p>
+<span id="more"></span>
 <h4 id="代码结构分析">代码结构分析：</h4>
 <p>​
 Catalog1算法需要将二进制文件截取分割后，由于每个二进制文件的长度不定，故其分割计算出的S(a)也不定长。为了对每个二进制文件都得到一个定长的特征签名，就需要对S(a)进行特征提取。</p>
