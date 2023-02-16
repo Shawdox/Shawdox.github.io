@@ -114,6 +114,271 @@
         
           <section id="main">
   
+    <article id="post-【论文阅读】Adversarial Training with Fast Gradient Projection Method against Synonym Substitution Based Text Attacks"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Adversarial%20Training%20with%20Fast%20Gradient%20Projection%20Method%20against%20Synonym%20Substitution%20Based%20Text%20Attacks/">Adversarial Training with Fast Gradient Projection Method against Synonym Substitution Based Text Attacks</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Adversarial%20Training%20with%20Fast%20Gradient%20Projection%20Method%20against%20Synonym%20Substitution%20Based%20Text%20Attacks/" class="article-date">
+	  <time datetime="2021-09-03T08:19:51.193Z" itemprop="datePublished">九月 3, 2021</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1
+id="论文阅读adversarial-training-with-fast-gradient-projection-method-against-synonym-substitution-based-text-attacks">【论文阅读】Adversarial
+Training with Fast Gradient Projection Method against Synonym
+Substitution Based Text Attacks</h1>
+<blockquote>
+<p><strong>时间：2020</strong></p>
+<p><strong>作者：王晓森，杨逸辰等 </strong>华中科技大学</p>
+<p><strong>会议：AAAI</strong></p>
+</blockquote>
+<h3 id="总结">总结：</h3>
+<ol type="1">
+<li><p><strong>做了什么？</strong></p>
+<ul>
+<li><p>提出了一种速度更快的，更容易应用在复杂神经网络和大数据集上的，基于同义词替换的NLP对抗样本生成方法，FGPM；</p></li>
+<li><p>将FGPM纳入对抗训练中，以提高深度神经网络的鲁棒性。</p></li>
+</ul></li>
+<li><p><strong>怎么做的？</strong></p></li>
+<li><p><strong>实验结果？</strong></p>
+<ul>
+<li>FGPM的效果不是最高的，但也跟最高的差不多，但生成对抗样本的时间对比同类方法，缩减了1-3个数量级。</li>
+<li>ATFL的对抗样本防御能力和抗转移能力很强。</li>
+</ul></li>
+</ol>
+<hr />
+<h3 id="abstract">Abstract:</h3>
+<p>​
+对抗训练是对于提升图像分类深度神经网络鲁棒性的，基于实验的最成功的进步所在。</p>
+<p>​
+然而，对于文本分类，现有的基于同义词替换的对抗样本攻击十分奏效，但却没有被很有效地合并入实际的文本对抗训练中。</p>
+<p>​
+基于梯度的攻击对于图像很有效，但因为文本的词汇，语法，语义结构的限制以及离散的文本输入空间，不能很好的应用于基于近义词替换的文本攻击中。</p>
+<p>​
+因此，我们提出了一个基于同义词的替换的快速的文本对抗抗攻击方法名为<strong><em>Fast
+Gradient Projection Method
+(FGPM)</em></strong>。它的速度是已有文本攻击方法的20余倍，攻击效果也跟这些方法差不多。</p>
+<p>​
+我们接着将FGPM合并入对抗训练中，提出了一个文本防御方法，<strong><em>Adversarial
+Training with FGPM enhanced by Logit pairing</em>(ATFL)</strong>。</p>
+<p>​
+实验结果表明ATFL可以显著提高模型的鲁棒性，破坏对抗样本的可转移性。</p>
+<hr />
+<h3 id="introduction">1 Introduction:</h3>
+<p>​
+现有的针对NLP的攻击方法包括了：字符等级攻击，单词等级攻击，句子等级攻击。</p>
+<p>​ 对于字符等级的攻击，最近的工作（<em>Pruthi, Dhingra, and Lipton
+2019</em>）表明了拼写检查器很容易修正样本中的扰动；</p>
+<p>​
+对于句子等级的攻击，其一般需要基于改述，故需要更长的时间来生成对抗样本；</p>
+<p>​ 对于单词等级的攻击，基于嵌入扰动的替换（<em>replacing word based on
+embedding
+perturbation</em>），添加，删除单词都会很容易改变句子的语法语义结构与正确性，<strong>故同义词替换的方法可以更好的处理上述问题，同时保证对抗样本更难被人类观察者发现</strong>。</p>
+<p>​
+但不幸的是，基于同义词替换的攻击相较于如今对图像的攻击展现出了更低的功效。</p>
+<p>​</p>
+<p>​
+据我们所知，对抗训练，对图像数据最有效的防御方法之一，并没有在对抗基于同义词替换的攻击上很好的实施过。</p>
+<p>​
+一方面，现有的基于同义词替换的攻击方法通常效率要低得多，难以纳入对抗训练。另一方面，尽管对图像的方法很有效，但其并不能直接移植到文本数据上。</p>
+<p>​</p>
+<h4 id="adversarial-defense">1.1 Adversarial Defense:</h4>
+<p>​
+有一系列工作对词嵌入进行扰动，并将扰动作为正则化策略用于对抗训练(<em>Miyato,
+Dai, and Goodfellow</em></p>
+<p><em>2016; Sato et al. 2018; Barham and Feizi 2019</em>)
+。这些工作目的是提高模型对于原始数据集的表现，并不是为了防御对抗样本攻击，因此，我们不会考虑这些工作。</p>
+<p>​
+不同于如今现有的防御方法，我们的工作聚焦于快速对抗样本生成，容易应用在复杂的神经网络和大数据集上的防御方法。</p>
+<hr />
+<h3 id="fast-gradient-projection-methodfgpm">2 Fast Gradient Projection
+Method（FGPM）:</h3>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904144444.png" /></p>
+<hr />
+<h3 id="adversarial-training-with-fgpm">3 Adversarial Training with
+FGPM：</h3>
+<p>​ 具体算法中文描述见：</p>
+<p><a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/248425749">《基于同义词替换的快速梯度映射（FGPM）文本对抗攻击方法》阅读笔记
+- 知乎 (zhihu.com)</a></p>
+<hr />
+<h3 id="experimental-results">4 Experimental Results：</h3>
+<p>​ 我们衡量FGPM使用四种攻击准则，衡量ATFL使用两种防御准则。</p>
+<p>​
+我们在三个很受欢迎的基准数据集上，同时包括CNN和RNN模型上进行测试，代码开源：https://github.com/JHL-HUST/FGPM</p>
+<h4 id="baselines">4.1 Baselines:</h4>
+<p>​ 为了评估FGPM的攻击效能，我们将其与Papernot’、GSA (
+Kuleshov等人的4种对抗性攻击进行了比较。2018 )、PWWS ( Ren et al . 2019
+)和Iga ( Wang，jin，and he 2019 )。</p>
+<p>​ 此外，为了验证我们的ATFL的防御能力，我们采用了SEM ( Wang，Jin，He
+2019 )和IBP ( Jia et al . 2019
+)，针对上述Word-Level攻击。由于攻击基线的效率很低，我们在每个数据集上随机抽取200个示例，并在各种模型上生成对抗样本。</p>
+<h4 id="datasets">4.2 Datasets:</h4>
+<p>​ <em>AG’s News</em>, <em>DBPedia ontology</em> and <em>Yahoo!
+Answers</em> (Zhang,Zhao, and LeCun 2015).</p>
+<h4 id="models">4.3 Models:</h4>
+<p>​
+我们使用了CNNs,RNNs,来达到主流的文本分类表现，所有模型的嵌入维度均为300。</p>
+<h4 id="evaluation-on-attack-effectiveness">4.4 Evaluation on Attack
+Effectiveness：</h4>
+<p>​ 我们评估模型在攻击下的准确率和转移率：</p>
+<p>​ <strong>准确率：</strong></p>
+<p>​ <img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904134852.png" /></p>
+<p>​ <strong>转移率：</strong></p>
+<p>​ <img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904135419.png" /></p>
+<h4 id="evaluation-on-attack-efficiency">4.4 Evaluation on Attack
+Efficiency：</h4>
+<p>​
+对抗训练需要高效率的生成对抗样本以有效地提升模型鲁棒性。因此，我们评估了不同攻击方法在三个数据集上生成生成200个对抗样本的总时间。</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904135842.png" /></p>
+<h4 id="evaluation-on-adversarial-training">4.5 Evaluation on
+Adversarial Training：</h4>
+<p>​ 我们评估ATFL的对抗样本防御能力和抗转移能力：</p>
+<p>​ <strong>对抗样本防御能力：</strong></p>
+<p>​ <img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904140647.png" /></p>
+<p>​ <strong>抗转移能力：</strong></p>
+<p>​ <img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904141719.png" /></p>
+<h4 id="evaluation-on-adversarial-training-variants">4.6 Evaluation on
+Adversarial Training Variants:</h4>
+<p>​
+许多对抗训练的变体，例如CLP和ALP，TRADES等，已经尝试采用不同的正则化方法来提高针对图像数据的对抗训练准确率。</p>
+<p>​
+在这里，我们回答一个问题：这些变体方法也可以提高文本数据准确率吗？</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904142406.png" /></p>
+<p>​ 从表中可以看出，只有ALP可以长远地提升对抗训练的表现。</p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AD/" rel="tag">AD</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AD-training/" rel="tag">AD training</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NLP/" rel="tag">NLP</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
+    <article id="post-【书籍阅读】《统计学习方法》"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2021/09/03/%E3%80%90%E4%B9%A6%E7%B1%8D%E9%98%85%E8%AF%BB%E3%80%91%E3%80%8A%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95%E3%80%8B/">《统计学习方法》</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2021/09/03/%E3%80%90%E4%B9%A6%E7%B1%8D%E9%98%85%E8%AF%BB%E3%80%91%E3%80%8A%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95%E3%80%8B/" class="article-date">
+	  <time datetime="2021-09-03T06:17:39.403Z" itemprop="datePublished">九月 3, 2021</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Book/">Book</a>
+ 
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+
+          
+            <div class="entry-thumbnail">
+              <a href="/2021/09/03/%E3%80%90%E4%B9%A6%E7%B1%8D%E9%98%85%E8%AF%BB%E3%80%91%E3%80%8A%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95%E3%80%8B/"><img src="http://lorempixel.com/750/450/city/7" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+            </div>
+          
+          <div class="entry-summary">
+          【书籍阅读】《统计学习方法》
+一. 统计学习方法概论：
+​
+首先，要明确计算机科学中存在三个维度：系统，计算，与信息。统计学习方法（机器学习）主要属于信息这一维度，并在其中扮演者核心角色。
+1. 监督学习概念：
+​ 监督学习，Supervised
+learning，指在已经做好标注的训练集上学习，为了叙述方便，定义以下基本概念：
+
+
+输入空间（X），输出空间（Y）：输入所有可能取值，输出所有可能取值；
+特征空间：输入一般由特征向量表示，所有特征向量存在的空间称为特征空间，输入空间与特征空间并不完全等价，有时需要映射；
+上标 xi :表示一个输入的第 i
+个特征；
+下标 xj：表示第 j 个输入。
+回归问题：输入输出都为连续型变量；
+分类问题：输出变量为有限个离散型变量；
+标注问题：输入与输出变量都为变量序列。
+假设空间：所有可能的模型的集合，也就是学习的范围。
+
+
+​ 使用训练集学习----&gt;对未知数据进行预测
+​
+
+        
+          <p class="article-more-link">
+            <a href="/2021/09/03/%E3%80%90%E4%B9%A6%E7%B1%8D%E9%98%85%E8%AF%BB%E3%80%91%E3%80%8A%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95%E3%80%8B/#more">阅读全文</a>
+          </p>
+        </div>
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Book/">Book</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
     <article id="post-【论文阅读】Deep Text Classifification Can be Fooled"  class="article article-type-post" itemscope itemprop="blogPost" >
   <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
     
@@ -146,7 +411,7 @@
 
           
             <div class="entry-thumbnail">
-              <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -428,7 +693,7 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194448.png" /></p>
 
           
             <div class="entry-thumbnail">
-              <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91AD%20nlp%20Survey/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91AD%20nlp%20Survey/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -508,7 +773,7 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194448.png" /></p>
 
           
             <div class="entry-thumbnail">
-              <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91A%20novel%20Android%20malware%20detection%20system%20adaption%20of%20flter%E2%80%91based%20%20feature%20selection%20methods/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91A%20novel%20Android%20malware%20detection%20system%20adaption%20of%20flter%E2%80%91based%20%20feature%20selection%20methods/"><img src="http://lorempixel.com/750/450/city/7" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -600,7 +865,7 @@ Abstract:
 
           
             <div class="entry-thumbnail">
-              <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91A%20Benchmark%20API%20Call%20Dataset%20For%20Windows%20PE%20Malware%20Classification/"><img src="http://lorempixel.com/750/450/city/4" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91A%20Benchmark%20API%20Call%20Dataset%20For%20Windows%20PE%20Malware%20Classification/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -954,6 +1219,30 @@ Rate，TNR），也称为specificity,计算公式为TNR= <em>TN</em>/ (
               <div class="widget-entry-summary" style="margin: 0;">
             
 
+              <h6 style="margin: 0;"><a href="/2023/02/12/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91How%20Machine%20Learning%20Is%20Solving%20the%20Binary%20Function%20Similarity%20Problem/">(no title)</a></h6>
+              <span>二月 12, 2023</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
+              <h6 style="margin: 0;"><a href="/2023/01/10/Comparing-One-with-Many-%E2%80%94-Solving-Binary2source-Function-Matching-Under-Function-Inlining/">Comparing One with Many — Solving Binary2source Function Matching Under  Function Inlining</a></h6>
+              <span>一月 10, 2023</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
               <h6 style="margin: 0;"><a href="/2022/12/08/How-Machine-Learning-Is-Solving-the-Binary-Function-Similarity-Problem/">How Machine Learning Is Solving the Binary Function Similarity Problem</a></h6>
               <span>十二月 8, 2022</span>
             </div>
@@ -996,30 +1285,6 @@ Rate，TNR），也称为specificity,计算公式为TNR= <em>TN</em>/ (
 
           </li>
         
-          <li class="clearfix">
-
-            
-              <div class="widget-entry-summary" style="margin: 0;">
-            
-
-              <h6 style="margin: 0;"><a href="/2022/10/01/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Function-level%20obfuscation%20detection%20method%20based%20on%20Graph%20Convolutional%20Networks/">Function-level obfuscation detection method based on Graph Convolutional Networks</a></h6>
-              <span>十月 1, 2022</span>
-            </div>
-
-          </li>
-        
-          <li class="clearfix">
-
-            
-              <div class="widget-entry-summary" style="margin: 0;">
-            
-
-              <h6 style="margin: 0;"><a href="/2022/07/21/%E5%86%B3%E7%AD%96%E6%97%B6%E8%A7%84%E5%88%92/">Planning at Decision Time(决策时规划)</a></h6>
-              <span>七月 21, 2022</span>
-            </div>
-
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -1029,7 +1294,7 @@ Rate，TNR），也称为specificity,计算公式为TNR= <em>TN</em>/ (
   <div class="widget-wrap">
     <h3 class="widget-title">分类</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Book/">Book</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kaggle/">Kaggle</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Paper/">Paper</a><span class="category-list-count">19</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Something/">Something</a><span class="category-list-count">4</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Book/">Book</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kaggle/">Kaggle</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Paper/">Paper</a><span class="category-list-count">20</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Something/">Something</a><span class="category-list-count">4</span></li></ul>
     </div>
   </div>
 
@@ -1039,7 +1304,7 @@ Rate，TNR），也称为specificity,计算公式为TNR= <em>TN</em>/ (
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD/" rel="tag">AD</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD-training/" rel="tag">AD training</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BCSA/" rel="tag">BCSA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary/" rel="tag">Binary</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Botnet/" rel="tag">Botnet</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CV/" rel="tag">CV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNN/" rel="tag">DNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDS/" rel="tag">IDS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ML/" rel="tag">ML</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Malware-Classifiers/" rel="tag">Malware Classifiers</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Math/" rel="tag">Math</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mutiagent/" rel="tag">Mutiagent</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/" rel="tag">NLP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDF/" rel="tag">PDF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RL/" rel="tag">RL</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RNN/" rel="tag">RNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/obfuscation/" rel="tag">obfuscation</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD/" rel="tag">AD</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD-training/" rel="tag">AD training</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BCSA/" rel="tag">BCSA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary/" rel="tag">Binary</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Botnet/" rel="tag">Botnet</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CV/" rel="tag">CV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNN/" rel="tag">DNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDS/" rel="tag">IDS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ML/" rel="tag">ML</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Malware-Classifiers/" rel="tag">Malware Classifiers</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Math/" rel="tag">Math</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mutiagent/" rel="tag">Mutiagent</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/" rel="tag">NLP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDF/" rel="tag">PDF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RL/" rel="tag">RL</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RNN/" rel="tag">RNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/obfuscation/" rel="tag">obfuscation</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1049,7 +1314,7 @@ Rate，TNR），也称为specificity,计算公式为TNR= <em>TN</em>/ (
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/AD/" style="font-size: 20px;">AD</a> <a href="/tags/AD-training/" style="font-size: 10px;">AD training</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/BCSA/" style="font-size: 10px;">BCSA</a> <a href="/tags/Binary/" style="font-size: 10px;">Binary</a> <a href="/tags/Botnet/" style="font-size: 10px;">Botnet</a> <a href="/tags/CV/" style="font-size: 10px;">CV</a> <a href="/tags/DDoS/" style="font-size: 10px;">DDoS</a> <a href="/tags/DNN/" style="font-size: 10px;">DNN</a> <a href="/tags/IDS/" style="font-size: 12px;">IDS</a> <a href="/tags/ML/" style="font-size: 10px;">ML</a> <a href="/tags/Machine-Learning/" style="font-size: 12px;">Machine Learning</a> <a href="/tags/Malware-Classifiers/" style="font-size: 18px;">Malware Classifiers</a> <a href="/tags/Math/" style="font-size: 10px;">Math</a> <a href="/tags/Mutiagent/" style="font-size: 10px;">Mutiagent</a> <a href="/tags/NLP/" style="font-size: 14px;">NLP</a> <a href="/tags/PDF/" style="font-size: 10px;">PDF</a> <a href="/tags/Pytorch/" style="font-size: 12px;">Pytorch</a> <a href="/tags/RL/" style="font-size: 16px;">RL</a> <a href="/tags/RNN/" style="font-size: 10px;">RNN</a> <a href="/tags/obfuscation/" style="font-size: 10px;">obfuscation</a>
+      <a href="/tags/AD/" style="font-size: 20px;">AD</a> <a href="/tags/AD-training/" style="font-size: 10px;">AD training</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/BCSA/" style="font-size: 10px;">BCSA</a> <a href="/tags/Binary/" style="font-size: 12px;">Binary</a> <a href="/tags/Botnet/" style="font-size: 10px;">Botnet</a> <a href="/tags/CV/" style="font-size: 10px;">CV</a> <a href="/tags/DDoS/" style="font-size: 10px;">DDoS</a> <a href="/tags/DNN/" style="font-size: 10px;">DNN</a> <a href="/tags/IDS/" style="font-size: 12px;">IDS</a> <a href="/tags/ML/" style="font-size: 12px;">ML</a> <a href="/tags/Machine-Learning/" style="font-size: 12px;">Machine Learning</a> <a href="/tags/Malware-Classifiers/" style="font-size: 18px;">Malware Classifiers</a> <a href="/tags/Math/" style="font-size: 10px;">Math</a> <a href="/tags/Mutiagent/" style="font-size: 10px;">Mutiagent</a> <a href="/tags/NLP/" style="font-size: 14px;">NLP</a> <a href="/tags/PDF/" style="font-size: 10px;">PDF</a> <a href="/tags/Pytorch/" style="font-size: 12px;">Pytorch</a> <a href="/tags/RL/" style="font-size: 16px;">RL</a> <a href="/tags/RNN/" style="font-size: 10px;">RNN</a> <a href="/tags/obfuscation/" style="font-size: 10px;">obfuscation</a>
     </div>
   </div>
 
@@ -1059,7 +1324,7 @@ Rate，TNR），也称为specificity,计算公式为TNR= <em>TN</em>/ (
     <h3 class="widget-title">归档</h3>
 
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">14</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">14</span></li></ul>
     </div>
   </div>
 
@@ -1088,7 +1353,7 @@ Rate，TNR），也称为specificity,计算公式为TNR= <em>TN</em>/ (
 
   <div class="clearfix container">
       <div class="site-info">
-	      &copy; 2022 Shaw All Rights Reserved.
+	      &copy; 2023 Shaw All Rights Reserved.
         
             <span id="busuanzi_container_site_uv">
               本站访客数<span id="busuanzi_value_site_uv"></span>人次  

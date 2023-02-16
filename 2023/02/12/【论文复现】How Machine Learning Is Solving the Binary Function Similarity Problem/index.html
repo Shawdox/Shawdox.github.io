@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  
+  
+  
+  <meta name="description" content="【论文复现】How Machine Learning Is Solving the Binary Function Similarity Problem 一、模糊哈希（Fuzzy Hashing） 1. Bytes fuzzy hashing——Catalog1  出处： ​ 1. xorpd | FCatalog ​ 2. binary_function_similarity&#x2F;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Shaw">
+<meta property="og:url" content="http://example.com/2023/02/12/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91How%20Machine%20Learning%20Is%20Solving%20the%20Binary%20Function%20Similarity%20Problem/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="【论文复现】How Machine Learning Is Solving the Binary Function Similarity Problem 一、模糊哈希（Fuzzy Hashing） 1. Bytes fuzzy hashing——Catalog1  出处： ​ 1. xorpd | FCatalog ​ 2. binary_function_similarity&#x2F;">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-02-12T02:04:09.593Z">
+<meta property="article:modified_time" content="2023-02-13T12:31:49.384Z">
+<meta property="article:author" content="Shaw">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-【论文复现】How Machine Learning Is Solving the Binary Function Similarity Problem" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+    <div class="article-meta">
+      
+	<a href="/2023/02/12/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91How%20Machine%20Learning%20Is%20Solving%20the%20Binary%20Function%20Similarity%20Problem/" class="article-date">
+	  <time datetime="2023-02-12T02:04:09.593Z" itemprop="datePublished">二月 12, 2023</time>
+	</a>
+
+       
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1
+id="论文复现how-machine-learning-is-solving-the-binary-function-similarity-problem">【论文复现】How
+Machine Learning Is Solving the Binary Function Similarity Problem</h1>
+<h2 id="一模糊哈希fuzzy-hashing">一、模糊哈希（Fuzzy Hashing）</h2>
+<h3 id="bytes-fuzzy-hashingcatalog1">1. Bytes fuzzy
+hashing——Catalog1</h3>
+<blockquote>
+<p><strong>出处：</strong></p>
+<p>​ 1. <a target="_blank" rel="noopener" href="https://www.xorpd.net/pages/fcatalog.html">xorpd |
+FCatalog</a></p>
+<p>​ 2. <a
+target="_blank" rel="noopener" href="https://github.com/Cisco-Talos/binary_function_similarity/tree/main/Models/Catalog1">binary_function_similarity/Models/Catalog1
+at main · Cisco-Talos/binary_function_similarity (github.com)</a></p>
+<p>"FCatalog allows you to keep a database of all your named functions,
+and find similarities from this database efficiently."</p>
+</blockquote>
+<h4 id="前置知识">前置知识：</h4>
+<ul>
+<li><p><strong>binary blob</strong>：一串bytes；</p></li>
+<li><p><strong>S(a)</strong>：字节串a的四字截取集合，例如: <span
+class="math display">\[
+\mathbf{S(a)}= \{123x,23xy,3xy1\},a=123xy1 \\
+\mathbf{S(b)}= \{1111\},b=111111111 \\
+\]</span></p></li>
+<li><p><strong>Jaccard Similarity</strong>：计算两个集合相似性： <span
+class="math display">\[
+J（S(a),S(b)）=\frac {S(a)\cap S(b)}{S(a)\cup S(b)}
+\]</span></p></li>
+<li><p><strong>minhash</strong>：文本相似度比较算法，用于快速<strong>估算</strong>两个集合的相似度。</p></li>
+</ul>
+<p>​
+Catalog1算法利用minhash，使用哈希近似替代两个S集合，以此来估算其Jaccard系数，从而达到高效率地比较两个集合。</p>
+<h4 id="代码结构分析">代码结构分析：</h4>
+<p>​
+Catalog1算法需要将二进制文件截取分割后，由于每个二进制文件的长度不定，故其分割计算出的S(a)也不定长。为了对每个二进制文件都得到一个定长的特征签名，就需要对S(a)进行特征提取。</p>
+<p>​
+使用哈希函数将集合中的每个DWORD映射到DWORD，这里的哈希采用类似密码学中置换的方法（permutation）：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">WORD_SIZE</span> <span class="token expression"><span class="token number">32</span>      	</span><span class="token comment">// 32 bits</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">MAX_WORD</span> <span class="token expression"><span class="token number">0xffffffff</span>     </span><span class="token comment">// Maximum size of a dword.</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">BYTE_SIZE</span> <span class="token expression"><span class="token number">8</span>             </span><span class="token comment">// Amount of bits in a byte.</span></span>
+
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">NUM_ITERS</span> <span class="token expression"><span class="token number">4</span>             </span><span class="token comment">// Amount of iterations per permutation.</span></span>
+
+<span class="token comment">// There are 128 RAND_DWORDS. Don't change the amount of random dwords here.</span>
+
+<span class="token keyword">unsigned</span> <span class="token keyword">int</span> RAND_DWORDS<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token number">1445200656</span><span class="token punctuation">,</span> <span class="token number">3877429363</span><span class="token punctuation">,</span> <span class="token number">1060188777</span><span class="token punctuation">,</span> <span class="token number">4260769784</span><span class="token punctuation">,</span> <span class="token number">1438562000</span><span class="token punctuation">,</span> <span class="token number">2836098482</span><span class="token punctuation">,</span> <span class="token number">1986405151</span><span class="token punctuation">,</span> <span class="token number">4230168452</span><span class="token punctuation">,</span> <span class="token number">380326093</span><span class="token punctuation">,</span> <span class="token number">2859127666</span><span class="token punctuation">,</span> <span class="token number">1134102609</span><span class="token punctuation">,</span> <span class="token number">788546250</span><span class="token punctuation">,</span> <span class="token number">3705417527</span><span class="token punctuation">,</span> <span class="token number">1779868252</span><span class="token punctuation">,</span> <span class="token number">1958737986</span><span class="token punctuation">,</span> <span class="token number">4046915967</span><span class="token punctuation">,</span> <span class="token number">1614805928</span><span class="token punctuation">,</span> <span class="token number">4160312724</span><span class="token punctuation">,</span> <span class="token number">3682325739</span><span class="token punctuation">,</span> <span class="token number">534901034</span><span class="token punctuation">,</span> <span class="token number">2287240917</span><span class="token punctuation">,</span> <span class="token number">2677201636</span><span class="token punctuation">,</span> <span class="token number">71025852</span><span class="token punctuation">,</span> <span class="token number">1171752314</span><span class="token punctuation">,</span> <span class="token number">47956297</span><span class="token punctuation">,</span> <span class="token number">2265969327</span><span class="token punctuation">,</span> <span class="token number">2865804126</span><span class="token punctuation">,</span> <span class="token number">1364027301</span><span class="token punctuation">,</span> <span class="token number">2267528752</span><span class="token punctuation">,</span> <span class="token number">1998395705</span><span class="token punctuation">,</span> <span class="token number">576397983</span><span class="token punctuation">,</span> <span class="token number">636085149</span><span class="token punctuation">,</span> <span class="token number">3876141063</span><span class="token punctuation">,</span> <span class="token number">1131266725</span><span class="token punctuation">,</span> <span class="token number">3949079092</span><span class="token punctuation">,</span> <span class="token number">1674557074</span><span class="token punctuation">,</span> <span class="token number">2566739348</span><span class="token punctuation">,</span> <span class="token number">3782985982</span><span class="token punctuation">,</span> <span class="token number">2164386649</span><span class="token punctuation">,</span> <span class="token number">550438955</span><span class="token punctuation">,</span> <span class="token number">2491039847</span><span class="token punctuation">,</span> <span class="token number">2409394861</span><span class="token punctuation">,</span> <span class="token number">3757073140</span><span class="token punctuation">,</span> <span class="token number">3509849961</span><span class="token punctuation">,</span> <span class="token number">3972853470</span><span class="token punctuation">,</span> <span class="token number">1377009785</span><span class="token punctuation">,</span> <span class="token number">2164834118</span><span class="token punctuation">,</span> <span class="token number">820549672</span><span class="token punctuation">,</span> <span class="token number">2867309379</span><span class="token punctuation">,</span> <span class="token number">1454756115</span><span class="token punctuation">,</span> <span class="token number">94270429</span><span class="token punctuation">,</span> <span class="token number">2974978638</span><span class="token punctuation">,</span> <span class="token number">2915205038</span><span class="token punctuation">,</span> <span class="token number">1887247447</span><span class="token punctuation">,</span> <span class="token number">3641720023</span><span class="token punctuation">,</span> <span class="token number">4292314015</span><span class="token punctuation">,</span> <span class="token number">702694146</span><span class="token punctuation">,</span> <span class="token number">1808155309</span><span class="token punctuation">,</span> <span class="token number">95993403</span><span class="token punctuation">,</span> <span class="token number">1529688311</span><span class="token punctuation">,</span> <span class="token number">2883286160</span><span class="token punctuation">,</span> <span class="token number">1410658736</span><span class="token punctuation">,</span> <span class="token number">3225014055</span><span class="token punctuation">,</span> <span class="token number">1903093988</span><span class="token punctuation">,</span> <span class="token number">2049895643</span><span class="token punctuation">,</span> <span class="token number">476880516</span><span class="token punctuation">,</span> <span class="token number">3241604078</span><span class="token punctuation">,</span> <span class="token number">3709326844</span><span class="token punctuation">,</span> <span class="token number">2531992854</span><span class="token punctuation">,</span> <span class="token number">265580822</span><span class="token punctuation">,</span> <span class="token number">2920230147</span><span class="token punctuation">,</span> <span class="token number">4294230868</span><span class="token punctuation">,</span> <span class="token number">408106067</span><span class="token punctuation">,</span> <span class="token number">3683123785</span><span class="token punctuation">,</span> <span class="token number">1782150222</span><span class="token punctuation">,</span> <span class="token number">3876124798</span><span class="token punctuation">,</span> <span class="token number">3400886112</span><span class="token punctuation">,</span> <span class="token number">1837386661</span><span class="token punctuation">,</span> <span class="token number">664033147</span><span class="token punctuation">,</span> <span class="token number">3948403539</span><span class="token punctuation">,</span> <span class="token number">3572529266</span><span class="token punctuation">,</span> <span class="token number">4084780068</span><span class="token punctuation">,</span> <span class="token number">691101764</span><span class="token punctuation">,</span> <span class="token number">1191456665</span><span class="token punctuation">,</span> <span class="token number">3559651142</span><span class="token punctuation">,</span> <span class="token number">709364116</span><span class="token punctuation">,</span> <span class="token number">3999544719</span><span class="token punctuation">,</span> <span class="token number">189208547</span><span class="token punctuation">,</span> <span class="token number">3851247656</span><span class="token punctuation">,</span> <span class="token number">69124994</span><span class="token punctuation">,</span> <span class="token number">1685591380</span><span class="token punctuation">,</span> <span class="token number">1312437435</span><span class="token punctuation">,</span> <span class="token number">2316872331</span><span class="token punctuation">,</span> <span class="token number">1466758250</span><span class="token punctuation">,</span> <span class="token number">1979107610</span><span class="token punctuation">,</span> <span class="token number">2611873442</span><span class="token punctuation">,</span> <span class="token number">80372344</span><span class="token punctuation">,</span> <span class="token number">1251839752</span><span class="token punctuation">,</span> <span class="token number">2716578101</span><span class="token punctuation">,</span> <span class="token number">176193185</span><span class="token punctuation">,</span> <span class="token number">2142192370</span><span class="token punctuation">,</span> <span class="token number">1179562050</span><span class="token punctuation">,</span> <span class="token number">1290470544</span><span class="token punctuation">,</span> <span class="token number">1957198791</span><span class="token punctuation">,</span> <span class="token number">1435943450</span><span class="token punctuation">,</span> <span class="token number">2989992875</span><span class="token punctuation">,</span> <span class="token number">3703466909</span><span class="token punctuation">,</span> <span class="token number">1302678442</span><span class="token punctuation">,</span> <span class="token number">3343948619</span><span class="token punctuation">,</span> <span class="token number">3762772165</span><span class="token punctuation">,</span> <span class="token number">1438266632</span><span class="token punctuation">,</span> <span class="token number">1761719790</span><span class="token punctuation">,</span> <span class="token number">3668101852</span><span class="token punctuation">,</span> <span class="token number">1283600006</span><span class="token punctuation">,</span> <span class="token number">671544087</span><span class="token punctuation">,</span> <span class="token number">1665876818</span><span class="token punctuation">,</span> <span class="token number">3645433092</span><span class="token punctuation">,</span> <span class="token number">3760380605</span><span class="token punctuation">,</span> <span class="token number">3802664867</span><span class="token punctuation">,</span> <span class="token number">1635015896</span><span class="token punctuation">,</span> <span class="token number">1060356828</span><span class="token punctuation">,</span> <span class="token number">1666255066</span><span class="token punctuation">,</span> <span class="token number">2953295653</span><span class="token punctuation">,</span> <span class="token number">2827859377</span><span class="token punctuation">,</span> <span class="token number">386702151</span><span class="token punctuation">,</span> <span class="token number">3372348076</span><span class="token punctuation">,</span> <span class="token number">4248620909</span><span class="token punctuation">,</span> <span class="token number">2259505262</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+
+<span class="token comment">// Amount of rand dwords - 1:</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">NUM_DWORDS_MASK</span> <span class="token expression"><span class="token number">0x7f</span></span></span>
+
+<span class="token keyword">unsigned</span> <span class="token keyword">int</span> <span class="token function">ror</span><span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">int</span> x<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">int</span> i<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// Rotate right a dword x by i bits.</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>x <span class="token operator">>></span> i<span class="token punctuation">)</span> <span class="token operator">|</span> <span class="token punctuation">(</span>x <span class="token operator">&lt;&lt;</span> <span class="token punctuation">(</span>WORD_SIZE <span class="token operator">-</span> i<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+
+<span class="token keyword">unsigned</span> <span class="token keyword">int</span> <span class="token function">perm</span><span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">int</span> num<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">int</span> x<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// Permutation from dword to dword.</span>
+    <span class="token comment">// num is the permutation number. x is the input.</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">int</span> ror_index<span class="token punctuation">;</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">int</span> i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> i<span class="token operator">&lt;</span>NUM_ITERS<span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// Addition:</span>
+        x <span class="token operator">+=</span> RAND_DWORDS<span class="token punctuation">[</span><span class="token punctuation">(</span>i <span class="token operator">+</span> num <span class="token operator">+</span> x<span class="token punctuation">)</span> <span class="token operator">&amp;</span> NUM_DWORDS_MASK<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token comment">// Rotation:</span>
+        ror_index <span class="token operator">=</span> <span class="token punctuation">(</span>x <span class="token operator">^</span> RAND_DWORDS<span class="token punctuation">[</span><span class="token punctuation">(</span>i <span class="token operator">+</span> num <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span> NUM_DWORDS_MASK<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span> <span class="token number">0x1f</span><span class="token punctuation">;</span>
+        x <span class="token operator">=</span> <span class="token function">ror</span><span class="token punctuation">(</span>x<span class="token punctuation">,</span>ror_index<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">// Xor:</span>
+        x <span class="token operator">^=</span> RAND_DWORDS<span class="token punctuation">[</span><span class="token punctuation">(</span>i <span class="token operator">+</span> num <span class="token operator">+</span> x<span class="token punctuation">)</span> <span class="token operator">&amp;</span> NUM_DWORDS_MASK<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token comment">// Rotation:</span>
+        ror_index <span class="token operator">=</span> <span class="token punctuation">(</span>x <span class="token operator">^</span> RAND_DWORDS<span class="token punctuation">[</span><span class="token punctuation">(</span>i <span class="token operator">+</span> num <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span> NUM_DWORDS_MASK<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span> <span class="token number">0x1f</span><span class="token punctuation">;</span>
+        x <span class="token operator">=</span> <span class="token function">ror</span><span class="token punctuation">(</span>x<span class="token punctuation">,</span>ror_index<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> x<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+由上可知，<strong>perm(i，x)就是第i个哈希函数h<sub>i</sub>(x)</strong>。计算完k个哈希函数后，我们得到了k个集合：
+<span class="math display">\[
+h_{1}(x),h_{2}(x),h_{3}(x)\cdots h_{k}(x)
+\]</span> ​ 然后每个集合中最小的数，就是我们所需的定长特征： <span
+class="math display">\[
+sig(T) = \{min_{t\in T}h_{1}(T),min_{t\in T}h_{2}(T),min_{t\in
+T}h_{3}(T)\cdots min_{t\in T}h_{k}(T)\}
+\]</span> ​ 故用<span
+class="math inline">\(J(sig(A),sig(B))\)</span>代替<span
+class="math inline">\(J(A,B)\)</span>即可大大简化计算，k的数量可以自己选定。对于完整的二进制文件，以下代码可以生成其对应特征：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">sign</span><span class="token punctuation">(</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">char</span><span class="token operator">*</span> data<span class="token punctuation">,</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">int</span> len<span class="token punctuation">,</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">int</span> <span class="token operator">*</span>result<span class="token punctuation">,</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">int</span> num_perms<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+
+    <span class="token comment">// Find entry number &lt;num> of the signature of data.</span>
+    <span class="token comment">// len is the length of the data.</span>
+    <span class="token comment">// The result is inside &lt;result>, as an array of dwords.</span>
+
+    <span class="token comment">// We need at least 4 bytes to generate a signature.</span>
+    <span class="token comment">// We return -1 (error) if we don't have at least 4 bytes.</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>len <span class="token operator">&lt;</span> <span class="token number">4</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">int</span> y<span class="token punctuation">;</span> <span class="token comment">// Current integer value of 4 consecutive bytes.</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">int</span> py<span class="token punctuation">;</span> <span class="token comment">// Permutation over y.</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">int</span> min_py<span class="token punctuation">;</span> <span class="token comment">// Minimum py ever found.</span>
+
+    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">int</span> permi<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> permi<span class="token operator">&lt;</span>num_perms<span class="token punctuation">;</span> <span class="token operator">++</span>permi<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// Initialize y to be the first dword from the data:</span>
+        y <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">int</span><span class="token punctuation">)</span>data<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">&lt;&lt;</span> <span class="token number">24</span><span class="token punctuation">;</span>
+        y <span class="token operator">+=</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">int</span><span class="token punctuation">)</span>data<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">&lt;&lt;</span> <span class="token number">16</span><span class="token punctuation">;</span>
+        y <span class="token operator">+=</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">int</span><span class="token punctuation">)</span>data<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">&lt;&lt;</span> <span class="token number">8</span><span class="token punctuation">;</span>
+        y <span class="token operator">+=</span> <span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">int</span><span class="token punctuation">)</span>data<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+        <span class="token comment">// Calculate first permutation:</span>
+        py <span class="token operator">=</span> <span class="token function">perm</span><span class="token punctuation">(</span>permi<span class="token punctuation">,</span>y<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        min_py <span class="token operator">=</span> py<span class="token punctuation">;</span>
+
+        <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">int</span> i<span class="token operator">=</span><span class="token number">4</span><span class="token punctuation">;</span> i<span class="token operator">&lt;</span>len<span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            y <span class="token operator">&lt;&lt;=</span> <span class="token number">8</span><span class="token punctuation">;</span>
+            y <span class="token operator">+=</span> data<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+            py <span class="token operator">=</span> <span class="token function">perm</span><span class="token punctuation">(</span>permi<span class="token punctuation">,</span>y<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span><span class="token punctuation">(</span>min_py <span class="token operator">></span> py<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                min_py <span class="token operator">=</span> py<span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token comment">// Save minimum perm value found to memory:</span>
+        result<span class="token punctuation">[</span>permi<span class="token punctuation">]</span> <span class="token operator">=</span> min_py<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">// Everything went well.</span>
+    <span class="token comment">// Result should be stored at &lt;result></span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​</p>
+<p>​</p>
+<h4 id="运行测试">运行测试：</h4>
+<p>​
+Catalog1共分为server和client两部分，client客户端作为IDA的一个插件，server服务器可以使用官方提供的testfcatalog.xorpd.net:1337，也可以自行搭建https://github.com/xorpd/fcatalog_server。</p>
+<p>​
+为了计算速度更快，这里使用C语言编写catalog相关计算操作，首先编译catalog1
+：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230213123532.png" /></p>
+<p>​</p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+      
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2023/01/10/Comparing-One-with-Many-%E2%80%94-Solving-Binary2source-Function-Matching-Under-Function-Inlining/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Comparing One with Many — Solving Binary2source Function Matching Under  Function Inlining</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0how-machine-learning-is-solving-the-binary-function-similarity-problem"><span class="nav-number">1.</span> <span class="nav-text">【论文复现】How
+Machine Learning Is Solving the Binary Function Similarity Problem</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8Cfuzzy-hashing"><span class="nav-number">1.1.</span> <span class="nav-text">一、模糊哈希（Fuzzy Hashing）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#bytes-fuzzy-hashingcatalog1"><span class="nav-number">1.1.1.</span> <span class="nav-text">1. Bytes fuzzy
+hashing——Catalog1</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">前置知识：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84%E5%88%86%E6%9E%90"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">代码结构分析：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E6%B5%8B%E8%AF%95"><span class="nav-number">1.1.1.3.</span> <span class="nav-text">运行测试：</span></a></li></ol></li></ol></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    <footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2023 Shaw All Rights Reserved.
+        
+            <span id="busuanzi_container_site_uv">
+              本站访客数<span id="busuanzi_value_site_uv"></span>人次  
+              本站总访问量<span id="busuanzi_value_site_pv"></span>次
+            </span>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>
