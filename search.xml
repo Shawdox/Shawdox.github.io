@@ -69,7 +69,7 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216160626.png" /></p>
 ，断言并未触发，此条分支执行结束。</p>
 <p>​ 当C状态继续执行，遇到了y = 3 +
 x赋值语句，这时就要改变σ中的映射关系：</p>
-<p><img src="Symbolic%20Execution-%E7%AC%A6%E5%8F%B7%E6%89%A7%E8%A1%8C/image-20230216161033046.png" style="zoom:67%;" /></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217193952.png" style="zoom:67%;" /></p>
 <p>​ 状态E继续执行，遇到条件判断语句，同理，生成两个分支：</p>
 <p><img
 src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216161133.png" /></p>
