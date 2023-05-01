@@ -158,6 +158,313 @@
 <!-- Table of Contents -->
 
   
+    <article id="post-(LLVM入门)编写LLVM PASS"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2023/05/01/(LLVM%E5%85%A5%E9%97%A8)%E7%BC%96%E5%86%99LLVM%20PASS/">(LLVM入门)编写LLVM PASS</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/05/01/(LLVM%E5%85%A5%E9%97%A8)%E7%BC%96%E5%86%99LLVM%20PASS/" class="article-date">
+	  <time datetime="2023-05-01T06:40:01.508Z" itemprop="datePublished">五月 1, 2023</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Code/">Code</a>
+ 
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="llvm入门编写llvm-pass">(LLVM入门)编写LLVM PASS</h1>
+<p>​ 前置知识：</p>
+<blockquote>
+<ol type="1">
+<li>LLVM IR结构；</li>
+<li>C++ 面向对象；</li>
+<li>CMake；</li>
+</ol>
+</blockquote>
+<h2 id="一理论">一、理论</h2>
+<h4 id="llvm-ir">LLVM IR</h4>
+<ol type="1">
+<li>LLVM IR 文件的基本单位称为
+<code>module</code>，LLVM中的Module，代表了一块代码。它是一个比较完整独立的代码块，是一个最小的编译单元。；</li>
+<li>一个 <code>module</code> 中可以拥有多个顶层实体，比如
+<code>function</code> 和 <code>global variavle</code>；</li>
+<li>一个 <code>function define</code> 中至少有一个
+<code>basicblock</code>；</li>
+<li>每个 <code>basicblock</code> 中有若干
+<code>instruction</code>，并且都以 <code>terminator instruction</code>
+结尾。</li>
+</ol>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230420162739440.png" /></p>
+<p>(详见：<a
+target="_blank" rel="noopener" href="https://llvm.org/devmtg/2019-04/slides/Tutorial-Bridgers-LLVM_IR_tutorial.pdf">PowerPoint
+Presentation (llvm.org)</a>)</p>
+<h4 id="what-is-a-pass">What is a PASS?</h4>
+<ol type="1">
+<li>pass 对LLVM IR的一些单元进行操作，例如module或者function；</li>
+<li>pass有两类，Analysis pass和Transformation pass。Transformation
+pass会对单元进行修改操作，Analysis
+pass不修改，只观察并生成一些高层信息；</li>
+</ol>
+<p>​ Pass Manager：调度Pass在各IR层级按顺序运行。
+（什么是各IR层级？）</p>
+<h4 id="opt">opt</h4>
+<p>​
+opt是LLVM的代码优化器，其输入ll源文件，其可以对源文件进行优化（输出优化后的ll源文件）或者分析（输出分析结果）。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230429225221269.png" alt="opt workflow" style="zoom:80%;" /></p>
+<p>​
+在使用opt命令时，-{passname}提供了以任何顺序运行任何LLVM优化或分析Pass的能力。</p>
+<h2 id="二代码实践">二、代码实践</h2>
+<p>常见llvm编译命令：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#.c -> .ll：</span>
+clang -emit-llvm -S a.c -o a.ll
+<span class="token comment">#.c -> .bc: </span>
+clang -emit-llvm -c a.c -o a.bc
+<span class="token comment">#.ll -> .bc: </span>
+llvm-as a.ll -o a.bc
+<span class="token comment">#.bc -> .ll: </span>
+llvm-dis a.bc -o a.ll
+<span class="token comment">#.bc -> .s: </span>
+lc a.bc -o a.s<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="hellow-world-pass">2. Hellow World PASS</h3>
+<blockquote>
+<p>目标：打印出编译程序中存在的非外部函数的名称，该 Pass
+只是检查程序，不修改原程序。</p>
+</blockquote>
+<p>​ llvm安装编译过程略，详见github官方项目。</p>
+<h4 id="old-manager">2.1 old manager</h4>
+<p>​ <strong><u>旧版pass
+manager采用继承对应PASS类，覆写父类虚函数的方式定义用户自己的pass类</u></strong>，编写old_hello.cpp如下：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token comment">//old_Hello.cpp</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"llvm/Pass.h"</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"llvm/IR/Function.h"</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"llvm/Support/raw_ostream.h"</span></span>
+
+<span class="token keyword">using</span> <span class="token keyword">namespace</span> llvm<span class="token punctuation">;</span>
+
+<span class="token comment">//使用匿名命名空间，使得其中定义的函数对其它文件不可见；</span>
+<span class="token comment">//防止命名空间污染</span>
+<span class="token keyword">namespace</span><span class="token punctuation">&#123;</span>
+    <span class="token comment">//FunctionPass每次操作一个函数,Hellp继承它</span>
+    <span class="token keyword">struct</span> <span class="token class-name">Hello</span><span class="token operator">:</span><span class="token base-clause"><span class="token keyword">public</span> <span class="token class-name">FunctionPass</span></span><span class="token punctuation">&#123;</span>
+        <span class="token keyword">static</span> <span class="token keyword">char</span> ID<span class="token punctuation">;</span>
+        <span class="token function">Hello</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">:</span> <span class="token function">FunctionPass</span><span class="token punctuation">(</span>ID<span class="token punctuation">)</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+        <span class="token comment">//覆写父类的虚函数，override是覆写标志，使用它时当没有正确</span>
+        <span class="token comment">//进行覆写操作时编译器会报error而不是warnning，且子类覆写</span>
+        <span class="token comment">//的虚函数也不用再加virtual关键字；</span>
+        <span class="token comment">//如果要禁止子类覆写虚函数，可以使用final关键字。</span>
+        <span class="token keyword">bool</span> <span class="token function">runOnFunction</span><span class="token punctuation">(</span>Function <span class="token operator">&amp;</span>F<span class="token punctuation">)</span> override <span class="token punctuation">&#123;</span>
+            <span class="token comment">//打印"Hello: 函数名称"</span>
+            <span class="token function">errs</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&lt;&lt;</span> <span class="token string">"Hello: "</span><span class="token punctuation">;</span>
+            <span class="token function">errs</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">write_escaped</span><span class="token punctuation">(</span>F<span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&lt;&lt;</span> <span class="token string">'\n'</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">//初始化ID</span>
+<span class="token keyword">char</span> Hello<span class="token operator">::</span>ID <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token comment">//Register for opt</span>
+<span class="token keyword">static</span> RegisterPass<span class="token operator">&lt;</span>Hello<span class="token operator">></span> <span class="token function">X</span><span class="token punctuation">(</span><span class="token string">"hello"</span><span class="token punctuation">,</span><span class="token string">"Hello World Pass"</span><span class="token punctuation">,</span>
+                            <span class="token boolean">false</span><span class="token comment">/* Only looks at CFG */</span><span class="token punctuation">,</span>
+                            <span class="token boolean">false</span><span class="token comment">/* Only looks at CFG */</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 编写一个待测试文件test.cpp：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;stdio.h></span></span>
+<span class="token keyword">void</span> <span class="token function">fun1</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"111\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">void</span> <span class="token function">fun2</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"222\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">void</span> <span class="token function">fun3</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"333\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span><span class="token function">fun1</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span><span class="token function">fun2</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//printf("%d\n",fun3());</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 编译pass和test文件：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#编译pass，也可以自行定义CMakeLists文件，手动编译;</span>
+<span class="token comment">#llvm-config提供了CXXFLAGS与LDFLAGS参数方便查找LLVM的头文件与库文件;</span>
+<span class="token comment">#如果链接有问题，还可以用llvm-config --libs提供动态链接的LLVM库;</span>
+<span class="token comment">#具体llvm-config打印了什么，请自行尝试或查找官方文档;</span>
+<span class="token comment">#-fPIC -shared 是编译动态库的必要参数。</span>
+<span class="token comment">#因为LLVM没用到RTTI，所以用-fno-rtti 来让我们的Pass与之一致;</span>
+<span class="token comment">#-Wl,-znodelete是为了应对LLVM 5.0+中加载ModulePass引起segmentation fault的bug;</span>
+<span class="token comment">#若Pass继承了ModulePass，务必加上。</span>
+clang <span class="token variable"><span class="token variable">`</span>llvm-config --cxxflags<span class="token variable">`</span></span> -Wl,-znodelete -fno-rtti -fPIC -shared old_hello.cpp -o LLVMHello.so <span class="token variable"><span class="token variable">`</span>llvm-config --ldflags<span class="token variable">`</span></span>
+<span class="token comment">#将待测试文件编译为bitcode</span>
+clang -emit-llvm -c test.cpp -o test.bc<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 使用opt命令加载运行，运行结果：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#-loda 选项表明要加载进程序的pass</span>
+<span class="token comment">#-hello 是注册时规定的参数</span>
+<span class="token comment">#由于此pass并不修改程序，故将opt的输出结果放入/dev/null(丢弃)</span>
+<span class="token function">sudo</span> opt -load ./LLVMHello.so -hello <span class="token operator">&lt;</span> test.bc <span class="token operator">></span> /dev/null
+
+Hello: _Z4fun1v
+Hello: _Z4fun2v
+Hello: _Z4fun3v
+Hello: main<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 在命令中加入-time-passes参数，可以获得运行时间相关结果：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token variable">$sudo</span> opt -load ./LLVMHello.so -hello -time-passes <span class="token operator">&lt;</span> test.bc <span class="token operator">></span> /dev/null
+Hello: _Z4fun1v
+Hello: _Z4fun2v
+Hello: _Z4fun3v
+Hello: main
+<span class="token operator">==</span>-------------------------------------------------------------------------<span class="token operator">==</span>
+                      <span class="token punctuation">..</span>. Pass execution timing report <span class="token punctuation">..</span>.
+<span class="token operator">==</span>-------------------------------------------------------------------------<span class="token operator">==</span>
+  Total Execution Time: <span class="token number">0.0006</span> seconds <span class="token punctuation">(</span><span class="token number">0.0006</span> wall clock<span class="token punctuation">)</span>
+
+---User Time---   --System Time--   --User+System--  ---Wall Time---  ---Name ---
+   <span class="token number">0.0001</span> <span class="token punctuation">(</span> <span class="token number">61.1</span>%<span class="token punctuation">)</span>   <span class="token number">0.0002</span> <span class="token punctuation">(</span> <span class="token number">62.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0003</span> <span class="token punctuation">(</span> <span class="token number">61.7</span>%<span class="token punctuation">)</span>   <span class="token number">0.0003</span> <span class="token punctuation">(</span> <span class="token number">62.0</span>%<span class="token punctuation">)</span>  Bitcode Writer
+   <span class="token number">0.0001</span> <span class="token punctuation">(</span> <span class="token number">33.7</span>%<span class="token punctuation">)</span>   <span class="token number">0.0001</span> <span class="token punctuation">(</span> <span class="token number">33.2</span>%<span class="token punctuation">)</span>   <span class="token number">0.0002</span> <span class="token punctuation">(</span> <span class="token number">33.3</span>%<span class="token punctuation">)</span>   <span class="token number">0.0002</span> <span class="token punctuation">(</span> <span class="token number">33.0</span>%<span class="token punctuation">)</span>  Hello World Pass
+   <span class="token number">0.0000</span> <span class="token punctuation">(</span>  <span class="token number">5.3</span>%<span class="token punctuation">)</span>   <span class="token number">0.0000</span> <span class="token punctuation">(</span>  <span class="token number">4.8</span>%<span class="token punctuation">)</span>   <span class="token number">0.0000</span> <span class="token punctuation">(</span>  <span class="token number">5.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0000</span> <span class="token punctuation">(</span>  <span class="token number">5.0</span>%<span class="token punctuation">)</span>  Module Verifier
+   <span class="token number">0.0002</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0004</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0006</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0006</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>  Total
+<span class="token operator">==</span>-------------------------------------------------------------------------<span class="token operator">==</span>
+                                LLVM IR Parsing
+<span class="token operator">==</span><span class="token operator">=</span>-------------------------------------------------------------------------<span class="token operator">==</span>
+  Total Execution Time: <span class="token number">0.0005</span> seconds <span class="token punctuation">(</span><span class="token number">0.0005</span> wall clock<span class="token punctuation">)</span>
+
+   ---User Time---   --System Time--   --User+System--   ---Wall Time---  --- Name ---
+   <span class="token number">0.0002</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0003</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0005</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0005</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>  Parse IR
+   <span class="token number">0.0002</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0003</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0005</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0005</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>  Total<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 如果想直接使用clang集成这个过程，需要在pass注册时添加：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"llvm/IR/LegacyPassManager.h"</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"llvm/Transforms/IPO/PassManagerBuilder.h"</span></span>
+
+<span class="token comment">// Register for clang</span>
+<span class="token keyword">static</span> RegisterStandardPasses <span class="token function">Y</span><span class="token punctuation">(</span>PassManagerBuilder<span class="token operator">::</span>EP_EarlyAsPossible<span class="token punctuation">,</span>
+  <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">(</span><span class="token keyword">const</span> PassManagerBuilder <span class="token operator">&amp;</span>Builder<span class="token punctuation">,</span> legacy<span class="token operator">::</span>PassManagerBase <span class="token operator">&amp;</span>PM<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    PM<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token function">Hello</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 接下来无需提前编译bc文件再调用opt，直接使用clang即可：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">clang -Xclang -load -Xclang ./LLVMHello.so test.cpp -o clang_test
+
+Hello: _Z4fun1v
+Hello: _Z4fun2v
+Hello: _Z4fun3v
+Hello: main<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="new-manager">2.2 new manager</h4>
+<p>​ llvm新版本的pass
+manager定义依赖于多态，意味着并不存在显示的接口，所有的 Pass 是继承自
+CRTP
+模板<code>PassInfoMixin&lt;PassT&gt;</code>，其中需要有一个<code>run()</code>方法，接收一些
+IR 单元和一个分析管理器，返回类型为 PreservedAnalyses。</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;new_hellp.cpp
+#include &quot;llvm&#x2F;IR&#x2F;LegacyPassManager.h&quot;
+#include &quot;llvm&#x2F;Passes&#x2F;PassBuilder.h&quot;
+#include &quot;llvm&#x2F;Passes&#x2F;PassPlugin.h&quot;
+#include &quot;llvm&#x2F;Support&#x2F;raw_ostream.h&quot;
+
+using namespace llvm;
+
+namespace&#123;
+    void visitor(Function &amp;F)&#123;
+        errs() &lt;&lt; &quot;(New Hello)FunctionName: &quot; &lt;&lt; F.getName() &lt;&lt; &quot;\n&quot;;
+        errs() &lt;&lt; &quot;(New Hello)ArgSize: &quot; &lt;&lt; F.arg_size() &lt;&lt; &quot;\n&quot;;
+    &#125;
+
+    struct HelloWorld:PassInfoMixin&lt;HelloWorld&gt;&#123;
+        PreservedAnalyses run(Function &amp;F,FunctionAnalysisManager &amp;)&#123;
+            visitor(F);
+            return PreservedAnalyses::all();
+        &#125;
+        static bool isRequired()&#123;return true;&#125;
+    &#125;;
+&#125;&#x2F;&#x2F;namespace
+
+llvm::PassPluginLibraryInfo getHelloWorldPluginInfo()&#123;
+    return&#123;
+        LLVM_PLUGIN_API_VERSION,&quot;HelloWorld&quot;,LLVM_VERSION_STRING,
+        [](PassBuilder &amp;PB)&#123;
+            PB.registerPipelineParsingCallback(
+                [](StringRef Name, FunctionPassManager &amp;FPM,
+                ArrayRef&lt;PassBuilder::PipelineElement&gt;)&#123;
+                    if(Name &#x3D;&#x3D; &quot;hello-world&quot;)&#123;
+                        FPM.addPass(HelloWorld());
+                        return true;
+                    &#125;
+                    return true;
+                &#125;);
+        &#125;
+    &#125;;
+&#125;
+
+extern &quot;C&quot; LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo
+llvmGetPassPluginInfo()&#123;
+    return getHelloWorldPluginInfo();
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+以上代码分为两部分，Pass本体和Pass注册，具体含义和对应的CMakeLists.txt可参照<a
+target="_blank" rel="noopener" href="https://github.com/banach-space/llvm-tutor">llvm-tutor</a>，这里不做赘述。尝试运行：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#编译Pass</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">LLVM_DIR</span><span class="token operator">=</span>/usr/local/include/llvm/
+cmake -DLT_LLVM_INSTALL_DIR<span class="token operator">=</span><span class="token variable">$LLVM_DIR</span> <span class="token punctuation">..</span>/
+<span class="token function">make</span>
+
+<span class="token comment">#编译输入文件</span>
+clang -O1 -S -emit-llvm <span class="token punctuation">..</span>/<span class="token punctuation">..</span>/data/test.cpp -o <span class="token punctuation">..</span>/<span class="token punctuation">..</span>/data/test.ll
+
+<span class="token comment">#使用new manager加载pass</span>
+opt -load-pass-plugin ./libHelloWorld.so -passes<span class="token operator">=</span>hello-world -disable-output <span class="token punctuation">..</span>/<span class="token punctuation">..</span>/data/test.ll<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230501140915.png" style="zoom: 67%;" /></p>
+<h2 id="reference">Reference</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/416754155">LLVM IR 的第二个
+Pass：上手官方文档 New Pass Manager HelloWorld Pass - 知乎
+(zhihu.com)</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/290946850#:~:text=因此，LLVM%20pass管理机制的主要模块包括pass、pass管理器、pass注册及相关模块，如PassRegistry、AnalysisUsage、AnalysisResolver等。.%201、LLVM%20Pass及常用子类.,pass是一种编译器开发的结构化技术，用于完成编译对象（如IR）的转换、分析或优化等功能。.%20pass的执行就是编译器对编译对象进行转换、分析和优化的过程，pass构建了这些过程所需要的分析结果。.%20LLVM%20Pass是LLVM系统的重要组成部分，定义在llvmincludellvmPass.h中：.">LLVM中的pass及其管理机制
+- 知乎 (zhihu.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://llvm.org/docs/NewPassManager.html">Using the New
+Pass Manager — LLVM 17.0.0git documentation</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=ar7cJl2aBuU">2019 LLVM
+Developers’ Meeting: A. Warzynski “Writing an LLVM Pass: 101” -
+YouTube</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/banach-space/llvm-tutor">banach-space/llvm-tutor:
+A collection of out-of-tree LLVM passes for teaching and learning
+(github.com)</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Code/">Code</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LLVM/" rel="tag">LLVM</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
     <article id="post-【论文阅读】GREBE-Unveiling-Exploitation-Potential-for-Linux-Kernel-Bugs"  class="article article-type-post" itemscope itemprop="blogPost" >
   <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
     
@@ -267,7 +574,7 @@ ABSTRACT
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/03/15/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Demons-in-the-Shared-Kernel-Abstract-Resource-Attacks-Against-OS-level-Virtualization/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/03/15/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Demons-in-the-Shared-Kernel-Abstract-Resource-Attacks-Against-OS-level-Virtualization/"><img src="http://lorempixel.com/750/450/city/4" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -346,7 +653,7 @@ Resources）的重要性，我们针对操作系统内核的不同方面进行�
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/02/27/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Windows%20of%20Vulnerability%20A%20Case%20Study%20Analysis/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/02/27/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Windows%20of%20Vulnerability%20A%20Case%20Study%20Analysis/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -418,7 +725,7 @@ ABSTRACT
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/02/16/Symbolic%20Execution-%E7%AC%A6%E5%8F%B7%E6%89%A7%E8%A1%8C/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/02/16/Symbolic%20Execution-%E7%AC%A6%E5%8F%B7%E6%89%A7%E8%A1%8C/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -492,7 +799,7 @@ Execution：从思维上理解符号执行
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/02/12/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91How%20Machine%20Learning%20Is%20Solving%20the%20Binary%20Function%20Similarity%20Problem/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/02/12/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91How%20Machine%20Learning%20Is%20Solving%20the%20Binary%20Function%20Similarity%20Problem/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -583,7 +890,7 @@ Catalog1算法利用minhash，使用哈希近似替代两个S集合，以此来�
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/01/10/Comparing-One-with-Many-%E2%80%94-Solving-Binary2source-Function-Matching-Under-Function-Inlining/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/01/10/Comparing-One-with-Many-%E2%80%94-Solving-Binary2source-Function-Matching-Under-Function-Inlining/"><img src="http://lorempixel.com/750/450/city/3" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -657,7 +964,7 @@ Software）生成一个带有标记的调用点（内联或不内联）的数据
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/12/08/How-Machine-Learning-Is-Solving-the-Binary-Function-Similarity-Problem/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/12/08/How-Machine-Learning-Is-Solving-the-Binary-Function-Similarity-Problem/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -737,7 +1044,7 @@ ABSTRACT
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/12/01/Connect%20X/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/12/01/Connect%20X/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -771,80 +1078,6 @@ Getting Started | Kaggle
       
   <span class="ico-tags"></span>
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RL/" rel="tag">RL</a></li></ul>
-
-      
-    </footer>
-    <hr class="entry-footer-hr">
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
-    <article id="post-Facial Keypoints Detection"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2022/11/14/Facial%20Keypoints%20Detection/">Facial Keypoints Detection</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2022/11/14/Facial%20Keypoints%20Detection/" class="article-date">
-	  <time datetime="2022-11-14T03:24:28.500Z" itemprop="datePublished">十一月 14, 2022</time>
-	</a>
-
-      
-	<span class="ico-folder"></span>
-    <a class="article-category-link" href="/categories/Kaggle/">Kaggle</a>
- 
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-
-          
-            <div class="entry-thumbnail">
-              <a href="/2022/11/14/Facial%20Keypoints%20Detection/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
-            </div>
-          
-          <div class="entry-summary">
-          Facial Keypoints Detection
-
-Time: 2022.11.11
-Author: Shaw
-Facial
-Keypoints Detection | Kaggle
-
-一、任务简介：
-
-​ 任务：正确标注所给图片的人脸关键位置；
-
-
-        
-          <p class="article-more-link">
-            <a href="/2022/11/14/Facial%20Keypoints%20Detection/#more">阅读全文</a>
-          </p>
-        </div>
-      
-    </div>
-    <footer class="entry-meta entry-footer">
-      
-	<span class="ico-folder"></span>
-    <a class="article-category-link" href="/categories/Kaggle/">Kaggle</a>
-
-      
-  <span class="ico-tags"></span>
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CV/" rel="tag">CV</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a></li></ul>
 
       
     </footer>
@@ -965,6 +1198,18 @@ Keypoints Detection | Kaggle
               <div class="widget-entry-summary" style="margin: 0;">
             
 
+              <h6 style="margin: 0;"><a href="/2023/05/01/(LLVM%E5%85%A5%E9%97%A8)%E7%BC%96%E5%86%99LLVM%20PASS/">(LLVM入门)编写LLVM PASS</a></h6>
+              <span>五月 1, 2023</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
               <h6 style="margin: 0;"><a href="/2023/04/10/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91GREBE-Unveiling-Exploitation-Potential-for-Linux-Kernel-Bugs/">GREBE-Unveiling Exploitation Potential for Linux Kernel Bugs</a></h6>
               <span>四月 10, 2023</span>
             </div>
@@ -1019,18 +1264,6 @@ Keypoints Detection | Kaggle
 
           </li>
         
-          <li class="clearfix">
-
-            
-              <div class="widget-entry-summary" style="margin: 0;">
-            
-
-              <h6 style="margin: 0;"><a href="/2023/01/10/Comparing-One-with-Many-%E2%80%94-Solving-Binary2source-Function-Matching-Under-Function-Inlining/">Comparing One with Many — Solving Binary2source Function Matching Under  Function Inlining</a></h6>
-              <span>一月 10, 2023</span>
-            </div>
-
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -1040,7 +1273,7 @@ Keypoints Detection | Kaggle
   <div class="widget-wrap">
     <h3 class="widget-title">分类</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Book/">Book</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kaggle/">Kaggle</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Paper/">Paper</a><span class="category-list-count">23</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Reproduce/">Reproduce</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Something/">Something</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/paper/">paper</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Book/">Book</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Code/">Code</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kaggle/">Kaggle</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Paper/">Paper</a><span class="category-list-count">23</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Reproduce/">Reproduce</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Something/">Something</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/paper/">paper</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1050,7 +1283,7 @@ Keypoints Detection | Kaggle
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD/" rel="tag">AD</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD-training/" rel="tag">AD training</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AEG/" rel="tag">AEG</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BCSA/" rel="tag">BCSA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary/" rel="tag">Binary</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Botnet/" rel="tag">Botnet</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CV/" rel="tag">CV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cloud/" rel="tag">Cloud</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNN/" rel="tag">DNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDS/" rel="tag">IDS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ML/" rel="tag">ML</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Malware-Classifiers/" rel="tag">Malware Classifiers</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Math/" rel="tag">Math</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mutiagent/" rel="tag">Mutiagent</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/" rel="tag">NLP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDF/" rel="tag">PDF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RL/" rel="tag">RL</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RNN/" rel="tag">RNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Symbolic-Execution/" rel="tag">Symbolic Execution</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vulnerability/" rel="tag">Vulnerability</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/" rel="tag">Windows</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/obfuscation/" rel="tag">obfuscation</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD/" rel="tag">AD</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD-training/" rel="tag">AD training</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AEG/" rel="tag">AEG</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BCSA/" rel="tag">BCSA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary/" rel="tag">Binary</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Botnet/" rel="tag">Botnet</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CV/" rel="tag">CV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cloud/" rel="tag">Cloud</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNN/" rel="tag">DNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDS/" rel="tag">IDS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LLVM/" rel="tag">LLVM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ML/" rel="tag">ML</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Malware-Classifiers/" rel="tag">Malware Classifiers</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Math/" rel="tag">Math</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mutiagent/" rel="tag">Mutiagent</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/" rel="tag">NLP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDF/" rel="tag">PDF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RL/" rel="tag">RL</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RNN/" rel="tag">RNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Symbolic-Execution/" rel="tag">Symbolic Execution</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vulnerability/" rel="tag">Vulnerability</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/" rel="tag">Windows</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/obfuscation/" rel="tag">obfuscation</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1060,7 +1293,7 @@ Keypoints Detection | Kaggle
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/AD/" style="font-size: 20px;">AD</a> <a href="/tags/AD-training/" style="font-size: 10px;">AD training</a> <a href="/tags/AEG/" style="font-size: 11.67px;">AEG</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/BCSA/" style="font-size: 10px;">BCSA</a> <a href="/tags/Binary/" style="font-size: 13.33px;">Binary</a> <a href="/tags/Botnet/" style="font-size: 10px;">Botnet</a> <a href="/tags/CV/" style="font-size: 10px;">CV</a> <a href="/tags/Cloud/" style="font-size: 10px;">Cloud</a> <a href="/tags/DDoS/" style="font-size: 10px;">DDoS</a> <a href="/tags/DNN/" style="font-size: 10px;">DNN</a> <a href="/tags/IDS/" style="font-size: 11.67px;">IDS</a> <a href="/tags/ML/" style="font-size: 13.33px;">ML</a> <a href="/tags/Machine-Learning/" style="font-size: 11.67px;">Machine Learning</a> <a href="/tags/Malware-Classifiers/" style="font-size: 18.33px;">Malware Classifiers</a> <a href="/tags/Math/" style="font-size: 10px;">Math</a> <a href="/tags/Mutiagent/" style="font-size: 10px;">Mutiagent</a> <a href="/tags/NLP/" style="font-size: 13.33px;">NLP</a> <a href="/tags/PDF/" style="font-size: 10px;">PDF</a> <a href="/tags/Pytorch/" style="font-size: 11.67px;">Pytorch</a> <a href="/tags/RL/" style="font-size: 16.67px;">RL</a> <a href="/tags/RNN/" style="font-size: 10px;">RNN</a> <a href="/tags/Symbolic-Execution/" style="font-size: 10px;">Symbolic Execution</a> <a href="/tags/Vulnerability/" style="font-size: 15px;">Vulnerability</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/obfuscation/" style="font-size: 10px;">obfuscation</a>
+      <a href="/tags/AD/" style="font-size: 20px;">AD</a> <a href="/tags/AD-training/" style="font-size: 10px;">AD training</a> <a href="/tags/AEG/" style="font-size: 11.67px;">AEG</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/BCSA/" style="font-size: 10px;">BCSA</a> <a href="/tags/Binary/" style="font-size: 13.33px;">Binary</a> <a href="/tags/Botnet/" style="font-size: 10px;">Botnet</a> <a href="/tags/CV/" style="font-size: 10px;">CV</a> <a href="/tags/Cloud/" style="font-size: 10px;">Cloud</a> <a href="/tags/DDoS/" style="font-size: 10px;">DDoS</a> <a href="/tags/DNN/" style="font-size: 10px;">DNN</a> <a href="/tags/IDS/" style="font-size: 11.67px;">IDS</a> <a href="/tags/LLVM/" style="font-size: 10px;">LLVM</a> <a href="/tags/ML/" style="font-size: 13.33px;">ML</a> <a href="/tags/Machine-Learning/" style="font-size: 11.67px;">Machine Learning</a> <a href="/tags/Malware-Classifiers/" style="font-size: 18.33px;">Malware Classifiers</a> <a href="/tags/Math/" style="font-size: 10px;">Math</a> <a href="/tags/Mutiagent/" style="font-size: 10px;">Mutiagent</a> <a href="/tags/NLP/" style="font-size: 13.33px;">NLP</a> <a href="/tags/PDF/" style="font-size: 10px;">PDF</a> <a href="/tags/Pytorch/" style="font-size: 11.67px;">Pytorch</a> <a href="/tags/RL/" style="font-size: 16.67px;">RL</a> <a href="/tags/RNN/" style="font-size: 10px;">RNN</a> <a href="/tags/Symbolic-Execution/" style="font-size: 10px;">Symbolic Execution</a> <a href="/tags/Vulnerability/" style="font-size: 15px;">Vulnerability</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/obfuscation/" style="font-size: 10px;">obfuscation</a>
     </div>
   </div>
 
@@ -1070,7 +1303,7 @@ Keypoints Detection | Kaggle
     <h3 class="widget-title">归档</h3>
 
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">14</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">14</span></li></ul>
     </div>
   </div>
 

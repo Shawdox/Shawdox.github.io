@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>(LLVM入门)编写LLVM PASS | Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="LLVM" />
+  
+  
+  
+    <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
+  
+  
+  <meta name="description" content="(LLVM入门)编写LLVM PASS ​ 前置知识：   LLVM IR结构； C++ 面向对象； CMake；   一、理论 LLVM IR  LLVM IR 文件的基本单位称为 module，LLVM中的Module，代表了一块代码。它是一个比较完整独立的代码块，是一个最小的编译单元。； 一个 module 中可以拥有多个顶层实体，比如 function 和 g">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(LLVM入门)编写LLVM PASS">
+<meta property="og:url" content="http://example.com/2023/05/01/(LLVM%E5%85%A5%E9%97%A8)%E7%BC%96%E5%86%99LLVM%20PASS/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="(LLVM入门)编写LLVM PASS ​ 前置知识：   LLVM IR结构； C++ 面向对象； CMake；   一、理论 LLVM IR  LLVM IR 文件的基本单位称为 module，LLVM中的Module，代表了一块代码。它是一个比较完整独立的代码块，是一个最小的编译单元。； 一个 module 中可以拥有多个顶层实体，比如 function 和 g">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230429225221269.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230501140915.png">
+<meta property="article:published_time" content="2023-05-01T06:40:01.508Z">
+<meta property="article:modified_time" content="2023-05-01T06:41:09.680Z">
+<meta property="article:author" content="Shaw">
+<meta property="article:tag" content="LLVM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230429225221269.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-(LLVM入门)编写LLVM PASS" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      (LLVM入门)编写LLVM PASS
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/05/01/(LLVM%E5%85%A5%E9%97%A8)%E7%BC%96%E5%86%99LLVM%20PASS/" class="article-date">
+	  <time datetime="2023-05-01T06:40:01.508Z" itemprop="datePublished">五月 1, 2023</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Code/">Code</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="llvm入门编写llvm-pass">(LLVM入门)编写LLVM PASS</h1>
+<p>​ 前置知识：</p>
+<blockquote>
+<ol type="1">
+<li>LLVM IR结构；</li>
+<li>C++ 面向对象；</li>
+<li>CMake；</li>
+</ol>
+</blockquote>
+<h2 id="一理论">一、理论</h2>
+<h4 id="llvm-ir">LLVM IR</h4>
+<ol type="1">
+<li>LLVM IR 文件的基本单位称为
+<code>module</code>，LLVM中的Module，代表了一块代码。它是一个比较完整独立的代码块，是一个最小的编译单元。；</li>
+<li>一个 <code>module</code> 中可以拥有多个顶层实体，比如
+<code>function</code> 和 <code>global variavle</code>；</li>
+<li>一个 <code>function define</code> 中至少有一个
+<code>basicblock</code>；</li>
+<li>每个 <code>basicblock</code> 中有若干
+<code>instruction</code>，并且都以 <code>terminator instruction</code>
+结尾。</li>
+</ol>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230420162739440.png" /></p>
+<p>(详见：<a
+target="_blank" rel="noopener" href="https://llvm.org/devmtg/2019-04/slides/Tutorial-Bridgers-LLVM_IR_tutorial.pdf">PowerPoint
+Presentation (llvm.org)</a>)</p>
+<h4 id="what-is-a-pass">What is a PASS?</h4>
+<ol type="1">
+<li>pass 对LLVM IR的一些单元进行操作，例如module或者function；</li>
+<li>pass有两类，Analysis pass和Transformation pass。Transformation
+pass会对单元进行修改操作，Analysis
+pass不修改，只观察并生成一些高层信息；</li>
+</ol>
+<p>​ Pass Manager：调度Pass在各IR层级按顺序运行。
+（什么是各IR层级？）</p>
+<h4 id="opt">opt</h4>
+<p>​
+opt是LLVM的代码优化器，其输入ll源文件，其可以对源文件进行优化（输出优化后的ll源文件）或者分析（输出分析结果）。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230429225221269.png" alt="opt workflow" style="zoom:80%;" /></p>
+<p>​
+在使用opt命令时，-{passname}提供了以任何顺序运行任何LLVM优化或分析Pass的能力。</p>
+<h2 id="二代码实践">二、代码实践</h2>
+<p>常见llvm编译命令：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#.c -> .ll：</span>
+clang -emit-llvm -S a.c -o a.ll
+<span class="token comment">#.c -> .bc: </span>
+clang -emit-llvm -c a.c -o a.bc
+<span class="token comment">#.ll -> .bc: </span>
+llvm-as a.ll -o a.bc
+<span class="token comment">#.bc -> .ll: </span>
+llvm-dis a.bc -o a.ll
+<span class="token comment">#.bc -> .s: </span>
+lc a.bc -o a.s<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="hellow-world-pass">2. Hellow World PASS</h3>
+<blockquote>
+<p>目标：打印出编译程序中存在的非外部函数的名称，该 Pass
+只是检查程序，不修改原程序。</p>
+</blockquote>
+<p>​ llvm安装编译过程略，详见github官方项目。</p>
+<h4 id="old-manager">2.1 old manager</h4>
+<p>​ <strong><u>旧版pass
+manager采用继承对应PASS类，覆写父类虚函数的方式定义用户自己的pass类</u></strong>，编写old_hello.cpp如下：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token comment">//old_Hello.cpp</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"llvm/Pass.h"</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"llvm/IR/Function.h"</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"llvm/Support/raw_ostream.h"</span></span>
+
+<span class="token keyword">using</span> <span class="token keyword">namespace</span> llvm<span class="token punctuation">;</span>
+
+<span class="token comment">//使用匿名命名空间，使得其中定义的函数对其它文件不可见；</span>
+<span class="token comment">//防止命名空间污染</span>
+<span class="token keyword">namespace</span><span class="token punctuation">&#123;</span>
+    <span class="token comment">//FunctionPass每次操作一个函数,Hellp继承它</span>
+    <span class="token keyword">struct</span> <span class="token class-name">Hello</span><span class="token operator">:</span><span class="token base-clause"><span class="token keyword">public</span> <span class="token class-name">FunctionPass</span></span><span class="token punctuation">&#123;</span>
+        <span class="token keyword">static</span> <span class="token keyword">char</span> ID<span class="token punctuation">;</span>
+        <span class="token function">Hello</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">:</span> <span class="token function">FunctionPass</span><span class="token punctuation">(</span>ID<span class="token punctuation">)</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+        <span class="token comment">//覆写父类的虚函数，override是覆写标志，使用它时当没有正确</span>
+        <span class="token comment">//进行覆写操作时编译器会报error而不是warnning，且子类覆写</span>
+        <span class="token comment">//的虚函数也不用再加virtual关键字；</span>
+        <span class="token comment">//如果要禁止子类覆写虚函数，可以使用final关键字。</span>
+        <span class="token keyword">bool</span> <span class="token function">runOnFunction</span><span class="token punctuation">(</span>Function <span class="token operator">&amp;</span>F<span class="token punctuation">)</span> override <span class="token punctuation">&#123;</span>
+            <span class="token comment">//打印"Hello: 函数名称"</span>
+            <span class="token function">errs</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&lt;&lt;</span> <span class="token string">"Hello: "</span><span class="token punctuation">;</span>
+            <span class="token function">errs</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">write_escaped</span><span class="token punctuation">(</span>F<span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&lt;&lt;</span> <span class="token string">'\n'</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">//初始化ID</span>
+<span class="token keyword">char</span> Hello<span class="token operator">::</span>ID <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token comment">//Register for opt</span>
+<span class="token keyword">static</span> RegisterPass<span class="token operator">&lt;</span>Hello<span class="token operator">></span> <span class="token function">X</span><span class="token punctuation">(</span><span class="token string">"hello"</span><span class="token punctuation">,</span><span class="token string">"Hello World Pass"</span><span class="token punctuation">,</span>
+                            <span class="token boolean">false</span><span class="token comment">/* Only looks at CFG */</span><span class="token punctuation">,</span>
+                            <span class="token boolean">false</span><span class="token comment">/* Only looks at CFG */</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 编写一个待测试文件test.cpp：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;stdio.h></span></span>
+<span class="token keyword">void</span> <span class="token function">fun1</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"111\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">void</span> <span class="token function">fun2</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"222\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">void</span> <span class="token function">fun3</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"333\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span><span class="token function">fun1</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span><span class="token function">fun2</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//printf("%d\n",fun3());</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 编译pass和test文件：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#编译pass，也可以自行定义CMakeLists文件，手动编译;</span>
+<span class="token comment">#llvm-config提供了CXXFLAGS与LDFLAGS参数方便查找LLVM的头文件与库文件;</span>
+<span class="token comment">#如果链接有问题，还可以用llvm-config --libs提供动态链接的LLVM库;</span>
+<span class="token comment">#具体llvm-config打印了什么，请自行尝试或查找官方文档;</span>
+<span class="token comment">#-fPIC -shared 是编译动态库的必要参数。</span>
+<span class="token comment">#因为LLVM没用到RTTI，所以用-fno-rtti 来让我们的Pass与之一致;</span>
+<span class="token comment">#-Wl,-znodelete是为了应对LLVM 5.0+中加载ModulePass引起segmentation fault的bug;</span>
+<span class="token comment">#若Pass继承了ModulePass，务必加上。</span>
+clang <span class="token variable"><span class="token variable">`</span>llvm-config --cxxflags<span class="token variable">`</span></span> -Wl,-znodelete -fno-rtti -fPIC -shared old_hello.cpp -o LLVMHello.so <span class="token variable"><span class="token variable">`</span>llvm-config --ldflags<span class="token variable">`</span></span>
+<span class="token comment">#将待测试文件编译为bitcode</span>
+clang -emit-llvm -c test.cpp -o test.bc<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 使用opt命令加载运行，运行结果：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#-loda 选项表明要加载进程序的pass</span>
+<span class="token comment">#-hello 是注册时规定的参数</span>
+<span class="token comment">#由于此pass并不修改程序，故将opt的输出结果放入/dev/null(丢弃)</span>
+<span class="token function">sudo</span> opt -load ./LLVMHello.so -hello <span class="token operator">&lt;</span> test.bc <span class="token operator">></span> /dev/null
+
+Hello: _Z4fun1v
+Hello: _Z4fun2v
+Hello: _Z4fun3v
+Hello: main<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 在命令中加入-time-passes参数，可以获得运行时间相关结果：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token variable">$sudo</span> opt -load ./LLVMHello.so -hello -time-passes <span class="token operator">&lt;</span> test.bc <span class="token operator">></span> /dev/null
+Hello: _Z4fun1v
+Hello: _Z4fun2v
+Hello: _Z4fun3v
+Hello: main
+<span class="token operator">==</span>-------------------------------------------------------------------------<span class="token operator">==</span>
+                      <span class="token punctuation">..</span>. Pass execution timing report <span class="token punctuation">..</span>.
+<span class="token operator">==</span>-------------------------------------------------------------------------<span class="token operator">==</span>
+  Total Execution Time: <span class="token number">0.0006</span> seconds <span class="token punctuation">(</span><span class="token number">0.0006</span> wall clock<span class="token punctuation">)</span>
+
+---User Time---   --System Time--   --User+System--  ---Wall Time---  ---Name ---
+   <span class="token number">0.0001</span> <span class="token punctuation">(</span> <span class="token number">61.1</span>%<span class="token punctuation">)</span>   <span class="token number">0.0002</span> <span class="token punctuation">(</span> <span class="token number">62.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0003</span> <span class="token punctuation">(</span> <span class="token number">61.7</span>%<span class="token punctuation">)</span>   <span class="token number">0.0003</span> <span class="token punctuation">(</span> <span class="token number">62.0</span>%<span class="token punctuation">)</span>  Bitcode Writer
+   <span class="token number">0.0001</span> <span class="token punctuation">(</span> <span class="token number">33.7</span>%<span class="token punctuation">)</span>   <span class="token number">0.0001</span> <span class="token punctuation">(</span> <span class="token number">33.2</span>%<span class="token punctuation">)</span>   <span class="token number">0.0002</span> <span class="token punctuation">(</span> <span class="token number">33.3</span>%<span class="token punctuation">)</span>   <span class="token number">0.0002</span> <span class="token punctuation">(</span> <span class="token number">33.0</span>%<span class="token punctuation">)</span>  Hello World Pass
+   <span class="token number">0.0000</span> <span class="token punctuation">(</span>  <span class="token number">5.3</span>%<span class="token punctuation">)</span>   <span class="token number">0.0000</span> <span class="token punctuation">(</span>  <span class="token number">4.8</span>%<span class="token punctuation">)</span>   <span class="token number">0.0000</span> <span class="token punctuation">(</span>  <span class="token number">5.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0000</span> <span class="token punctuation">(</span>  <span class="token number">5.0</span>%<span class="token punctuation">)</span>  Module Verifier
+   <span class="token number">0.0002</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0004</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0006</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0006</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>  Total
+<span class="token operator">==</span>-------------------------------------------------------------------------<span class="token operator">==</span>
+                                LLVM IR Parsing
+<span class="token operator">==</span><span class="token operator">=</span>-------------------------------------------------------------------------<span class="token operator">==</span>
+  Total Execution Time: <span class="token number">0.0005</span> seconds <span class="token punctuation">(</span><span class="token number">0.0005</span> wall clock<span class="token punctuation">)</span>
+
+   ---User Time---   --System Time--   --User+System--   ---Wall Time---  --- Name ---
+   <span class="token number">0.0002</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0003</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0005</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0005</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>  Parse IR
+   <span class="token number">0.0002</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0003</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0005</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0005</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>  Total<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 如果想直接使用clang集成这个过程，需要在pass注册时添加：</p>
+<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"llvm/IR/LegacyPassManager.h"</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"llvm/Transforms/IPO/PassManagerBuilder.h"</span></span>
+
+<span class="token comment">// Register for clang</span>
+<span class="token keyword">static</span> RegisterStandardPasses <span class="token function">Y</span><span class="token punctuation">(</span>PassManagerBuilder<span class="token operator">::</span>EP_EarlyAsPossible<span class="token punctuation">,</span>
+  <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">(</span><span class="token keyword">const</span> PassManagerBuilder <span class="token operator">&amp;</span>Builder<span class="token punctuation">,</span> legacy<span class="token operator">::</span>PassManagerBase <span class="token operator">&amp;</span>PM<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    PM<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token function">Hello</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 接下来无需提前编译bc文件再调用opt，直接使用clang即可：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">clang -Xclang -load -Xclang ./LLVMHello.so test.cpp -o clang_test
+
+Hello: _Z4fun1v
+Hello: _Z4fun2v
+Hello: _Z4fun3v
+Hello: main<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="new-manager">2.2 new manager</h4>
+<p>​ llvm新版本的pass
+manager定义依赖于多态，意味着并不存在显示的接口，所有的 Pass 是继承自
+CRTP
+模板<code>PassInfoMixin&lt;PassT&gt;</code>，其中需要有一个<code>run()</code>方法，接收一些
+IR 单元和一个分析管理器，返回类型为 PreservedAnalyses。</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;new_hellp.cpp
+#include &quot;llvm&#x2F;IR&#x2F;LegacyPassManager.h&quot;
+#include &quot;llvm&#x2F;Passes&#x2F;PassBuilder.h&quot;
+#include &quot;llvm&#x2F;Passes&#x2F;PassPlugin.h&quot;
+#include &quot;llvm&#x2F;Support&#x2F;raw_ostream.h&quot;
+
+using namespace llvm;
+
+namespace&#123;
+    void visitor(Function &amp;F)&#123;
+        errs() &lt;&lt; &quot;(New Hello)FunctionName: &quot; &lt;&lt; F.getName() &lt;&lt; &quot;\n&quot;;
+        errs() &lt;&lt; &quot;(New Hello)ArgSize: &quot; &lt;&lt; F.arg_size() &lt;&lt; &quot;\n&quot;;
+    &#125;
+
+    struct HelloWorld:PassInfoMixin&lt;HelloWorld&gt;&#123;
+        PreservedAnalyses run(Function &amp;F,FunctionAnalysisManager &amp;)&#123;
+            visitor(F);
+            return PreservedAnalyses::all();
+        &#125;
+        static bool isRequired()&#123;return true;&#125;
+    &#125;;
+&#125;&#x2F;&#x2F;namespace
+
+llvm::PassPluginLibraryInfo getHelloWorldPluginInfo()&#123;
+    return&#123;
+        LLVM_PLUGIN_API_VERSION,&quot;HelloWorld&quot;,LLVM_VERSION_STRING,
+        [](PassBuilder &amp;PB)&#123;
+            PB.registerPipelineParsingCallback(
+                [](StringRef Name, FunctionPassManager &amp;FPM,
+                ArrayRef&lt;PassBuilder::PipelineElement&gt;)&#123;
+                    if(Name &#x3D;&#x3D; &quot;hello-world&quot;)&#123;
+                        FPM.addPass(HelloWorld());
+                        return true;
+                    &#125;
+                    return true;
+                &#125;);
+        &#125;
+    &#125;;
+&#125;
+
+extern &quot;C&quot; LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo
+llvmGetPassPluginInfo()&#123;
+    return getHelloWorldPluginInfo();
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+以上代码分为两部分，Pass本体和Pass注册，具体含义和对应的CMakeLists.txt可参照<a
+target="_blank" rel="noopener" href="https://github.com/banach-space/llvm-tutor">llvm-tutor</a>，这里不做赘述。尝试运行：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#编译Pass</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">LLVM_DIR</span><span class="token operator">=</span>/usr/local/include/llvm/
+cmake -DLT_LLVM_INSTALL_DIR<span class="token operator">=</span><span class="token variable">$LLVM_DIR</span> <span class="token punctuation">..</span>/
+<span class="token function">make</span>
+
+<span class="token comment">#编译输入文件</span>
+clang -O1 -S -emit-llvm <span class="token punctuation">..</span>/<span class="token punctuation">..</span>/data/test.cpp -o <span class="token punctuation">..</span>/<span class="token punctuation">..</span>/data/test.ll
+
+<span class="token comment">#使用new manager加载pass</span>
+opt -load-pass-plugin ./libHelloWorld.so -passes<span class="token operator">=</span>hello-world -disable-output <span class="token punctuation">..</span>/<span class="token punctuation">..</span>/data/test.ll<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230501140915.png" style="zoom: 67%;" /></p>
+<h2 id="reference">Reference</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/416754155">LLVM IR 的第二个
+Pass：上手官方文档 New Pass Manager HelloWorld Pass - 知乎
+(zhihu.com)</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/290946850#:~:text=因此，LLVM%20pass管理机制的主要模块包括pass、pass管理器、pass注册及相关模块，如PassRegistry、AnalysisUsage、AnalysisResolver等。.%201、LLVM%20Pass及常用子类.,pass是一种编译器开发的结构化技术，用于完成编译对象（如IR）的转换、分析或优化等功能。.%20pass的执行就是编译器对编译对象进行转换、分析和优化的过程，pass构建了这些过程所需要的分析结果。.%20LLVM%20Pass是LLVM系统的重要组成部分，定义在llvmincludellvmPass.h中：.">LLVM中的pass及其管理机制
+- 知乎 (zhihu.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://llvm.org/docs/NewPassManager.html">Using the New
+Pass Manager — LLVM 17.0.0git documentation</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=ar7cJl2aBuU">2019 LLVM
+Developers’ Meeting: A. Warzynski “Writing an LLVM Pass: 101” -
+YouTube</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/banach-space/llvm-tutor">banach-space/llvm-tutor:
+A collection of out-of-tree LLVM passes for teaching and learning
+(github.com)</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Code/">Code</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LLVM/" rel="tag">LLVM</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2023/04/10/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91GREBE-Unveiling-Exploitation-Potential-for-Linux-Kernel-Bugs/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">GREBE-Unveiling Exploitation Potential for Linux Kernel Bugs</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#llvm%E5%85%A5%E9%97%A8%E7%BC%96%E5%86%99llvm-pass"><span class="nav-number">1.</span> <span class="nav-text">(LLVM入门)编写LLVM PASS</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E7%90%86%E8%AE%BA"><span class="nav-number">1.1.</span> <span class="nav-text">一、理论</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#llvm-ir"><span class="nav-number">1.1.0.1.</span> <span class="nav-text">LLVM IR</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#what-is-a-pass"><span class="nav-number">1.1.0.2.</span> <span class="nav-text">What is a PASS?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#opt"><span class="nav-number">1.1.0.3.</span> <span class="nav-text">opt</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E4%BB%A3%E7%A0%81%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.2.</span> <span class="nav-text">二、代码实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#hellow-world-pass"><span class="nav-number">1.2.1.</span> <span class="nav-text">2. Hellow World PASS</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#old-manager"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">2.1 old manager</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#new-manager"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">2.2 new manager</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">1.3.</span> <span class="nav-text">Reference</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+<footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2023 Shaw All Rights Reserved.
+        
+          <span id="busuanzi_container_site_pv">
+            本站总访问量<span id="busuanzi_value_site_pv"></span>次
+          </span>
+          <span class="post-meta-divider">|</span>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            本站访客数<span id="busuanzi_value_site_uv"></span>人
+          </span>
+          <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+
+  
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'true', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+<!-- Gaug.es Analytics -->
+<script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', 'true');
+    t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+    t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+<!-- End Gaug.es Analytics -->
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+	<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2439014eb270056ee1808a49956fe114";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<!-- Tencent Analytics -->
+	<script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId={{ theme.tencent_analytics }}";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+<!-- End Tencent Analytics -->
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>
