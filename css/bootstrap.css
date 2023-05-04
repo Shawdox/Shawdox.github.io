@@ -102,7 +102,7 @@ code,
 kbd,
 pre,
 samp {
-  font-family:  monospace, serif;
+  font-family: Consolas, serif;
   font-size: 1em;
 }
 
@@ -742,7 +742,7 @@ code,
 kbd,
 pre,
 samp {
-  font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+  font-family: Consolas, Monaco, Menlo, Consolas, "Courier New", monospace;
 }
 
 code {
