@@ -158,6 +158,231 @@
 <!-- Table of Contents -->
 
   
+    <article id="post-【技术总结】The Kernel Address Sanitizer(KASAN)"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2023/05/04/%E3%80%90%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93%E3%80%91The%20Kernel%20Address%20Sanitizer(KASAN)/">(技术总结)The Kernel Address Sanitizer(KASAN)</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/05/04/%E3%80%90%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93%E3%80%91The%20Kernel%20Address%20Sanitizer(KASAN)/" class="article-date">
+	  <time datetime="2023-05-04T06:33:12.791Z" itemprop="datePublished">五月 4, 2023</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Code/">Code</a>
+ 
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="the-kernel-address-sanitizerkasan">The Kernel Address
+Sanitizer(KASAN)</h1>
+<h3 id="兼容性">1. 兼容性</h3>
+<p>​
+KASAN是一个动态内存安全错误检测器，旨在发现内核out-of-bounds和UAF错误。KASAN有三个模块：<code>Generic KASAN</code>、<code>Software Tag-Based KASAN</code>、<code>Hardware Tag-Based KASAN</code>。<code>Generic KASAN</code>兼容许多CPU架构，但性能开销很大；<code>Software Tag-Based KASAN</code>和<code>Hardware Tag-Based KASAN</code>都只兼容arm64架构的CPU，性能开销会更小。</p>
+<p>​
+一般的，称<code>Generic KASAN</code>和<code>Software Tag-Based KASAN</code>为<strong>software
+KASAN</strong>；</p>
+<p>​
+称<code>Software Tag-Based KASAN</code>和<code>Hardware Tag-Based KASAN</code>为<strong>tag-based
+KASAN</strong>。</p>
+<p>​ <code>Generic KASAN</code>支持的指令集架构有：x86_64, arm, arm64,
+powerpc, riscv, s390, 和
+xtensa；<code>tag-based KASAN</code>只支持arm64。</p>
+<h3 id="编译器要求">2. 编译器要求</h3>
+<p>​
+KASAN对内存检查的逻辑是在编译的时候在内存访问操作之前插入相关检查指令，故需要相应的编译器支持该操作。</p>
+<blockquote>
+<p>​ <code>Generic KASAN</code>需要GCC
+8.3.0+/任何版本的Clang(只要内核支持)；</p>
+<p>​ <code>Software Tag-Based KASAN</code>需要GCC
+11+/任何版本的Clang(只要内核支持)；</p>
+<p>​ <code>Hardware Tag-Based KASAN</code>需要GCC10+/Clang12+。</p>
+</blockquote>
+<h3 id="使用方法">3. 使用方法</h3>
+<p>​ 开启KASAN需要在内核配置文件中开启对应配置：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token assign-left variable">CONFIG_KASAN</span><span class="token operator">=</span>y<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​
+然后根据选择的KASAN类型选择标签：<code>CONFIG_KASAN_GENERIC</code>、<code>CONFIG_KASAN_SW_TAGS</code>、<code>CONFIG_KASAN_HW_TAGS</code>。</p>
+<p>​ 对于software
+KASAN，其需要指定其编译插装类型：<code>CONFIG_KASAN_OUTLINE</code>、<code>CONFIG_KASAN_INLINE</code>，outline类型生成体积更小的二进制代码，而inline类型速度比outline快两倍。</p>
+<p>​ 为了在报告中包括受影响的slab对象的stack
+traces，指定：<code>CONFIG_STACKTRACE</code>;包括受影响的物理页的stack
+traces，指定<code>CONFIG_PAGE_OWNER</code>并<code>page_owner=on</code>。</p>
+<h3 id="report">4. Report</h3>
+<p>​ 默认情况下，KASAN只对第一个无效的内存访问打印错误报告。使用
+<code>kasan_multi_shot</code>，KASAN对每一个无效的访问都打印一份报告。这会禁用
+了KASAN报告的 <code>panic_on_warn</code>。</p>
+<p>​ 典型的KASAN报告如下所示:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span>
+BUG: KASAN: slab-out-of-bounds <span class="token keyword">in</span> kmalloc_oob_right+0xa8/0xbc <span class="token punctuation">[</span>test_kasan<span class="token punctuation">]</span>
+Write of size <span class="token number">1</span> at addr ffff8801f44ec37b by task insmod/2760
+
+CPU: <span class="token number">1</span> PID: <span class="token number">2760</span> Comm: insmod Not tainted <span class="token number">4.19</span>.0-rc3+ <span class="token comment">#698</span>
+Hardware name: QEMU Standard PC <span class="token punctuation">(</span>i440FX + PIIX, <span class="token number">1996</span><span class="token punctuation">)</span>, BIOS <span class="token number">1.10</span>.2-1 04/01/2014
+Call Trace:
+ dump_stack+0x94/0xd8
+ print_address_description+0x73/0x280
+ kasan_report+0x144/0x187
+ __asan_report_store1_noabort+0x17/0x20
+ kmalloc_oob_right+0xa8/0xbc <span class="token punctuation">[</span>test_kasan<span class="token punctuation">]</span>
+ kmalloc_tests_init+0x16/0x700 <span class="token punctuation">[</span>test_kasan<span class="token punctuation">]</span>
+ do_one_initcall+0xa5/0x3ae
+ do_init_module+0x1b6/0x547
+ load_module+0x75df/0x8070
+ __do_sys_init_module+0x1c6/0x200
+ __x64_sys_init_module+0x6e/0xb0
+ do_syscall_64+0x9f/0x2c0
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x7f96443109da
+RSP: 002b:00007ffcf0b51b08 EFLAGS: 00000202 ORIG_RAX: 00000000000000af
+RAX: ffffffffffffffda RBX: 000055dc3ee521a0 RCX: 00007f96443109da
+RDX: 00007f96445cff88 RSI: 0000000000057a50 RDI: 00007f9644992000
+RBP: 000055dc3ee510b0 R08: 0000000000000003 R09: 0000000000000000
+R10: 00007f964430cd0a R11: 0000000000000202 R12: 00007f96445cff88
+R13: 000055dc3ee51090 R14: 0000000000000000 R15: 0000000000000000
+
+Allocated by task <span class="token number">2760</span>:
+ save_stack+0x43/0xd0
+ kasan_kmalloc+0xa7/0xd0
+ kmem_cache_alloc_trace+0xe1/0x1b0
+ kmalloc_oob_right+0x56/0xbc <span class="token punctuation">[</span>test_kasan<span class="token punctuation">]</span>
+ kmalloc_tests_init+0x16/0x700 <span class="token punctuation">[</span>test_kasan<span class="token punctuation">]</span>
+ do_one_initcall+0xa5/0x3ae
+ do_init_module+0x1b6/0x547
+ load_module+0x75df/0x8070
+ __do_sys_init_module+0x1c6/0x200
+ __x64_sys_init_module+0x6e/0xb0
+ do_syscall_64+0x9f/0x2c0
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Freed by task <span class="token number">815</span>:
+ save_stack+0x43/0xd0
+ __kasan_slab_free+0x135/0x190
+ kasan_slab_free+0xe/0x10
+ kfree+0x93/0x1a0
+ umh_complete+0x6a/0xa0
+ call_usermodehelper_exec_async+0x4c3/0x640
+ ret_from_fork+0x35/0x40
+
+The buggy address belongs to the object at ffff8801f44ec300
+ <span class="token function">which</span> belongs to the cache kmalloc-128 of size <span class="token number">128</span>
+The buggy address is located <span class="token number">123</span> bytes inside of
+ <span class="token number">128</span>-byte region <span class="token punctuation">[</span>ffff8801f44ec300, ffff8801f44ec380<span class="token punctuation">)</span>
+The buggy address belongs to the page:
+page:ffffea0007d13b00 count:1 mapcount:0 mapping:ffff8801f7001640 index:0x0
+flags: 0x200000000000100<span class="token punctuation">(</span>slab<span class="token punctuation">)</span>
+raw: 0200000000000100 ffffea0007d11dc0 0000001a0000001a ffff8801f7001640
+raw: 0000000000000000 0000000080150015 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff8801f44ec200: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
+ ffff8801f44ec280: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+<span class="token operator">></span>ffff8801f44ec300: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 03
+                                                                ^
+ ffff8801f44ec380: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
+ ffff8801f44ec400: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ <code>BUG: KASAN:</code>
+第一行报告了错误类型，slab-out-of-bounds；</p>
+<p>​ <code>Call Trace</code>:表明了当前error的堆栈跟踪；</p>
+<p>​
+<code>Allocated by task 2760</code>:表明了所访问内存分配位置的堆栈跟踪（“where
+the accessed memory was allocated ”）；</p>
+<p>​
+<code>Freed by task 815</code>:表明了对象被释放的位置的堆栈跟踪（“where
+the object was freed”）；</p>
+<p>​
+<code>The buggy address belongs to ……</code>:表明了访问的slab对象的相关描述；</p>
+<p>​
+<code>Memory state around the buggy address:</code>表明了访问slab对象周围的内存情况。</p>
+<h3 id="影子内存">5. 影子内存</h3>
+<p>​
+KASAN的原理是利用“额外”的内存来标记那些可以被使用的内存的状态。这些做标记的区域被称为影子区域（shadow
+region）。了解 Linux
+内存管理的读者知道，内存中的每个物理页在内存中都会有一个 struct page
+这样的结构体来表示，即每 4KB 的页需要 40B 的结构体，大约 1%
+的内存用来表示内存本身。Kasan 与其类似但“浪费”更为严重，影子区域的比例是
+1:8，即总内存的九分之一会被“浪费”。用官方文档中的例子，如果有 128TB
+的可用内存，需要有额外 16TB 的内存用来做标记。</p>
+<figure>
+<img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230504141838.png"
+alt="Shadow Memory of KASAN" />
+<figcaption aria-hidden="true">Shadow Memory of KASAN</figcaption>
+</figure>
+<p>​ 做标记的方法比较简单，将可用内存按照 8
+子节的大小分组，如果每组中所有 8
+个字节都可以访问，则影子内存中相应的地方用全零（0x00）表示；如果可用内存的前
+N（1 到 7 范围之间）个字节可用，则影子内存中响应的位置用 N
+表示；其它情况影子内存用负数表示该内存不可用（<em>KASAN使用不同的负值来区分不同类型的不可访问内存，如redzones
+或已释放的内存，参见 mm/kasan/kasan.h</em>）。</p>
+<p>​
+上述Report中，箭头指向的影子字节<code>03</code>，表示访问的地址是部分可访问的。报告中可访问的内存是“00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00
+03”，一共15个<code>00</code>和一个<code>03</code>，其表明了一共有15×8+3=123个字节可以访问，当试图访问这123个字节之外的内容时，就会报错out-of-bounds。</p>
+<p>​ <strong>KASAN错误标题（如 <code>slab-out-of-bounds</code> 或
+<code>use-after-free</code> ）
+是尽量接近的KASAN根据其拥有的有限信息打印出最可能的错误类型。错误的实际类型
+可能会有所不同。</strong></p>
+<h2 id="reference">Reference</h2>
+<ul>
+<li><p>文档：</p>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://www.kernel.org/doc/html/latest/dev-tools/kasan.html">The
+Kernel Address Sanitizer (KASAN) — The Linux Kernel
+documentation</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.kernel.org/doc/html/latest/translations/zh_CN/dev-tools/kasan.html">内核地址消毒剂(KASAN)
+— The Linux Kernel documentation</a></li>
+<li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1518011">Kasan
+- Linux 内核的内存检测工具 - 腾讯云开发者社区-腾讯云
+(tencent.com)</a></li>
+</ul></li>
+<li><p>内存分配:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/358891862">Linux 内核 |
+内存管理——slab 分配器 - 知乎 (zhihu.com)</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42262944/article/details/119853846">(60条消息)
+Linux内存子系统——分配物理页面（alloc_pages）_绍兴小贵宁的博客-CSDN博客</a></li>
+</ul></li>
+</ul>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Code/">Code</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AEG/" rel="tag">AEG</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Vulnerability/" rel="tag">Vulnerability</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
     <article id="post-(LLVM入门)编写LLVM PASS"  class="article article-type-post" itemscope itemprop="blogPost" >
   <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
     
@@ -190,7 +415,7 @@
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/05/01/(LLVM%E5%85%A5%E9%97%A8)%E7%BC%96%E5%86%99LLVM%20PASS/"><img src="http://lorempixel.com/750/450/city/7" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/05/01/(LLVM%E5%85%A5%E9%97%A8)%E7%BC%96%E5%86%99LLVM%20PASS/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -262,7 +487,7 @@ CMake；
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/04/10/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91GREBE-Unveiling-Exploitation-Potential-for-Linux-Kernel-Bugs/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/04/10/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91GREBE-Unveiling-Exploitation-Potential-for-Linux-Kernel-Bugs/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -339,7 +564,7 @@ ABSTRACT
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/03/15/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Demons-in-the-Shared-Kernel-Abstract-Resource-Attacks-Against-OS-level-Virtualization/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/03/15/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Demons-in-the-Shared-Kernel-Abstract-Resource-Attacks-Against-OS-level-Virtualization/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -490,7 +715,7 @@ ABSTRACT
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/02/16/Symbolic%20Execution-%E7%AC%A6%E5%8F%B7%E6%89%A7%E8%A1%8C/"><img src="http://lorempixel.com/750/450/city/4" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/02/16/Symbolic%20Execution-%E7%AC%A6%E5%8F%B7%E6%89%A7%E8%A1%8C/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -564,7 +789,7 @@ Execution：从思维上理解符号执行
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/02/12/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91How%20Machine%20Learning%20Is%20Solving%20the%20Binary%20Function%20Similarity%20Problem/"><img src="http://lorempixel.com/750/450/city/3" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/02/12/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91How%20Machine%20Learning%20Is%20Solving%20the%20Binary%20Function%20Similarity%20Problem/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -655,7 +880,7 @@ Catalog1算法利用minhash，使用哈希近似替代两个S集合，以此来�
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/01/10/Comparing-One-with-Many-%E2%80%94-Solving-Binary2source-Function-Matching-Under-Function-Inlining/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/01/10/Comparing-One-with-Many-%E2%80%94-Solving-Binary2source-Function-Matching-Under-Function-Inlining/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -729,7 +954,7 @@ Software）生成一个带有标记的调用点（内联或不内联）的数据
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/12/08/How-Machine-Learning-Is-Solving-the-Binary-Function-Similarity-Problem/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/12/08/How-Machine-Learning-Is-Solving-the-Binary-Function-Similarity-Problem/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -766,83 +991,6 @@ ABSTRACT
       
   <span class="ico-tags"></span>
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Binary/" rel="tag">Binary</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ML/" rel="tag">ML</a></li></ul>
-
-      
-    </footer>
-    <hr class="entry-footer-hr">
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
-    <article id="post-Connect X"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2022/12/01/Connect%20X/">强化学习之ConnectX四子棋游戏</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2022/12/01/Connect%20X/" class="article-date">
-	  <time datetime="2022-12-01T14:11:52.779Z" itemprop="datePublished">十二月 1, 2022</time>
-	</a>
-
-      
-	<span class="ico-folder"></span>
-    <a class="article-category-link" href="/categories/Kaggle/">Kaggle</a>
- 
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-
-          
-            <div class="entry-thumbnail">
-              <a href="/2022/12/01/Connect%20X/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
-            </div>
-          
-          <div class="entry-summary">
-          Connect X
-
-Time: 2022.11.14
-Author: Shaw
-Connect X |
-Kaggle
-ConnectX
-Getting Started | Kaggle
-
-一、任务简介：
-
-任务：强化学习任务，类似五子棋的规则（但每一步只能下某一列的最底端的空位），每人一步，先于对手横竖或斜角连成4个即可获胜。
-
-
-
-        
-          <p class="article-more-link">
-            <a href="/2022/12/01/Connect%20X/#more">阅读全文</a>
-          </p>
-        </div>
-      
-    </div>
-    <footer class="entry-meta entry-footer">
-      
-	<span class="ico-folder"></span>
-    <a class="article-category-link" href="/categories/Kaggle/">Kaggle</a>
-
-      
-  <span class="ico-tags"></span>
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RL/" rel="tag">RL</a></li></ul>
 
       
     </footer>
@@ -963,6 +1111,18 @@ Getting Started | Kaggle
               <div class="widget-entry-summary" style="margin: 0;">
             
 
+              <h6 style="margin: 0;"><a href="/2023/05/04/%E3%80%90%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93%E3%80%91The%20Kernel%20Address%20Sanitizer(KASAN)/">(技术总结)The Kernel Address Sanitizer(KASAN)</a></h6>
+              <span>五月 4, 2023</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
               <h6 style="margin: 0;"><a href="/2023/05/01/(LLVM%E5%85%A5%E9%97%A8)%E7%BC%96%E5%86%99LLVM%20PASS/">(LLVM入门)编写LLVM PASS</a></h6>
               <span>五月 1, 2023</span>
             </div>
@@ -1017,18 +1177,6 @@ Getting Started | Kaggle
 
           </li>
         
-          <li class="clearfix">
-
-            
-              <div class="widget-entry-summary" style="margin: 0;">
-            
-
-              <h6 style="margin: 0;"><a href="/2023/02/12/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91How%20Machine%20Learning%20Is%20Solving%20the%20Binary%20Function%20Similarity%20Problem/">(论文复现)How Machine Learning Is Solving the Binary Function Similarity Problem</a></h6>
-              <span>二月 12, 2023</span>
-            </div>
-
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -1038,7 +1186,7 @@ Getting Started | Kaggle
   <div class="widget-wrap">
     <h3 class="widget-title">分类</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Book/">Book</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Code/">Code</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kaggle/">Kaggle</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Paper/">Paper</a><span class="category-list-count">23</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Reproduce/">Reproduce</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Something/">Something</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/paper/">paper</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Book/">Book</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Code/">Code</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kaggle/">Kaggle</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Paper/">Paper</a><span class="category-list-count">23</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Reproduce/">Reproduce</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Something/">Something</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/paper/">paper</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1048,7 +1196,7 @@ Getting Started | Kaggle
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD/" rel="tag">AD</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD-training/" rel="tag">AD training</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AEG/" rel="tag">AEG</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BCSA/" rel="tag">BCSA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary/" rel="tag">Binary</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Botnet/" rel="tag">Botnet</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CV/" rel="tag">CV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cloud/" rel="tag">Cloud</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNN/" rel="tag">DNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDS/" rel="tag">IDS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LLVM/" rel="tag">LLVM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ML/" rel="tag">ML</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Malware-Classifiers/" rel="tag">Malware Classifiers</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Math/" rel="tag">Math</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mutiagent/" rel="tag">Mutiagent</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/" rel="tag">NLP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDF/" rel="tag">PDF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RL/" rel="tag">RL</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RNN/" rel="tag">RNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Symbolic-Execution/" rel="tag">Symbolic Execution</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vulnerability/" rel="tag">Vulnerability</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/" rel="tag">Windows</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/obfuscation/" rel="tag">obfuscation</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD/" rel="tag">AD</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD-training/" rel="tag">AD training</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AEG/" rel="tag">AEG</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BCSA/" rel="tag">BCSA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary/" rel="tag">Binary</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Botnet/" rel="tag">Botnet</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CV/" rel="tag">CV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cloud/" rel="tag">Cloud</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNN/" rel="tag">DNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDS/" rel="tag">IDS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LLVM/" rel="tag">LLVM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ML/" rel="tag">ML</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Malware-Classifiers/" rel="tag">Malware Classifiers</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Math/" rel="tag">Math</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mutiagent/" rel="tag">Mutiagent</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/" rel="tag">NLP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDF/" rel="tag">PDF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RL/" rel="tag">RL</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RNN/" rel="tag">RNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Symbolic-Execution/" rel="tag">Symbolic Execution</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vulnerability/" rel="tag">Vulnerability</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/" rel="tag">Windows</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/obfuscation/" rel="tag">obfuscation</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1058,7 +1206,7 @@ Getting Started | Kaggle
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/AD/" style="font-size: 20px;">AD</a> <a href="/tags/AD-training/" style="font-size: 10px;">AD training</a> <a href="/tags/AEG/" style="font-size: 11.67px;">AEG</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/BCSA/" style="font-size: 10px;">BCSA</a> <a href="/tags/Binary/" style="font-size: 13.33px;">Binary</a> <a href="/tags/Botnet/" style="font-size: 10px;">Botnet</a> <a href="/tags/CV/" style="font-size: 10px;">CV</a> <a href="/tags/Cloud/" style="font-size: 10px;">Cloud</a> <a href="/tags/DDoS/" style="font-size: 10px;">DDoS</a> <a href="/tags/DNN/" style="font-size: 10px;">DNN</a> <a href="/tags/IDS/" style="font-size: 11.67px;">IDS</a> <a href="/tags/LLVM/" style="font-size: 10px;">LLVM</a> <a href="/tags/ML/" style="font-size: 13.33px;">ML</a> <a href="/tags/Machine-Learning/" style="font-size: 11.67px;">Machine Learning</a> <a href="/tags/Malware-Classifiers/" style="font-size: 18.33px;">Malware Classifiers</a> <a href="/tags/Math/" style="font-size: 10px;">Math</a> <a href="/tags/Mutiagent/" style="font-size: 10px;">Mutiagent</a> <a href="/tags/NLP/" style="font-size: 13.33px;">NLP</a> <a href="/tags/PDF/" style="font-size: 10px;">PDF</a> <a href="/tags/Pytorch/" style="font-size: 11.67px;">Pytorch</a> <a href="/tags/RL/" style="font-size: 16.67px;">RL</a> <a href="/tags/RNN/" style="font-size: 10px;">RNN</a> <a href="/tags/Symbolic-Execution/" style="font-size: 10px;">Symbolic Execution</a> <a href="/tags/Vulnerability/" style="font-size: 15px;">Vulnerability</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/obfuscation/" style="font-size: 10px;">obfuscation</a>
+      <a href="/tags/AD/" style="font-size: 20px;">AD</a> <a href="/tags/AD-training/" style="font-size: 10px;">AD training</a> <a href="/tags/AEG/" style="font-size: 14px;">AEG</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/BCSA/" style="font-size: 10px;">BCSA</a> <a href="/tags/Binary/" style="font-size: 14px;">Binary</a> <a href="/tags/Botnet/" style="font-size: 10px;">Botnet</a> <a href="/tags/CV/" style="font-size: 10px;">CV</a> <a href="/tags/Cloud/" style="font-size: 10px;">Cloud</a> <a href="/tags/DDoS/" style="font-size: 10px;">DDoS</a> <a href="/tags/DNN/" style="font-size: 10px;">DNN</a> <a href="/tags/IDS/" style="font-size: 12px;">IDS</a> <a href="/tags/LLVM/" style="font-size: 10px;">LLVM</a> <a href="/tags/ML/" style="font-size: 14px;">ML</a> <a href="/tags/Machine-Learning/" style="font-size: 12px;">Machine Learning</a> <a href="/tags/Malware-Classifiers/" style="font-size: 18px;">Malware Classifiers</a> <a href="/tags/Math/" style="font-size: 10px;">Math</a> <a href="/tags/Mutiagent/" style="font-size: 10px;">Mutiagent</a> <a href="/tags/NLP/" style="font-size: 14px;">NLP</a> <a href="/tags/PDF/" style="font-size: 10px;">PDF</a> <a href="/tags/Pytorch/" style="font-size: 12px;">Pytorch</a> <a href="/tags/RL/" style="font-size: 16px;">RL</a> <a href="/tags/RNN/" style="font-size: 10px;">RNN</a> <a href="/tags/Symbolic-Execution/" style="font-size: 10px;">Symbolic Execution</a> <a href="/tags/Vulnerability/" style="font-size: 16px;">Vulnerability</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/obfuscation/" style="font-size: 10px;">obfuscation</a>
     </div>
   </div>
 
@@ -1068,7 +1216,7 @@ Getting Started | Kaggle
     <h3 class="widget-title">归档</h3>
 
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">14</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">14</span></li></ul>
     </div>
   </div>
 
