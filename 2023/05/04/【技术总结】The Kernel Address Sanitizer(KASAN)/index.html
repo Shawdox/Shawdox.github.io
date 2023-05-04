@@ -21,7 +21,7 @@
 <meta property="og:description" content="The Kernel Address Sanitizer(KASAN) 1. 兼容性 ​ KASAN是一个动态内存安全错误检测器，旨在发现内核out-of-bounds和UAF错误。KASAN有三个模块：Generic KASAN、Software Tag-Based KASAN、Hardware Tag-Based KASAN。Generic KASAN兼容许多CPU架构，但性能开销很大">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-05-04T06:33:12.791Z">
-<meta property="article:modified_time" content="2023-05-04T06:32:45.951Z">
+<meta property="article:modified_time" content="2023-05-04T06:36:52.861Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="Vulnerability">
 <meta property="article:tag" content="AEG">
@@ -165,8 +165,8 @@ KASAN</strong>；</p>
 KASAN</strong>。</p>
 <p>​ <code>Generic KASAN</code>支持的指令集架构有：x86_64, arm, arm64,
 powerpc, riscv, s390, 和
-xtensa；<code>tag-based KASAN</code>只支持arm64。</p>
-<h3 id="编译器要求">2. 编译器要求</h3>
+xtensa；<code>tag-based KASAN</code>只支持arm64。 <span id="more"></span> ### 2.
+编译器要求</p>
 <p>​
 KASAN对内存检查的逻辑是在编译的时候在内存访问操作之前插入相关检查指令，故需要相应的编译器支持该操作。</p>
 <blockquote>
@@ -365,7 +365,7 @@ Linux内存子系统——分配物理页面（alloc_pages）_绍兴小贵宁的
     <strong class="toc-title">文章目录</strong>
     
       <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#the-kernel-address-sanitizerkasan"><span class="nav-number">1.</span> <span class="nav-text">The Kernel Address
-Sanitizer(KASAN)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%BC%E5%AE%B9%E6%80%A7"><span class="nav-number">1.0.1.</span> <span class="nav-text">1. 兼容性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%99%A8%E8%A6%81%E6%B1%82"><span class="nav-number">1.0.2.</span> <span class="nav-text">2. 编译器要求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">1.0.3.</span> <span class="nav-text">3. 使用方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#report"><span class="nav-number">1.0.4.</span> <span class="nav-text">4. Report</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BD%B1%E5%AD%90%E5%86%85%E5%AD%98"><span class="nav-number">1.0.5.</span> <span class="nav-text">5. 影子内存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">1.1.</span> <span class="nav-text">Reference</span></a></li></ol></li></ol>
+Sanitizer(KASAN)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%BC%E5%AE%B9%E6%80%A7"><span class="nav-number">1.0.1.</span> <span class="nav-text">1. 兼容性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">1.0.2.</span> <span class="nav-text">3. 使用方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#report"><span class="nav-number">1.0.3.</span> <span class="nav-text">4. Report</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BD%B1%E5%AD%90%E5%86%85%E5%AD%98"><span class="nav-number">1.0.4.</span> <span class="nav-text">5. 影子内存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">1.1.</span> <span class="nav-text">Reference</span></a></li></ol></li></ol>
     
     </div>
   </aside>

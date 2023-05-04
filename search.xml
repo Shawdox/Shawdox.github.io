@@ -22,8 +22,8 @@ KASAN</strong>；</p>
 KASAN</strong>。</p>
 <p>​ <code>Generic KASAN</code>支持的指令集架构有：x86_64, arm, arm64,
 powerpc, riscv, s390, 和
-xtensa；<code>tag-based KASAN</code>只支持arm64。</p>
-<h3 id="编译器要求">2. 编译器要求</h3>
+xtensa；<code>tag-based KASAN</code>只支持arm64。 <span id="more"></span> ### 2.
+编译器要求</p>
 <p>​
 KASAN对内存检查的逻辑是在编译的时候在内存访问操作之前插入相关检查指令，故需要相应的编译器支持该操作。</p>
 <blockquote>
