@@ -25,7 +25,7 @@
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230508211728.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230508204234.png">
 <meta property="article:published_time" content="2023-05-08T13:21:58.186Z">
-<meta property="article:modified_time" content="2023-05-08T13:21:23.053Z">
+<meta property="article:modified_time" content="2023-05-08T13:23:18.820Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="Fuzzing">
 <meta name="twitter:card" content="summary">
@@ -176,6 +176,7 @@ of Likely Invariants as Feedback for Fuzzers (github.com)</a></p>
 在本文，我们提出了<strong>一个新型反馈机制，通过考虑到程序变量的”不变值“和其之间的关系来增强代码覆盖率</strong>。为此，我们在基本块层面上学习可能的变量“不变值”，并相应地划分程序状态空间。我们的反馈可以区分输入是否违反了一个或多个不变量，并对其进行奖励，从而完善代码覆盖通常提供的程序状态近似值。</p>
 <p>​
 基于<u>LLVM和AFPL++</u>，我们在一个名为<strong>INVSCOV</strong>的原型中实现了上述的技术。实验表明，与使用纯代码覆盖反馈的fuzzer相比，我们的方法可以发现更多、更不同的bug。此外，还发现了一个在OSS-Fuzz上每天测试的库中的两个漏洞，而且当时在其最新版本中仍然存在。</p>
+<span id="more"></span>
 <h2 id="问题背景">问题背景</h2>
 <blockquote>
 <p><strong><em>“code coverage alone is a necessary but not sufficient
