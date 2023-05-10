@@ -9,28 +9,44 @@
   <entry>
     <title>(代码分析)GREBE-Analyzer污点分析代码解析</title>
     <url>/2023/05/09/%E3%80%90%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%E3%80%91GREBE-Analyzer%E6%B1%A1%E7%82%B9%E5%88%86%E6%9E%90%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/</url>
-    <content><![CDATA[<h1 id="代码分析-GREBE-Analyzer污点分析代码解析"><a href="#代码分析-GREBE-Analyzer污点分析代码解析" class="headerlink" title="(代码分析)GREBE-Analyzer污点分析代码解析"></a>(代码分析)GREBE-Analyzer污点分析代码解析</h1><blockquote>
-<p><strong>Code：</strong><a href="https://github.com/Markakd/GREBE">Markakd/GREBE (github.com)</a></p>
-<p><strong>Target：</strong>GREBE/analyzer<br><span id="more"></span></p>
-<h2 id="一、get-cg-py-amp-run-analyze-py"><a href="#一、get-cg-py-amp-run-analyze-py" class="headerlink" title="一、get_cg.py &amp; run_analyze.py"></a>一、get_cg.py &amp; run_analyze.py</h2></blockquote>
-<h2 id="二、analyzer-src-lib"><a href="#二、analyzer-src-lib" class="headerlink" title="二、analyzer/src/lib"></a>二、analyzer/src/lib</h2><blockquote>
+    <content><![CDATA[<h1
+id="代码分析grebe-analyzer污点分析代码解析">(代码分析)GREBE-Analyzer污点分析代码解析</h1>
+<blockquote>
+<p><strong>Code：</strong><a
+href="https://github.com/Markakd/GREBE">Markakd/GREBE
+(github.com)</a></p>
+<p><strong>Target：</strong>GREBE/analyzer <span id="more"></span> ## 一、get_cg.py
+&amp; run_analyze.py</p>
+</blockquote>
+<h2 id="二analyzersrclib">二、analyzer/src/lib</h2>
+<blockquote>
 <p>前置知识：</p>
 <ul>
-<li><p>GREBE</p>
-</li>
-<li><p>LLVM IR</p>
-</li>
-<li>LLVM Pass(legacy manager &amp; new manager)</li>
-<li>C++面向对象</li>
-<li>taint analysis</li>
+<li><p>GREBE</p></li>
+<li><p>LLVM IR</p></li>
+<li><p>LLVM Pass(legacy manager &amp; new manager)</p></li>
+<li><p>C++面向对象</p></li>
+<li><p>taint analysis</p></li>
 </ul>
 </blockquote>
-<h3 id="2-1-代码来源"><a href="#2-1-代码来源" class="headerlink" title="2.1 代码来源"></a>2.1 代码来源</h3><p>​    analyzer的主要作用是用于污点分析，其基于的代码是ucr副教授Chengyu Song 基于<a href="https://github.com/CRYPTOlab/kint">kint</a>（2013年的分析工具）的工作《<a href="https://www.researchgate.net/profile/Kangjie-Lu/publication/292156157_Enforcing_Kernel_Security_Invariants_with_Data_Flow_Integrity/links/56ab8bd408aed5a0135c201a/Enforcing-Kernel-Security-Invariants-with-Data-Flow-Integrity.pdf">Enforcing-Kernel-Security-Invariants-with-Data-Flow-Integrity </a>》，其在kint的基础上实现了自己的call graph和taint analysis。过去几年有多篇安全A类会议都使用了这份分析代码。</p>
+<h3 id="代码来源">2.1 代码来源</h3>
+<p>​ analyzer的主要作用是用于污点分析，其基于的代码是ucr副教授Chengyu
+Song 基于<a
+href="https://github.com/CRYPTOlab/kint">kint</a>（2013年的分析工具）的工作《<a
+href="https://www.researchgate.net/profile/Kangjie-Lu/publication/292156157_Enforcing_Kernel_Security_Invariants_with_Data_Flow_Integrity/links/56ab8bd408aed5a0135c201a/Enforcing-Kernel-Security-Invariants-with-Data-Flow-Integrity.pdf">Enforcing-Kernel-Security-Invariants-with-Data-Flow-Integrity</a>》，其在kint的基础上实现了自己的call
+graph和taint
+analysis。过去几年有多篇安全A类会议都使用了这份分析代码。</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230502104803.png" style="zoom:67%;" /></p>
-<p>​    针对最新的LLVM(14)版本，目前也有开源的kint：<a href="https://github.com/ganler/mini-kint">ganler/mini-kint: Enhanced implementation of Kint in LLVM-14, in C++17. (github.com)</a></p>
-<h3 id="2-2-总体结构"><a href="#2-2-总体结构" class="headerlink" title="2.2 总体结构"></a>2.2 总体结构</h3><p>​    analyzer的源码分为几个模块：<code>KAMain</code>、<code>Annotation</code>、<code>CallGraph</code>、<code>CrashAnalyzer</code>、<code>PointerAnalysis</code>。KAMain.cc是程序的主模块，其引用模块：</p>
+<p>​ 针对最新的LLVM(14)版本，目前也有开源的kint：<a
+href="https://github.com/ganler/mini-kint">ganler/mini-kint: Enhanced
+implementation of Kint in LLVM-14, in C++17. (github.com)</a></p>
+<h3 id="总体结构">2.2 总体结构</h3>
+<p>​
+analyzer的源码分为几个模块：<code>KAMain</code>、<code>Annotation</code>、<code>CallGraph</code>、<code>CrashAnalyzer</code>、<code>PointerAnalysis</code>。KAMain.cc是程序的主模块，其引用模块：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230418154111392.png" style="zoom:50%;" /></p>
-<h4 id=""><a href="#" class="headerlink" title=" "></a> </h4><p>​    analyzer在<code>GlobalCtx</code>模块中定义了自己的Pass父类<code>IterativeModulePass</code>：</p>
+<h4 id="section"></h4>
+<p>​
+analyzer在<code>GlobalCtx</code>模块中定义了自己的Pass父类<code>IterativeModulePass</code>：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">class IterativeModulePass &#123;
   protected:
     GlobalContext *Ctx;
@@ -54,13 +70,22 @@
 
     virtual void run(ModuleList &amp;modules);
 &#125;;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    可以看到<code>IterativeModulePass</code>实现了四个虚函数<code>doInitialization</code>、<code>doFinalization</code>、<code>doModulePass</code>和<code>run</code>分别用于Pass的运行前后处理以及在多个modules上运行Pass。从虚函数的定义就可以看出该项目使用的是旧版的Pass Manager。</p>
-<p>​    项目中实现了四个子类，其继承关系如图所示：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230502154428.png" alt=""></p>
-<h3 id="2-3-KAMain-cc"><a href="#2-3-KAMain-cc" class="headerlink" title="2.3 KAMain.cc"></a>2.3 KAMain.cc</h3><h4 id="2-3-1-IterativeModulePass-run"><a href="#2-3-1-IterativeModulePass-run" class="headerlink" title="2.3.1 IterativeModulePass::run"></a>2.3.1 IterativeModulePass::run</h4><p>​    <code>IterativeModulePass::run</code>的完整实现在KAMain.cc中，run函数的参数是一个module列表(<strong>ModuleList &amp;modules</strong>)，其数据结构是：</p>
+<p>​
+可以看到<code>IterativeModulePass</code>实现了四个虚函数<code>doInitialization</code>、<code>doFinalization</code>、<code>doModulePass</code>和<code>run</code>分别用于Pass的运行前后处理以及在多个modules上运行Pass。从虚函数的定义就可以看出该项目使用的是旧版的Pass
+Manager。</p>
+<p>​ 项目中实现了四个子类，其继承关系如图所示：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230502154428.png" /></p>
+<h3 id="kamain.cc">2.3 KAMain.cc</h3>
+<h4 id="iterativemodulepassrun">2.3.1 IterativeModulePass::run</h4>
+<p>​
+<code>IterativeModulePass::run</code>的完整实现在KAMain.cc中，run函数的参数是一个module列表(<strong>ModuleList
+&amp;modules</strong>)，其数据结构是：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">typedef std::vector&lt; std::pair&lt;llvm::Module*, llvm::StringRef&gt; &gt; ModuleList;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>​    <code>llvm:StringRef</code>类型表示一个固定不变的字符串的引用（包括一个字符数组的指针和长度），它支持可用在<code>std::string</code>类上的各种通用字符串操作。</p>
-<p>​    ①在run函数中，首先对传入的module列表进行遍历，并依次进行初始化操作：</p>
+<p>​
+<code>llvm:StringRef</code>类型表示一个固定不变的字符串的引用（包括一个字符数组的指针和长度），它支持可用在<code>std::string</code>类上的各种通用字符串操作。</p>
+<p>​
+①在run函数中，首先对传入的module列表进行遍历，并依次进行初始化操作：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;KAMain.cc
 bool again &#x3D; true;
     while (again) &#123;
@@ -72,8 +97,10 @@ bool again &#x3D; true;
             again |&#x3D; doInitialization(i-&gt;first);
         &#125;
     &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    这里的<code>doInitialization</code>和后续的<code>doModulePass</code>函数都是各个子类中定义的函数，其在父类的函数定义中出现是C++多态的体现，<code>doInitialization</code>函数并不通过<code>IterativeModulePass</code>类运行，而是通过其对应子类<code>ChildName::doInitialization</code>来运行子类特定的对应函数。由于所有子类中的<code>doInitialization</code>都只返回false，故这段初始化操作实际什么也没做。</p>
-<p>​    ②接着，对module列表中的每个module依次调用<code>doModulePass</code>函数，其调用各个子类中实现的Pass操作，并对结果进行统计。</p>
+<p>​
+这里的<code>doInitialization</code>和后续的<code>doModulePass</code>函数都是各个子类中定义的函数，其在父类的函数定义中出现是C++多态的体现，<code>doInitialization</code>函数并不通过<code>IterativeModulePass</code>类运行，而是通过其对应子类<code>ChildName::doInitialization</code>来运行子类特定的对应函数。由于所有子类中的<code>doInitialization</code>都只返回false，故这段初始化操作实际什么也没做。</p>
+<p>​
+②接着，对module列表中的每个module依次调用<code>doModulePass</code>函数，其调用各个子类中实现的Pass操作，并对结果进行统计。</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;KAMain.cc 
 unsigned iter &#x3D; 0, changed &#x3D; 1;
     while (changed) &#123;
@@ -94,8 +121,10 @@ unsigned iter &#x3D; 0, changed &#x3D; 1;
         &#125;
         KA_LOGS(3, &quot;[&quot; &lt;&lt; ID &lt;&lt; &quot;] Updated in &quot; &lt;&lt; changed &lt;&lt; &quot; modules.&quot;);
     &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    由于所有子类的<code>doModulePass</code>函数返回值都是false，故这里的change应该不会被触发。</p>
-<p>​    ③最后，与<code>doInitialization</code>相似，调用<code>doFinalization</code>函数对modules做后处理，这里实际上除了<code>CallGraphPass</code>类对module更新了相关caller和callee映射，其它类的<code>doFinalization</code>什么都没做。所有子类的<code>doFinalization</code>都返回了false，故这里也只遍历了一轮。</p>
+<p>​
+由于所有子类的<code>doModulePass</code>函数返回值都是false，故这里的change应该不会被触发。</p>
+<p>​
+③最后，与<code>doInitialization</code>相似，调用<code>doFinalization</code>函数对modules做后处理，这里实际上除了<code>CallGraphPass</code>类对module更新了相关caller和callee映射，其它类的<code>doFinalization</code>什么都没做。所有子类的<code>doFinalization</code>都返回了false，故这里也只遍历了一轮。</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;KAMain.cc
 again &#x3D; true;
     while (again) &#123;
@@ -104,8 +133,11 @@ again &#x3D; true;
             again |&#x3D; doFinalization(i-&gt;first);
         &#125;
     &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    综上，子类的run函数的作用就是接受一个module列表，对其中的每个module运行其对应的Pass。</p>
-<h4 id="2-3-2-doBasicInitialization"><a href="#2-3-2-doBasicInitialization" class="headerlink" title="2.3.2 doBasicInitialization"></a>2.3.2 doBasicInitialization</h4><p>​    KAMain.cc中实现了一个独立函数<code>doBasicInitialization</code>：</p>
+<p>​
+综上，子类的run函数的作用就是接受一个module列表，对其中的每个module运行其对应的Pass。</p>
+<h4 id="dobasicinitialization">2.3.2 doBasicInitialization</h4>
+<p>​
+KAMain.cc中实现了一个独立函数<code>doBasicInitialization</code>：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;KAMain.cc
 void doBasicInitialization(Module *M) &#123;
     &#x2F;&#x2F; collect global object definitions
@@ -131,9 +163,12 @@ void doBasicInitialization(Module *M) &#123;
     &#125;
     return;
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    其功能分为两个部分，将输入的module中的全局对象存储到GlobalCtx.Gobjs中，将输入modules中的全局函数存储到GlobalCtx.Funcs中。</p>
-<h4 id="2-3-3-main"><a href="#2-3-3-main" class="headerlink" title="2.3.3 main()"></a>2.3.3 main()</h4><p>​    main函数的工作流程可以分为以下几部分：</p>
-<h5 id="2-3-3-1-准备工作："><a href="#2-3-3-1-准备工作：" class="headerlink" title="2.3.3.1 准备工作："></a>2.3.3.1 准备工作：</h5><ul>
+<p>​
+其功能分为两个部分，将输入的module中的全局对象存储到GlobalCtx.Gobjs中，将输入modules中的全局函数存储到GlobalCtx.Funcs中。</p>
+<h4 id="main">2.3.3 main()</h4>
+<p>​ main函数的工作流程可以分为以下几部分：</p>
+<h5 id="准备工作">2.3.3.1 准备工作：</h5>
+<ul>
 <li><strong>分配堆栈资源：</strong></li>
 </ul>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;KAMain.cc -&gt; main()
@@ -150,7 +185,8 @@ void doBasicInitialization(Module *M) &#123;
         setrlimit(RLIMIT_STACK, &amp;rl);
     &#125;
 #endif<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    上述代码将进程的栈长度设置为预定义的SET_STACK_SIZE，以字节为单位。</p>
+<p>​
+上述代码将进程的栈长度设置为预定义的SET_STACK_SIZE，以字节为单位。</p>
 <ul>
 <li><strong>打印stack trace：</strong></li>
 </ul>
@@ -164,11 +200,10 @@ void doBasicInitialization(Module *M) &#123;
     PrettyStackTraceProgram X(argc, argv);
     &#x2F;&#x2F; Call llvm_shutdown() on exit.
     llvm_shutdown_obj Y; <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    如果程序发生错误，上述代码将打印Stack Trace。</p>
+<p>​ 如果程序发生错误，上述代码将打印Stack Trace。</p>
 <ul>
 <li><p><strong>命令行选项：</strong></p>
-<p>KAMain.cc定义了如下命令行全局变量:</p>
-</li>
+<p>KAMain.cc定义了如下命令行全局变量:</p></li>
 </ul>
 <pre class="line-numbers language-C++" data-language="C++"><code class="language-C++">&#x2F;&#x2F;KAMain.cc
 cl::list&lt;std::string&gt; InputFilenames(
@@ -186,8 +221,12 @@ cl::opt&lt;std::string&gt; CrashReport(
 
 cl::opt&lt;std::string&gt; CallGraph(&quot;call-graph&quot;, cl::desc(&quot;call graph from the report&quot;),
     cl::Required, cl::init(&quot;&quot;));<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    其中，<code>InputFilenames</code>是一个list，包含输入的文件名称；<code>VerboseLevel</code>代表输出等级（具体见Common.h）；<code>DumpLocation</code>代表dump文件存储的位置；<code>CrashReport</code>代表syzbot报告的位置；<code>CallGraph</code>代表从报告中提取的call trace文件的位置。</p>
-<h5 id="2-3-3-2-读取文件信息"><a href="#2-3-3-2-读取文件信息" class="headerlink" title="2.3.3.2 读取文件信息"></a>2.3.3.2 读取文件信息</h5><p>​    对<code>InputFilenames</code>列表中的每个LLVM IR文件，需要依次对其做以下处理：</p>
+<p>​
+其中，<code>InputFilenames</code>是一个list，包含输入的文件名称；<code>VerboseLevel</code>代表输出等级（具体见Common.h）；<code>DumpLocation</code>代表dump文件存储的位置；<code>CrashReport</code>代表syzbot报告的位置；<code>CallGraph</code>代表从报告中提取的call
+trace文件的位置。</p>
+<h5 id="读取文件信息">2.3.3.2 读取文件信息</h5>
+<p>​ 对<code>InputFilenames</code>列表中的每个LLVM
+IR文件，需要依次对其做以下处理：</p>
 <ul>
 <li><strong>IR File -&gt; llvm::Module</strong></li>
 </ul>
@@ -204,8 +243,10 @@ std::unique_ptr&lt;Module&gt; M &#x3D; parseIRFile(InputFilenames[i], Err, *LLVM
 &#x2F;&#x2F;std::unique_ptr智能指针相关
 &#x2F;&#x2F;release()将指针的控制权转移给外部代码
 Module *Module &#x3D; M.release();<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    <code>std::unique_ptr</code>是c++智能指针类型，用于对象对指针的使用权限管理，不必过于深究；这里<code>LLVM::LLVMContext</code>类用于多线程共享/线程独享，不必过于深究。</p>
-<p>​    <code>parseIRFile()</code>来自llvm/IRReader/IRReader.h，其接收一个文件，判断其是否是bitcode文件，如果是则将其转化为Module。若分析失败则打印对应日志信息。</p>
+<p>​
+<code>std::unique_ptr</code>是c++智能指针类型，用于对象对指针的使用权限管理，不必过于深究；这里<code>LLVM::LLVMContext</code>类用于多线程共享/线程独享，不必过于深究。</p>
+<p>​
+<code>parseIRFile()</code>来自llvm/IRReader/IRReader.h，其接收一个文件，判断其是否是bitcode文件，如果是则将其转化为Module。若分析失败则打印对应日志信息。</p>
 <ul>
 <li><strong>std::string -&gt; llvm::StringRef</strong></li>
 </ul>
@@ -214,7 +255,8 @@ Module *Module &#x3D; M.release();<span aria-hidden="true" class="line-numbers-r
 &#x2F;&#x2F;string.data()返回string字符串的首地址
 &#x2F;&#x2F;strdup()用于字符串复制
 StringRef MName &#x3D; StringRef(strdup(InputFilenames[i].data()));<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    将函数名从<code>std::string</code>转化为<code>llvm::StringRef</code>，用于后续记录。</p>
+<p>​
+将函数名从<code>std::string</code>转化为<code>llvm::StringRef</code>，用于后续记录。</p>
 <ul>
 <li><strong>全局信息记录</strong></li>
 </ul>
@@ -224,8 +266,9 @@ StringRef MName &#x3D; StringRef(strdup(InputFilenames[i].data()));<span aria-hi
 GlobalCtx.Modules.push_back(std::make_pair(Module, MName));
 GlobalCtx.ModuleMaps[Module] &#x3D; InputFilenames[i];
 doBasicInitialization(Module);<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    将读取的Module和其名称存到<code>GlobalCtx.Modules</code>和<code>GlobalCtx.ModuleMaps</code>中，并调用<code>doBasicInitialization</code>函数，将Module中的全局对象存储到<code>GlobalCtx.Gobjs</code>中，全局函数存储到<code>GlobalCtx.Funcs</code>中。</p>
-<p>​    <u>完整代码</u>如下：</p>
+<p>​
+将读取的Module和其名称存到<code>GlobalCtx.Modules</code>和<code>GlobalCtx.ModuleMaps</code>中，并调用<code>doBasicInitialization</code>函数，将Module中的全局对象存储到<code>GlobalCtx.Gobjs</code>中，全局函数存储到<code>GlobalCtx.Funcs</code>中。</p>
+<p>​ <u>完整代码</u>如下：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; Load modules
     KA_LOGS(0, &quot;Total &quot; &lt;&lt; InputFilenames.size() &lt;&lt; &quot; file(s)&quot;);
     &#x2F;&#x2F; 遍历每个文件
@@ -254,7 +297,9 @@ doBasicInitialization(Module);<span aria-hidden="true" class="line-numbers-rows"
         GlobalCtx.ModuleMaps[Module] &#x3D; InputFilenames[i];
         doBasicInitialization(Module);
     &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h5 id="2-3-3-3-分析CrashReport"><a href="#2-3-3-3-分析CrashReport" class="headerlink" title="2.3.3.3 分析CrashReport"></a>2.3.3.3 分析CrashReport</h5><p>​    该部分的功能是分析从syzbot爬取的报告，其目的是分析报告中是否存在可check的点：</p>
+<h5 id="分析crashreport">2.3.3.3 分析CrashReport</h5>
+<p>​
+该部分的功能是分析从syzbot爬取的报告，其目的是分析报告中是否存在可check的点：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">std::ifstream report(CrashReport);
 &#x2F;&#x2F; do we find explicit check expression
 bool explicity &#x3D; false;
@@ -276,9 +321,11 @@ if (report.is_open()) &#123;
      &#125;
      report.close();
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h5 id="2-3-3-4-分析CallGraph"><a href="#2-3-3-4-分析CallGraph" class="headerlink" title="2.3.3.4 分析CallGraph"></a>2.3.3.4 分析CallGraph</h5><p>​    CallGraph就是使用get_cg.py脚本从syzbot报告中提取的call tarce，其以文本文件存储，CallGraph的每一行的组成是[函数名]+[空格]+[调用位置]，例如：</p>
+<h5 id="分析callgraph">2.3.3.4 分析CallGraph</h5>
+<p>​ CallGraph就是使用get_cg.py脚本从syzbot报告中提取的call
+tarce，其以文本文件存储，CallGraph的每一行的组成是[函数名]+[空格]+[调用位置]，例如：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230503202218.png" alt="report_cg.txt" style="zoom: 50%;" /></p>
-<p>​    使用std::ifstream类打开文件：</p>
+<p>​ 使用std::ifstream类打开文件：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">std::ifstream file(CallGraph);
 &#x2F;&#x2F;用于定位Call Trace中的Crash点
 std::string CrashLoc;
@@ -288,7 +335,10 @@ if (file.is_open()) &#123;
 	&#x2F;&#x2F;······
 	file.close();
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    打开CallGraph后，逐行分析其中的每个函数是否在<code>GlobalCtx.h</code>中预定义的skipFunc函数集中，如果在call trace中前一个函数在skipFunc中而当前函数不在，则认为当前的函数是crash location。</p>
+<p>​
+打开CallGraph后，逐行分析其中的每个函数是否在<code>GlobalCtx.h</code>中预定义的skipFunc函数集中，如果在call
+trace中前一个函数在skipFunc中而当前函数不在，则认为当前的函数是crash
+location。</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">if (file.is_open()) &#123;
      std::string line, curFunc;
      std::string lastFunc &#x3D; &quot;&quot;;
@@ -325,15 +375,19 @@ if (file.is_open()) &#123;
      &#125;
      file.close();
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    在遍历CallGraph的过程中，会将函数的调用关系记录到 <code>GlobalCtx.CallGraph</code>中。</p>
-<h5 id="2-3-3-5-运行Pass-amp-amp-Dump"><a href="#2-3-3-5-运行Pass-amp-amp-Dump" class="headerlink" title="2.3.3.5 运行Pass &amp;&amp; Dump"></a>2.3.3.5 运行Pass &amp;&amp; Dump</h5><p>​    接下来对<code>GlobalCtx.Modules</code>中存储的所有Module调用CallGraphPass和PointerAnalysisPass：</p>
+<p>​ 在遍历CallGraph的过程中，会将函数的调用关系记录到
+<code>GlobalCtx.CallGraph</code>中。</p>
+<h5 id="运行pass-dump">2.3.3.5 运行Pass &amp;&amp; Dump</h5>
+<p>​
+接下来对<code>GlobalCtx.Modules</code>中存储的所有Module调用CallGraphPass和PointerAnalysisPass：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;调用CallGraphPass
 CallGraphPass CGPass(&amp;GlobalCtx);
 CGPass.run(GlobalCtx.Modules);
 &#x2F;&#x2F;调用PointerAnalysisPass
 PointerAnalysisPass PAPass(&amp;GlobalCtx);
 PAPass.run(GlobalCtx.Modules);<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    如果前文的分析过程中存在Crash check point，则调用CrashAnalyzer Pass：</p>
+<p>​ 如果前文的分析过程中存在Crash check point，则调用CrashAnalyzer
+Pass：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">assert(CrashLoc !&#x3D; &quot;&quot;);&#123;
     &#x2F;&#x2F;调用CrashAnalyzePass
     CrashAnalyzer CA(&amp;GlobalCtx, explicity, CrashLoc);
@@ -344,9 +398,13 @@ PAPass.run(GlobalCtx.Modules);<span aria-hidden="true" class="line-numbers-rows"
     else
         CA.dump();
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    这是整个代码的核心部分，具体Pass的分析过程见后文。</p>
-<h3 id="2-4-CallGraphPass"><a href="#2-4-CallGraphPass" class="headerlink" title="2.4 CallGraphPass"></a>2.4 CallGraphPass</h3><h4 id="2-4-1-C-C-特殊函数调用"><a href="#2-4-1-C-C-特殊函数调用" class="headerlink" title="2.4.1 C/C++特殊函数调用"></a>2.4.1 C/C++特殊函数调用</h4><p>​    <strong>CallGraphPass的目的是构建文件的CallGraph，并将相关调用信息存储到Ctx全局变量中。</strong>在进行具体代码分析前，首先来关注一下C语言中函数的特殊调用问题。</p>
-<h5 id="2-4-1-1-间接调用-indirect-call"><a href="#2-4-1-1-间接调用-indirect-call" class="headerlink" title="2.4.1.1 间接调用(indirect call)"></a>2.4.1.1 间接调用(indirect call)</h5><p>​    C中的间接调用一般是指通过函数指针调用函数：</p>
+<p>​ 这是整个代码的核心部分，具体Pass的分析过程见后文。</p>
+<h3 id="callgraphpass">2.4 CallGraphPass</h3>
+<h4 id="cc特殊函数调用">2.4.1 C/C++特殊函数调用</h4>
+<p>​
+<strong>CallGraphPass的目的是构建文件的CallGraph，并将相关调用信息存储到Ctx全局变量中。</strong>在进行具体代码分析前，首先来关注一下C语言中函数的特殊调用问题。</p>
+<h5 id="间接调用indirect-call">2.4.1.1 间接调用(indirect call)</h5>
+<p>​ C中的间接调用一般是指通过函数指针调用函数：</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">//directCall_test.c</span>
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
 <span class="token keyword">void</span> <span class="token function">foo</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"function foo\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
@@ -362,7 +420,7 @@ PAPass.run(GlobalCtx.Modules);<span aria-hidden="true" class="line-numbers-rows"
   <span class="token function">fp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    将其编译为ll文件如下：</p>
+<p>​ 将其编译为ll文件如下：</p>
 <pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">&#x2F;&#x2F;directCall_test.ll
 ; Function Attrs: noinline nounwind optnone uwtable
 define dso_local void @foo() #0 &#123;
@@ -398,10 +456,14 @@ define dso_local i32 @main() #0 &#123;
   call void (...) %3()
   ret i32 0
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    可以看到，直接调用指令的操作数就是确定Callee的地址（foo），但是间接调其操作数是一个虚拟寄存器<code>%3</code>（在汇编中就是一个确定的寄存器）。故当Pass分析到call语句时没有办法直接得出目标函数的地址，因为寄存器中的值可能是直接载入的确定的地址，也可能是其它地方载入的值。换句话说，直接调用语句可以确定call语句调用的foo函数，但是间接调用语句不能，因为调用什么函数取决于<code>%3</code>内加载了什么值。</p>
-<p>​    在以上例子中，我们当然可以轻松看出间接调用的就是foo函数的地址，但是万一间接调用的地址取决于用户的输入/程序运行时的具体状态/读取的文件信息等，代码的分支情况就复杂了起来。在C++中的虚函数调用就是通过间接调用完成的，这也是其多态的基础。</p>
-<h5 id="2-4-1-2-内联汇编语句"><a href="#2-4-1-2-内联汇编语句" class="headerlink" title="2.4.1.2 内联汇编语句"></a>2.4.1.2 内联汇编语句</h5><p>​    内联汇编语言（或“inline asm”）是一些编程语言中的一项功能，允许在代码中直接包含汇编语言指令。在需要执行无法使用高级语言结构有效或清晰表达的特定操作时，使用内联汇编可能会很有用。例如，可以使用内联汇编访问硬件设备或优化性能关键的代码段。</p>
-<p>​    内联汇编语句中可以包含调用指令，例如：</p>
+<p>​
+可以看到，直接调用指令的操作数就是确定Callee的地址（foo），但是间接调其操作数是一个虚拟寄存器<code>%3</code>（在汇编中就是一个确定的寄存器）。故当Pass分析到call语句时没有办法直接得出目标函数的地址，因为寄存器中的值可能是直接载入的确定的地址，也可能是其它地方载入的值。换句话说，直接调用语句可以确定call语句调用的foo函数，但是间接调用语句不能，因为调用什么函数取决于<code>%3</code>内加载了什么值。</p>
+<p>​
+在以上例子中，我们当然可以轻松看出间接调用的就是foo函数的地址，但是万一间接调用的地址取决于用户的输入/程序运行时的具体状态/读取的文件信息等，代码的分支情况就复杂了起来。在C++中的虚函数调用就是通过间接调用完成的，这也是其多态的基础。</p>
+<h5 id="内联汇编语句">2.4.1.2 内联汇编语句</h5>
+<p>​ 内联汇编语言（或“inline
+asm”）是一些编程语言中的一项功能，允许在代码中直接包含汇编语言指令。在需要执行无法使用高级语言结构有效或清晰表达的特定操作时，使用内联汇编可能会很有用。例如，可以使用内联汇编访问硬件设备或优化性能关键的代码段。</p>
+<p>​ 内联汇编语句中可以包含调用指令，例如：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#include &lt;stdio.h&gt;
 int main() &#123;
     int x &#x3D; 10;
@@ -417,7 +479,9 @@ __asm__(
     &quot;addl $5, %eax\n&quot;
     &quot;ret\n&quot;
 );<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    上述代码使用内联汇编语言调用一个在汇编语言中定义的函数<code>assembly_function</code>。该函数接受一个输入参数，将其加5，然后返回结果。将其转化为LLVM IR如下：</p>
+<p>​
+上述代码使用内联汇编语言调用一个在汇编语言中定义的函数<code>assembly_function</code>。该函数接受一个输入参数，将其加5，然后返回结果。将其转化为LLVM
+IR如下：</p>
 <pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">define dso_local i32 @main() #0 &#123;
   %1 &#x3D; alloca i32, align 4
   %2 &#x3D; alloca i32, align 4
@@ -431,10 +495,16 @@ __asm__(
   %7 &#x3D; call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str, i64 0, i64 0), i32 %6)
   ret i32 0
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    <strong>可见其使用<code>call i32 asm</code>语句直接调用汇编，并不对其处理。CallGraphPass跳过了对内联汇编函数调用语句的分析。</strong></p>
-<h5 id="2-4-1-3-Intrinsic函数"><a href="#2-4-1-3-Intrinsic函数" class="headerlink" title="2.4.1.3 Intrinsic函数"></a>2.4.1.3 Intrinsic函数</h5><p>​    Intrinsic函数是编译器内建的函数，由编译器提供，类似于内联函数。在LLVM中，Intrinsic函数一般是在IR级代码优化时引入的，也就是由前端产生。也可以在程序代码中写Intrinsic函数，并通过前端直接发射。这些函数名的前缀一般是保留字“llvm.”。LLVM后端选择用最高效的形式将Intrinsic函数转换给硬件执行，可以将Intrinsic函数拆分为一系列机器指令，也可以映射为单独一条机器指令，并直接调用相应的硬件功能。</p>
-<p>​    <strong>这里CallGraphPass跳过了Intrinsic函数的调用分析，其与内核并无关系，是LLVM引入的。Intrinsic名必须全部以“ llvm”开头前缀。</strong></p>
-<h4 id="2-4-2-代码分析"><a href="#2-4-2-代码分析" class="headerlink" title="2.4.2 代码分析"></a>2.4.2 代码分析</h4><p>​    CallGraph的Pass执行代码如下：</p>
+<p>​
+<strong>可见其使用<code>call i32 asm</code>语句直接调用汇编，并不对其处理。CallGraphPass跳过了对内联汇编函数调用语句的分析。</strong></p>
+<h5 id="intrinsic函数">2.4.1.3 Intrinsic函数</h5>
+<p>​
+Intrinsic函数是编译器内建的函数，由编译器提供，类似于内联函数。在LLVM中，Intrinsic函数一般是在IR级代码优化时引入的，也就是由前端产生。也可以在程序代码中写Intrinsic函数，并通过前端直接发射。这些函数名的前缀一般是保留字“llvm.”。LLVM后端选择用最高效的形式将Intrinsic函数转换给硬件执行，可以将Intrinsic函数拆分为一系列机器指令，也可以映射为单独一条机器指令，并直接调用相应的硬件功能。</p>
+<p>​
+<strong>这里CallGraphPass跳过了Intrinsic函数的调用分析，其与内核并无关系，是LLVM引入的。Intrinsic名必须全部以“
+llvm”开头前缀。</strong></p>
+<h4 id="代码分析">2.4.2 代码分析</h4>
+<p>​ CallGraph的Pass执行代码如下：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;CallGraph.cc
 bool CallGraphPass::doModulePass(Module *M) &#123;
     bool Changed &#x3D; true, ret &#x3D; false;
@@ -448,20 +518,24 @@ bool CallGraphPass::doModulePass(Module *M) &#123;
     &#125;
     return ret;
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    进入函数<code>CallGraph::runOnFunction</code>:</p>
+<p>​ 进入函数<code>CallGraph::runOnFunction</code>:</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;CallGraph.cc -&gt; runOnFunction()
 &#x2F;&#x2F;llvm::GlobalObject -&gt; hasSection(): Check if this global has a custom object file section.
 &#x2F;&#x2F;llvm::GlobalObject -&gt; getSection(): Get the custom section of this global if it has one.
 if(F-&gt;hasSection() &amp;&amp; F-&gt;getSection().str() &#x3D;&#x3D; &quot;.init.text&quot;)
         return false;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    首先排除了初始化函数。在C代码中，使用__init宏声明的函数会在编译时将函数放在”.init.text”这个代码区中。标记为初始化的函数,表明该函数供在初始化期间使用。在<strong>模块装载之后，模块装载就会将初始化函数扔掉。这样可以将该函数占用的内存释放出来。</strong></p>
-<p>​    这里，程序通过使用<code>inst_iterator</code>直接遍历函数里的每条指令：</p>
+<p>​
+首先排除了初始化函数。在C代码中，使用__init宏声明的函数会在编译时将函数放在".init.text"这个代码区中。标记为初始化的函数,表明该函数供在初始化期间使用。在<strong>模块装载之后，模块装载就会将初始化函数扔掉。这样可以将该函数占用的内存释放出来。</strong></p>
+<p>​
+这里，程序通过使用<code>inst_iterator</code>直接遍历函数里的每条指令：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;CallGraph.cc -&gt; runOnFunction()
 bool Changed &#x3D; false;
 for (inst_iterator i &#x3D; inst_begin(F), e &#x3D; inst_end(F); i !&#x3D; e; ++i) &#123;
 	&#x2F;&#x2F;......
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    对于每条指令，可能与inst_iterator的指针重载有关，需要重新取址获取指向每条指令的地址[<a href="https://blog.csdn.net/qq_23599965/article/details/88538590">LLVM开发者手册</a>]。接着，排除了asm内联调用和intrinsic调用：</p>
+<p>​
+对于每条指令，可能与inst_iterator的指针重载有关，需要重新取址获取指向每条指令的地址[<a
+href="https://blog.csdn.net/qq_23599965/article/details/88538590">LLVM开发者手册</a>]。接着，排除了asm内联调用和intrinsic调用：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;&#x2F;&#x2F;CallGraph.cc -&gt; runOnFunction()
 &#x2F;&#x2F;获取指向指令引用的指针
 Instruction *I &#x3D; &amp;*i;
@@ -472,13 +546,14 @@ if (CallInst *CI &#x3D; dyn_cast&lt;CallInst&gt;(I)) &#123;
 if (CI-&gt;isInlineAsm() || (CI-&gt;getCalledFunction()
         &amp;&amp; CI-&gt;getCalledFunction()-&gt;isIntrinsic()))
     continue;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    接下来需要获取该CallInst的Callee，即该指令调用的函数。对于直接调用，使用<code>CI-&gt;getCalledFunction()</code>即可；对于间接调用，由于其调用存在多种情况，需要具体分析：</p>
+<p>​
+接下来需要获取该CallInst的Callee，即该指令调用的函数。对于直接调用，使用<code>CI-&gt;getCalledFunction()</code>即可；对于间接调用，由于其调用存在多种情况，需要具体分析：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; CallGraph.cc -&gt; runOnFunction()
 &#x2F;&#x2F; might be an indirect call, find all possible callees
 FuncSet &amp;FS &#x3D; Ctx-&gt;Callees[CI];
 if (!findCallees(CI, FS))
 	continue;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    findCallees()函数流程如下：</p>
+<p>​ findCallees()函数流程如下：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; CallGraph.cc -&gt; findCallees()
 &#x2F;&#x2F; typedef llvm::SmallPtrSet&lt;llvm::Function*, 32&gt; FuncSet;
 bool CallGraphPass::findCallees(CallInst *CI, FuncSet &amp;FS) &#123;
@@ -492,9 +567,10 @@ bool CallGraphPass::findCallees(CallInst *CI, FuncSet &amp;FS) &#123;
     &#125;
 	&#x2F;&#x2F;......
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    <code>CI-&gt;getCalledFunction()</code>函数用于获取直接调用call指令的callee地址，若其是一个间接调用/非调用指令则返回nullptr。如果返回不为nullptr，则进入以下调用过程：</p>
+<p>​
+<code>CI-&gt;getCalledFunction()</code>函数用于获取直接调用call指令的callee地址，若其是一个间接调用/非调用指令则返回nullptr。如果返回不为nullptr，则进入以下调用过程：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230506144655.png" style="zoom:67%;" /></p>
-<p>​    getFuncDef()过程如下：</p>
+<p>​ getFuncDef()过程如下：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; CallGraph.cc -&gt; getFuncDef()
 Function* CallGraphPass::getFuncDef(Function *F) &#123;
     &#x2F;&#x2F; typedef std::unordered_map&lt;std::string, llvm::Function*&gt; FuncMap
@@ -504,7 +580,7 @@ Function* CallGraphPass::getFuncDef(Function *F) &#123;
     else
         return F;
 &#125; <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    getScopeName()过程如下：</p>
+<p>​ getScopeName()过程如下：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; Annotation.h -&gt; getScopeName()
 static inline std::string getScopeName(const llvm::GlobalValue *GV) &#123;
 	if (llvm::GlobalValue::isExternalLinkage(GV-&gt;getLinkage()))
@@ -515,12 +591,18 @@ static inline std::string getScopeName(const llvm::GlobalValue *GV) &#123;
 		return &quot;_&quot; + moduleName.str() + &quot;.&quot; + GV-&gt;getName().str();
 	&#125;
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    其中，<code>llvm::GlobalValue</code>类是<code>llvm::Function</code>类的父类<code>llvm::GlobalObject</code>的父类：</p>
+<p>​
+其中，<code>llvm::GlobalValue</code>类是<code>llvm::Function</code>类的父类<code>llvm::GlobalObject</code>的父类：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230506145059.png" style="zoom:50%;" /></p>
-<p>​    getScopeName()的作用是检查一个函数是否为全局函数(extern)，如果是则直接返回其函数名，如果不是则查找该函数所属的Module，构建“_{ModuleName}.{FuncName}”字符串并返回。</p>
-<p>​    回到getFuncDef()函数，其功能是在<code>Ctx-&gt;Funcs</code>中查找函数的定义，如果其在<code>Ctx-&gt;Funcs</code>中存在则返回<code>Ctx-&gt;Funcs</code>中的函数指针，否则返回输入的函数指针F本身。</p>
-<p>​    回到findCallees()函数，如果输入的指令CI是一个直接调用，则获取其Callee函数指针CF，并调用getFuncDef()在<code>Ctx-&gt;Funcs</code>中查找并返回函数的定义。然后将指针插入FuncSet FS中，如果第一次插入则返回true，否则返回false。因为CF这里传入的是<code>Ctx-&gt;Callees[CI]</code>，返回false就代表查找到的调用关系（CI-&gt;CF）已经存在。</p>
-<p>​    如果findCallees()函数中CI指令并不是直接调用，则将其插入到Ctx-&gt;IndirectCallInst中：</p>
+<p>​
+getScopeName()的作用是检查一个函数是否为全局函数(extern)，如果是则直接返回其函数名，如果不是则查找该函数所属的Module，构建“_{ModuleName}.{FuncName}”字符串并返回。</p>
+<p>​
+回到getFuncDef()函数，其功能是在<code>Ctx-&gt;Funcs</code>中查找函数的定义，如果其在<code>Ctx-&gt;Funcs</code>中存在则返回<code>Ctx-&gt;Funcs</code>中的函数指针，否则返回输入的函数指针F本身。</p>
+<p>​
+回到findCallees()函数，如果输入的指令CI是一个直接调用，则获取其Callee函数指针CF，并调用getFuncDef()在<code>Ctx-&gt;Funcs</code>中查找并返回函数的定义。然后将指针插入FuncSet
+FS中，如果第一次插入则返回true，否则返回false。因为CF这里传入的是<code>Ctx-&gt;Callees[CI]</code>，返回false就代表查找到的调用关系（CI-&gt;CF）已经存在。</p>
+<p>​
+如果findCallees()函数中CI指令并不是直接调用，则将其插入到Ctx-&gt;IndirectCallInst中：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; CallGraph.cc -&gt; findCallees()
     &#x2F;&#x2F; save called values for point-to analysis
     Ctx-&gt;IndirectCallInsts.push_back(CI);
@@ -534,8 +616,10 @@ static inline std::string getScopeName(const llvm::GlobalValue *GV) &#123;
     &#x2F;&#x2F; getCalledValue() - Get a pointer to the function that is invoked by this instruction.
     return findFunctions(CI-&gt;getCalledValue(), FS);
 #endif<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    接下来，调用<code>findFunctions</code>查找其所有可能的Callee，并存储到<code>Ctx-&gt;Callees[Ins]</code>中，具体细节这里不再展开。</p>
-<p>​    至此，已经找到了当前Call指令的所有Callee，接下来分析callInst指令的所有参数，找到其可能存在的函数指针参数并分析其所有函数指针的Callee，将其存储到<code>Ctx-&gt;FuncPtrs[Id]</code>中：</p>
+<p>​
+接下来，调用<code>findFunctions</code>查找其所有可能的Callee，并存储到<code>Ctx-&gt;Callees[Ins]</code>中，具体细节这里不再展开。</p>
+<p>​
+至此，已经找到了当前Call指令的所有Callee，接下来分析callInst指令的所有参数，找到其可能存在的函数指针参数并分析其所有函数指针的Callee，将其存储到<code>Ctx-&gt;FuncPtrs[Id]</code>中：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;CallGraph.cc -&gt; runOnFunction()
 #ifndef TYPE_BASED
             &#x2F;&#x2F; looking for function pointer arguments
@@ -565,7 +649,7 @@ static inline std::string getScopeName(const llvm::GlobalValue *GV) &#123;
                 &#125;
             &#125;
 #endif<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    如果I不是CallInst指令，而是StoreInst类型指令，则：</p>
+<p>​ 如果I不是CallInst指令，而是StoreInst类型指令，则：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#ifndef TYPE_BASED
         if (StoreInst *SI &#x3D; dyn_cast&lt;StoreInst&gt;(I)) &#123;
             &#x2F;&#x2F; stores to function pointers
@@ -591,17 +675,28 @@ static inline std::string getScopeName(const llvm::GlobalValue *GV) &#123;
             &#125;
         &#125;
 #endif<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    如果一个StoreInst类型指令，并且其操作数是函数指针，则获取其函数指针所有可能的Callee并存储到<code>Ctx-&gt;FuncPtrs[]</code>中。至此，CallGraphPass分析完毕。</p>
-<p>​    </p>
-<h3 id="2-5-PointerAnalysisPass"><a href="#2-5-PointerAnalysisPass" class="headerlink" title="2.5 PointerAnalysisPass"></a>2.5 PointerAnalysisPass</h3><h4 id="2-5-1-Alias-Analysis"><a href="#2-5-1-Alias-Analysis" class="headerlink" title="2.5.1 Alias Analysis"></a>2.5.1 Alias Analysis</h4><p>​    <u>Alias Analysis/Pointer Analysis是一类试图确定两个指针是否可以指向内存中同一个对象的技术</u><a href="https://llvm.org/docs/AliasAnalysis.html">[LLVM Alias Analysis Infrastructure — LLVM 17.0.0]</a>。</p>
-<p>​    Alias Analysis（别名分析）是编译器理论中的一种技术，用于确定存储位置是否可以以多种方式访问。如果两个指针指向相同的位置，则称这两个指针为别名。 但是，它不能与Pointer Analysis（指针分析）混淆，指针分析解决的问题是一个指针可能指向哪些对象或者指向哪些地址，而别名分析解决的是两个指针指向的是否是同一个对象。指针分析和别名分析通常通过静态代码分析来实现。</p>
-<p>​    别名分析在编译器理论中非常重要，在代码优化和安全方面有着非常广泛且重要的应用。编译器级优化需要指针别名信息来执行死代码消除（删除不影响程序结果的代码）、冗余加载/存储指令消除、指令调度（重排列指令）等。编译器级别的程序安全使用别名分析来检测内存泄漏和内存相关的安全漏洞。</p>
-<h4 id="2-5-2-代码分析"><a href="#2-5-2-代码分析" class="headerlink" title="2.5.2 代码分析"></a>2.5.2 代码分析</h4><p>​    定义相关数据结构：</p>
+<p>​
+如果一个StoreInst类型指令，并且其操作数是函数指针，则获取其函数指针所有可能的Callee并存储到<code>Ctx-&gt;FuncPtrs[]</code>中。至此，CallGraphPass分析完毕。</p>
+<p>​</p>
+<h3 id="pointeranalysispass">2.5 PointerAnalysisPass</h3>
+<h4 id="alias-analysis">2.5.1 Alias Analysis</h4>
+<p>​ <u>Alias Analysis/Pointer
+Analysis是一类试图确定两个指针是否可以指向内存中同一个对象的技术</u><a
+href="https://llvm.org/docs/AliasAnalysis.html">[LLVM Alias Analysis
+Infrastructure — LLVM 17.0.0]</a>。</p>
+<p>​ Alias
+Analysis（别名分析）是编译器理论中的一种技术，用于确定存储位置是否可以以多种方式访问。如果两个指针指向相同的位置，则称这两个指针为别名。
+但是，它不能与Pointer
+Analysis（指针分析）混淆，指针分析解决的问题是一个指针可能指向哪些对象或者指向哪些地址，而别名分析解决的是两个指针指向的是否是同一个对象。指针分析和别名分析通常通过静态代码分析来实现。</p>
+<p>​
+别名分析在编译器理论中非常重要，在代码优化和安全方面有着非常广泛且重要的应用。编译器级优化需要指针别名信息来执行死代码消除（删除不影响程序结果的代码）、冗余加载/存储指令消除、指令调度（重排列指令）等。编译器级别的程序安全使用别名分析来检测内存泄漏和内存相关的安全漏洞。</p>
+<h4 id="代码分析-1">2.5.2 代码分析</h4>
+<p>​ 定义相关数据结构：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;GlobalCtx.h
 typedef DenseMap&lt;Value *, SmallPtrSet&lt;Value *, 16&gt;&gt; PointerAnalysisMap;
 typedef unordered_map&lt;Function *, PointerAnalysisMap&gt; FuncPointerAnalysisMap;
 typedef unordered_map&lt;Function *, AAResults *&gt; FuncAAResultsMap;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    分析代码：</p>
+<p>​ 分析代码：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;PointerAnalysis.cc
 bool PointerAnalysisPass::doModulePass(Module *M) &#123;
     &#x2F;&#x2F;llvm::legacy::FunctionPassManager是旧版的Pass Manager
@@ -631,9 +726,14 @@ bool PointerAnalysisPass::doModulePass(Module *M) &#123;
     &#125;
     return false;
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    其使用<code>legacy::FunctionPassManager</code>创建了一个旧版的Function Pass Manager，并将Pointer Analysis分析Pass <code>AAResultsWrapperPass</code>添加进去。</p>
-<p>​    接下来使用(Function &amp;F : *M）语句遍历Module中的每个函数，如果该函数F的定义不在Module之外，则运行<code>AAResultsWrapperPass</code>，并通过<code>AAResult</code>结构获取分析结果。</p>
-<p>​    接下来再次遍历Module中的每个Function，对其调用函数<code>detectAliasPointers</code>：</p>
+<p>​
+其使用<code>legacy::FunctionPassManager</code>创建了一个旧版的Function
+Pass Manager，并将Pointer Analysis分析Pass
+<code>AAResultsWrapperPass</code>添加进去。</p>
+<p>​ 接下来使用(Function &amp;F :
+*M）语句遍历Module中的每个函数，如果该函数F的定义不在Module之外，则运行<code>AAResultsWrapperPass</code>，并通过<code>AAResult</code>结构获取分析结果。</p>
+<p>​
+接下来再次遍历Module中的每个Function，对其调用函数<code>detectAliasPointers</code>：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;PointerAnalysis.cc
 void PointerAnalysisPass::detectAliasPointers(Function* F, AAResults &amp;AAR, 
         PointerAnalysisMap &amp;aliasPtrs) &#123;
@@ -678,11 +778,15 @@ void PointerAnalysisPass::detectAliasPointers(Function* F, AAResults &amp;AAR,
         &#125;
     &#125;
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    <code>detectAliasPointers()</code>对每个输入的函数，首先用循环将其指针类参数和指针类指令都存储到集合addr1Set中，并且如果addr1Set存储的指针数量大于100则直接返回，不做分析（为什么？）。</p>
-<p>​    接下来对addr1Set内的所有指针两两分析，使用AAResult.alias()函数获取两个指针的分析结果AResult，如果AResult为MustAlias/PartialAlias则将这个指针对存储到aliasPtrs中。</p>
-<p>​    在<code>detectAliasPointers()</code>分析完后，将其Ailas分析结果存储到<code>Ctx-&gt;FuncPAResults[F]</code>中，将整个<code>AAResultsWrapperPass</code>的分析结果存储到<code>Ctx-&gt;FuncAAResults[F]</code>中，至此，PointerAnalysisPass分析完毕。</p>
-<h3 id="2-6-CrashAnalyzer"><a href="#2-6-CrashAnalyzer" class="headerlink" title="2.6 CrashAnalyzer"></a>2.6 CrashAnalyzer</h3><p>​    <strong>CrashAnalyzer用于确定反向污点分析的source。</strong></p>
-<p>​    在CrashAnalyzer.h中定义了CrashAnalyzer的构造函数：</p>
+<p>​
+<code>detectAliasPointers()</code>对每个输入的函数，首先用循环将其指针类参数和指针类指令都存储到集合addr1Set中，并且如果addr1Set存储的指针数量大于100则直接返回，不做分析（为什么？）。</p>
+<p>​
+接下来对addr1Set内的所有指针两两分析，使用AAResult.alias()函数获取两个指针的分析结果AResult，如果AResult为MustAlias/PartialAlias则将这个指针对存储到aliasPtrs中。</p>
+<p>​
+在<code>detectAliasPointers()</code>分析完后，将其Ailas分析结果存储到<code>Ctx-&gt;FuncPAResults[F]</code>中，将整个<code>AAResultsWrapperPass</code>的分析结果存储到<code>Ctx-&gt;FuncAAResults[F]</code>中，至此，PointerAnalysisPass分析完毕。</p>
+<h3 id="crashanalyzer">2.6 CrashAnalyzer</h3>
+<p>​ <strong>CrashAnalyzer用于确定反向污点分析的source。</strong></p>
+<p>​ 在CrashAnalyzer.h中定义了CrashAnalyzer的构造函数：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;CrashAnalyzer.h
 public:
     &#x2F;&#x2F;构造函数
@@ -704,8 +808,12 @@ public:
         analyzed &#x3D; false;
         Ctx-&gt;InstNum &#x3D; 0;
     &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    其继承了父类IterativeModulePass的构造函数，将Ctx设置为Ctx_，ID设置为“CrashAnalyzer”。接下来，设置cond（就是KAMain.cc中的explicity，用于表明是否在report中找到了显式可check点），并将CrashLoc中的函数名称与位置信息提取出来，分别赋值给变量funcName、loc、 source、line。最后将<code>Ctx-&gt;InstNum</code>设置为0。</p>
-<p>​    <code>CrashAnalyzer::doModulePass</code>对每个函数运行<code>CrashAnalyzer::runOnFunction</code> ：</p>
+<p>​
+其继承了父类IterativeModulePass的构造函数，将Ctx设置为Ctx_，ID设置为“CrashAnalyzer”。接下来，设置cond（就是KAMain.cc中的explicity，用于表明是否在report中找到了显式可check点），并将CrashLoc中的函数名称与位置信息提取出来，分别赋值给变量funcName、loc、
+source、line。最后将<code>Ctx-&gt;InstNum</code>设置为0。</p>
+<p>​
+<code>CrashAnalyzer::doModulePass</code>对每个函数运行<code>CrashAnalyzer::runOnFunction</code>
+：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;CrashAnalyzer.cc
 bool CrashAnalyzer::doModulePass(Module* M) &#123;
     &#x2F;&#x2F; some functions are defined in headers
@@ -715,7 +823,8 @@ bool CrashAnalyzer::doModulePass(Module* M) &#123;
         runOnFunction(&amp;F);
     return false;
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    <code>CrashAnalyzer::runOnFunction()</code>会定位之前在<code>KAMain.cc</code>中定位的CrashLoc中的函数以及crash位置，并遍历该函数的每条指令：</p>
+<p>​
+<code>CrashAnalyzer::runOnFunction()</code>会定位之前在<code>KAMain.cc</code>中定位的CrashLoc中的函数以及crash位置，并遍历该函数的每条指令：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;确定source
 void CrashAnalyzer::runOnFunction(Function *F) &#123;
 	&#x2F;&#x2F;只对carsh函数做分析
@@ -744,10 +853,16 @@ void CrashAnalyzer::runOnFunction(Function *F) &#123;
           &#125;
      &#125;&#x2F;&#x2F;end of for
 &#125;&#x2F;&#x2F;end of runOnFunction()<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    由上述代码可知，定位到call trace中的crash函数后，代码根据LLVM IR的debug信息来定位LLVM指令对应源代码的行数，以此定位到report中的crash行，例如对如下call trace：</p>
+<p>​ 由上述代码可知，定位到call trace中的crash函数后，代码根据LLVM
+IR的debug信息来定位LLVM指令对应源代码的行数，以此定位到report中的crash行，例如对如下call
+trace：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230509100607.png" style="zoom: 67%;" /></p>
-<p>​    根据函数名来定位Module内的Crash函数，根据对应文件标志的代码行数来定位相关crash指令（遍历每个指令，根据metaData提供的debug信息查看指令对应的源码行数）。</p>
-<h4 id="2-6-1-Implicit-Checking"><a href="#2-6-1-Implicit-Checking" class="headerlink" title="2.6.1 Implicit Checking"></a>2.6.1 Implicit Checking</h4><p>​    <strong><code>CrashAnalyzer::runOnFunction()</code>根据cond参数决定以显式/隐式的方式定位反向污点分析的source(即导致程序crash的指令)。</strong>当cond为false时，执行隐式检查(<em>Implicit Checking</em>)：</p>
+<p>​
+根据函数名来定位Module内的Crash函数，根据对应文件标志的代码行数来定位相关crash指令（遍历每个指令，根据metaData提供的debug信息查看指令对应的源码行数）。</p>
+<h4 id="implicit-checking">2.6.1 Implicit Checking</h4>
+<p>​
+<strong><code>CrashAnalyzer::runOnFunction()</code>根据cond参数决定以显式/隐式的方式定位反向污点分析的source(即导致程序crash的指令)。</strong>当cond为false时，执行隐式检查(<em>Implicit
+Checking</em>)：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;CrashAnalyzer.cc -&gt; runOnFunction()
 &#x2F;&#x2F;Implicit Checking
 &#x2F;&#x2F;如果没有可以明确check的点
@@ -792,14 +907,17 @@ if (!cond) &#123;
 else&#123;
      &#x2F;&#x2F;...
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    对于implicit checking：</p>
-<p>​    1） <u>若定位的指令是LoadInst/StoreInst类型：</u></p>
-<p>​    直接将此指令作为source。</p>
-<p>​    2） <u>若定位的指令是CallInst类型：</u></p>
-<p>​    若该Call不是直接调用则直接丢弃；否则若其Callee是skipFunc，直接将该指令作为source；或者其Callee函数名包含“__write_once_size”，将该Call指令的第一个操作数作为source。</p>
-<p>​    3） <u>若以上二者都不是：</u></p>
-<p>​    丢弃。</p>
-<h4 id="2-6-2-Explicit-Checking"><a href="#2-6-2-Explicit-Checking" class="headerlink" title="2.6.2 Explicit Checking"></a>2.6.2 Explicit Checking</h4><p>​    当cond为ture时，执行显式检查(<em>Explicit Checking</em>)。对于显式检查，GREBE文章中的定义是有明确错误检查功能的预定义宏（如WARN_ON和BUG_ON）、辅助函数等，其共性是在代码中直接进行检查，故代码中只分析CallInst类型指令：</p>
+<p>​ 对于implicit checking：</p>
+<p>​ 1） <u>若定位的指令是LoadInst/StoreInst类型：</u></p>
+<p>​ 直接将此指令作为source。</p>
+<p>​ 2） <u>若定位的指令是CallInst类型：</u></p>
+<p>​
+若该Call不是直接调用则直接丢弃；否则若其Callee是skipFunc，直接将该指令作为source；或者其Callee函数名包含“__write_once_size”，将该Call指令的第一个操作数作为source。</p>
+<p>​ 3） <u>若以上二者都不是：</u></p>
+<p>​ 丢弃。</p>
+<h4 id="explicit-checking">2.6.2 Explicit Checking</h4>
+<p>​ 当cond为ture时，执行显式检查(<em>Explicit
+Checking</em>)。对于显式检查，GREBE文章中的定义是有明确错误检查功能的预定义宏（如WARN_ON和BUG_ON）、辅助函数等，其共性是在代码中直接进行检查，故代码中只分析CallInst类型指令：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;CrashAnalyzer.cc -&gt; runOnFunction()
 &#x2F;&#x2F;explicit checking
 else&#123;
@@ -814,65 +932,278 @@ else&#123;
       	&#x2F;&#x2F;......
       &#125;
 &#123;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    针对不同的调用情况，其具体处理如下：</p>
-<h3 id="2-7-Backward-Taint-Analysis"><a href="#2-7-Backward-Taint-Analysis" class="headerlink" title="2.7 Backward Taint Analysis"></a>2.7 Backward Taint Analysis</h3><h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul>
-<li><a href="https://github.com/Markakd/GREBE">Markakd/GREBE (github.com)</a></li>
-<li>LLVM Pass:<ul>
-<li><a href="https://zhuanlan.zhihu.com/p/122522485">LLVM Pass入门导引 </a></li>
-<li><a href="https://github.com/llvm/llvm-project/tree/main/llvm">llvm-project/llvm at main · llvm/llvm-project (github.com)</a></li>
-<li><a href="https://llvm.org/docs/#llvm-design-overview">About — LLVM 17.0.0git documentation</a></li>
-<li><a href="https://llvm.org/devmtg/2019-04/slides/Tutorial-Bridgers-LLVM_IR_tutorial.pdf">PowerPoint Presentation (llvm.org)</a></li>
-<li><a href="https://buaa-se-compiling.github.io/miniSysY-tutorial/pre/llvm_ir_ssa.html">LLVM IR SSA 介绍 · GitBook (buaa-se-compiling.github.io)</a></li>
-<li><a href="https://llvm.org/docs/WritingAnLLVMPass.html">Writing an LLVM Pass — LLVM 17.0.0git documentation</a></li>
-<li><a href="https://developer.aliyun.com/article/233367">LLVM每日谈之八 PASS例子分析- (aliyun.com)</a></li>
-<li><a href="https://blog.csdn.net/qq_23599965/article/details/88538590">LLVM开发者手册_llvm_shutdown_-CSDN</a></li>
-<li><a href="https://www.llvm.org/docs/CommandLine.html">CommandLine 2.0 Library Manual — LLVM 17.0.0git documentation</a></li>
-<li><a href="https://llvm.org/doxygen/classllvm_1_1CallInst.html#details">LLVM: llvm::CallInst Class Reference</a></li>
-<li><a href="https://groups.google.com/g/llvm-dev/c/CAExSXsHl0Q">LLVMdev] indirect calls tracking and control flow graph (google.com)</a></li>
-<li><a href="https://stackoverflow.com/questions/44696177/llvm-declaring-an-indirect-function-call-in-c-that-becomes-a-storedinst">LLVM: declaring an indirect function call in C that becomes a storedinst? - Stack Overflow</a></li>
-<li><a href="https://llvm.org/docs/AliasAnalysis.html">LLVM Alias Analysis Infrastructure — LLVM 17.0.0git documentation</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/564950777">编译器优化：何为别名分析 - 知乎 (zhihu.com)</a></li>
-<li><a href="https://llvm.org/docs/SourceLevelDebugging.html">Source Level Debugging with LLVM — LLVM 17.0.0git documentation</a></li>
-</ul>
-</li>
-<li>kint：<ul>
+<p>​ 针对不同的调用情况，其具体处理如下：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;* handle ODEBUG and DEBUG_OBJECTS_FREE.
+* which generate warns using &quot;implicit&quot;
+* checkings
+*&#x2F;
+if (Fname.find(&quot;init_work&quot;) !&#x3D; string::npos ||
+    Fname.find(&quot;print_unlock_imbalance_bug&quot;) !&#x3D; string::npos ||
+    Fname.find(&quot;debug_print_object&quot;) !&#x3D; string::npos ||
+    Fname.find(&quot;debug_object_init&quot;) !&#x3D; string::npos ||
+    Fname.find(&quot;debug_assert_init&quot;) !&#x3D; string::npos ||
+    &#x2F;* DEBUG_OBJECTS_FREE *&#x2F;
+    Fname.find(&quot;debug_check_no_obj_freed&quot;) !&#x3D; string::npos) &#123;
+     Ctx-&gt;TaintSrc.insert(I);
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 对于子函数名中存在“printk”/内联汇编调用的，进行如下处理：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;定位指令属于的BB
+BasicBlock *BB &#x3D; CI-&gt;getParent();
+KA_LOGS(2, &quot;Found BB : &quot;&lt;&lt;*BB);
+KA_LOGS(2, &quot;terminator : &quot;&lt;&lt;*BB-&gt;getTerminator());
+Value *condV;
+bool warnOnce &#x3D; false;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 接着进行如下处理：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">while (BB-&gt;getSinglePredecessor()) &#123;
+     &#x2F;&#x2F;Predecessor，前身，指在控制流中一个基本块的上一个块
+     BasicBlock *newBB &#x3D; BB-&gt;getSinglePredecessor();
+     &#x2F;* heuristic: if sotring true to &#96;refcount_inc_checked.__warned&#96;
+                             * exists in the skipped BB, there should exist an redundant
+                             * checking for the &#96;refcount_inc_checked.__warned&#96; *&#x2F;
+     &#x2F;&#x2F;遍历基本块中的每条指令
+     for (Instruction &amp;BBInst : *BB) &#123;
+          &#x2F;&#x2F;如果是StoreInst类型
+          if (isa&lt;StoreInst&gt;(&amp;BBInst)) &#123;
+               StoreInst *SI &#x3D; cast&lt;StoreInst&gt;(&amp;BBInst);
+               &#x2F;&#x2F;如果StoreInst指令的第一个参数为常数
+               &#x2F;&#x2F;&amp;&amp; 第二个参数为全局变量
+               if (isa&lt;ConstantInt&gt;(SI-&gt;getOperand(0))
+                   &amp;&amp; isa&lt;GlobalVariable&gt;(SI-&gt;getOperand(1))) &#123;
+                    &#x2F;&#x2F;获取第二个参数的名称
+                    StringRef GVName &#x3D; cast&lt;GlobalVariable&gt;(SI-&gt;getOperand(1))-&gt;getName();
+                    KA_LOGS(0, &quot;Found Global Value: &quot;&lt;&lt;GVName);
+                    &#x2F;&#x2F;如果全局变量名称包含“__warned”
+                    &#x2F;&#x2F;并且子函数F存在（直接调用）
+                    &#x2F;&#x2F;并且子函数名称包含“__warn_printk”
+                    if (GVName.find(&quot;__warned&quot;) !&#x3D; string::npos &amp;&amp;
+                        F &amp;&amp; F-&gt;getName().find(&quot;__warn_printk&quot;) !&#x3D; string::npos) &#123;
+                         KA_LOGS(0, &quot;Warn ONCE checking here....&quot;);
+                         warnOnce &#x3D; true;
+                    &#125;
+               &#125;
+          &#125;
+     &#125;
+	&#x2F;&#x2F;如果是BranchInst类型
+     if (isa&lt;BranchInst&gt;(newBB-&gt;getTerminator())) &#123;
+          &#x2F;&#x2F;getTerminator()获取基本块的终止指令，例如分支指令br，ret等
+          &#x2F;&#x2F;如果Predecessor块中的终止指令是BranchInst类型
+          BranchInst *BI &#x3D; cast&lt;BranchInst&gt;(newBB-&gt;getTerminator());
+          &#x2F;&#x2F;检查该br指令是否是条件跳转，isConditional()
+	    &#x2F;&#x2F;isConditional()返回true&#x2F;false
+          if (BI-&gt;isConditional()) &#123;
+               KA_LOGS(0, &quot;Found first condition : &quot;&lt;&lt;*BI-&gt;getCondition());
+               condV &#x3D; BI-&gt;getCondition();
+               break;
+          &#125;
+     &#125;
+     &#x2F;&#x2F;如果父块的终止指令不是conditional br，则继续向上寻找
+     BB &#x3D; newBB;
+     KA_LOGS(1, &quot;Skipping BB: &quot;&lt;&lt;*BB);<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 如果指令的父基本块的终止指令是一个contional
+br并且指令所在的基本块不存在上述的warn调用，则将condition指令设置为污点源source：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;*
+* if we find a condition value and the logging is not WARN_ONCE,
+* we mark the condition value as taint source and continue.
+* *&#x2F;
+if (condV &amp;&amp; !warnOnce ) &#123;
+     Ctx-&gt;TaintSrc.insert(condV);
+     continue;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 接下来进行广度优先搜索：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; null the condition
+Value *SecondCondV &#x3D; nullptr;
+
+&#x2F;&#x2F; breadth first search
+std::vector&lt;BasicBlock *&gt; BBVec;
+std::set&lt;BasicBlock *&gt; BBSet;
+BBVec.push_back(BB);
+&#x2F;&#x2F;......<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">while (!BBVec.empty() &amp;&amp; !SecondCondV) &#123;
+     BB &#x3D; BBVec.back();
+     BBVec.pop_back();
+
+     &#x2F;&#x2F; cyclic basic block
+     if (!BBSet.insert(BB).second) &#123;
+          continue;
+     &#125;
+
+     if (!BB-&gt;hasNPredecessorsOrMore(1)) &#123;
+          &#x2F;* no predecessor, let&#39;s find find its parents *&#x2F;
+          &#x2F;&#x2F;getParent()用于获取当前基本块所在函数
+          auto fName &#x3D; BB-&gt;getParent()-&gt;getName();
+          &#x2F;&#x2F;如果该函数在report报告的Call trace中
+          if (Ctx-&gt;CallGraph.find(fName) !&#x3D; Ctx-&gt;CallGraph.end()) &#123;
+               auto callerName &#x3D; Ctx-&gt;CallGraph[fName];
+               for (auto M : Ctx-&gt;Callers) &#123;
+                    if (M.first-&gt;getName().endswith(fName)) &#123;
+                         auto CISet &#x3D; M.second;
+                         for (CallInst *caller : CISet) &#123;
+                              &#x2F;&#x2F;根据调用图找到parent
+                              if (caller-&gt;getFunction()-&gt;getName()
+                                  &#x3D;&#x3D; callerName) &#123;
+                                   BB &#x3D; caller-&gt;getParent();
+                                   KA_LOGS(0, &quot;Backwarding to its parent &quot;&lt;&lt;callerName);
+                                   break;
+                              &#125;
+                         &#125;
+                    &#125;
+               &#125;
+          &#125;
+     &#125;
+	&#x2F;&#x2F;遍历其predecessors
+     for (BasicBlock *Pred : predecessors(BB)) &#123;
+          KA_LOGS(1, &quot;Found pre : &quot;&lt;&lt;*Pred);
+          BBVec.push_back(Pred);
+          if (isa&lt;BranchInst&gt;(Pred-&gt;getTerminator())) &#123;
+               BranchInst *BI &#x3D; cast&lt;BranchInst&gt;(Pred-&gt;getTerminator());
+               if (BI-&gt;isConditional()
+                   &amp;&amp; condV !&#x3D; BI-&gt;getCondition()) &#123;
+                    SecondCondV &#x3D; BI-&gt;getCondition();
+                    assert(SecondCondV);
+                    KA_LOGS(0, &quot;Found 1st condition : &quot;&lt;&lt;*condV);
+                    KA_LOGS(0, &quot;Found 2nd condition : &quot;&lt;&lt;*SecondCondV);
+                    break;
+               &#125;
+          &#125;
+     &#125;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">if (SecondCondV) &#123;
+     Ctx-&gt;TaintSrc.insert(SecondCondV);
+     continue;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 这里具体为什么要这么做还需深入探索。</p>
+<h3 id="backward-taint-analysis">2.7 Backward Taint Analysis</h3>
+<p>​ 污点分析过程存储在<code>StructFinderPass::doAnalyze()</code>中：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">void StructFinderPass::doAnalyze(Value *v) &#123;
+    VSet vs;
+    vs.clear();
+    mergeSet(Ctx-&gt;CriticalSt, taintAnalysis(v, vs, false));
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="reference">Reference</h2>
+<ul>
+<li><a href="https://github.com/Markakd/GREBE">Markakd/GREBE
+(github.com)</a></li>
+<li>LLVM Pass:
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/122522485">LLVM
+Pass入门导引</a></li>
+<li><a
+href="https://github.com/llvm/llvm-project/tree/main/llvm">llvm-project/llvm
+at main · llvm/llvm-project (github.com)</a></li>
+<li><a href="https://llvm.org/docs/#llvm-design-overview">About — LLVM
+17.0.0git documentation</a></li>
+<li><a
+href="https://llvm.org/devmtg/2019-04/slides/Tutorial-Bridgers-LLVM_IR_tutorial.pdf">PowerPoint
+Presentation (llvm.org)</a></li>
+<li><a
+href="https://buaa-se-compiling.github.io/miniSysY-tutorial/pre/llvm_ir_ssa.html">LLVM
+IR SSA 介绍 · GitBook (buaa-se-compiling.github.io)</a></li>
+<li><a href="https://llvm.org/docs/WritingAnLLVMPass.html">Writing an
+LLVM Pass — LLVM 17.0.0git documentation</a></li>
+<li><a href="https://developer.aliyun.com/article/233367">LLVM每日谈之八
+PASS例子分析- (aliyun.com)</a></li>
+<li><a
+href="https://blog.csdn.net/qq_23599965/article/details/88538590">LLVM开发者手册_llvm_shutdown_-CSDN</a></li>
+<li><a href="https://www.llvm.org/docs/CommandLine.html">CommandLine 2.0
+Library Manual — LLVM 17.0.0git documentation</a></li>
+<li><a
+href="https://llvm.org/doxygen/classllvm_1_1CallInst.html#details">LLVM:
+llvm::CallInst Class Reference</a></li>
+<li><a
+href="https://groups.google.com/g/llvm-dev/c/CAExSXsHl0Q">LLVMdev]
+indirect calls tracking and control flow graph (google.com)</a></li>
+<li><a
+href="https://stackoverflow.com/questions/44696177/llvm-declaring-an-indirect-function-call-in-c-that-becomes-a-storedinst">LLVM:
+declaring an indirect function call in C that becomes a storedinst? -
+Stack Overflow</a></li>
+<li><a href="https://llvm.org/docs/AliasAnalysis.html">LLVM Alias
+Analysis Infrastructure — LLVM 17.0.0git documentation</a></li>
+<li><a
+href="https://zhuanlan.zhihu.com/p/564950777">编译器优化：何为别名分析 -
+知乎 (zhihu.com)</a></li>
+<li><a href="https://llvm.org/docs/SourceLevelDebugging.html">Source
+Level Debugging with LLVM — LLVM 17.0.0git documentation</a></li>
+</ul></li>
+<li>kint：
+<ul>
 <li><a href="http://css.csail.mit.edu/kint/">KINT (mit.edu)</a></li>
-<li><a href="https://github.com/zhukailongaa/Kint-learn/blob/master/KINT学习记录.md">Kint-learn/KINT学习记录.md at master · zhukailongaa/Kint-learn · GitHub</a></li>
-<li><a href="https://github.com/CRYPTOlab/kint">CRYPTOlab/kint: git://g.csail.mit.edu/kint (github.com)</a></li>
-<li><a href="https://github.com/ganler/mini-kint">ganler/mini-kint: Enhanced implementation of Kint in LLVM-14, in C++17. (github.com)</a></li>
+<li><a
+href="https://github.com/zhukailongaa/Kint-learn/blob/master/KINT学习记录.md">Kint-learn/KINT学习记录.md
+at master · zhukailongaa/Kint-learn · GitHub</a></li>
+<li><a href="https://github.com/CRYPTOlab/kint">CRYPTOlab/kint:
+git://g.csail.mit.edu/kint (github.com)</a></li>
+<li><a href="https://github.com/ganler/mini-kint">ganler/mini-kint:
+Enhanced implementation of Kint in LLVM-14, in C++17.
+(github.com)</a></li>
+</ul></li>
+<li>Paper:
+<ul>
+<li>Wang X, Chen H, Jia Z, et al. <strong>Improving integer security for
+systems with KINT</strong>[C]//Presented as part of the 10th {USENIX}
+Symposium on Opera。ting Systems Design and Implementation ({OSDI} 12).
+2012: 163-177.</li>
+<li>Song C, Lee B, Lu K, et al. <strong>Enforcing kernel security
+invariants with data flow integrity</strong>[C]//NDSS. 2016.</li>
+<li>Lin Z, Chen Y, Wu Y, et al. **GREBE: Unveiling exploitation
+potential for Linux kernel bugs[**C]//2022 IEEE Symposium on Security
+and Privacy (SP). IEEE, 2022.</li>
+</ul></li>
+<li>C/C++:
+<ul>
+<li><a
+href="https://zhuanlan.zhihu.com/p/50812510">被知乎大佬嘲讽后的一个月，我重新研究了一下内联函数
+- 知乎 (zhihu.com)</a></li>
+<li><a
+href="https://stackoverflow.com/questions/28653072/how-can-i-get-function-name-of-indirect-call-from-callinst-in-llvm">c++
+- How can I get Function Name of indirect call from CallInst in LLVM -
+Stack Overflow</a></li>
+<li><a
+href="http://c.biancheng.net/view/228.html">函数指针及其定义和用法，C语言函数指针详解
+(biancheng.net)</a></li>
+<li><a
+href="https://blog.csdn.net/tonny0832/article/details/12558493">内部链接(internal
+linkage)和外部链接(external linkage)_CSDN博客</a></li>
+<li><a
+href="https://softwareengineering.stackexchange.com/questions/401110/difference-between-direct-and-indirect-function-calls">compiler
+- Difference between direct and indirect function() calls - Software
+Engineering Stack Exchange</a></li>
+</ul></li>
 </ul>
-</li>
-<li>Paper:<ul>
-<li>Wang X, Chen H, Jia Z, et al. <strong>Improving integer security for systems with KINT</strong>[C]//Presented as part of the 10th {USENIX} Symposium on Opera。ting Systems Design and Implementation ({OSDI} 12). 2012: 163-177.</li>
-<li>Song C, Lee B, Lu K, et al. <strong>Enforcing kernel security invariants with data flow integrity</strong>[C]//NDSS. 2016.</li>
-<li>Lin Z, Chen Y, Wu Y, et al. <strong>GREBE: Unveiling exploitation potential for Linux kernel bugs[</strong>C]//2022 IEEE Symposium on Security and Privacy (SP). IEEE, 2022.</li>
-</ul>
-</li>
-<li>C/C++:<ul>
-<li><a href="https://zhuanlan.zhihu.com/p/50812510">被知乎大佬嘲讽后的一个月，我重新研究了一下内联函数 - 知乎 (zhihu.com)</a></li>
-<li><a href="https://stackoverflow.com/questions/28653072/how-can-i-get-function-name-of-indirect-call-from-callinst-in-llvm">c++ - How can I get Function Name of indirect call from CallInst in LLVM - Stack Overflow</a></li>
-<li><a href="http://c.biancheng.net/view/228.html">函数指针及其定义和用法，C语言函数指针详解 (biancheng.net)</a></li>
-<li><a href="https://blog.csdn.net/tonny0832/article/details/12558493">内部链接(internal linkage)和外部链接(external linkage)_CSDN博客</a></li>
-<li><a href="https://softwareengineering.stackexchange.com/questions/401110/difference-between-direct-and-indirect-function-calls">compiler - Difference between direct and indirect function() calls - Software Engineering Stack Exchange</a></li>
-</ul>
-</li>
-</ul>
-<h2 id="PS"><a href="#PS" class="headerlink" title="PS"></a>PS</h2><p>在人工分析前，先问问Cursor：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230418145234286.png" alt=""></p>
+<h2 id="ps">PS</h2>
+<p>在人工分析前，先问问Cursor：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230418145234286.png" /></p>
 <blockquote>
 <p><strong>提问：这段代码的功能是什么？</strong></p>
 <p><strong>AI：</strong>根据提供的代码，这是一个C++程序，用于对LLVM模块进行全局分析。它从输入文件中加载模块，执行基本初始化，并运行两个Pass：CallGraphPass和PointerAnalysisPass。</p>
-<p>程序还从两个文件CrashReport和CallGraph中读取数据，以确定是否存在显式检查表达式并找到崩溃位置。如果在CrashReport文件中找到显式检查表达式，则程序将将“explicitly”标志设置为true。如果在CrashReport文件中找到“kernel BUG at”字符串，则程序还将将“explicitly”标志设置为true。然后，程序使用GlobalCtx和“explicitly”标志运行CrashAnalyzer来分析崩溃位置。</p>
+<p>程序还从两个文件CrashReport和CallGraph中读取数据，以确定是否存在显式检查表达式并找到崩溃位置。如果在CrashReport文件中找到显式检查表达式，则程序将将“explicitly”标志设置为true。如果在CrashReport文件中找到“kernel
+BUG
+at”字符串，则程序还将将“explicitly”标志设置为true。然后，程序使用GlobalCtx和“explicitly”标志运行CrashAnalyzer来分析崩溃位置。</p>
 <p>如果DumpLocation不为空，则程序将将分析结果转储到指定位置。否则，它将将结果转储到标准输出。最后，程序返回0。</p>
 <p>因此，该程序的主要功能是对LLVM模块进行全局分析，并分析崩溃位置。</p>
 <p><strong>提问：请介绍这段代码使用的LLVM API。</strong></p>
 <p><strong>AI：</strong>根据提供的代码，该程序使用了LLVM的以下API：</p>
-<p>- llvm::IRReader：用于从文件中读取LLVM IR。<br>- llvm::LLVMContext：用于管理LLVM IR的上下文。<br>- llvm::Module：表示LLVM IR模块。<br>- llvm::PassManager：用于管理LLVM Pass。<br>- llvm::Verifier：用于验证LLVM IR的正确性。<br>- llvm::ManagedStatic：用于管理静态对象的生命周期。<br>- llvm::PrettyStackTrace：用于在程序崩溃时打印调用堆栈。<br>- llvm::ToolOutputFile：用于将输出写入文件。<br>- llvm::SystemUtils：提供了一些系统相关的实用函数。<br>- llvm::FileSystem：提供了一些文件系统相关的实用函数。<br>- llvm::SourceMgr：用于管理源文件和缓冲区。<br>- llvm::Signals：用于处理信号。<br>- llvm::Path：提供了一些路径相关的实用函数。</p>
+<p>- llvm::IRReader：用于从文件中读取LLVM IR。 -
+llvm::LLVMContext：用于管理LLVM IR的上下文。 - llvm::Module：表示LLVM
+IR模块。 - llvm::PassManager：用于管理LLVM Pass。 -
+llvm::Verifier：用于验证LLVM IR的正确性。 -
+llvm::ManagedStatic：用于管理静态对象的生命周期。 -
+llvm::PrettyStackTrace：用于在程序崩溃时打印调用堆栈。 -
+llvm::ToolOutputFile：用于将输出写入文件。 -
+llvm::SystemUtils：提供了一些系统相关的实用函数。 -
+llvm::FileSystem：提供了一些文件系统相关的实用函数。 -
+llvm::SourceMgr：用于管理源文件和缓冲区。 -
+llvm::Signals：用于处理信号。 -
+llvm::Path：提供了一些路径相关的实用函数。</p>
 <p>此外，该程序还使用了一些自定义的类和函数，如GlobalCtx、CallGraph、StructFinder、CrashAnalyzer和PointerAnalysis。</p>
 <p><strong>提问：请问你能画出代码的结构图吗？</strong></p>
 <p><strong>AI：</strong></p>
-<p>main function<br>├── cl::list &lt; std::string&gt; InputFilenames<br>├── cl::opt &lt; unsigned&gt; VerboseLevel<br>├── cl::opt &lt; std::string&gt; DumpLocation<br>├── cl::opt &lt; std::string&gt; CrashReport<br>├── CallGraphPass<br>├── PointerAnalysisPass<br>├── CrashAnalyzer<br>└── return 0</p>
-<p>其中，<code>InputFilenames</code>、<code>VerboseLevel</code>、<code>DumpLocation</code>和<code>CrashReport</code>是程序的命令行参数。<code>CallGraphPass</code>和<code>PointerAnalysisPass</code>是两个LLVM Pass，用于分析LLVM模块的调用图和指针分析。<code>CrashAnalyzer</code>是一个自定义的类，用于分析崩溃位置。程序最后返回0。</p>
+<p>main function ├── cl::list &lt; std::string&gt; InputFilenames ├──
+cl::opt &lt; unsigned&gt; VerboseLevel ├── cl::opt &lt; std::string&gt;
+DumpLocation ├── cl::opt &lt; std::string&gt; CrashReport ├──
+CallGraphPass ├── PointerAnalysisPass ├── CrashAnalyzer └── return 0</p>
+<p>其中，<code>InputFilenames</code>、<code>VerboseLevel</code>、<code>DumpLocation</code>和<code>CrashReport</code>是程序的命令行参数。<code>CallGraphPass</code>和<code>PointerAnalysisPass</code>是两个LLVM
+Pass，用于分析LLVM模块的调用图和指针分析。<code>CrashAnalyzer</code>是一个自定义的类，用于分析崩溃位置。程序最后返回0。</p>
 </blockquote>
 ]]></content>
       <categories>
