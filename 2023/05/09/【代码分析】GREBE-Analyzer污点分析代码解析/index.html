@@ -26,8 +26,16 @@
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230506144655.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230506145059.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230509100607.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230512164203.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230512171505.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230512172747.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230514193930.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230514200619.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230514201549.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230514204040.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230514210450.png">
 <meta property="article:published_time" content="2023-05-09T07:06:56.538Z">
-<meta property="article:modified_time" content="2023-05-10T02:32:23.646Z">
+<meta property="article:modified_time" content="2023-05-14T14:01:21.701Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="Vulnerability">
 <meta property="article:tag" content="AEG">
@@ -800,7 +808,8 @@ FS中，如果第一次插入则返回true，否则返回false。因为CF这里�
             &#125;
 #endif<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>​ 如果I不是CallInst指令，而是StoreInst类型指令，则：</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#ifndef TYPE_BASED
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;CallGraph.cc -&gt; runOnFunction()
+#ifndef TYPE_BASED
         if (StoreInst *SI &#x3D; dyn_cast&lt;StoreInst&gt;(I)) &#123;
             &#x2F;&#x2F; stores to function pointers
             Value *V &#x3D; SI-&gt;getValueOperand();
@@ -824,9 +833,34 @@ FS中，如果第一次插入则返回true，否则返回false。因为CF这里�
                 Changed |&#x3D; mergeFuncSet(Id, FS, isFunctionPointer(V-&gt;getType()));
             &#125;
         &#125;
-#endif<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+#endif<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>​
-如果一个StoreInst类型指令，并且其操作数是函数指针，则获取其函数指针所有可能的Callee并存储到<code>Ctx-&gt;FuncPtrs[]</code>中。至此，CallGraphPass分析完毕。</p>
+如果一个StoreInst类型指令，并且其操作数是函数指针，则获取其函数指针所有可能的Callee并存储到<code>Ctx-&gt;FuncPtrs[]</code>中。</p>
+<p>​
+在runOnFunction函数执行完毕后，其run函数调用<code>CallGraphPass::doFinalization</code>对每个Module进行善后处理：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;CallGraph.cc -&gt; doFinalization()
+bool CallGraphPass::doFinalization(Module *M) &#123;
+    &#x2F;&#x2F; update callee and caller mapping
+    &#x2F;&#x2F; 遍历每个函数
+    for (Function &amp;F : *M) &#123;
+        &#x2F;&#x2F;遍历每条指令
+        for (inst_iterator i &#x3D; inst_begin(F), e &#x3D; inst_end(F); i !&#x3D; e; ++i) &#123;
+            &#x2F;&#x2F; map callsite to possible callees
+            &#x2F;&#x2F; 如果该指令是CallInst类型
+            &#x2F;&#x2F; 根据之前存储的Callees，反向计算Callers
+            if (CallInst *CI &#x3D; dyn_cast&lt;CallInst&gt;(&amp;*i)) &#123;
+                FuncSet &amp;FS &#x3D; Ctx-&gt;Callees[CI];
+                &#x2F;&#x2F; calculate the caller info here
+                for (Function *CF : FS) &#123;
+                    CallInstSet &amp;CIS &#x3D; Ctx-&gt;Callers[CF];
+                    CIS.insert(CI);
+                &#125;
+            &#125;
+        &#125;
+    &#125;
+    return false;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 至此，CallGraphPass分析完毕。</p>
 <p>​</p>
 <h3 id="pointeranalysispass">2.5 PointerAnalysisPass</h3>
 <h4 id="alias-analysis">2.5.1 Alias Analysis</h4>
@@ -1224,11 +1258,441 @@ BBVec.push_back(BB);
 <p>​ 这里具体为什么要这么做还需深入探索。</p>
 <h3 id="backward-taint-analysis">2.7 Backward Taint Analysis</h3>
 <p>​ 污点分析过程存储在<code>StructFinderPass::doAnalyze()</code>中：</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">void StructFinderPass::doAnalyze(Value *v) &#123;
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; StructFinder.cc -&gt; doAnalyze()
+&#x2F;&#x2F; v是污点源
+void StructFinderPass::doAnalyze(Value *v) &#123;
     VSet vs;
     vs.clear();
+    &#x2F;&#x2F; 将污点分析的结果存储到全局变量Ctx-&gt;CriticalSt中
     mergeSet(Ctx-&gt;CriticalSt, taintAnalysis(v, vs, false));
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+&#125;
+&#x2F;&#x2F; StructFinderPass -&gt; mergeSet()
+static void mergeSet(std::set&lt;llvm::StringRef&gt; &amp;a, std::set&lt;llvm::StringRef&gt; b) &#123;
+    a.insert(b.begin(), b.end());
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+接下来进入正式的污点分析过程<code>StructFinderPass::taintAnalysis</code>，首先遍历污点源的用户指令，对其中的Cast指令进行处理：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;StructFinder.cc -&gt; taintAnalysis()
+std::set&lt;llvm::StringRef&gt; result;
+&#x2F;&#x2F;每个污点源单独一个result
+result.clear();
+if (!vs.insert(V).second) &#123;
+     return result;
+&#125;
+&#x2F;&#x2F; debuging!!! remove this when deploying blockset
+&#x2F;&#x2F; found &#x3D; false;
+KA_LOGV(0, V);
+&#x2F;&#x2F; find the casting...
+&#x2F;&#x2F; V-&gt;users()获取污点源的用户指令
+for (auto *user : V-&gt;users()) &#123;
+     &#x2F;&#x2F;BitCastInst类型是LLVM的数据类型转换指令
+     &#x2F;&#x2F;其转换数据格式但不改变其存储方式
+     &#x2F;&#x2F;例如：
+     &#x2F;&#x2F;%ptr &#x3D; alloca i32*
+     &#x2F;&#x2F;%casted_ptr &#x3D; bitcast i32** %ptr to i8**
+     if (isa&lt;BitCastInst&gt;(user)) &#123;
+          BitCastInst *BCI &#x3D; dyn_cast&lt;BitCastInst&gt;(user);
+          &#x2F;&#x2F; getDestTy &#x3D; get distination type
+          Type *dst &#x3D; BCI-&gt;getDestTy();
+          &#x2F;&#x2F; *Type -&gt; StringRef
+          auto name &#x3D; handleType(dst);
+          KA_LOGS(0, &quot;Found &quot;&lt;&lt;name&lt;&lt;&quot; in casting&quot;);
+          addToSet(result, name);
+     &#125;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+可见，只要污点源的用户指令是BitCastInst类型，就将该指令的DestType的名称加入result中。</p>
+<p>​
+接下来，对污点源本身分为三类：<code>Instruction</code>、<code>Argument</code>与<code>GlobalVaribal</code>，三类污点源分别进行不同的处理。无需赘述，<code>Instruction</code>类型就是指令类型；<code>Argument</code>类型用于描述函数声明，<code>GlobalVaribal</code>表示全局变量。</p>
+<h4 id="structfinderpasshandletype">0. StructFinderPass::handleType</h4>
+<p>​
+handleType()函数用于获取struct/int的名称，如果传入的type是指针或数组则递归查找其指向类型。</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">StringRef StructFinderPass::handleType(Type *ty) &#123;
+    
+    if (ty &#x3D;&#x3D; nullptr)
+        return StringRef(&quot;&quot;);
+
+    if (ty-&gt;isStructTy()) &#123;
+        StructType *ST &#x3D; dyn_cast&lt;StructType&gt;(ty);
+        StringRef stname &#x3D; ST-&gt;getName();
+        &#x2F;&#x2F;如果该结构以struct.为首，
+        &#x2F;&#x2F;并且不是匿名结构
+        if (stname.startswith(&quot;struct.&quot;)
+                &amp;&amp; !stname.startswith(&quot;struct.anon&quot;))
+            return stname;
+
+    &#125; else if (ty-&gt;isPointerTy())&#123;
+        ty &#x3D; cast&lt;PointerType&gt;(ty)-&gt;getElementType();
+        return handleType(ty);
+    &#125; else if (ty-&gt;isArrayTy())&#123;
+        ty &#x3D; cast&lt;ArrayType&gt;(ty)-&gt;getElementType();
+        return handleType(ty);
+    &#125; else if (ty-&gt;isIntegerTy()) &#123;
+        return StringRef(&quot;int&quot;);
+    &#125;
+
+    return StringRef(&quot;&quot;);    
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="instruction类型source">1.
+<code>Instruction</code>类型source：</h4>
+<p>​ 针对不同类型的Insturction再分别处理.</p>
+<h5 id="instructionstore">1.1 Instruction::Store:</h5>
+<ul>
+<li>​ 在LLVM IR中，store指令的格式如下：</li>
+</ul>
+<pre class="line-numbers language-llvm" data-language="llvm"><code class="language-llvm"><span class="token variable">%value</span> <span class="token punctuation">=</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token variable">%ptr</span> <span class="token punctuation">=</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token keyword">store</span> <span class="token punctuation">&lt;</span><span class="token keyword">type1</span><span class="token punctuation">></span> <span class="token variable">%value</span><span class="token punctuation">,</span> <span class="token punctuation">&lt;</span><span class="token keyword">type2</span><span class="token punctuation">></span><span class="token punctuation">*</span> <span class="token variable">%ptr</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>​
+其表明将type1格式的value存入type2格式的指针ptr所指向的内存中。type1与type2必须相同或者兼容。</p>
+<ul>
+<li>​ 在LLVM IR中，getelementptr指令的格式如下：</li>
+</ul>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230512164203.png" style="zoom:50%;" /></p>
+<pre class="line-numbers language-llvm" data-language="llvm"><code class="language-llvm"><span class="token variable">%array</span> <span class="token punctuation">=</span> <span class="token keyword">alloca</span> <span class="token punctuation">[</span><span class="token number">10</span> <span class="token keyword">x</span> <span class="token type class-name">i32</span><span class="token punctuation">]</span>
+<span class="token variable">%element_ptr</span> <span class="token punctuation">=</span> <span class="token keyword">getelementptr</span> <span class="token punctuation">[</span><span class="token number">10</span> <span class="token keyword">x</span> <span class="token type class-name">i32</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token number">10</span> <span class="token keyword">x</span> <span class="token type class-name">i32</span><span class="token punctuation">]</span><span class="token punctuation">*</span> <span class="token variable">%array</span><span class="token punctuation">,</span> <span class="token type class-name">i32</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token type class-name">i32</span> <span class="token number">3</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>​
+<u>其用于计算结构中某个元素的指针，C语言中所有对数组/结构体的取值操作都会被翻译为getelementptr。</u></p>
+<ul>
+<li>​ 在LLVM
+IR中，load/store指令经常与getelementptr指令一起使用，用于表示对数组/结构体的赋值操作，例如：</li>
+</ul>
+<pre class="line-numbers language-llvm" data-language="llvm"><code class="language-llvm"><span class="token variable">%arr</span> <span class="token punctuation">=</span> <span class="token keyword">alloca</span> <span class="token punctuation">[</span><span class="token number">10</span> <span class="token keyword">x</span> <span class="token type class-name">i32</span><span class="token punctuation">]</span>
+<span class="token variable">%x</span> <span class="token punctuation">=</span> <span class="token keyword">load</span> <span class="token type class-name">i32</span><span class="token punctuation">,</span> <span class="token type class-name">i32</span><span class="token punctuation">*</span> <span class="token keyword">getelementptr</span> <span class="token keyword">inbounds</span> <span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">10</span> <span class="token keyword">x</span> <span class="token type class-name">i32</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token number">10</span> <span class="token keyword">x</span> <span class="token type class-name">i32</span><span class="token punctuation">]</span><span class="token punctuation">*</span> <span class="token variable">%arr</span><span class="token punctuation">,</span> <span class="token type class-name">i64</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token type class-name">i64</span> <span class="token number">3</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-llvm" data-language="llvm"><code class="language-llvm"><span class="token variable">%arr</span> <span class="token punctuation">=</span> <span class="token keyword">alloca</span> <span class="token punctuation">[</span><span class="token number">10</span> <span class="token keyword">x</span> <span class="token type class-name">i32</span><span class="token punctuation">]</span>
+<span class="token variable">%3</span> <span class="token punctuation">=</span> <span class="token keyword">getelementptr</span> <span class="token keyword">inbounds</span> <span class="token punctuation">[</span><span class="token number">10</span> <span class="token keyword">x</span> <span class="token type class-name">i32</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token number">10</span> <span class="token keyword">x</span> <span class="token type class-name">i32</span><span class="token punctuation">]</span><span class="token punctuation">*</span> <span class="token variable">%arr</span><span class="token punctuation">,</span> <span class="token type class-name">i64</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token type class-name">i64</span> <span class="token number">3</span>
+<span class="token keyword">store</span> <span class="token type class-name">i32</span> <span class="token number">7</span><span class="token punctuation">,</span> <span class="token type class-name">i32</span><span class="token punctuation">*</span> <span class="token variable">%3</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>​ 上述两个代码块分别表示从数组中取值和为数组某个成员赋值。</p>
+<p>​ 针对store指令的分析过程如下：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; StructFinder.cc -&gt; taintAnalysis()
+&#x2F;&#x2F; if (auto *I &#x3D; dyn_cast&lt;Instruction&gt;(V)) 
+&#x2F;&#x2F; I-&gt;getOpcode() &#x3D;&#x3D; Instruction::Store:
+
+case Instruction::Store:&#123;
+     StoreInst *SI &#x3D; cast&lt;StoreInst&gt;(I);
+     &#x2F;&#x2F;获取指针类型
+     Type *SType &#x3D; SI-&gt;getPointerOperandType();
+     &#x2F;&#x2F;*Type -&gt; StringRef
+     StringRef stName &#x3D; handleType(SType);
+	&#x2F;&#x2F;如果该指针类型已经在该source的result中了则跳过分析
+     if (!addToSet(result, stName)) &#123;
+          break;
+     &#125;
+	
+     &#x2F;&#x2F; would find a GetElementType
+     if (!isa&lt;GetElementPtrInst&gt;(SI-&gt;getOperand(0))) &#123;
+          &#x2F;&#x2F; assert(0 &amp;&amp; &quot;didn&#39;t find a GetElementPtrInst before StoreInst&quot;);
+     &#125;
+
+     Value *GetV &#x3D; SI-&gt;getOperand(1);
+
+     &#x2F;&#x2F; we skip these getElement since they are nested
+     while (isa&lt;GetElementPtrInst&gt;(GetV)) &#123;
+          GetElementPtrInst *GEI &#x3D; cast&lt;GetElementPtrInst&gt;(GetV);
+          &#x2F;&#x2F;getSourceElementType()获取取值操作的原地址
+          &#x2F;&#x2F;hanleType获取类型名称，例如结构的名称
+          StringRef name &#x3D; handleType(GEI-&gt;getSourceElementType());
+	    &#x2F;&#x2F;如果该结构已经处理则跳过
+          if (!addToSet(result, name)) &#123;
+               break;
+          &#125;
+	    &#x2F;&#x2F;继续递归，向上寻找其操作指针
+          GetV &#x3D; GEI-&gt;getOperand(0);
+     &#125;
+
+     &#x2F;&#x2F; the outside GetElementPtrInst
+     &#x2F;&#x2F; 处理最后的的GteV
+     mergeSet(result, taintAnalysis(GetV, vs, found));
+     break;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 正常来说，对于一个store指令，如果其value
+（Operand(0)）为污点源，那污点就会通过该指令传播到对应的ptr中去（Operand(1)）。但由于C语言中存在对数组/结构体取值的操作，故store指令的Ptr也可能是<code>GetElementPtrInst</code>类型，所以代码中存在对store指令操作数的反复递归迭代，如下图所示：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230512171505.png" alt="store指令的迭代问题" style="zoom:50%;" /></p>
+<h5 id="instructionload">1.2 Instruction::load</h5>
+<p>​ load指令的作用是从目标地址取操作数，其格式如下：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230512172747.png" style="zoom:50%;" /></p>
+<p>​ load指令将ptr所指向的数据以&lt; type
+&gt;的形式取出，并存入%1中。</p>
+<p>​ Load指令处理部分：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">case Instruction::Load:&#123;
+     &#x2F;&#x2F; should pair with a GetElementPtr
+     &#x2F;&#x2F; remember to check if it is nested
+     LoadInst *LI &#x3D; cast&lt;LoadInst&gt;(I);
+     Type *lType &#x3D; LI-&gt;getPointerOperandType();
+     &#x2F;&#x2F;获取ptr指向的结构名称
+     StringRef stName &#x3D; handleType(lType);
+     if (!addToSet(result, stName)) &#123;
+          break;
+     &#125;
+	&#x2F;&#x2F;如果Load指令的ptr指向的结构以&quot;struct.list_head&quot;开头
+     &#x2F;&#x2F;并且Load指令的第一个参数为ConstantExpr(算术式)类型
+     if (stName &#x3D;&#x3D; &quot;struct.list_head&quot; &amp;&amp;
+         isa&lt;ConstantExpr&gt;(LI-&gt;getOperand(0))) &#123;
+          &#x2F;&#x2F; looking type info in list_head
+          Value *bitcastV &#x3D; nullptr;
+		&#x2F;&#x2F;分析污点源的所有用户指令
+          for (auto *user : V-&gt;users()) &#123;
+               &#x2F;&#x2F;如果用户指令是phi指令
+               if (isa&lt;PHINode&gt;(user)) &#123;
+                    &#x2F;&#x2F;继续获取其父指令
+                    for (auto *uuser : user-&gt;users()) &#123;
+                         &#x2F;&#x2F;如果其是一个类型转换指令
+                         if (isa&lt;BitCastInst&gt;(uuser)) &#123;
+                              bitcastV &#x3D; uuser;
+                         &#125;
+                    &#125;
+               &#125;
+          &#125;
+	    &#x2F;&#x2F;如果找不到类型转换指令则跳过
+          if (bitcastV &#x3D;&#x3D; nullptr) &#123;
+               break;
+          &#125;
+	    &#x2F;&#x2F;遍历bitcast指令的父指令
+          for (auto *user : bitcastV-&gt;users()) &#123;
+               &#x2F;&#x2F;如果其父指令也是bitcast
+               if (isa&lt;BitCastInst&gt;(user)) &#123;
+                    BitCastInst *BCI &#x3D; dyn_cast&lt;BitCastInst&gt;(user);
+                    Type *src &#x3D; BCI-&gt;getDestTy();
+                    &#x2F;&#x2F;将转换后的类型名称加入result
+                    if (!addToSet(result, handleType(src))) &#123;
+
+                    &#125;
+               &#125;
+          &#125;
+          break;
+     &#125;
+     &#x2F;&#x2F; would find a GetElementType
+     if (!isa&lt;GetElementPtrInst&gt;(LI-&gt;getOperand(0))) &#123;
+          &#x2F;&#x2F; it may not in some cases
+          &#x2F;&#x2F; outs() &lt;&lt; &quot;in &quot; &lt;&lt; LI-&gt;getFunction()-&gt;getName() &lt;&lt; &quot;\n&quot;;
+          &#x2F;&#x2F; assert(0 &amp;&amp; &quot;didn&#39;t find a GetElementPtrInst before LoadInst&quot;);
+     &#125;
+	&#x2F;&#x2F;同store指令，继续递归分析
+     Value *GetV &#x3D; LI-&gt;getOperand(0);
+     &#x2F;&#x2F; we skip these getElement since they are nested
+     while (isa&lt;GetElementPtrInst&gt;(GetV)) &#123;
+          GetElementPtrInst *GEI &#x3D; cast&lt;GetElementPtrInst&gt;(GetV);
+          StringRef name &#x3D; handleType(GEI-&gt;getSourceElementType());
+
+          if (!addToSet(result, name)) &#123;
+               break;
+          &#125;
+
+          GetV &#x3D; GEI-&gt;getOperand(0);
+     &#125;
+     &#x2F;&#x2F; the outside GetElementPtrInst
+     mergeSet(result, taintAnalysis(GetV, vs, found));
+     break;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+如上述代码所示，load指令与store指令相比增加了<code>struct.list_head</code>的分析部分，list_head是Linux内核中的经典双向链表，其定义如下：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">struct</span> <span class="token class-name">list_head</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">struct</span> <span class="token class-name">list_head</span> <span class="token operator">*</span>next<span class="token punctuation">,</span> <span class="token operator">*</span>prev<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>​
+针对<code>struct.list_head</code>，若其满足<code>stName == "struct.list_head" &amp;&amp; isa&lt; ConstantExpr &gt;(LI&gt;getOperand(0))</code>：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230514193930.png" style="zoom:50%;" /></p>
+<p>​
+则代表其Load指令的type为<code>struct.list_head</code>类型且对应的指针ptr是<code>ConstantExpr</code>算术式类型，则分析该Load指令的所有父指令，其具体分析流程如下：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230514200619.png" style="zoom:50%;" /></p>
+<p>​
+对于某个Load指令污点源，分析其父指令里的phi指令，再分析phi指令的父指令，找到其中的bitcast指令，后续再次分析这个bitcast指令的父指令：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230514201549.png" style="zoom:50%;" /></p>
+<p>​
+如果bitcastV的父指令也为bitcast指令，则将其目标type（即上图最后一行的type2）所指向的结构名称加入result集中。接下来针对<code>GetElementPtrInst</code>的分析同store指令，具体过程见上述代码。</p>
+<h5 id="instructioncall">1.3 Instruction::Call</h5>
+<p>​
+遍历Call指令的所有参数，如果如果该参数不是某个结构体中的引用则将其指向的结构名加入result，然后递归深入分析arg参数：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">case</span> Instruction<span class="token operator">::</span>Call<span class="token operator">:</span><span class="token punctuation">&#123;</span>
+     CallInst <span class="token operator">*</span>CI <span class="token operator">=</span> cast<span class="token operator">&lt;</span>CallInst<span class="token operator">></span><span class="token punctuation">(</span>I<span class="token punctuation">)</span><span class="token punctuation">;</span>
+     <span class="token comment">//遍历其参数列表</span>
+     <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">auto</span> AI <span class="token operator">=</span> CI<span class="token operator">-></span><span class="token function">arg_begin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> E <span class="token operator">=</span> CI<span class="token operator">-></span><span class="token function">arg_end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> AI <span class="token operator">!=</span> E<span class="token punctuation">;</span> AI<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+          <span class="token comment">//获取单个参数</span>
+          Value<span class="token operator">*</span> arg <span class="token operator">=</span> dyn_cast<span class="token operator">&lt;</span>Value<span class="token operator">></span><span class="token punctuation">(</span><span class="token operator">&amp;</span><span class="token operator">*</span>AI<span class="token punctuation">)</span><span class="token punctuation">;</span>
+          <span class="token comment">//跳过常数</span>
+          <span class="token keyword">if</span> <span class="token punctuation">(</span>dyn_cast<span class="token operator">&lt;</span>Constant<span class="token operator">></span><span class="token punctuation">(</span>arg<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+               <span class="token keyword">continue</span><span class="token punctuation">;</span>
+          <span class="token punctuation">&#125;</span>
+          <span class="token comment">// if not &amp;a->b</span>
+          <span class="token comment">// 如果该参数不是某个结构体中的引用（后续会分析）</span>
+          <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>isa<span class="token operator">&lt;</span>GetElementPtrInst<span class="token operator">></span><span class="token punctuation">(</span>arg<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+               <span class="token keyword">auto</span> name <span class="token operator">=</span> <span class="token function">handleType</span><span class="token punctuation">(</span>arg<span class="token operator">-></span><span class="token function">getType</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+               <span class="token function">addToSet</span><span class="token punctuation">(</span>result<span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">;</span>
+          <span class="token punctuation">&#125;</span>
+          <span class="token comment">// taint argument</span>
+          <span class="token comment">// 继续递归分析</span>
+          <span class="token function">mergeSet</span><span class="token punctuation">(</span>result<span class="token punctuation">,</span> <span class="token function">taintAnalysis</span><span class="token punctuation">(</span>arg<span class="token punctuation">,</span> vs<span class="token punctuation">,</span> found<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+     <span class="token punctuation">&#125;</span>
+     <span class="token keyword">break</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h5 id="instructiongetelementptr">1.4 Instruction::GetElementPtr</h5>
+<p>​ GetElementPtr指令的分析大体同上，也是递归分析，详见如下代码：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">case Instruction::GetElementPtr:&#123;
+     &#x2F;&#x2F; this is nested
+     GetElementPtrInst *GEI &#x3D; cast&lt;GetElementPtrInst&gt;(I);
+
+     &#x2F;&#x2F; while (isa&lt;GetElementPtrInst&gt;(GEI-&gt;getOperand(0))) &#123;
+     &#x2F;&#x2F;     &#x2F;&#x2F; nest struct
+     &#x2F;&#x2F;     Type *src &#x3D; GEI-&gt;getSourceElementType();
+     &#x2F;&#x2F;     GEI &#x3D; cast&lt;GetElementPtrInst&gt;(I);
+     &#x2F;&#x2F; &#125;
+
+     Type *src &#x3D; GEI-&gt;getSourceElementType();
+     &#x2F;&#x2F; handle type
+     auto name &#x3D; handleType(src);
+     if (!addToSet(result, name)) &#123;
+          break;
+     &#125;
+     &#x2F;&#x2F; addToSet(result, name);
+
+     mergeSet(result, taintAnalysis(GEI-&gt;getOperand(0), vs, found));
+
+     &#x2F;&#x2F; handle GetElementPtr other operands
+     for (unsigned i &#x3D; 1, e &#x3D; I-&gt;getNumOperands(); i !&#x3D; e; i++) &#123;
+          V &#x3D; I-&gt;getOperand(i);
+          if (dyn_cast&lt;Constant&gt;(V)) &#123;
+               continue;
+          &#125;
+          &#x2F;&#x2F; taint value
+          mergeSet(result, taintAnalysis(V, vs, found));
+     &#125;
+     break;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h5 id="instructionphi">1.5 Instruction::PHI</h5>
+<p>​ LLVM IR中PHI指令的格式如下所示:</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230514204040.png" style="zoom: 50%;" /></p>
+<p>​
+phi指令用于不同代码块的分支判断，其根据不同代码块转移来的label选择value，对phi指令的相关函数操作如下所示：</p>
+<blockquote>
+<p><code>PHINode::getNumIncomingValues()</code>：返回PHI节点的入边数量，即上图方括号的数量；</p>
+<p><code>PHINode::getIncomingValues(i)</code>：返回第i个节点的value；</p>
+</blockquote>
+<p>​ 具体代码如下所示：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">case Instruction::PHI:&#123;
+     &#x2F;&#x2F; check code coverage here to find the node
+     PHINode *PN &#x3D; cast&lt;PHINode&gt;(I);
+     &#x2F;&#x2F;遍历每个入边节点
+     for (unsigned i &#x3D; 0, e &#x3D; PN-&gt;getNumIncomingValues(); i !&#x3D; e; i++) &#123;
+          &#x2F;&#x2F;获取该节点的value
+          Value* IV &#x3D; PN-&gt;getIncomingValue(i);
+          &#x2F;&#x2F;这里什么都没做
+          if (Instruction *II &#x3D; dyn_cast&lt;Instruction&gt;(IV)) &#123;
+               &#x2F;&#x2F; if II not get covered
+               &#x2F;&#x2F; continue
+          &#125;
+	    &#x2F;&#x2F;递归分析每个节点的value
+          mergeSet(result, taintAnalysis(IV, vs, found));
+     &#125;
+     break;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h5 id="instructionalloca">1.6 Instruction::Alloca</h5>
+<p>​ Alloca指令用于分配内存，这里遍历其所有父指令：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">case Instruction::Alloca:
+     &#x2F;&#x2F; return
+     &#x2F;&#x2F; solve alias
+	&#x2F;&#x2F;遍历其所有父指令
+     for (auto *user : V-&gt;users()) &#123;
+          &#x2F;&#x2F;若是store指令
+          if (isa&lt;StoreInst&gt;(user)) &#123;
+               StoreInst *SI &#x3D; cast&lt;StoreInst&gt;(user);
+               &#x2F;&#x2F;获取store的参数
+               Value *next &#x3D; SI-&gt;getOperand(0);
+               &#x2F;&#x2F;递归分析
+               mergeSet(result, taintAnalysis(next, vs, found));
+          &#125;
+     &#125;
+     break;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​</p>
+<h5 id="instructionbitcast">1.7 Instruction::BitCast</h5>
+<p>​ BitCast同理，具体见代码：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">case Instruction::BitCast:&#123;
+     &#x2F;&#x2F; handle type info
+     BitCastInst *BCI &#x3D; dyn_cast&lt;BitCastInst&gt;(V);
+     Type *src &#x3D; BCI-&gt;getSrcTy();
+     auto name &#x3D; handleType(src);
+     if (!addToSet(result, name)) &#123;
+          break;
+     &#125;
+     mergeSet(result, taintAnalysis(BCI-&gt;getOperand(0), vs, found));
+     break;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h5 id="case-instructionselect">1.8 case Instruction::Select</h5>
+<p>​ Select指令类似于C语言中的<code>x?:a:b</code>语法，其格式如下：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230514210450.png" style="zoom: 67%;" /></p>
+<p>​ 其分析逻辑跟上述代码类似，详细见下：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">case Instruction::Select:
+     for (unsigned i &#x3D; 0, e &#x3D; I-&gt;getNumOperands(); i !&#x3D; e; i++) &#123;
+          V &#x3D; I-&gt;getOperand(i);
+          &#x2F;&#x2F;排除常数
+          if (dyn_cast&lt;Constant&gt;(V)) &#123;
+               continue;
+          &#125;
+          &#x2F;&#x2F; taint value
+          mergeSet(result, taintAnalysis(V, vs, found));
+     &#125;
+     break;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="argument类型source">2. <code>Argument</code>类型Source</h4>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">else if (auto *Arg &#x3D; dyn_cast&lt;Argument&gt;(V)) &#123;
+     &#x2F;&#x2F; argument
+     unsigned argNo &#x3D; Arg-&gt;getArgNo();
+     StringRef name &#x3D; handleType(Arg-&gt;getType());
+
+     if (!addToSet(result, name)) &#123;
+          return result;
+     &#125;
+	&#x2F;&#x2F;获取参数属于的function
+     Function* callee &#x3D; Arg-&gt;getParent();
+	&#x2F;&#x2F;从Ctx-&gt;CallGraph中查找其父函数
+     auto parentName &#x3D; findParents(callee-&gt;getName());
+     bool matched &#x3D; false;
+
+     CallInstSet CISet;
+	&#x2F;&#x2F;遍历call graph
+     &#x2F;&#x2F;typedef llvm::DenseMap&lt;llvm::CallInst*, FuncSet&gt; CalleeMap;
+     for (auto M : Ctx-&gt;Callers) &#123;
+          &#x2F;* use endswith here because functions in the Callers
+             * are like &#96;filename&#96;.functionName
+             *&#x2F; 
+          if (M.first-&gt;getName().endswith(callee-&gt;getName()))
+               CISet &#x3D; M.second;
+          
+		&#x2F;&#x2F;查找callee的所有caller
+          for (CallInst *caller : CISet) &#123;
+               &#x2F;&#x2F; TODO need pricise location check
+               if (parentName.find(caller-&gt;getFunction()-&gt;getName())
+                   !&#x3D; parentName.end()) &#123;
+                    matched &#x3D; true;
+
+                    auto parentFname &#x3D; caller-&gt;getFunction()-&gt;getName();
+                    if (parentFname.find(&quot;_sys_&quot;) !&#x3D; string::npos)
+                         continue;
+                    if (BlockFunc.find(parentFname) !&#x3D; BlockFunc.end())
+                         continue;
+
+                    KA_LOGS(2, &quot;Taint to it&#39;s parent &quot;&lt;&lt;caller-&gt;getFunction()-&gt;getName()&lt;&lt;&quot; from &quot;&lt;&lt;callee-&gt;getName());
+                    &#x2F;&#x2F;递归分析
+                    mergeSet(result, taintAnalysis(caller-&gt;getArgOperand(argNo), vs, found));
+               &#125;
+          &#125;
+     &#125;
+     return result;
+     &#x2F;* global variable *&#x2F;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="globalvariable类型source">3.
+<code>GlobalVariable</code>类型Source</h4>
+<p>​ 全局变量单纯的添加即可：</p>
+<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">else if (isa&lt;GlobalVariable&gt;(V)) &#123;
+        GlobalVariable *GV &#x3D; cast&lt;GlobalVariable&gt;(V);
+        StringRef name &#x3D; handleType(GV-&gt;getType());
+
+        if (!addToSet(result, name)) &#123;
+            return result;
+        &#125;
+    &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​</p>
+<p>​
+综上所述，将污点分为instruction、argument和globalvariable三种类型，并分别分析，最终得到了一个结果集合result，这就是污点分析得到的关节结构对象。</p>
+<p>​</p>
 <h2 id="reference">Reference</h2>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://github.com/Markakd/GREBE">Markakd/GREBE
@@ -1273,6 +1737,8 @@ target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/564950777">编
 知乎 (zhihu.com)</a></li>
 <li><a target="_blank" rel="noopener" href="https://llvm.org/docs/SourceLevelDebugging.html">Source
 Level Debugging with LLVM — LLVM 17.0.0git documentation</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/COMAC_919/article/details/130516527">I.users()_-CSDN博客</a></li>
 </ul></li>
 <li>kint：
 <ul>
@@ -1298,7 +1764,7 @@ invariants with data flow integrity</strong>[C]//NDSS. 2016.</li>
 potential for Linux kernel bugs[**C]//2022 IEEE Symposium on Security
 and Privacy (SP). IEEE, 2022.</li>
 </ul></li>
-<li>C/C++:
+<li>C/C++ &amp;&amp; Kernel:
 <ul>
 <li><a
 target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/50812510">被知乎大佬嘲讽后的一个月，我重新研究了一下内联函数
@@ -1317,6 +1783,9 @@ linkage)和外部链接(external linkage)_CSDN博客</a></li>
 target="_blank" rel="noopener" href="https://softwareengineering.stackexchange.com/questions/401110/difference-between-direct-and-indirect-function-calls">compiler
 - Difference between direct and indirect function() calls - Software
 Engineering Stack Exchange</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/wanshilun/article/details/79747710">Linux内核中经典链表
+list_head 常见使用方法解析_内核链表 CSDN博客</a></li>
 </ul></li>
 </ul>
 <h2 id="ps">PS</h2>
@@ -1392,7 +1861,9 @@ Pass，用于分析LLVM模块的调用图和指针分析。<code>CrashAnalyzer</
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90grebe-analyzer%E6%B1%A1%E7%82%B9%E5%88%86%E6%9E%90%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90"><span class="nav-number">1.</span> <span class="nav-text">(代码分析)GREBE-Analyzer污点分析代码解析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8Canalyzersrclib"><span class="nav-number">1.1.</span> <span class="nav-text">二、analyzer&#x2F;src&#x2F;lib</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E6%9D%A5%E6%BA%90"><span class="nav-number">1.1.1.</span> <span class="nav-text">2.1 代码来源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E4%BD%93%E7%BB%93%E6%9E%84"><span class="nav-number">1.1.2.</span> <span class="nav-text">2.2 总体结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#section"><span class="nav-number">1.1.2.1.</span> <span class="nav-text"></span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#kamain.cc"><span class="nav-number">1.1.3.</span> <span class="nav-text">2.3 KAMain.cc</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#iterativemodulepassrun"><span class="nav-number">1.1.3.1.</span> <span class="nav-text">2.3.1 IterativeModulePass::run</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#dobasicinitialization"><span class="nav-number">1.1.3.2.</span> <span class="nav-text">2.3.2 doBasicInitialization</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#main"><span class="nav-number">1.1.3.3.</span> <span class="nav-text">2.3.3 main()</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.1.3.3.1.</span> <span class="nav-text">2.3.3.1 准备工作：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%AF%BB%E5%8F%96%E6%96%87%E4%BB%B6%E4%BF%A1%E6%81%AF"><span class="nav-number">1.1.3.3.2.</span> <span class="nav-text">2.3.3.2 读取文件信息</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%86%E6%9E%90crashreport"><span class="nav-number">1.1.3.3.3.</span> <span class="nav-text">2.3.3.3 分析CrashReport</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%86%E6%9E%90callgraph"><span class="nav-number">1.1.3.3.4.</span> <span class="nav-text">2.3.3.4 分析CallGraph</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BF%90%E8%A1%8Cpass-dump"><span class="nav-number">1.1.3.3.5.</span> <span class="nav-text">2.3.3.5 运行Pass &amp;&amp; Dump</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#callgraphpass"><span class="nav-number">1.1.4.</span> <span class="nav-text">2.4 CallGraphPass</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#cc%E7%89%B9%E6%AE%8A%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8"><span class="nav-number">1.1.4.1.</span> <span class="nav-text">2.4.1 C&#x2F;C++特殊函数调用</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%97%B4%E6%8E%A5%E8%B0%83%E7%94%A8indirect-call"><span class="nav-number">1.1.4.1.1.</span> <span class="nav-text">2.4.1.1 间接调用(indirect call)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%86%85%E8%81%94%E6%B1%87%E7%BC%96%E8%AF%AD%E5%8F%A5"><span class="nav-number">1.1.4.1.2.</span> <span class="nav-text">2.4.1.2 内联汇编语句</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#intrinsic%E5%87%BD%E6%95%B0"><span class="nav-number">1.1.4.1.3.</span> <span class="nav-text">2.4.1.3 Intrinsic函数</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">1.1.4.2.</span> <span class="nav-text">2.4.2 代码分析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pointeranalysispass"><span class="nav-number">1.1.5.</span> <span class="nav-text">2.5 PointerAnalysisPass</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#alias-analysis"><span class="nav-number">1.1.5.1.</span> <span class="nav-text">2.5.1 Alias Analysis</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90-1"><span class="nav-number">1.1.5.2.</span> <span class="nav-text">2.5.2 代码分析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#crashanalyzer"><span class="nav-number">1.1.6.</span> <span class="nav-text">2.6 CrashAnalyzer</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#implicit-checking"><span class="nav-number">1.1.6.1.</span> <span class="nav-text">2.6.1 Implicit Checking</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#explicit-checking"><span class="nav-number">1.1.6.2.</span> <span class="nav-text">2.6.2 Explicit Checking</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#backward-taint-analysis"><span class="nav-number">1.1.7.</span> <span class="nav-text">2.7 Backward Taint Analysis</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">1.2.</span> <span class="nav-text">Reference</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ps"><span class="nav-number">1.3.</span> <span class="nav-text">PS</span></a></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90grebe-analyzer%E6%B1%A1%E7%82%B9%E5%88%86%E6%9E%90%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90"><span class="nav-number">1.</span> <span class="nav-text">(代码分析)GREBE-Analyzer污点分析代码解析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8Canalyzersrclib"><span class="nav-number">1.1.</span> <span class="nav-text">二、analyzer&#x2F;src&#x2F;lib</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E6%9D%A5%E6%BA%90"><span class="nav-number">1.1.1.</span> <span class="nav-text">2.1 代码来源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E4%BD%93%E7%BB%93%E6%9E%84"><span class="nav-number">1.1.2.</span> <span class="nav-text">2.2 总体结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#section"><span class="nav-number">1.1.2.1.</span> <span class="nav-text"></span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#kamain.cc"><span class="nav-number">1.1.3.</span> <span class="nav-text">2.3 KAMain.cc</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#iterativemodulepassrun"><span class="nav-number">1.1.3.1.</span> <span class="nav-text">2.3.1 IterativeModulePass::run</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#dobasicinitialization"><span class="nav-number">1.1.3.2.</span> <span class="nav-text">2.3.2 doBasicInitialization</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#main"><span class="nav-number">1.1.3.3.</span> <span class="nav-text">2.3.3 main()</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.1.3.3.1.</span> <span class="nav-text">2.3.3.1 准备工作：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%AF%BB%E5%8F%96%E6%96%87%E4%BB%B6%E4%BF%A1%E6%81%AF"><span class="nav-number">1.1.3.3.2.</span> <span class="nav-text">2.3.3.2 读取文件信息</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%86%E6%9E%90crashreport"><span class="nav-number">1.1.3.3.3.</span> <span class="nav-text">2.3.3.3 分析CrashReport</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%86%E6%9E%90callgraph"><span class="nav-number">1.1.3.3.4.</span> <span class="nav-text">2.3.3.4 分析CallGraph</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BF%90%E8%A1%8Cpass-dump"><span class="nav-number">1.1.3.3.5.</span> <span class="nav-text">2.3.3.5 运行Pass &amp;&amp; Dump</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#callgraphpass"><span class="nav-number">1.1.4.</span> <span class="nav-text">2.4 CallGraphPass</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#cc%E7%89%B9%E6%AE%8A%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8"><span class="nav-number">1.1.4.1.</span> <span class="nav-text">2.4.1 C&#x2F;C++特殊函数调用</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%97%B4%E6%8E%A5%E8%B0%83%E7%94%A8indirect-call"><span class="nav-number">1.1.4.1.1.</span> <span class="nav-text">2.4.1.1 间接调用(indirect call)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%86%85%E8%81%94%E6%B1%87%E7%BC%96%E8%AF%AD%E5%8F%A5"><span class="nav-number">1.1.4.1.2.</span> <span class="nav-text">2.4.1.2 内联汇编语句</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#intrinsic%E5%87%BD%E6%95%B0"><span class="nav-number">1.1.4.1.3.</span> <span class="nav-text">2.4.1.3 Intrinsic函数</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">1.1.4.2.</span> <span class="nav-text">2.4.2 代码分析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pointeranalysispass"><span class="nav-number">1.1.5.</span> <span class="nav-text">2.5 PointerAnalysisPass</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#alias-analysis"><span class="nav-number">1.1.5.1.</span> <span class="nav-text">2.5.1 Alias Analysis</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90-1"><span class="nav-number">1.1.5.2.</span> <span class="nav-text">2.5.2 代码分析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#crashanalyzer"><span class="nav-number">1.1.6.</span> <span class="nav-text">2.6 CrashAnalyzer</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#implicit-checking"><span class="nav-number">1.1.6.1.</span> <span class="nav-text">2.6.1 Implicit Checking</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#explicit-checking"><span class="nav-number">1.1.6.2.</span> <span class="nav-text">2.6.2 Explicit Checking</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#backward-taint-analysis"><span class="nav-number">1.1.7.</span> <span class="nav-text">2.7 Backward Taint Analysis</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#structfinderpasshandletype"><span class="nav-number">1.1.7.1.</span> <span class="nav-text">0. StructFinderPass::handleType</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#instruction%E7%B1%BB%E5%9E%8Bsource"><span class="nav-number">1.1.7.2.</span> <span class="nav-text">1.
+Instruction类型source：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#instructionstore"><span class="nav-number">1.1.7.2.1.</span> <span class="nav-text">1.1 Instruction::Store:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#instructionload"><span class="nav-number">1.1.7.2.2.</span> <span class="nav-text">1.2 Instruction::load</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#instructioncall"><span class="nav-number">1.1.7.2.3.</span> <span class="nav-text">1.3 Instruction::Call</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#instructiongetelementptr"><span class="nav-number">1.1.7.2.4.</span> <span class="nav-text">1.4 Instruction::GetElementPtr</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#instructionphi"><span class="nav-number">1.1.7.2.5.</span> <span class="nav-text">1.5 Instruction::PHI</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#instructionalloca"><span class="nav-number">1.1.7.2.6.</span> <span class="nav-text">1.6 Instruction::Alloca</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#instructionbitcast"><span class="nav-number">1.1.7.2.7.</span> <span class="nav-text">1.7 Instruction::BitCast</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#case-instructionselect"><span class="nav-number">1.1.7.2.8.</span> <span class="nav-text">1.8 case Instruction::Select</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#argument%E7%B1%BB%E5%9E%8Bsource"><span class="nav-number">1.1.7.3.</span> <span class="nav-text">2. Argument类型Source</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#globalvariable%E7%B1%BB%E5%9E%8Bsource"><span class="nav-number">1.1.7.4.</span> <span class="nav-text">3.
+GlobalVariable类型Source</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">1.2.</span> <span class="nav-text">Reference</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ps"><span class="nav-number">1.3.</span> <span class="nav-text">PS</span></a></li></ol></li></ol>
     
     </div>
   </aside>
