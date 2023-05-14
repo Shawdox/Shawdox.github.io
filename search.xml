@@ -1533,7 +1533,7 @@ phi指令用于不同代码块的分支判断，其根据不同代码块转移�
     &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>​</p>
 <p>​
-综上所述，将污点分为instruction、argument和globalvariable三种类型，并分别分析，最终得到了一个结果集合result，这就是污点分析得到的关节结构对象。</p>
+综上所述，将污点分为instruction、argument和globalvariable三种类型，并分别分析，最终得到了一个结果集合result，这就是污点分析得到的关键结构对象。</p>
 <p>​</p>
 <h2 id="reference">Reference</h2>
 <ul>
