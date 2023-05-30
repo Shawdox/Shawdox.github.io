@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>(技术积累)Klee安装使用 | Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Symbolic ExecutionKlee" />
+  
+  
+  
+    <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
+  
+  
+  <meta name="description" content="Klee安装使用  Linux系统下著名符号执行工具Klee的安装使用  Prerequisites  删除旧版本（非官方发行版的Docker）  for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt-get remove $pkg; done  设置G">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(技术积累)Klee安装使用">
+<meta property="og:url" content="http://example.com/2023/05/30/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Klee%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="Klee安装使用  Linux系统下著名符号执行工具Klee的安装使用  Prerequisites  删除旧版本（非官方发行版的Docker）  for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt-get remove $pkg; done  设置G">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530145106.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530150453.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530154204.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530154657.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530154911.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530155115.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530155831.png">
+<meta property="article:published_time" content="2023-05-30T09:09:53.697Z">
+<meta property="article:modified_time" content="2023-05-30T09:09:32.767Z">
+<meta property="article:author" content="Shaw">
+<meta property="article:tag" content="Symbolic Execution">
+<meta property="article:tag" content="Klee">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530145106.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-【技术积累】Klee安装使用" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      (技术积累)Klee安装使用
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/05/30/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Klee%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8/" class="article-date">
+	  <time datetime="2023-05-30T09:09:53.697Z" itemprop="datePublished">五月 30, 2023</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Project/">Project</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="klee安装使用">Klee安装使用</h1>
+<blockquote>
+<p>Linux系统下著名符号执行工具Klee的安装使用</p>
+</blockquote>
+<h2 id="prerequisites">Prerequisites</h2>
+<ol type="1">
+<li>删除旧版本（非官方发行版的Docker）</li>
+</ol>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token keyword">for</span> <span class="token for-or-select variable">pkg</span> <span class="token keyword">in</span> docker.io docker-doc docker-compose podman-docker containerd runc<span class="token punctuation">;</span> <span class="token keyword">do</span> <span class="token function">sudo</span> <span class="token function">apt-get</span> remove <span class="token variable">$pkg</span><span class="token punctuation">;</span> <span class="token keyword">done</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ol start="2" type="1">
+<li>设置GPG key和仓库，确保下载源</li>
+</ol>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#Update the apt package index and install packages to allow apt to use a repository over HTTPS:</span>
+<span class="token function">sudo</span> <span class="token function">apt-get</span> update
+<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> ca-certificates <span class="token function">curl</span> gnupg
+
+<span class="token comment">#Add Docker’s official GPG key:</span>
+<span class="token function">sudo</span> <span class="token function">install</span> -m 0755 -d /etc/apt/keyrings
+<span class="token function">curl</span> -fsSL https://download.docker.com/linux/ubuntu/gpg <span class="token operator">|</span> <span class="token function">sudo</span> gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+<span class="token function">sudo</span> <span class="token function">chmod</span> a+r /etc/apt/keyrings/docker.gpg
+
+<span class="token comment">#Set up the repository:</span>
+<span class="token builtin class-name">echo</span> <span class="token punctuation">\</span>
+  <span class="token string">"deb [arch="</span><span class="token variable"><span class="token variable">$(</span>dpkg --print-architecture<span class="token variable">)</span></span><span class="token string">" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  "</span><span class="token variable"><span class="token variable">$(</span><span class="token builtin class-name">.</span> /etc/os-release <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">echo</span> <span class="token string">"<span class="token variable">$VERSION_CODENAME</span>"</span><span class="token variable">)</span></span><span class="token string">" stable"</span> <span class="token operator">|</span> <span class="token punctuation">\</span>
+  <span class="token function">sudo</span> <span class="token function">tee</span> /etc/apt/sources.list.d/docker.list <span class="token operator">></span> /dev/null<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ol start="3" type="1">
+<li>安装Docker：</li>
+</ol>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#install</span>
+<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+<span class="token comment">#test</span>
+<span class="token function">sudo</span> docker run hello-world<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="install">Install</h2>
+<p>​ 这里使用现成的Docker环境，直接pull即可：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> docker pull klee/klee<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530145106.png" style="zoom:50%;" /></p>
+<p>​ 运行：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker run --rm -ti --ulimit<span class="token operator">=</span><span class="token string">'stack=-1:-1'</span> klee/klee<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​
+其中，<code>--rm</code>表明容器停止，即使用命令<code>docker stop</code>后直接删除容器；<code>-ti</code>表明为容器重新分配一个伪输入终端（-t）并且以交互模式运行容器(-i)；<code>--ulimit</code>表明将栈设置为无限大。</p>
+<p>​ 进入容器后检查Klee：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530150453.png" style="zoom: 67%;" /></p>
+<h2 id="klee">Klee</h2>
+<h3 id="small-function">1. Small Function</h3>
+<blockquote>
+<p>测试一个简单函数get_sign()</p>
+</blockquote>
+<p>​ 以<code>get_sign</code>函数为例：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">//First KLEE tutorial: testing a small function</span>
+
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"klee/klee.h"</span></span>
+
+<span class="token keyword">int</span> <span class="token function">get_sign</span><span class="token punctuation">(</span><span class="token keyword">int</span> x<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>x <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+     <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>x <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span>
+     <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+  <span class="token keyword">else</span> 
+     <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span> 
+
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">int</span> a<span class="token punctuation">;</span>
+  <span class="token function">klee_make_symbolic</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>a<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"a"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token function">get_sign</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span> <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 首先将其编译为bc文件：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">clang -I <span class="token punctuation">..</span>/<span class="token punctuation">..</span>/include -emit-llvm -c -g -O0 -Xclang -disable-O0-optnone get_sign.c<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​
+其中，<code>-I+&lt;dir&gt;</code>表明添加搜索路径，用于引入头文件klee/klee.h；<code>-c</code>表明只进行预处理、编译和汇编；<code>-Xclang+&lt;arg&gt;</code>用于给clang编译器传递参数，这里禁止了优化。</p>
+<p>​ 运行klee：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">klee get_sign.bc<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530154204.png" style="zoom: 67%;" /></p>
+<p>​
+由上图可见klee探索了程序中的3条路径并生成了3个测试样例，并生成了两个目录：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530154657.png" style="zoom: 67%;" /></p>
+<p>​
+其中<code>klee-out-0</code>是输出结果目录，<code>klee-last</code>是其符号链接，每次都链接到最新的测试输出中，其包含：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530154911.png" style="zoom:67%;" /></p>
+<p>​
+klee生成的测试样例都以<code>.ktest</code>结尾，借助<code>ktest-tool</code>工具来查看：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530155115.png" style="zoom:67%;" /></p>
+<p>​ 使用libkleeRuntest工具手动复现测试样例：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">export</span> <span class="token assign-left variable">LD_LIBRARY_PATH</span><span class="token operator">=</span>path-to-klee-build-dir/lib/:<span class="token variable">$LD_LIBRARY_PATH</span>
+gcc -I <span class="token punctuation">..</span>/<span class="token punctuation">..</span>/include -L path-to-klee-build-dir/lib/ get_sign.c -lkleeRuntest
+<span class="token assign-left variable">KTEST_FILE</span><span class="token operator">=</span>klee-last/test000001.ktest ./a.out
+<span class="token builtin class-name">echo</span> <span class="token variable">$?</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530155831.png" style="zoom:67%;" /></p>
+<p>​
+如图所示，最后一个测试样例返回255（-1）的原因是-1转换为0-255范围内的有效退出代码值。</p>
+<p>​ 可见，klee通过对C代码插装，并接受bc输入的方式进行符号执行测试。</p>
+<h2 id="reference">Reference</h2>
+<ul>
+<li>Install:
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://docs.docker.com/engine/install/ubuntu/#prerequisites">Prerequisites
+| Docker Documentation</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.docker.com/engine/install/ubuntu/">Install
+Docker Engine on Ubuntu | Docker Documentation</a></li>
+<li><a target="_blank" rel="noopener" href="http://klee.github.io/docker/">Docker · KLEE</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_39998006/article/details/99680522">docker
+run 参数详解_-CSDN博客</a></li>
+</ul></li>
+<li>Tutorial:
+<ul>
+<li><a target="_blank" rel="noopener" href="http://klee.github.io/docs/files/">Files · KLEE</a></li>
+<li><a target="_blank" rel="noopener" href="http://klee.github.io/tutorials/">Tutorials · KLEE</a></li>
+</ul></li>
+</ul>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Project/">Project</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Klee/" rel="tag">Klee</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Symbolic-Execution/" rel="tag">Symbolic Execution</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2023/05/29/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Automated-WebAssembly-Function-Purpose-Identification-With-Semantics-Aware-Analysis/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">(论文阅读)Automated WebAssembly Function Purpose Identification With Semantics-Aware Analysis</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#klee%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">Klee安装使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#prerequisites"><span class="nav-number">1.1.</span> <span class="nav-text">Prerequisites</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#install"><span class="nav-number">1.2.</span> <span class="nav-text">Install</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#klee"><span class="nav-number">1.3.</span> <span class="nav-text">Klee</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#small-function"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. Small Function</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">1.4.</span> <span class="nav-text">Reference</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+<footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2023 Shaw All Rights Reserved.
+        
+          <span id="busuanzi_container_site_pv">
+            本站总访问量<span id="busuanzi_value_site_pv"></span>次
+          </span>
+          <span class="post-meta-divider">|</span>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            本站访客数<span id="busuanzi_value_site_uv"></span>人
+          </span>
+          <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+
+  
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'true', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+<!-- Gaug.es Analytics -->
+<script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', 'true');
+    t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+    t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+<!-- End Gaug.es Analytics -->
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+	<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2439014eb270056ee1808a49956fe114";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<!-- Tencent Analytics -->
+	<script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId={{ theme.tencent_analytics }}";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+<!-- End Tencent Analytics -->
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>
