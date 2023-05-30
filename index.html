@@ -186,119 +186,23 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="klee安装使用">Klee安装使用</h1>
-<blockquote>
-<p>Linux系统下著名符号执行工具Klee的安装使用</p>
-</blockquote>
-<h2 id="prerequisites">Prerequisites</h2>
-<ol type="1">
-<li>删除旧版本（非官方发行版的Docker）</li>
-</ol>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token keyword">for</span> <span class="token for-or-select variable">pkg</span> <span class="token keyword">in</span> docker.io docker-doc docker-compose podman-docker containerd runc<span class="token punctuation">;</span> <span class="token keyword">do</span> <span class="token function">sudo</span> <span class="token function">apt-get</span> remove <span class="token variable">$pkg</span><span class="token punctuation">;</span> <span class="token keyword">done</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<ol start="2" type="1">
-<li>设置GPG key和仓库，确保下载源</li>
-</ol>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#Update the apt package index and install packages to allow apt to use a repository over HTTPS:</span>
-<span class="token function">sudo</span> <span class="token function">apt-get</span> update
-<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> ca-certificates <span class="token function">curl</span> gnupg
+        
 
-<span class="token comment">#Add Docker’s official GPG key:</span>
-<span class="token function">sudo</span> <span class="token function">install</span> -m 0755 -d /etc/apt/keyrings
-<span class="token function">curl</span> -fsSL https://download.docker.com/linux/ubuntu/gpg <span class="token operator">|</span> <span class="token function">sudo</span> gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-<span class="token function">sudo</span> <span class="token function">chmod</span> a+r /etc/apt/keyrings/docker.gpg
+          
+            <div class="entry-thumbnail">
+              <a href="/2023/05/30/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Klee%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+            </div>
+          
+          <div class="entry-summary">
+          Klee安装使用
 
-<span class="token comment">#Set up the repository:</span>
-<span class="token builtin class-name">echo</span> <span class="token punctuation">\</span>
-  <span class="token string">"deb [arch="</span><span class="token variable"><span class="token variable">$(</span>dpkg --print-architecture<span class="token variable">)</span></span><span class="token string">" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-  "</span><span class="token variable"><span class="token variable">$(</span><span class="token builtin class-name">.</span> /etc/os-release <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">echo</span> <span class="token string">"<span class="token variable">$VERSION_CODENAME</span>"</span><span class="token variable">)</span></span><span class="token string">" stable"</span> <span class="token operator">|</span> <span class="token punctuation">\</span>
-  <span class="token function">sudo</span> <span class="token function">tee</span> /etc/apt/sources.list.d/docker.list <span class="token operator">></span> /dev/null<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<ol start="3" type="1">
-<li>安装Docker：</li>
-</ol>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#install</span>
-<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-<span class="token comment">#test</span>
-<span class="token function">sudo</span> docker run hello-world<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="install">Install</h2>
-<p>​ 这里使用现成的Docker环境，直接pull即可：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> docker pull klee/klee<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530145106.png" style="zoom:50%;" /></p>
-<p>​ 运行：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker run --rm -ti --ulimit<span class="token operator">=</span><span class="token string">'stack=-1:-1'</span> klee/klee<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>​
-其中，<code>--rm</code>表明容器停止，即使用命令<code>docker stop</code>后直接删除容器；<code>-ti</code>表明为容器重新分配一个伪输入终端（-t）并且以交互模式运行容器(-i)；<code>--ulimit</code>表明将栈设置为无限大。</p>
-<p>​ 进入容器后检查Klee：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530150453.png" style="zoom: 67%;" /></p>
-<h2 id="klee">Klee</h2>
-<h3 id="small-function">1. Small Function</h3>
-<blockquote>
-<p>测试一个简单函数get_sign()</p>
-</blockquote>
-<p>​ 以<code>get_sign</code>函数为例：</p>
-<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">//First KLEE tutorial: testing a small function</span>
+Linux系统下著名符号执行工具Klee的安装使用
 
-<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"klee/klee.h"</span></span>
-
-<span class="token keyword">int</span> <span class="token function">get_sign</span><span class="token punctuation">(</span><span class="token keyword">int</span> x<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-  <span class="token keyword">if</span> <span class="token punctuation">(</span>x <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
-     <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
-  <span class="token keyword">if</span> <span class="token punctuation">(</span>x <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span>
-     <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
-  <span class="token keyword">else</span> 
-     <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span> 
-
-<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-  <span class="token keyword">int</span> a<span class="token punctuation">;</span>
-  <span class="token function">klee_make_symbolic</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>a<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"a"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">return</span> <span class="token function">get_sign</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span> <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​ 首先将其编译为bc文件：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">clang -I <span class="token punctuation">..</span>/<span class="token punctuation">..</span>/include -emit-llvm -c -g -O0 -Xclang -disable-O0-optnone get_sign.c<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>​
-其中，<code>-I+&lt;dir&gt;</code>表明添加搜索路径，用于引入头文件klee/klee.h；<code>-c</code>表明只进行预处理、编译和汇编；<code>-Xclang+&lt;arg&gt;</code>用于给clang编译器传递参数，这里禁止了优化。</p>
-<p>​ 运行klee：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">klee get_sign.bc<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530154204.png" style="zoom: 67%;" /></p>
-<p>​
-由上图可见klee探索了程序中的3条路径并生成了3个测试样例，并生成了两个目录：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530154657.png" style="zoom: 67%;" /></p>
-<p>​
-其中<code>klee-out-0</code>是输出结果目录，<code>klee-last</code>是其符号链接，每次都链接到最新的测试输出中，其包含：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530154911.png" style="zoom:67%;" /></p>
-<p>​
-klee生成的测试样例都以<code>.ktest</code>结尾，借助<code>ktest-tool</code>工具来查看：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530155115.png" style="zoom:67%;" /></p>
-<p>​ 使用libkleeRuntest工具手动复现测试样例：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">export</span> <span class="token assign-left variable">LD_LIBRARY_PATH</span><span class="token operator">=</span>path-to-klee-build-dir/lib/:<span class="token variable">$LD_LIBRARY_PATH</span>
-gcc -I <span class="token punctuation">..</span>/<span class="token punctuation">..</span>/include -L path-to-klee-build-dir/lib/ get_sign.c -lkleeRuntest
-<span class="token assign-left variable">KTEST_FILE</span><span class="token operator">=</span>klee-last/test000001.ktest ./a.out
-<span class="token builtin class-name">echo</span> <span class="token variable">$?</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530155831.png" style="zoom:67%;" /></p>
-<p>​
-如图所示，最后一个测试样例返回255（-1）的原因是-1转换为0-255范围内的有效退出代码值。</p>
-<p>​ 可见，klee通过对C代码插装，并接受bc输入的方式进行符号执行测试。</p>
-<h2 id="reference">Reference</h2>
-<ul>
-<li>Install:
-<ul>
-<li><a
-target="_blank" rel="noopener" href="https://docs.docker.com/engine/install/ubuntu/#prerequisites">Prerequisites
-| Docker Documentation</a></li>
-<li><a target="_blank" rel="noopener" href="https://docs.docker.com/engine/install/ubuntu/">Install
-Docker Engine on Ubuntu | Docker Documentation</a></li>
-<li><a target="_blank" rel="noopener" href="http://klee.github.io/docker/">Docker · KLEE</a></li>
-<li><a
-target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_39998006/article/details/99680522">docker
-run 参数详解_-CSDN博客</a></li>
-</ul></li>
-<li>Tutorial:
-<ul>
-<li><a target="_blank" rel="noopener" href="http://klee.github.io/docs/files/">Files · KLEE</a></li>
-<li><a target="_blank" rel="noopener" href="http://klee.github.io/tutorials/">Tutorials · KLEE</a></li>
-</ul></li>
-</ul>
-
+        
+          <p class="article-more-link">
+            <a href="/2023/05/30/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Klee%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8/#more">阅读全文</a>
+          </p>
+        </div>
       
     </div>
     <footer class="entry-meta entry-footer">
@@ -429,7 +333,7 @@ WebAssembly是最近建立的一个网络标准，用于提高网络应用的性
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/05/25/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Binary-level%20Directed%20Fuzzing%20for%20Use-After-Free%20Vulnerabilities/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/05/25/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Binary-level%20Directed%20Fuzzing%20for%20Use-After-Free%20Vulnerabilities/"><img src="http://lorempixel.com/750/450/city/3" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -514,7 +418,7 @@ Patch等程序中发现了30个新的错误（7个CVEs）。最后，我们为�
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/05/09/%E3%80%90%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%E3%80%91GREBE-Analyzer%E6%B1%A1%E7%82%B9%E5%88%86%E6%9E%90%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/05/09/%E3%80%90%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%E3%80%91GREBE-Analyzer%E6%B1%A1%E7%82%B9%E5%88%86%E6%9E%90%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -582,7 +486,7 @@ Target：GREBE/analyzer
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/05/08/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91The-Use-of-Likely-Invariants-as-Feedback-for-FuzzersVulnerabilities/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/05/08/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91The-Use-of-Likely-Invariants-as-Feedback-for-FuzzersVulnerabilities/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -663,7 +567,7 @@ ABSTRACT
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/05/04/%E3%80%90%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93%E3%80%91The%20Kernel%20Address%20Sanitizer(KASAN)/"><img src="http://lorempixel.com/750/450/city/3" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/05/04/%E3%80%90%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93%E3%80%91The%20Kernel%20Address%20Sanitizer(KASAN)/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -740,7 +644,7 @@ xtensa；tag-based KASAN只支持arm64。
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/05/01/(LLVM%E5%85%A5%E9%97%A8)%E7%BC%96%E5%86%99LLVM%20PASS/"><img src="http://lorempixel.com/750/450/city/4" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/05/01/(LLVM%E5%85%A5%E9%97%A8)%E7%BC%96%E5%86%99LLVM%20PASS/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -812,7 +716,7 @@ CMake；
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/04/10/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91GREBE-Unveiling-Exploitation-Potential-for-Linux-Kernel-Bugs/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/04/10/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91GREBE-Unveiling-Exploitation-Potential-for-Linux-Kernel-Bugs/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -889,7 +793,7 @@ ABSTRACT
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/03/15/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Demons-in-the-Shared-Kernel-Abstract-Resource-Attacks-Against-OS-level-Virtualization/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/03/15/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Demons-in-the-Shared-Kernel-Abstract-Resource-Attacks-Against-OS-level-Virtualization/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
