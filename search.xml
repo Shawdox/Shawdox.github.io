@@ -101,6 +101,137 @@ gcc -I <span class="token punctuation">..</span>/<span class="token punctuation"
 <p>​
 如图所示，最后一个测试样例返回255（-1）的原因是-1转换为0-255范围内的有效退出代码值。</p>
 <p>​ 可见，klee通过对C代码插装，并接受bc输入的方式进行符号执行测试。</p>
+<h3 id="test-gnu-coreutils">2. Test GNU coreutils</h3>
+<h4 id="安装coreutils-wllvm">2.1 安装coreutils &amp; WLLVM</h4>
+<p>​ 下载GNU coreutils源码，这里选用6.11版本（可以用其他版本）：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#下载</span>
+<span class="token function">wget</span> https://ftp.gnu.org/gnu/coreutils/coreutils-6.11.tar.gz
+<span class="token comment">#解压</span>
+<span class="token function">tar</span> -zxvf coreutils-6.11.tar.gz <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 配置并编译coreutils：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#如果该版本的coreutils有Bug,就使用如下补丁</span>
+<span class="token function">wget</span> http://web.cs.ucla.edu/classes/winter16/cs35L/assign/coreutils.diff
+patch -p0 <span class="token operator">&lt;</span> coreutils.diff
+<span class="token comment">#编译</span>
+<span class="token function">mkdir</span> obj-gcov
+<span class="token builtin class-name">cd</span> obj-gcov
+<span class="token punctuation">..</span>/configure --disable-nls <span class="token assign-left variable">CFLAGS</span><span class="token operator">=</span><span class="token string">"-g -fprofile-arcs -ftest-coverage"</span>
+<span class="token function">make</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+编译好的文件位于coreutils/src目录下。通过编译加上<code>CFLAGS="-g -fprofile-arcs -ftest-coverage"</code>配置选项，使其支持gcov，每次你运行它时其就会生成一个.gcda文件表明其运行覆盖率如何，例如：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">rm</span> -f *.gcda <span class="token comment"># Get rid of any stale gcov files</span>
+./echo**
+
+<span class="token function">ls</span> -l echo.gcda
+<span class="token builtin class-name">:</span><span class="token string">'
+-rw-rw-r-- 1 klee klee 896 Nov 21 22:00 echo.gcda
+'</span>
+gcov <span class="token builtin class-name">echo</span>
+<span class="token builtin class-name">:</span><span class="token string">'
+File '</span><span class="token punctuation">..</span>/<span class="token punctuation">..</span>/src/echo.c<span class="token string">'
+Lines executed:24.27% of 103
+Creating '</span>echo.c.gcov<span class="token string">'
+
+File '</span><span class="token punctuation">..</span>/<span class="token punctuation">..</span>/src/system.h<span class="token string">'
+Lines executed:0.00% of 3
+Creating '</span>system.h.gcov<span class="token string">'
+'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 安装WLLVM：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">pip3 <span class="token function">install</span> --upgrade wllvm
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">LLVM_COMPILER</span><span class="token operator">=</span>clang<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>​ 使用WLLVM编译coreutils：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">mkdir</span> obj-llvm
+<span class="token builtin class-name">cd</span> obj-llvm
+<span class="token assign-left variable">CC</span><span class="token operator">=</span>wllvm <span class="token punctuation">..</span>/configure --disable-nls <span class="token assign-left variable">CFLAGS</span><span class="token operator">=</span><span class="token string">"-g -O1 -Xclang -disable-llvm-passes -D__NO_STRING_INLINES  -D_FORTIFY_SOURCE=0 -U__OPTIMIZE__"</span>
+<span class="token function">make</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 这里：</p>
+<ul>
+<li><code>-fprofile-arcs -ftest-coverage</code>表明使用gcov对即将用klee测试的文件插桩，这里舍弃了这个flag；</li>
+<li><code>-O1 -Xclang -disable-llvm-passes</code>表明不使用优化，由于LLVM5.0以上版本的O0优化会影响Klee本身的优化措施，故这里使用O1优化并禁止所有LLVM
+Pass运行；</li>
+<li><code>D__NO_STRING_INLINES</code>表明不使用内联字符串；<code>-D_FORTIFY_SOURCE=0</code>表明不使用fortify安全技术，<u>因为其可能会替换现有的函数（fprintf
+-&gt;
+__fprintf_chk）导致Klee无法对其建模而将其视为外部函数</u>；<code>-U__OPTIMIZE__</code>取消
+<code>__OPTIMIZE__</code> 的宏定义，禁用编译器所有优化。</li>
+</ul>
+<p>​
+可以通过<code>extract-bc</code>命令从生成的可执行文件中提取bitcode：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">find</span> <span class="token builtin class-name">.</span> -executable -type f <span class="token operator">|</span> <span class="token function">xargs</span> -I <span class="token string">'&#123;&#125;'</span> extract-bc <span class="token string">'&#123;&#125;'</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h4 id="使用klee测试文件">2.2 使用Klee测试文件</h4>
+<p>​ 接下来就可以使用klee运行bc文件：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">klee --libc<span class="token operator">=</span>uclibc --posix-runtime ./cat.bc --version<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ul>
+<li><code>--libc=uclibc</code>指定了Klee外部函数库，其中定义了程序可能调用的外部函数；</li>
+<li><code>--posix-runtime</code>指定 KLEE 使用 POSIX
+标准库作为程序的运行时环境；</li>
+<li><code>--version</code>是传递给cat命令的参数。</li>
+</ul>
+<p>​
+当Klee指定了uclibc和POSIX，它就会替换程序的main()函数为库中的klee_init_env()函数，这个函数用于支持符号参数的构建。</p>
+<figure>
+<img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230601145325.png"
+alt="运行结果" />
+<figcaption aria-hidden="true">运行结果</figcaption>
+</figure>
+<p>​ 分析以上WARNING：</p>
+<ul>
+<li><code>*undefined reference to function: ___ctype_b_loc*</code>表明<code>__ctype_b_loc</code>函数未定义；</li>
+<li><code>*executable has module level assembly (ignoring)*</code>表明一些被编译进应用程序的文件有内嵌汇编语句，Klee无法分析，故跳过（来自uClibc，这里安全）；</li>
+<li><code>*calling external: getpagesize()*</code>表明调用的函数未定义。在这种情况下，Klee尝试调用该函数的本地版本，如果它存在的话。这有时是安全的，只要该函数不写入任何程序内存或试图处理符号值。例如，getpagesize()只是返回一个常数。</li>
+</ul>
+<p>​ 下面尝试用符号化输入测试echo：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">klee --optimize --libc<span class="token operator">=</span>uclibc --posix-runtime ./echo.bc --sym-arg <span class="token number">3</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​ 使用如下命令查看统计结果：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">klee-stats klee-last
+------------------------------------------------------------------------
+<span class="token operator">|</span>  Path   <span class="token operator">|</span>  Instrs<span class="token operator">|</span>  Time<span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token operator">|</span>  ICov<span class="token punctuation">(</span>%<span class="token punctuation">)</span><span class="token operator">|</span>  BCov<span class="token punctuation">(</span>%<span class="token punctuation">)</span><span class="token operator">|</span>  ICount<span class="token operator">|</span>  TSolver<span class="token punctuation">(</span>%<span class="token punctuation">)</span><span class="token operator">|</span>
+------------------------------------------------------------------------
+<span class="token operator">|</span>klee-last<span class="token operator">|</span>   <span class="token number">64546</span><span class="token operator">|</span>     <span class="token number">0.15</span><span class="token operator">|</span>    <span class="token number">22.07</span><span class="token operator">|</span>    <span class="token number">14.14</span><span class="token operator">|</span>   <span class="token number">19943</span><span class="token operator">|</span>       <span class="token number">62.97</span><span class="token operator">|</span>
+------------------------------------------------------------------------<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 其中：</p>
+<ul>
+<li><strong>ICov</strong>为LLVM指令覆盖率；</li>
+<li><strong>BCov</strong>为分支覆盖率；</li>
+</ul>
+<p>​
+可以看到覆盖率并不高，其中一个原因是由于这些数字是用比特码文件中的所有指令或分支来计算的，包括很多可能是不可执行的库代码。故对于这种情况使用–optimize优化去除死代码会更好：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">klee --optimize --libc<span class="token operator">=</span>uclibc --posix-runtime ./echo.bc --sym-arg <span class="token number">3</span>
+klee-stats klee-last
+------------------------------------------------------------------------
+<span class="token operator">|</span>  Path   <span class="token operator">|</span>  Instrs<span class="token operator">|</span>  Time<span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token operator">|</span>  ICov<span class="token punctuation">(</span>%<span class="token punctuation">)</span><span class="token operator">|</span>  BCov<span class="token punctuation">(</span>%<span class="token punctuation">)</span><span class="token operator">|</span>  ICount<span class="token operator">|</span>  TSolver<span class="token punctuation">(</span>%<span class="token punctuation">)</span><span class="token operator">|</span>
+------------------------------------------------------------------------
+<span class="token operator">|</span>klee-last<span class="token operator">|</span>   <span class="token number">33991</span><span class="token operator">|</span>     <span class="token number">0.13</span><span class="token operator">|</span>    <span class="token number">30.16</span><span class="token operator">|</span>    <span class="token number">21.91</span><span class="token operator">|</span>    <span class="token number">8339</span><span class="token operator">|</span>       <span class="token number">80.66</span><span class="token operator">|</span>
+------------------------------------------------------------------------<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+可以看到各项覆盖率都高了一些，klee执行的更快，执行的代码指令更少。</p>
+<h4 id="可视化klee进程">2.3 可视化klee进程</h4>
+<p>​
+<code>KCachegrind</code>是一个优秀的可视化工具，可以直接用apt安装。</p>
+<p>​
+<img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230601162143.png" style="zoom:67%;" /></p>
+<blockquote>
+<p>PS:</p>
+<p>​
+Kcachegrind是一个图形化工具，如果是通过windows使用ssh服务连接Linux系统，则需要在windows端安装X11服务并在Linux端修改ssh配置使其可以允许X11服务。</p>
+<p>相关参考：<a href="https://zhuanlan.zhihu.com/p/66075449">X11
+forwarding，Windows与Linux结合的最佳开发环境【编程环境优化篇】 - 知乎
+(zhihu.com)</a></p>
+</blockquote>
+<h4 id="结果分析">2.4 结果分析</h4>
+<p>​ 可以通过<code>ktest-tool</code>工具查看每个单独的测试样例：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ ktest-tool klee-last/test000001.ktest
+ktest <span class="token function">file</span> <span class="token builtin class-name">:</span> <span class="token string">'klee-last/test000001.ktest'</span>
+args       <span class="token builtin class-name">:</span> <span class="token punctuation">[</span><span class="token string">'./echo.bc'</span>, <span class="token string">'--sym-arg'</span>, <span class="token string">'3'</span><span class="token punctuation">]</span>
+num objects: <span class="token number">2</span>
+object    <span class="token number">0</span>: name: <span class="token string">'arg0'</span>
+object    <span class="token number">0</span>: size: <span class="token number">4</span>
+object    <span class="token number">0</span>: data: <span class="token string">'<span class="token entity" title="\x00">\x00</span><span class="token entity" title="\x00">\x00</span><span class="token entity" title="\x00">\x00</span><span class="token entity" title="\x00">\x00</span>'</span>
+object    <span class="token number">1</span>: name: <span class="token string">'model_version'</span>
+object    <span class="token number">1</span>: size: <span class="token number">4</span>
+object    <span class="token number">1</span>: data: <span class="token string">'<span class="token entity" title="\x01">\x01</span><span class="token entity" title="\x00">\x00</span><span class="token entity" title="\x00">\x00</span><span class="token entity" title="\x00">\x00</span>'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 可以使用<code>ktest-reply</code>工具来复现：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">klee-replay ./echo <span class="token punctuation">..</span>/<span class="token punctuation">..</span>/obj-llvm/src/klee-last/*.ktest<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <h2 id="reference">Reference</h2>
 <ul>
 <li>Install:
@@ -114,11 +245,17 @@ Docker Engine on Ubuntu | Docker Documentation</a></li>
 <li><a
 href="https://blog.csdn.net/weixin_39998006/article/details/99680522">docker
 run 参数详解_-CSDN博客</a></li>
+<li><a
+href="https://github.com/travitch/whole-program-llvm">travitch/whole-program-llvm:
+A wrapper script to build whole-program LLVM bitcode files
+(github.com)</a></li>
 </ul></li>
 <li>Tutorial:
 <ul>
 <li><a href="http://klee.github.io/docs/files/">Files · KLEE</a></li>
 <li><a href="http://klee.github.io/tutorials/">Tutorials · KLEE</a></li>
+<li><a href="http://klee.github.io/tutorials/testing-coreutils/">Testing
+Coreutils · KLEE</a></li>
 </ul></li>
 </ul>
 ]]></content>
