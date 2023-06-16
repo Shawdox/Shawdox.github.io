@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>(技术积累)Syzkaller环境配置 | Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="VulnerabilityAEG" />
+  
+  
+  
+    <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
+  
+  
+  <meta name="description" content="Syzkaller环境配置  Syzkaller内核模糊测试工具环境搭建，简单测试 项目地址：google&#x2F;syzkaller: syzkaller is an unsupervised coverage-guided kernel fuzzer (github.com)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(技术积累)Syzkaller环境配置">
+<meta property="og:url" content="http://example.com/2023/06/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Syzkaller%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="Syzkaller环境配置  Syzkaller内核模糊测试工具环境搭建，简单测试 项目地址：google&#x2F;syzkaller: syzkaller is an unsupervised coverage-guided kernel fuzzer (github.com)">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415160954894.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415170223601.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210618032.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210718938.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210814372.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416211532552.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415200044323.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415200148895.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415211857811.png">
+<meta property="article:published_time" content="2023-06-11T07:19:53.173Z">
+<meta property="article:modified_time" content="2023-06-16T04:19:22.900Z">
+<meta property="article:author" content="Shaw">
+<meta property="article:tag" content="Vulnerability">
+<meta property="article:tag" content="AEG">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415160954894.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-【技术积累】Syzkaller环境配置" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      (技术积累)Syzkaller环境配置
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/06/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Syzkaller%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" class="article-date">
+	  <time datetime="2023-06-11T07:19:53.173Z" itemprop="datePublished">六月 11, 2023</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="syzkaller环境配置">Syzkaller环境配置</h1>
+<blockquote>
+<p>Syzkaller内核模糊测试工具环境搭建，简单测试</p>
+<p>项目地址：<a
+target="_blank" rel="noopener" href="https://github.com/google/syzkaller">google/syzkaller: syzkaller
+is an unsupervised coverage-guided kernel fuzzer (github.com)</a></p>
+</blockquote>
+<span id="more"></span>
+<h1 id="install">Install</h1>
+<blockquote>
+<p>gcc 6.10 or later;</p>
+<p>go 1.20 or later;</p>
+</blockquote>
+<ul>
+<li><p>C compiler with coverage support</p></li>
+<li><p>Linux kernel with coverage additions</p></li>
+<li><p>Virtual machine or a physical device</p></li>
+<li><p>syzkaller itself</p>
+<p>更新apt并安装相关编译器：</p></li>
+</ul>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">apt</span> update
+<span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> <span class="token function">make</span> gcc flex bison libncurses-dev libelf-dev libssl-dev<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>​ 下载内核源码：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> clone --branch v6.2 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git <span class="token variable">$KERNEL</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​ 内核编译常用的配置参数：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#文本对话式，基于命令行的一种配置,其会在命令行一个个询问具体配置选择</span>
+<span class="token function">make</span> config
+<span class="token comment">#基于图形界面配置</span>
+<span class="token function">make</span> menuconfig
+<span class="token comment">##将当前系统存在的.config 文件拷贝至源码目录，并询问新符号如何设置</span>
+<span class="token function">make</span> oldconfig
+<span class="token comment">#将当前系统存在的.config 文件拷贝至源码目录，新符号设为默认值，不提示</span>
+<span class="token function">make</span> olddefconfig
+<span class="token comment">#基于当前config和加载的模块创建一个配置</span>
+<span class="token function">make</span> localmodconfig
+<span class="token comment">#基于QT的配置工具</span>
+<span class="token function">make</span> xconfig
+<span class="token comment">#使用系统中的默认符号值创建一个config</span>
+<span class="token function">make</span> defconfig
+<span class="token comment">#基于GTK+的配置工具</span>
+<span class="token function">make</span> gconfig
+<span class="token comment">#为kvm客户内核支持启用其他选项</span>
+<span class="token function">make</span> kvm_guest.config<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 进入源码目录：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">make</span> olddefconfig<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​ 手动在.config文件中添加编译选项（一定去掉原来的注释）：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># Coverage collection.</span>
+<span class="token assign-left variable">CONFIG_KCOV</span><span class="token operator">=</span>y
+
+<span class="token comment"># Debug info for symbolization.</span>
+<span class="token assign-left variable">CONFIG_DEBUG_INFO_DWARF4</span><span class="token operator">=</span>y
+
+<span class="token comment"># Memory bug detector</span>
+<span class="token assign-left variable">CONFIG_KASAN</span><span class="token operator">=</span>y
+<span class="token assign-left variable">CONFIG_KASAN_INLINE</span><span class="token operator">=</span>y
+
+<span class="token comment"># Required for Debian Stretch and later</span>
+<span class="token assign-left variable">CONFIG_CONFIGFS_FS</span><span class="token operator">=</span>y
+<span class="token assign-left variable">CONFIG_SECURITYFS</span><span class="token operator">=</span>y
+
+<span class="token comment">#这个一定要加上</span>
+<span class="token assign-left variable">CONFIG_CMDLINE_BOOL</span><span class="token operator">=</span>y
+<span class="token assign-left variable">CONFIG_CMDLINE</span><span class="token operator">=</span><span class="token string">"net.ifnames=0"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 再次make：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">make</span> olddefconfig<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​ 编译：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">make</span> -j<span class="token variable"><span class="token variable">`</span>nproc<span class="token variable">`</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​ 编译好的内核文件夹内应出现：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415160954894.png" style="zoom:80%;" /></p>
+<p>​
+<code>debootstrap</code>是debian/ubuntu下的一个工具，用来构建一套基本的系统(根文件系统)。生成的目录符合Linux文件系统标准(FHS)，即包含了/boot、/etc、/bin、/usr等等目录，但它比发行版本的Linux体积小很多，当然功能也没那么强大，因此，只能说是“基本的系统”。</p>
+<p>​ 这里以创建一个Debian Bullseye版本的Linux镜像为例：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> <span class="token function">debootstrap</span>
+
+<span class="token function">mkdir</span> <span class="token variable">$IMAGE</span>
+<span class="token builtin class-name">cd</span> <span class="token variable">$IMAGE</span>/
+<span class="token function">wget</span> https://raw.githubusercontent.com/google/syzkaller/master/tools/create-image.sh -O create-image.sh
+<span class="token function">chmod</span> +x create-image.sh
+./create-image.sh<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 创建好后对应文件夹下应该有一个<code>bullseye.img</code>文件。</p>
+<p>​
+如果Host使用的是虚拟机，需要在设置处开启虚拟化引擎（若是物理机则需要在BIOS上开启）：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415170223601.png" style="zoom:80%;" /></p>
+<p>​ 测试qemu：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">qemu-system-x86_64 <span class="token punctuation">\</span>
+  -m 2G <span class="token punctuation">\</span>
+  -smp <span class="token number">2</span> <span class="token punctuation">\</span>
+  -kernel /home/wx/SyzKaller/linux/arch/x86/boot/bzImage <span class="token punctuation">\</span>
+  -append <span class="token string">"console=ttyS0 root=/dev/sda earlyprintk=serial net.ifnames=0"</span> <span class="token punctuation">\</span>
+  -drive <span class="token assign-left variable">file</span><span class="token operator">=</span>/home/wx/SyzKaller/image/bullseye.img,format<span class="token operator">=</span>raw <span class="token punctuation">\</span>
+  -net user,host<span class="token operator">=</span><span class="token number">10.0</span>.2.10,hostfwd<span class="token operator">=</span>tcp:127.0.0.1:10021-:22 <span class="token punctuation">\</span>
+  -net nic,model<span class="token operator">=</span>e1000 <span class="token punctuation">\</span>
+  -enable-kvm <span class="token punctuation">\</span>
+  -nographic <span class="token punctuation">\</span>
+  -pidfile vm.pid <span class="token punctuation">\</span>
+  <span class="token operator"><span class="token file-descriptor important">2</span>></span><span class="token file-descriptor important">&amp;1</span> <span class="token operator">|</span> <span class="token function">tee</span> vm.log<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 另开一个终端，测试ssh连接：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">ssh</span> -i <span class="token variable">$IMAGE</span>/bullseye.id_rsa -p <span class="token number">10021</span> -o <span class="token string">"StrictHostKeyChecking no"</span> root@localhost<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​
+测试完成后就可以关闭qemu（直接poweroff），下面进行syzkaller安装：</p>
+<p>​ 安装go：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#如果显示地址不可达</span>
+<span class="token comment">#在站长工具处查询dl.google.com</span>
+<span class="token comment">#找到可以Ping的IP</span>
+<span class="token comment">#修改本机hosts文件即可</span>
+<span class="token function">wget</span> https://go.dev/dl/go1.20.3.linux-amd64.tar.gz
+<span class="token comment">#如果之前安装过go，一定要先删除原来的</span>
+<span class="token function">tar</span> -C /usr/local -xzf go1.20.3.linux-amd64.tar.gz
+<span class="token comment">#添加环境变量</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">GOROOT</span><span class="token operator">=</span><span class="token variable"><span class="token variable">`</span><span class="token builtin class-name">pwd</span><span class="token variable">`</span></span>/go
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span><span class="token variable">$GOROOT</span>/bin:<span class="token environment constant">$PATH</span>
+<span class="token comment">#测试</span>
+go version
+<span class="token comment">#-> go version go1.20.3 linux/amd64</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 安装syzkaller:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> clone https://github.com/google/syzkaller
+<span class="token builtin class-name">cd</span> syzkaller
+<span class="token comment">#安装之前一定要保证gcc和go的版本正确</span>
+<span class="token function">make</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h1 id="crash-test">Crash Test</h1>
+<p>​
+在$linux/fs/open.c文件中的chmod_common（）添加一段代码，使得当连续两次<code>chmod</code>调用的<code>mode</code>参数值为0时会产生空指针解引用异常：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">static</span> <span class="token class-name">umode_t</span> old_mode <span class="token operator">=</span> <span class="token number">0xffff</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>old_mode <span class="token operator">==</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> mode <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        path <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+old_mode <span class="token operator">=</span> mode<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 重新编译Linux内核，设置Syzkaller配置文件如下：</p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
+	<span class="token property">"target"</span><span class="token operator">:</span> <span class="token string">"linux/amd64"</span><span class="token punctuation">,</span>
+	<span class="token property">"http"</span><span class="token operator">:</span> <span class="token string">"127.0.0.1:56741"</span><span class="token punctuation">,</span>
+	<span class="token property">"workdir"</span><span class="token operator">:</span> <span class="token string">"/home/wx/SyzKaller/syzkaller/workdir"</span><span class="token punctuation">,</span>
+	<span class="token property">"kernel_obj"</span><span class="token operator">:</span> <span class="token string">"/home/wx/SyzKaller/linux/"</span><span class="token punctuation">,</span>
+	<span class="token property">"image"</span><span class="token operator">:</span> <span class="token string">"/home/wx/SyzKaller/image/bullseye.img"</span><span class="token punctuation">,</span>
+	<span class="token property">"sshkey"</span><span class="token operator">:</span> <span class="token string">"/home/wx/SyzKaller/image/bullseye.id_rsa"</span><span class="token punctuation">,</span>
+	<span class="token property">"syzkaller"</span><span class="token operator">:</span> <span class="token string">"/home/wx/SyzKaller/syzkaller"</span><span class="token punctuation">,</span>
+	<span class="token property">"enable_syscalls"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"chmod"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+	<span class="token property">"procs"</span><span class="token operator">:</span> <span class="token number">8</span><span class="token punctuation">,</span>
+	<span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"qemu"</span><span class="token punctuation">,</span>
+	<span class="token property">"vm"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+		<span class="token property">"count"</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">,</span>
+		<span class="token property">"kernel"</span><span class="token operator">:</span> <span class="token string">"/home/wx/SyzKaller/linux/arch/x86/boot/bzImage"</span><span class="token punctuation">,</span>
+		<span class="token property">"cpu"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+		<span class="token property">"mem"</span><span class="token operator">:</span> <span class="token number">2048</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li><code>enable_syscalls</code>选项表明了仅对其中的系统调用做fuzzing，如果其中的某个系统调用依赖其他调用，syzkaller会提醒你。</li>
+<li>同理，<code>disable_syscalls</code>选项表明了不对哪些系统调用fuzzing。</li>
+</ul>
+<p>​ 执行：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">syz-manager --config config.json<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210618032.png" style="zoom:80%;" /></p>
+<p>​
+在对应的web<code>127.0.0.1:56741</code>上就可以看到当前fuzzing的情况：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210718938.png" style="zoom:67%;" /></p>
+<p>​ 可以看到已经抓到了一个内核Crash：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210814372.png" style="zoom: 67%;" /></p>
+<p>​ <a
+target="_blank" rel="noopener" href="https://www.collabora.com/news-and-blog/blog/2020/04/17/using-syzkaller-to-detect-programming-bugs-in-linux/">Using
+syzkaller, part 2: Detecting programming bugs in the Linux kernel
+(collabora.com)</a>这个Blog详细说明了网站里各个模块的作用。</p>
+<p>​ 查看报告：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210930515.png" /></p>
+<p>​ 打开目录workdir/carsh/···/log0：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416211532552.png" style="zoom:80%;" /></p>
+<h1 id="problem-summary">Problem Summary</h1>
+<ul>
+<li><p><strong>问题1：在使用ssh连接qemu时无法连接，报错：</strong></p>
+<p><strong>“ssh_exchange_identification: Connection closed by remote
+host”</strong></p></li>
+</ul>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415200044323.png" style="zoom:80%;" /></p>
+<p>​ <strong>解决方法：</strong></p>
+<p>​ 查看QEMU虚拟机内sshd服务状态，发现其服务没有开启：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415200148895.png" style="zoom:80%;" /></p>
+<p>​ 尝试使用命令<code>service sshd start</code>，无效。</p>
+<p>​ 尝试google，发现如下帖子：<a
+target="_blank" rel="noopener" href="https://groups.google.com/g/syzkaller/c/n8BDOc5cXds">ssh : Why
+sshd does not start on qemu booting (google.com)</a></p>
+<figure>
+<img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415202522042.png"
+alt="这也能遇到自己老师hh" />
+<figcaption aria-hidden="true">这也能遇到自己老师hh</figcaption>
+</figure>
+<p>​
+故重新检查linux源码的config后发现，由于手动修改后没有删除原来对应的“xxx
+not
+set”注释，导致当时的修改在后续<code>make olddefconfig</code>时又被改回去了。</p>
+<p>​ 重新修改.config文件，重新编译，创建qemu虚拟机，再次尝试登陆：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415211857811.png" style="zoom:80%;" /></p>
+<p>​
+<u>这里的问题其实就出现在没有去掉注释，在.config文件中注释也会被扫描分析。</u></p>
+<ul>
+<li><p><strong>问题二：sshd服务错误定位</strong></p>
+<p><strong>解决方法：</strong></p>
+<ol type="1">
+<li><code>/usr/bin/sshd -T</code>命令可以显示出sshd配置文件的错误之处；</li>
+<li>在ssh连接时使用命令-v/-vv可以查看调试信息</li>
+</ol></li>
+<li><p><strong>问题三：开启syzkaller后一直没有虚拟机连接</strong></p>
+<p><strong>解决方法：</strong>在使用命令<code>./bin/syz-manager -config=my.cfg</code>后面加上<code>-debug</code>，查看调试信息后发现qemu虚拟机显示<strong>”Failed
+to start Raise network
+interfaces“</strong>，查找官方文档后发现需要在内核config上加上：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token assign-left variable">CONFIG_CMDLINE_BOOL</span><span class="token operator">=</span>y
+<span class="token assign-left variable">CONFIG_CMDLINE</span><span class="token operator">=</span><span class="token string">"net.ifnames=0"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></li>
+</ul>
+<h1 id="reference">Reference</h1>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/google/syzkaller">google/syzkaller:
+syzkaller is an unsupervised coverage-guided kernel fuzzer
+(github.com)</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/google/syzkaller/blob/master/docs/setup.md">syzkaller/setup.md
+at master · google/syzkaller (github.com)</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://fuchsia.googlesource.com/third_party/syzkaller/+/usb-fuzzer/docs/linux/setup.md">How
+to set up syzkaller (googlesource.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://groups.google.com/g/syzkaller/c/n8BDOc5cXds">ssh :
+Why sshd does not start on qemu booting (google.com)</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/hardenedlinux/Debian-GNU-Linux-Profiles/blob/master/docs/harbian_qa/fuzz_testing/test.c">Debian-GNU-Linux-Profiles/test.c
+at master · hardenedlinux/Debian-GNU-Linux-Profiles
+(github.com)</a></li>
+<li><a
+target="_blank" rel="noopener" href="http://pwn4.fun/2019/10/29/Syzkaller-Fuzz-Android-Kernel/">Syzkaller
+Fuzz Android Kernel | BruceFan's Blog (pwn4.fun)</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AEG/" rel="tag">AEG</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Vulnerability/" rel="tag">Vulnerability</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2023/05/30/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Klee%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">(技术积累)Klee安装使用</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#syzkaller%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">Syzkaller环境配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#install"><span class="nav-number">2.</span> <span class="nav-text">Install</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#crash-test"><span class="nav-number">3.</span> <span class="nav-text">Crash Test</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#problem-summary"><span class="nav-number">4.</span> <span class="nav-text">Problem Summary</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reference"><span class="nav-number">5.</span> <span class="nav-text">Reference</span></a></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+<footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2023 Shaw All Rights Reserved.
+        
+          <span id="busuanzi_container_site_pv">
+            本站总访问量<span id="busuanzi_value_site_pv"></span>次
+          </span>
+          <span class="post-meta-divider">|</span>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            本站访客数<span id="busuanzi_value_site_uv"></span>人
+          </span>
+          <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+
+  
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'true', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+<!-- Gaug.es Analytics -->
+<script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', 'true');
+    t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+    t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+<!-- End Gaug.es Analytics -->
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+	<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2439014eb270056ee1808a49956fe114";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<!-- Tencent Analytics -->
+	<script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId={{ theme.tencent_analytics }}";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+<!-- End Tencent Analytics -->
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+</body>
+</html>

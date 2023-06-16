@@ -29,7 +29,7 @@
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530155831.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230601162143.png">
 <meta property="article:published_time" content="2023-05-30T09:09:53.697Z">
-<meta property="article:modified_time" content="2023-06-01T08:51:30.073Z">
+<meta property="article:modified_time" content="2023-06-05T05:07:29.038Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="Symbolic Execution">
 <meta property="article:tag" content="Klee">
@@ -384,6 +384,8 @@ object    <span class="token number">1</span>: size: <span class="token number">
 object    <span class="token number">1</span>: data: <span class="token string">'<span class="token entity" title="\x01">\x01</span><span class="token entity" title="\x00">\x00</span><span class="token entity" title="\x00">\x00</span><span class="token entity" title="\x00">\x00</span>'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>​ 可以使用<code>ktest-reply</code>工具来复现：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">klee-replay ./echo <span class="token punctuation">..</span>/<span class="token punctuation">..</span>/obj-llvm/src/klee-last/*.ktest<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="binary">3. Binary</h3>
+<p>​</p>
 <h2 id="reference">Reference</h2>
 <ul>
 <li>Install:
@@ -430,6 +432,15 @@ Coreutils · KLEE</a></li>
     
 <nav id="article-nav">
   
+    <a href="/2023/06/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Syzkaller%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          (技术积累)Syzkaller环境配置
+        
+      </div>
+    </a>
+  
   
     <a href="/2023/05/29/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Automated-WebAssembly-Function-Purpose-Identification-With-Semantics-Aware-Analysis/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">下一篇</strong>
@@ -447,7 +458,7 @@ Coreutils · KLEE</a></li>
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#klee%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">Klee安装使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#prerequisites"><span class="nav-number">1.1.</span> <span class="nav-text">Prerequisites</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#install"><span class="nav-number">1.2.</span> <span class="nav-text">Install</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#klee"><span class="nav-number">1.3.</span> <span class="nav-text">Klee</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#small-function"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. Small Function</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#test-gnu-coreutils"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. Test GNU coreutils</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85coreutils-wllvm"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">2.1 安装coreutils &amp; WLLVM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8klee%E6%B5%8B%E8%AF%95%E6%96%87%E4%BB%B6"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">2.2 使用Klee测试文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96klee%E8%BF%9B%E7%A8%8B"><span class="nav-number">1.3.2.3.</span> <span class="nav-text">2.3 可视化klee进程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90"><span class="nav-number">1.3.2.4.</span> <span class="nav-text">2.4 结果分析</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">1.4.</span> <span class="nav-text">Reference</span></a></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#klee%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">Klee安装使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#prerequisites"><span class="nav-number">1.1.</span> <span class="nav-text">Prerequisites</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#install"><span class="nav-number">1.2.</span> <span class="nav-text">Install</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#klee"><span class="nav-number">1.3.</span> <span class="nav-text">Klee</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#small-function"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. Small Function</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#test-gnu-coreutils"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. Test GNU coreutils</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85coreutils-wllvm"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">2.1 安装coreutils &amp; WLLVM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8klee%E6%B5%8B%E8%AF%95%E6%96%87%E4%BB%B6"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">2.2 使用Klee测试文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96klee%E8%BF%9B%E7%A8%8B"><span class="nav-number">1.3.2.3.</span> <span class="nav-text">2.3 可视化klee进程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90"><span class="nav-number">1.3.2.4.</span> <span class="nav-text">2.4 结果分析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#binary"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. Binary</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">1.4.</span> <span class="nav-text">Reference</span></a></li></ol></li></ol>
     
     </div>
   </aside>
@@ -641,20 +652,5 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>

@@ -116,6 +116,85 @@
         
           <section id="main">
   
+    <article id="post-【论文阅读】Demons-in-the-Shared-Kernel-Abstract-Resource-Attacks-Against-OS-level-Virtualization"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2023/03/15/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Demons-in-the-Shared-Kernel-Abstract-Resource-Attacks-Against-OS-level-Virtualization/">Demons in the Shared Kernel--Abstract Resource Attacks Against OS-level Virtualization</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/03/15/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Demons-in-the-Shared-Kernel-Abstract-Resource-Attacks-Against-OS-level-Virtualization/" class="article-date">
+	  <time datetime="2023-03-15T07:29:02.891Z" itemprop="datePublished">三月 15, 2023</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+
+          
+            <div class="entry-thumbnail">
+              <a href="/2023/03/15/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Demons-in-the-Shared-Kernel-Abstract-Resource-Attacks-Against-OS-level-Virtualization/"><img src="http://lorempixel.com/750/450/city/7" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+            </div>
+          
+          <div class="entry-summary">
+          Demons
+in the Shared Kernel: Abstract Resource Attacks Against OS-level
+Virtualization
+
+时间：2021.11
+作者：Nanzi Yang（西电）、Wenbo Shen（浙大）
+会议：CCS
+
+对docker的一种Ddos攻击，实现了自动化检测。
+ABSTRACT
+​ 由于其更快的启动速度和更好的资源利用效率，操作系统级虚拟化(OS-level
+virtualization)已被广泛采用，并已成为云计算的一项基本技术。与硬件虚拟化相比，操作系统级虚拟化利用共享内核设计来达到更高的效率，并在共享内核上运行多个用户空间实例（又称容器）。然而，在本文中，我们揭示了一个新的攻击面，此漏洞是操作系统级虚拟化技术所固有的，会影响到Linux、FreeBSD和Fuchsia。
+​
+产生漏洞的根本原因是，操作系统级虚拟化中的共享内核设计导致容器直接或间接地共享成千上万的内核变量和数据结构。在不利用任何内核漏洞的情况下，非特权容器可以轻易地用尽共享的内核变量和数据结构实例，对其他容器进行DoS攻击。与物理资源相比，这些内核变量或数据结构实例（称为抽象资源）更普遍，但受到的保护不足。
+​ 为了显示限制抽象资源（Abstract
+Resources）的重要性，我们针对操作系统内核的不同方面进行了抽象资源攻击。结果表明，攻击抽象资源是非常实用和关键的。我们进一步进行了系统分析，以识别Linux内核中易受攻击的抽象资源，成功检测出1010个抽象资源，其中501个可以被动态地重复消耗。我们还在四大云厂商的自部署共享内核容器环境中进行了攻击实验。结果显示，所有环境都容易受到抽象资源的攻击。我们得出结论，限制抽象资源的使用是很难的，并给出了减轻此风险的多种策略。
+
+        
+          <p class="article-more-link">
+            <a href="/2023/03/15/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Demons-in-the-Shared-Kernel-Abstract-Resource-Attacks-Against-OS-level-Virtualization/#more">阅读全文</a>
+          </p>
+        </div>
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AEG/" rel="tag">AEG</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Cloud/" rel="tag">Cloud</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Vulnerability/" rel="tag">Vulnerability</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
     <article id="post-【论文阅读】Windows of Vulnerability A Case Study Analysis"  class="article article-type-post" itemscope itemprop="blogPost" >
   <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
     
@@ -148,7 +227,7 @@
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/02/27/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Windows%20of%20Vulnerability%20A%20Case%20Study%20Analysis/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/02/27/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Windows%20of%20Vulnerability%20A%20Case%20Study%20Analysis/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -220,7 +299,7 @@ ABSTRACT
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/02/16/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Symbolic%20Execution-%E7%AC%A6%E5%8F%B7%E6%89%A7%E8%A1%8C/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/02/16/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Symbolic%20Execution-%E7%AC%A6%E5%8F%B7%E6%89%A7%E8%A1%8C/"><img src="http://lorempixel.com/750/450/city/7" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -294,7 +373,7 @@ Execution：从思维上理解符号执行
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/02/12/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91How%20Machine%20Learning%20Is%20Solving%20the%20Binary%20Function%20Similarity%20Problem/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/02/12/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91How%20Machine%20Learning%20Is%20Solving%20the%20Binary%20Function%20Similarity%20Problem/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -385,7 +464,7 @@ Catalog1算法利用minhash，使用哈希近似替代两个S集合，以此来�
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/01/10/Comparing-One-with-Many-%E2%80%94-Solving-Binary2source-Function-Matching-Under-Function-Inlining/"><img src="http://lorempixel.com/750/450/city/7" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/01/10/Comparing-One-with-Many-%E2%80%94-Solving-Binary2source-Function-Matching-Under-Function-Inlining/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -459,7 +538,7 @@ Software）生成一个带有标记的调用点（内联或不内联）的数据
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/12/08/How-Machine-Learning-Is-Solving-the-Binary-Function-Similarity-Problem/"><img src="http://lorempixel.com/750/450/city/7" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/12/08/How-Machine-Learning-Is-Solving-the-Binary-Function-Similarity-Problem/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -539,7 +618,7 @@ ABSTRACT
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/12/01/Connect%20X/"><img src="http://lorempixel.com/750/450/city/4" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/12/01/Connect%20X/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -616,7 +695,7 @@ Getting Started | Kaggle
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/11/14/Facial%20Keypoints%20Detection/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/11/14/Facial%20Keypoints%20Detection/"><img src="http://lorempixel.com/750/450/city/4" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -690,7 +769,7 @@ Keypoints Detection | Kaggle
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/10/02/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91IFAttn%20Binary%20code%20similarity%20analysis%20based%20on%20interpretable%20features%20with%20attention/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/10/02/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91IFAttn%20Binary%20code%20similarity%20analysis%20based%20on%20interpretable%20features%20with%20attention/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -772,7 +851,7 @@ binaries上的表现。
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/10/01/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Function-level%20obfuscation%20detection%20method%20based%20on%20Graph%20Convolutional%20Networks/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/10/01/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Function-level%20obfuscation%20detection%20method%20based%20on%20Graph%20Convolutional%20Networks/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -820,108 +899,11 @@ level的、基于GCN的混淆检测方法。
 <!-- Table of Contents -->
 
   
-    <article id="post-决策时规划"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2022/07/21/%E5%86%B3%E7%AD%96%E6%97%B6%E8%A7%84%E5%88%92/">Planning at Decision Time(决策时规划)</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2022/07/21/%E5%86%B3%E7%AD%96%E6%97%B6%E8%A7%84%E5%88%92/" class="article-date">
-	  <time datetime="2022-07-21T07:46:53.321Z" itemprop="datePublished">七月 21, 2022</time>
-	</a>
-
-      
-	<span class="ico-folder"></span>
-    <a class="article-category-link" href="/categories/Something/">Something</a>
- 
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-
-          
-            <div class="entry-thumbnail">
-              <a href="/2022/07/21/%E5%86%B3%E7%AD%96%E6%97%B6%E8%A7%84%E5%88%92/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
-            </div>
-          
-          <div class="entry-summary">
-          
-参考资料：
-
-Reinforcement Learining. Second Edition. Sutton.Page 180-193
-白板推导--强化学习.shuhuai008.Bilibili
-Easy RL.Qi Wang.Yang Yiyuan.Ji Jiang
-
-
-Planning at Decision
-Time（决策时规划）
-规划（Planning）至少有两种使用方式。
-①一种在DP和Dyna中已经讨论过，通过从一个model（不论是sample
-model或是distribution model ）中获取模拟经验（simulated
-experience）的基础上来使用规划来逐渐提升一个policy或一个value
-function。
-然后，选择动作是一个比较当前状态的动作value问题，该value是在之前优化的表格中获取的；或者通过使用书中Part
-2中考虑的近似方法来评估数学表达式。
-对于任意状态St，在为其选择一个动作之前，其整个表格条目（例如Dyna-Q中的Q表）已经通过规划来优化过了。使用这种方式，规划并不是仅仅聚焦于当前的状态，我们称这种规划为background
-planning，后台规划。
-②另一种使用规划的方法就是在遇到每个新的状态St后再开始一个完整的规划过程，其为每个当前状态选择一个动作At，到下一个状态St+1就选择一个动作At+1，以此类推。
-一个使用这种规划最简单的例子：当state
-values可用时，通过比较当前model对执行每个动作后到达的新状态的value来选择一个动作。
-当然，更普遍的说，这种规划的用法可以比仅仅往后看一步（上面的例子就是）看得更深，评估动作的选择导致许多不同预测状态和奖励轨迹。
-不同于第一种用法，在这里，规划聚焦于一个特定的状态，我们称之为decision-time
-planning，决策时规划。
-这两种规划的方式可以用一种自然而有趣的方式结合在一起，不过一般二者被分开研究。
-如同background
-planning，我们仍可以将决策时规划看作一个从模拟经验中更新values，最后到更新policy的过程。只是基于当前状态所生成的values和policy会在做完动作选择决策后被丢弃，在很多应用场景中这么做并不算一个很大的损失，因为有非常多的状态存在，且不太可能在短时间内回到同一个状态，故重复计算导致的资源浪费会很少。
-一般来说，人们可能希望将两者结合起来：规划当前状态，并将规划的结果存储起来，以便在以后回到相同的状态时能走得更远。
-Decision-time
-Planning，(决策时规划）在不需要快速反应的应用场景中作用最为显著。
-决策时规划的常用算法有Heuristic Search（启发式搜索）、Rollout
-Algorithms（Rollout 算法）和Monte Carlo Tree Search（MCTS
-蒙特卡洛树搜索）三种。
-
-        
-          <p class="article-more-link">
-            <a href="/2022/07/21/%E5%86%B3%E7%AD%96%E6%97%B6%E8%A7%84%E5%88%92/#more">阅读全文</a>
-          </p>
-        </div>
-      
-    </div>
-    <footer class="entry-meta entry-footer">
-      
-	<span class="ico-folder"></span>
-    <a class="article-category-link" href="/categories/Something/">Something</a>
-
-      
-  <span class="ico-tags"></span>
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RL/" rel="tag">RL</a></li></ul>
-
-      
-    </footer>
-    <hr class="entry-footer-hr">
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
 
 
   <nav id="page-nav">
     
-    <a class="extend prev" rel="prev" href="/">上一页</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/">下一页</a>
+    <a class="extend prev" rel="prev" href="/">上一页</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/">下一页</a>
   </nav>
 
 </section>
@@ -1026,6 +1008,18 @@ Algorithms（Rollout 算法）和Monte Carlo Tree Search（MCTS
               <div class="widget-entry-summary" style="margin: 0;">
             
 
+              <h6 style="margin: 0;"><a href="/2023/06/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Syzkaller%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/">(技术积累)Syzkaller环境配置</a></h6>
+              <span>六月 11, 2023</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
               <h6 style="margin: 0;"><a href="/2023/05/30/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Klee%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8/">(技术积累)Klee安装使用</a></h6>
               <span>五月 30, 2023</span>
             </div>
@@ -1080,18 +1074,6 @@ Algorithms（Rollout 算法）和Monte Carlo Tree Search（MCTS
 
           </li>
         
-          <li class="clearfix">
-
-            
-              <div class="widget-entry-summary" style="margin: 0;">
-            
-
-              <h6 style="margin: 0;"><a href="/2023/05/04/%E3%80%90%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93%E3%80%91The%20Kernel%20Address%20Sanitizer(KASAN)/">(技术总结)The Kernel Address Sanitizer(KASAN)</a></h6>
-              <span>五月 4, 2023</span>
-            </div>
-
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -1101,7 +1083,7 @@ Algorithms（Rollout 算法）和Monte Carlo Tree Search（MCTS
   <div class="widget-wrap">
     <h3 class="widget-title">分类</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Book/">Book</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Code/">Code</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kaggle/">Kaggle</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Paper/">Paper</a><span class="category-list-count">25</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Project/">Project</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Reproduce/">Reproduce</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Something/">Something</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/paper/">paper</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Book/">Book</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Code/">Code</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kaggle/">Kaggle</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Paper/">Paper</a><span class="category-list-count">26</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Project/">Project</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Reproduce/">Reproduce</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Something/">Something</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/paper/">paper</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1111,7 +1093,7 @@ Algorithms（Rollout 算法）和Monte Carlo Tree Search（MCTS
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD/" rel="tag">AD</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD-training/" rel="tag">AD training</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AEG/" rel="tag">AEG</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BCSA/" rel="tag">BCSA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary/" rel="tag">Binary</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Botnet/" rel="tag">Botnet</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CV/" rel="tag">CV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cloud/" rel="tag">Cloud</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNN/" rel="tag">DNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDS/" rel="tag">IDS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Klee/" rel="tag">Klee</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LLVM/" rel="tag">LLVM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ML/" rel="tag">ML</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Malware-Classifiers/" rel="tag">Malware Classifiers</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Math/" rel="tag">Math</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mutiagent/" rel="tag">Mutiagent</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/" rel="tag">NLP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDF/" rel="tag">PDF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RL/" rel="tag">RL</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RNN/" rel="tag">RNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Symbolic-Execution/" rel="tag">Symbolic Execution</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UAF/" rel="tag">UAF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vulnerability/" rel="tag">Vulnerability</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WASM/" rel="tag">WASM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/" rel="tag">Windows</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/obfuscation/" rel="tag">obfuscation</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD/" rel="tag">AD</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD-training/" rel="tag">AD training</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AEG/" rel="tag">AEG</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BCSA/" rel="tag">BCSA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary/" rel="tag">Binary</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Botnet/" rel="tag">Botnet</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CV/" rel="tag">CV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cloud/" rel="tag">Cloud</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNN/" rel="tag">DNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDS/" rel="tag">IDS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Klee/" rel="tag">Klee</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LLVM/" rel="tag">LLVM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ML/" rel="tag">ML</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Malware-Classifiers/" rel="tag">Malware Classifiers</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Math/" rel="tag">Math</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mutiagent/" rel="tag">Mutiagent</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/" rel="tag">NLP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDF/" rel="tag">PDF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RL/" rel="tag">RL</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RNN/" rel="tag">RNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Symbolic-Execution/" rel="tag">Symbolic Execution</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UAF/" rel="tag">UAF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vulnerability/" rel="tag">Vulnerability</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WASM/" rel="tag">WASM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/" rel="tag">Windows</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/obfuscation/" rel="tag">obfuscation</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1121,7 +1103,7 @@ Algorithms（Rollout 算法）和Monte Carlo Tree Search（MCTS
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/AD/" style="font-size: 20px;">AD</a> <a href="/tags/AD-training/" style="font-size: 10px;">AD training</a> <a href="/tags/AEG/" style="font-size: 15px;">AEG</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/BCSA/" style="font-size: 10px;">BCSA</a> <a href="/tags/Binary/" style="font-size: 13.33px;">Binary</a> <a href="/tags/Botnet/" style="font-size: 10px;">Botnet</a> <a href="/tags/CV/" style="font-size: 10px;">CV</a> <a href="/tags/Cloud/" style="font-size: 10px;">Cloud</a> <a href="/tags/DDoS/" style="font-size: 10px;">DDoS</a> <a href="/tags/DNN/" style="font-size: 10px;">DNN</a> <a href="/tags/Fuzzing/" style="font-size: 11.67px;">Fuzzing</a> <a href="/tags/IDS/" style="font-size: 11.67px;">IDS</a> <a href="/tags/Klee/" style="font-size: 10px;">Klee</a> <a href="/tags/LLVM/" style="font-size: 10px;">LLVM</a> <a href="/tags/ML/" style="font-size: 13.33px;">ML</a> <a href="/tags/Machine-Learning/" style="font-size: 11.67px;">Machine Learning</a> <a href="/tags/Malware-Classifiers/" style="font-size: 18.33px;">Malware Classifiers</a> <a href="/tags/Math/" style="font-size: 10px;">Math</a> <a href="/tags/Mutiagent/" style="font-size: 10px;">Mutiagent</a> <a href="/tags/NLP/" style="font-size: 13.33px;">NLP</a> <a href="/tags/PDF/" style="font-size: 10px;">PDF</a> <a href="/tags/Pytorch/" style="font-size: 11.67px;">Pytorch</a> <a href="/tags/RL/" style="font-size: 16.67px;">RL</a> <a href="/tags/RNN/" style="font-size: 10px;">RNN</a> <a href="/tags/Symbolic-Execution/" style="font-size: 11.67px;">Symbolic Execution</a> <a href="/tags/UAF/" style="font-size: 10px;">UAF</a> <a href="/tags/Vulnerability/" style="font-size: 16.67px;">Vulnerability</a> <a href="/tags/WASM/" style="font-size: 10px;">WASM</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/obfuscation/" style="font-size: 10px;">obfuscation</a>
+      <a href="/tags/AD/" style="font-size: 20px;">AD</a> <a href="/tags/AD-training/" style="font-size: 10px;">AD training</a> <a href="/tags/AEG/" style="font-size: 15px;">AEG</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/BCSA/" style="font-size: 10px;">BCSA</a> <a href="/tags/Binary/" style="font-size: 13.33px;">Binary</a> <a href="/tags/Botnet/" style="font-size: 10px;">Botnet</a> <a href="/tags/CV/" style="font-size: 10px;">CV</a> <a href="/tags/Cloud/" style="font-size: 10px;">Cloud</a> <a href="/tags/DDoS/" style="font-size: 10px;">DDoS</a> <a href="/tags/DNN/" style="font-size: 10px;">DNN</a> <a href="/tags/Fuzzing/" style="font-size: 11.67px;">Fuzzing</a> <a href="/tags/IDS/" style="font-size: 11.67px;">IDS</a> <a href="/tags/Klee/" style="font-size: 10px;">Klee</a> <a href="/tags/LLVM/" style="font-size: 10px;">LLVM</a> <a href="/tags/ML/" style="font-size: 13.33px;">ML</a> <a href="/tags/Machine-Learning/" style="font-size: 11.67px;">Machine Learning</a> <a href="/tags/Malware-Classifiers/" style="font-size: 18.33px;">Malware Classifiers</a> <a href="/tags/Math/" style="font-size: 10px;">Math</a> <a href="/tags/Mutiagent/" style="font-size: 10px;">Mutiagent</a> <a href="/tags/NLP/" style="font-size: 13.33px;">NLP</a> <a href="/tags/PDF/" style="font-size: 10px;">PDF</a> <a href="/tags/Pytorch/" style="font-size: 11.67px;">Pytorch</a> <a href="/tags/RL/" style="font-size: 15px;">RL</a> <a href="/tags/RNN/" style="font-size: 10px;">RNN</a> <a href="/tags/Symbolic-Execution/" style="font-size: 11.67px;">Symbolic Execution</a> <a href="/tags/UAF/" style="font-size: 10px;">UAF</a> <a href="/tags/Vulnerability/" style="font-size: 16.67px;">Vulnerability</a> <a href="/tags/WASM/" style="font-size: 10px;">WASM</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/obfuscation/" style="font-size: 10px;">obfuscation</a>
     </div>
   </div>
 
@@ -1131,7 +1113,7 @@ Algorithms（Rollout 算法）和Monte Carlo Tree Search（MCTS
     <h3 class="widget-title">归档</h3>
 
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">14</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">14</span></li></ul>
     </div>
   </div>
 
@@ -1327,20 +1309,5 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>
