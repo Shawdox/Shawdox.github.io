@@ -71,6 +71,8 @@ value）插入字典中。在load操作中，如果符号内存地址存在于�
 <h3 id="对库函数建模">2. 对库函数建模</h3>
 <p>​
 一个智能合约可能会调用底层区块链平台提供的各种库函数。WANA根据这些库函数的效果来处理这些库函数的调用，并相应地模拟其行为。由于库函数与平台有关，WANA为不同的平台模拟了不同的库函数行为。当把WANA扩展到一个新的平台时，其相应的库函数也应被模拟。</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230619201024.png" /></p>
 ]]></content>
       <categories>
         <category>Paper</category>
