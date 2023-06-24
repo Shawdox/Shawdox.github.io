@@ -281,6 +281,378 @@ Emulating</h3>
       </tags>
   </entry>
   <entry>
+    <title>(论文复现)GREBE-Unveiling Exploitation Potential for Linux Kernel Bugs</title>
+    <url>/2023/06/11/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91GREBE-Unveiling-Exploitation-Potential-for-Linux-Kernel-Bugs/</url>
+    <content><![CDATA[<h1
+id="论文复现grebe-unveiling-exploitation-potential-for-linux-kernel-bugs">(论文复现)GREBE:
+Unveiling Exploitation Potential for Linux Kernel Bugs</h1>
+<p>源码：<a href="https://github.com/Markakd/GREBE">Markakd/GREBE
+(github.com)</a></p>
+<span id="more"></span>
+<h1 id="analysis">1. Analysis</h1>
+<h2 id="关键内核结构确定">1.1 关键内核结构确定</h2>
+<h3 id="report来源">1.1.1 <strong>report来源：</strong></h3>
+<p>​
+syzbot是一个基于syzkaller的自动化fuzzing系统。它能持续不停的运行syzkaller，对linux内核各个分支进行模糊测试，自动报告crash，监控bug的当前状态（是否已被修复等），监测对于bug的patch是否有效，完成发现-报告-复现-修复的整个流程。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230410171230.png" alt="syzbot报告的错误列表" style="zoom:80%;" /></p>
+<p>​ 对每个错误，syzbot会发布其对应的报告以及可能存在的POC程序：</p>
+<figure>
+<img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230615150648.png"
+alt="某个错误报告" />
+<figcaption aria-hidden="true">某个错误报告</figcaption>
+</figure>
+<p>​ 如上图所示，syzbot发布了某个错误发生时其对应的寄存器内容，call
+trace以及3次crashes（底部）的对应信息，可以看到，该错误提供了一个syz脚本编写的reproducer，也就是Poc程序。</p>
+<p>​ syzkaller
+repro是用特殊的syzkaller符号编写的程序，它们可以在目标系统上执行。并且，syzkaller
+repro可以转化为对应的C语言poc，如果syzbot没有提供C语言的repro，它就无法使用C语言程序来触发该错误（这可能只是因为该错误是由一个竞态条件触发的）。</p>
+<p>​ GREBE就是从这些报告中提取call trace进行后续分析。</p>
+<h3 id="编译analyzer">1.1.2 编译Analyzer</h3>
+<p>​ 安装llvm–10（<a href="https://apt.llvm.org/">LLVM Debian/Ubuntu
+packages</a>）：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#To install a specific version of LLVM:</span>
+<span class="token function">wget</span> https://apt.llvm.org/llvm.sh
+<span class="token function">chmod</span> +x llvm.sh
+<span class="token function">sudo</span> ./llvm.sh <span class="token operator">&lt;</span>version number<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+clang-10被安装在<code>/usr</code>中，故将analyer的make文件修改来指定clang，如下（这里直接指定C与C++编译器）：</p>
+<pre class="line-numbers language-makefile" data-language="makefile"><code class="language-makefile">CUR_DIR <span class="token operator">=</span> <span class="token variable">$</span><span class="token punctuation">(</span><span class="token keyword">shell</span> pwd<span class="token punctuation">)</span>
+SRC_DIR <span class="token operator">:=</span> <span class="token variable">$</span><span class="token punctuation">&#123;</span>CURDIR<span class="token punctuation">&#125;</span>/src
+BUILD_DIR <span class="token operator">:=</span> <span class="token variable">$</span><span class="token punctuation">&#123;</span>CURDIR<span class="token punctuation">&#125;</span>/build
+
+<span class="token keyword">include</span> Makefile.inc
+
+NPROC <span class="token operator">:=</span> <span class="token variable">$</span><span class="token punctuation">&#123;</span>shell nproc<span class="token punctuation">&#125;</span>
+
+build_ka_func <span class="token operator">=</span> \
+	<span class="token punctuation">(</span>mkdir -p <span class="token variable">$</span><span class="token punctuation">&#123;</span>2<span class="token punctuation">&#125;</span> \
+		&amp;&amp; cd <span class="token variable">$</span><span class="token punctuation">&#123;</span>2<span class="token punctuation">&#125;</span> \
+        &amp;&amp;    cmake <span class="token variable">$</span><span class="token punctuation">&#123;</span>1<span class="token punctuation">&#125;</span> \
+				-DCMAKE_CXX_COMPILER<span class="token operator">=</span>/home/wx/Shaw/llvm/patched_llvm/bin/clang++\
+				-DCMAKE_C_COMPILER<span class="token operator">=</span>/home/wx/Shaw/llvm/patched_llvm/bin/clang\
+                -DCMAKE_BUILD_TYPE<span class="token operator">=</span>Release \
+                -DCMAKE_CXX_FLAGS_RELEASE<span class="token operator">=</span><span class="token string">"-std=c++14 -fno-rtti -fpic -g"</span> \
+		&amp;&amp; make -j<span class="token variable">$</span><span class="token punctuation">&#123;</span>NPROC<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+<span class="token symbol">all</span><span class="token punctuation">:</span> analyzer
+
+<span class="token symbol">analyzer</span><span class="token punctuation">:</span>
+	<span class="token variable">$</span><span class="token punctuation">(</span><span class="token keyword">call</span> build_ka_func, <span class="token variable">$</span><span class="token punctuation">&#123;</span>SRC_DIR<span class="token punctuation">&#125;</span>, <span class="token variable">$</span><span class="token punctuation">&#123;</span>BUILD_DIR<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 接着修改analyzer/src中的CMakeLists.txt文件来指定LLVM：</p>
+<pre class="line-numbers language-cmake" data-language="cmake"><code class="language-cmake"><span class="token keyword">cmake_minimum_required</span><span class="token punctuation">(</span><span class="token property">VERSION</span> <span class="token number">2.8.8</span><span class="token punctuation">)</span>
+<span class="token keyword">project</span><span class="token punctuation">(</span>KANALYZER<span class="token punctuation">)</span>
+<span class="token comment">#指定LLVM版本</span>
+<span class="token keyword">set</span><span class="token punctuation">(</span>LLVM_DIR <span class="token string">"/home/wx/Shaw/llvm/patched_llvm/lib/cmake/llvm"</span><span class="token punctuation">)</span>
+
+<span class="token keyword">find_package</span><span class="token punctuation">(</span>LLVM REQUIRED CONFIG<span class="token punctuation">)</span>
+
+<span class="token keyword">message</span><span class="token punctuation">(</span>STATUS <span class="token string">"Found LLVM <span class="token interpolation"><span class="token punctuation">$&#123;</span><span class="token variable">LLVM_PACKAGE_VERSION</span><span class="token punctuation">&#125;</span></span>"</span><span class="token punctuation">)</span>
+<span class="token keyword">message</span><span class="token punctuation">(</span>STATUS <span class="token string">"Using LLVMConfig.cmake in: <span class="token interpolation"><span class="token punctuation">$&#123;</span><span class="token variable">LLVM_DIR</span><span class="token punctuation">&#125;</span></span>"</span><span class="token punctuation">)</span>
+
+<span class="token comment"># Set your project compile flags.</span>
+<span class="token comment"># E.g. if using the C++ header files</span>
+<span class="token comment"># you will need to enable C++14 support</span>
+<span class="token comment"># for your compiler.</span>
+<span class="token comment"># Check for C++14 support and set the compilation flag</span>
+<span class="token keyword">include</span><span class="token punctuation">(</span>CheckCXXCompilerFlag<span class="token punctuation">)</span>
+<span class="token comment">#CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX14)</span>
+<span class="token comment"># if(COMPILER_SUPPORTS_CXX14)</span>
+<span class="token comment"># 	set(CMAKE_CXX_FLAGS "$&#123;CMAKE_CXX_FLAGS&#125; -std=c++14 -fno-rtti -fPIC -Wall")</span>
+<span class="token comment"># else()</span>
+<span class="token comment"># 	message(STATUS "The compiler $&#123;CMAKE_CXX_COMPILER&#125; has no C++14 support. Please use a different C++ compiler.")</span>
+<span class="token comment"># endif()</span>
+
+<span class="token keyword">include_directories</span><span class="token punctuation">(</span><span class="token punctuation">$&#123;</span>LLVM_INCLUDE_DIRS<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token keyword">add_definitions</span><span class="token punctuation">(</span><span class="token punctuation">$&#123;</span>LLVM_DEFINITIONS<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+<span class="token keyword">add_subdirectory</span> <span class="token punctuation">(</span>lib<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 编译好的analyer位于GREBE/analyzer/build/lib中。</p>
+<h3 id="编译内核bitcode文件">1.1.3 编译内核bitcode文件</h3>
+<h4 id="安装带补丁的llvm">1.1.3.1 安装带补丁的LLVM</h4>
+<p>​
+内核bitcode文件指的是待测试的Linux内核，需要将其编译为bc文件后进行分析。</p>
+<p>​
+这里需要使用llvm-10并且给LLVM编译器打上补丁，以便在调用任何编译器优化通道之前转储比特码。通过这种方式，可以防止编译器优化影响分析的准确性。<u>故这里单独准备一个llvm并安装到特定文件夹中，以避免对全局llvm的影响：</u></p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"><span class="token function">git</span> clone https://github.com/llvm/llvm-project
+<span class="token builtin class-name">cd</span> llvm-project
+<span class="token function">git</span> checkout 5521236a18074584542b81fd680158d89a845fca<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>​ 打补丁：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">patch -p0 <span class="token operator">&lt;</span> WriteBitcode.patch<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230531152450.png" style="zoom: 50%;" /></p>
+<p>​ build clang:</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"><span class="token function">mkdir</span> build <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> build
+cmake -DCMAKE_INSTALL_PREFIX<span class="token operator">=</span>/home/wx/Shaw/llvm/patched_llvm -DLLVM_ENABLE_PROJECTS<span class="token operator">=</span>clang -DCMAKE_BUILD_TYPE<span class="token operator">=</span>Release  -G <span class="token string">"Unix Makefiles"</span> <span class="token punctuation">..</span>/llvm
+<span class="token function">sudo</span> <span class="token function">make</span> -j<span class="token variable"><span class="token variable">$(</span>nproc<span class="token variable">)</span></span> <span class="token operator">&amp;&amp;</span> <span class="token function">make</span> <span class="token function">install</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>​
+这里通过指定<code>DCMAKE_INSTALL_PREFIX</code>的方式指定其安装位置。注意，LLVM编译后体积非常大，如果在虚拟机中编译需要给足够内存和硬盘空间（80G+）。</p>
+<h4 id="编译内核">1.1.3.2 编译内核</h4>
+<p>​
+编译安装完带有特定补丁的LLVM，接下来就需要使用其来编译Linux内核源码。</p>
+<p>​ 以<a
+href="https://syzkaller.appspot.com/bug?extid=4b52080e97cde107939d">KASAN:
+slab-use-after-free Read in
+hfsplus_read_wrapper</a>为例，其附带的.config文件中详细的说明了漏洞的内核版本、config编译选项等信息。</p>
+<p>​ 在<a
+href="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/refs/tags">kernel/git/torvalds/linux.git
+- Linux kernel source
+tree</a>处下载对应版本的内核源码，解压后先安装编译所需的包：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> <span class="token function">git</span> fakeroot build-essential ncurses-dev xz-utils libssl-dev <span class="token function">bc</span> flex libelf-dev bison<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​
+使用如下命令编译,<code>CC</code>和<code>CXX</code>指定为带补丁的clang，由于LLVM-10存在一定bug，这里令<code>LLVM_IAS</code>为0关闭<strong>integrated
+assembler</strong>：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">make</span> <span class="token assign-left variable">CC</span><span class="token operator">=</span>/home/wx/Shaw/llvm/patched_llvm/bin/clang <span class="token assign-left variable">CXX</span><span class="token operator">=</span>/home/wx/Shaw/llvm/patched_llvm/bin/clang++ <span class="token assign-left variable">LLVM_IAS</span><span class="token operator">=</span><span class="token number">0</span> all -j<span class="token variable"><span class="token variable">$(</span>nproc<span class="token variable">)</span></span> <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​ analyzer编译完成后，使用如下命令运行：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">python run_analyze.py ./case<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​ 可以在对应case目录下看到对应的解析结果<code>sys.txt</code>：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230615150924.png" style="zoom: 50%;" /></p>
+<p>​ 注意：</p>
+<blockquote>
+<ol type="1">
+<li><p><strong>编译analyzer与源码的LLVM一定要相同版本；</strong></p></li>
+<li><p><strong>作者给出的LLVM-10是可以成功运行的，但是存在的问题如下：</strong></p>
+<ol type="a">
+<li><p>目前使用LLVM编译新版本的内核最低要求其版本为11，其无法编译内核；</p></li>
+<li><p>如果使用LLVM-11，其编译analyzer存在错误（见文末错误日志）；</p></li>
+</ol>
+<p><u>故目前作者仓库中给出的代码仅适合版本不高的内核。</u></p></li>
+<li><p><strong>部分工作已通过脚本自动化，整个内核的下载+解压+编译已自动化为<code>/analyzer/scripts/get_kernel.py</code>，复现analyzer需要：</strong></p>
+<ol type="a">
+<li><p>在/analyzer/Testcase/下创建对应case文件夹，命名格式为case+数字；</p></li>
+<li><p>将对应report中的.config文件与report文件以名称<code>.config</code>和<code>report</code>复制到case文件夹中；</p></li>
+<li><p>修改/analyzer/scripts/下的三个py文件中的<code>CASE_DIR</code>，<code>PATCHED_LLVM</code>和<code>AnalyzerPath</code>变量，使其分别对应Testcase，打过补丁的LLVM和编译好的analyzer；</p></li>
+<li><p>按次序运行<code>get_cg.py</code>、<code>get_kernel.py</code>和<code>run_analyze.py</code>，其参数为case序号，例如：</p></li>
+</ol></li>
+</ol>
+<p><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#分析/analyzer/Testcases/case7</span>
+python get_cg.py <span class="token number">7</span>
+python get_kernel.py <span class="token number">7</span>
+python run_analyze.py <span class="token number">7</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></p>
+</blockquote>
+<h3 id="静态分析代码解析">1.1.3 静态分析代码解析</h3>
+<p>​ 见<a
+href="https://shawdox.github.io/2023/05/09/%5B代码分析%5DGREBE-Analyzer污点分析代码解析/">(代码分析)GREBE-Analyzer污点分析代码解析
+| Shaw (shawdox.github.io)</a></p>
+<h1 id="fuzzing">2. Fuzzing</h1>
+<h2 id="编译gcc">2.1 编译GCC</h2>
+<p>​ 使用作者提供的gcc-9.3.0来编译内核，首先进入其文件夹中编译GCC：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">./contrib/download_prerequisites
+<span class="token function">mkdir</span> gcc-bin
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">INSTALLDIR</span><span class="token operator">=</span><span class="token variable"><span class="token variable">`</span><span class="token builtin class-name">pwd</span><span class="token variable">`</span></span>/gcc-bin
+<span class="token function">mkdir</span> gcc-build
+<span class="token builtin class-name">cd</span> gcc-build
+<span class="token punctuation">..</span>/configure --prefix<span class="token operator">=</span><span class="token variable">$INSTALLDIR</span> --enable-languages<span class="token operator">=</span>c,c++
+<span class="token function">make</span> -j<span class="token variable"><span class="token variable">`</span>nproc<span class="token variable">`</span></span> <span class="token operator">&amp;&amp;</span> <span class="token function">make</span> <span class="token function">install</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​</p>
+<h2 id="使用gcc编译内核">2.2 使用GCC编译内核</h2>
+<p>​ 在内核代码中运行：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">export</span> <span class="token assign-left variable">OBJ_FILE</span><span class="token operator">=</span><span class="token string">"/home/wx/Shaw/GREBE/analyzer/TestCases/case7/sts.txt"</span>
+<span class="token function">make</span> <span class="token assign-left variable">CC</span><span class="token operator">=</span><span class="token string">"/home/wx/Shaw/GREBE/gcc-9.3.0/gcc-bin/bin/gcc"</span> -j<span class="token variable"><span class="token variable">`</span>nproc<span class="token variable">`</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>​
+注意，内核的.config文件标志了其编译所需的最低版本，故不论是用clang编译还是gcc都需要符合对应版本。</p>
+<h2 id="编译fuzzer">2.3 编译Fuzzer</h2>
+<p>​
+GREBE的Fuzzer是syzkaller的改版，其使用方法与syzkaller基本相同。根据syzkaller官方给出的方法编译，这里集成为/fuzzer/compile_fuzzer.py：</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment">#Author: xiao wu</span>
+<span class="token comment">#Time: 2023.6.16</span>
+<span class="token comment">#Functionality:</span>
+<span class="token comment">#   Complie the modified syzkaller</span>
+
+<span class="token keyword">import</span> sys
+<span class="token keyword">import</span> os
+<span class="token keyword">assert</span> <span class="token punctuation">(</span><span class="token string">'linux'</span> <span class="token keyword">in</span> sys<span class="token punctuation">.</span>platform<span class="token punctuation">)</span>
+
+GO_DIR <span class="token operator">=</span> <span class="token string">"/home/wx/Shaw/go"</span>
+FUZZ_DIR <span class="token operator">=</span> <span class="token string">"/home/wx/Shaw/GREBE/fuzzer"</span>
+
+os<span class="token punctuation">.</span>environ<span class="token punctuation">[</span><span class="token string">"PATH"</span><span class="token punctuation">]</span> <span class="token operator">+=</span> GO_DIR<span class="token operator">+</span><span class="token string">"/bin"</span>
+os<span class="token punctuation">.</span>chdir<span class="token punctuation">(</span>FUZZ_DIR<span class="token punctuation">)</span>
+os<span class="token punctuation">.</span>system<span class="token punctuation">(</span><span class="token string">"make"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+这里需要在脚本中指定Go语言环境以及fuzzer的位置，Go的版本需要大于等于1.11。编译好的fuzzer位于/fuzzer/bin中。</p>
+<h2 id="测试qemu">2.4 测试QEMU</h2>
+<p>​
+syz-manager需要通过ssh来与ssh-fuzzer通信，后者运行在QEMU中，故在运行syzkaller之前，需要手动测试QEMU连通性：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">qemu-system-x86_64 <span class="token punctuation">\</span>
+  -m 2G <span class="token punctuation">\</span>
+  -smp <span class="token number">2</span> <span class="token punctuation">\</span>
+  -kernel <span class="token variable">$KERNEL</span>/arch/x86/boot/bzImage <span class="token punctuation">\</span>
+  -append <span class="token string">"console=ttyS0 root=/dev/sda earlyprintk=serial net.ifnames=0"</span> <span class="token punctuation">\</span>
+  -drive <span class="token assign-left variable">file</span><span class="token operator">=</span><span class="token variable">$IMAGE</span>/bullseye.img,format<span class="token operator">=</span>raw <span class="token punctuation">\</span>
+  -net user,host<span class="token operator">=</span><span class="token number">10.0</span>.2.10,hostfwd<span class="token operator">=</span>tcp:127.0.0.1:10021-:22 <span class="token punctuation">\</span>
+  -net nic,model<span class="token operator">=</span>e1000 <span class="token punctuation">\</span>
+  -enable-kvm <span class="token punctuation">\</span>
+  -nographic <span class="token punctuation">\</span>
+  -pidfile vm.pid <span class="token punctuation">\</span>
+  <span class="token operator"><span class="token file-descriptor important">2</span>></span><span class="token file-descriptor important">&amp;1</span> <span class="token operator">|</span> <span class="token function">tee</span> vm.log<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+注意，QEMU需要当前系统支持KVM虚拟化，如果是虚拟机可以直接查找对应处理器设置，如果是物理机需要在BIOS中开启。</p>
+<p>​ 成功开启QEMU后另开一个bash，用ssh测试其连通性：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">ssh</span> -i <span class="token variable">$IMAGE</span>/bullseye.id_rsa -p <span class="token number">10021</span> -o <span class="token string">"StrictHostKeyChecking no"</span> root@localhost<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​
+如果成果连通则说明QEMU通信部分没有问题，具体配置过程以及相关可能的问题可见：<a
+href="https://shawdox.github.io/2023/06/11/%5B技术积累%5DSyzkaller环境配置/">(技术积累)Syzkaller环境配置
+| Shaw (shawdox.github.io)</a></p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230616155831.png" /></p>
+<p>​</p>
+<h2 id="运行fuzzer">2.5 运行fuzzer</h2>
+<p>​
+直接使用/fuzzer/scripts/run_fuzzer.py脚本即可运行fuzzer，其会自动定位case文件夹并创建对应的config文件，运行syz-manager:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">python run_fuzzer.py <span class="token punctuation">[</span>case_number<span class="token punctuation">]</span>
+<span class="token comment">#python run_fuzzer.py 8</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>​ 下面是run_fuzzer.py的运行逻辑：</p>
+<ol type="1">
+<li><p>首先在对应的case文件夹下创建其config文件：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230624193501.png" style="zoom:50%;" /></p>
+<ol start="2" type="1">
+<li>然后将config文件复制到workdir（如上图）中：</li>
+</ol></li>
+</ol>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230624192531.png" style="zoom: 67%;" /></p>
+<p>​
+如上图fuzzer源码所示，注意到poc是默认位于workdir中的，<strong><u>故在使用命令时仅传入poc文件名称即可</u></strong>（此次复现中，poc.txt默认位于对应的case文件夹中，这里run_fuzzer.py脚本会在运行syz-manager前将对应的poc.txt复制过来）。</p>
+<pre><code>3. 运行syz-manager:</code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">syz-manager -config /home/wx/Shaw/GREBE/analyzer/TestCases/case8/syzconfig.cfg --auxiliary poc.txt<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​
+再次注意，由于fuzzer源码限制，使用<code>--auxiliary</code>标志传入poc.txt只能传入该名称，并且poc.txt文件应该位于workdir文件夹下。</p>
+<p>​ 运行即可得到对应结果：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230624193915.png" /></p>
+<h1 id="错误日志">3. 错误日志</h1>
+<ul>
+<li><p><strong>问题1：编译llvm时报错：</strong></p>
+<blockquote>
+<p>Killed (program cc1plus) Please submit a full bug report, with
+preprocessed source if appropriate. See <a
+href="file:///usr/share/doc/gcc-5/README.Bugs"
+class="uri">file:///usr/share/doc/gcc-5/README.Bugs</a> for
+instructions.
+lib/DebugInfo/CodeView/CMakeFiles/LLVMDebugInfoCodeView.dir/build.make:494:
+recipe for target
+'lib/DebugInfo/CodeView/CMakeFiles/LLVMDebugInfoCodeView.dir/EnumTables.cpp.o'
+failed make[2]: ***
+[lib/DebugInfo/CodeView/CMakeFiles/LLVMDebugInfoCodeView.dir/EnumTables.cpp.o]
+Error 4 CMakeFiles/Makefile2:6769: recipe for target
+'lib/DebugInfo/CodeView/CMakeFiles/LLVMDebugInfoCodeView.dir/all' failed
+make[1]: ***
+[lib/DebugInfo/CodeView/CMakeFiles/LLVMDebugInfoCodeView.dir/all] Error
+2</p>
+</blockquote></li>
+</ul>
+<p><strong>解决方法：</strong></p>
+<p>编译时虚拟机的内存与硬盘空间太小，在服务器上跑即可成功编译。</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230615151312.png" /></p>
+<ul>
+<li><p><strong>问题2：在编译analyzer时报错：</strong></p>
+<blockquote>
+<p>error: no member named 'hasNPredecessorsOrMore' in
+'llvm::BasicBlock'</p>
+</blockquote></li>
+<li><p><strong>解决方法：</strong></p>
+<p>查看错误报告发现是LLVM的BasicBlock没找到对应的子数据结构<code>hasNPredecessorsOrMore</code>，首先在LLVM官网查找对应数据结构定义：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230413144329.png" style="zoom: 25%;" /></p>
+<p>​
+可以看到在<code>BasicBlock.cpp</code>的319行有该数据结构的定义，查找本机上下载的llvm源码：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230413144452.png" style="zoom: 50%;" /></p>
+<p>​ 查找对应源码是可以发现对应数据结构定义的：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230413144554.png" style="zoom:50%;" /></p>
+<p>​
+阅读报错信息，发现编译时自动搜索到了以前安装的llvm-6.0旧版本，手动更改路径，上述问题解决，但是发现仍旧报错。</p>
+<p>​ 在llvm的github项目中找到了一样错误：<a
+href="https://github.com/google/autofdo/issues/87">Build failure when
+targeting LLVM 11.0 · Issue #87 · google/autofdo
+(github.com)</a>。<strong><u>可以基本确定这是LLVM-11的问题，换回LLVM-10版本即可解决</u></strong>。</p></li>
+<li><p><strong>问题3：在编译analyzer时报错：</strong></p>
+<blockquote>
+<p>ld: cannot find -lz</p>
+</blockquote>
+<p><strong>解决方法：</strong></p></li>
+</ul>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> zlib1g zlib1g-dev<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ul>
+<li><p><strong>问题4：在使用analyer时报错：</strong></p>
+<blockquote>
+<p>/home/wx/Shaw/GREBE/analyzer/build/lib/analyzer: error loading file
+'./case/linux-bitcode/lib/dump_stack.c.bc'</p>
+</blockquote>
+<p><strong>解决方法：</strong></p>
+<p>问题定位到KAMain.cc文件使用ParseIR()函数解析bc文件：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">std<span class="token operator">::</span>unique_ptr<span class="token operator">&lt;</span>Module<span class="token operator">></span> M <span class="token operator">=</span> <span class="token function">parseIRFile</span><span class="token punctuation">(</span>InputFilenames<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">,</span> Err<span class="token punctuation">,</span> <span class="token operator">*</span>LLVMCtx<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>M <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+     <span class="token function">errs</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&lt;&lt;</span> argv<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">&lt;&lt;</span> <span class="token string">": error loading file '"</span> <span class="token operator">&lt;&lt;</span> InputFilenames<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">&lt;&lt;</span> <span class="token string">"'\n"</span><span class="token punctuation">;</span>
+     <span class="token keyword">continue</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
+<li><p><strong>问题5：编译内核（部分版本）时报错：</strong></p>
+<blockquote>
+<p>error New address family defined, please update secclass_map.</p>
+</blockquote>
+<p><strong>解决方法：</strong></p>
+<p><a
+href="https://blog.csdn.net/zhangpengfei991023/article/details/109672491">编译错误
+error New address family defined, please update
+secclass_map.解决-CSDN博客</a></p></li>
+<li><p><strong>问题6：编译内核（部分版本）时报错：</strong></p>
+<blockquote>
+<p><strong>passing argument 1 to restrict-qualified parameter aliases
+with argument 5 [-Werror=restrict]</strong></p>
+<p>cc1: all warnings being treated as errors</p>
+</blockquote>
+<p><strong>解决方法：</strong></p>
+<p>对<code>tools/lib/str_error_r.c</code>打如下补丁：</p>
+<p><a
+href="https://lore.kernel.org/all/b5d9ea0f-3a3e-ec87-df76-10be4bd72b90@redhat.com/">Re:
+New -Werror=restrict error with incremental gcc - Laura Abbott
+(kernel.org)</a></p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230607224055657.png" /></p></li>
+<li><p><strong>问题7：无法使用py脚本（在其中使用export）改变环境变量</strong></p>
+<p><strong>解决方法：</strong></p>
+<p><a
+href="https://stackoverflow.com/questions/1506010/how-to-use-export-with-python-on-linux">How
+to use export with Python on Linux - Stack Overflow</a></p></li>
+</ul>
+<h2 id="reference">Reference</h2>
+<ul>
+<li>GREBE:
+<ul>
+<li><a
+href="https://github.com/Markakd/GREBE/tree/master/analyzer">GREBE/analyzer
+at master · Markakd/GREBE (github.com)</a></li>
+<li><a
+href="https://github.com/Markakd/LLVM-O0-BitcodeWriter/tree/master">Markakd/LLVM-O0-BitcodeWriter:
+patch for LLVM to generate O0 bitcode (github.com)</a></li>
+</ul></li>
+<li>LLVM:
+<ul>
+<li><a href="https://apt.llvm.org/">LLVM Debian/Ubuntu packages</a></li>
+</ul></li>
+<li>Kernel:
+<ul>
+<li><a href="https://phoenixnap.com/kb/build-linux-kernel">How To Build
+Linux Kernel {Step-By-Step} | phoenixNAP KB</a></li>
+<li><a
+href="https://github.com/google/syzkaller/blob/master/docs/linux/setup_ubuntu-host_qemu-vm_x86-64-kernel.md">syzkaller/docs/linux/setup_ubuntu-host_qemu-vm_x86-64-kernel.md
+at master · google/syzkaller · GitHub</a></li>
+<li><a
+href="https://android.googlesource.com/platform/external/syzkaller/+/HEAD/docs/linux/setup_ubuntu-host_qemu-vm_x86-64-kernel.md">Setup:
+Ubuntu host, QEMU vm, x86-64 kernel (googlesource.com)</a></li>
+<li><a
+href="https://shawdox.github.io/2023/06/11/%5B技术积累%5DSyzkaller环境配置/">(技术积累)Syzkaller环境配置
+| Shaw (shawdox.github.io)</a></li>
+</ul></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>Vulnerability</tag>
+        <tag>AEG</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>(技术积累)Syzkaller环境配置</title>
     <url>/2023/06/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Syzkaller%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/</url>
     <content><![CDATA[<h1 id="syzkaller环境配置">Syzkaller环境配置</h1>
