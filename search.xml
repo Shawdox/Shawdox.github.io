@@ -519,6 +519,76 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230616155831.png" /></p>
 <p>​ 运行即可得到对应结果：</p>
 <p><img
 src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230624193915.png" /></p>
+<h2 id="原理解析">2.6 原理解析</h2>
+<blockquote>
+<p>​ 对gcc和kernel都做了修改，使其在编译内核时可以将特定的basic
+block的16bit地址替换为一个magic_number，这样在代码覆盖率反馈中就可以识别哪些basic
+block属于关键内核对象。</p>
+</blockquote>
+<h3 id="syzkaller原理">2.6.1 Syzkaller原理</h3>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230701154658.png" /></p>
+<p>​ 如上图所示，具体描述见：<a
+href="https://github.com/google/syzkaller/blob/master/docs/internals.md">syzkaller/docs/internals.md
+at master · google/syzkaller · GitHub</a></p>
+<h3 id="syscall-descriptions">2.6.2 Syscall descriptions</h3>
+<p>​
+Syzkaller使用声明性的系统调用描述来控制程序（系统调用的序列），举例：</p>
+<pre class="line-numbers language-none"><code class="language-none">open(file filename, flags flags[open_flags], mode flags[open_mode]) fd
+read(fd fd, buf buffer[out], count len[buf])
+close(fd fd)
+open_mode &#x3D; S_IRUSR, S_IWUSR, S_IXUSR, S_IRGRP, S_IWGRP, S_IXGRP, S_IROTH, S_IWOTH, S_IXOTH<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+翻译后的系统调用描述被用来生成、变异、执行、最小化、序列化和反序列化程序，程序指的是有着一系列具体参数的系统调用，例如：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">r0 <span class="token operator">=</span> <span class="token function">open</span><span class="token punctuation">(</span><span class="token operator">&amp;</span><span class="token punctuation">(</span><span class="token number">0x7f0000000000</span><span class="token punctuation">)</span><span class="token operator">=</span><span class="token string">"./file0"</span><span class="token punctuation">,</span> <span class="token number">0x3</span><span class="token punctuation">,</span> <span class="token number">0x9</span><span class="token punctuation">)</span>
+<span class="token function">read</span><span class="token punctuation">(</span>r0<span class="token punctuation">,</span> <span class="token operator">&amp;</span><span class="token punctuation">(</span><span class="token number">0x7f0000000000</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">42</span><span class="token punctuation">)</span>
+<span class="token function">close</span><span class="token punctuation">(</span>r0<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>​
+在实际操作中，syzkaller使用类似AST的内存表示法，由prog/prog.go中定义的Call和Arg值组成。这种表示法被用来分析、生成、变异、最小化、验证等程序。内存中的表示法可以转换为文本形式，以存储在磁盘语料库中，并展示给人类，等等。还有另一种程序的二进制表示法（称为exec），它更简单，不包含丰富的类型信息（不可逆），用于实际执行（解释）程序。</p>
+<h3 id="coverage">2.6.3 Coverage</h3>
+<h4 id="syzkaller-coverage">2.6.3.1 Syzkaller Coverage</h4>
+<p>​
+覆盖率通过追踪<code>coverage points</code>的方式获取，<code>coverage points</code><u>一般通过编译器插入对象代码中。</u><code>coverage points</code>一般指一个基本块或者CFG边（取决于编译器，例如clang默认是cfg边而gcc是基本块），<u>编译器在翻译转换和优化代码的过程中插入<code>coverage points</code></u>。</p>
+<p>​
+因此，覆盖率与源代码的关系可能很差。例如，你可能会在一个非覆盖行之后看到一个覆盖行，或者你可能在你期望看到的地方没有看到覆盖点，反之亦然（如果编译器拆分基本块，或将控制流结构变成没有控制流的条件动作，就可能发生这种情况。）。</p>
+<blockquote>
+<p>https://github.com/google/syzkaller/blob/master/docs/coverage.md#syz-cover这里可以参照官网的syz-cover来从原始覆盖数据中生成报告。</p>
+</blockquote>
+<p>​
+Syzkaller使用<code>kcov</code>来从Linux内核中获取代码覆盖率，<code>kcov</code>会输出每个被运行的基本块的地址，然后syzkaller会用objdump、nm、addr2line、readelf等<code>binutils</code>工具来将该地址映射到源码对应的行数。</p>
+<h4 id="grebe-coverage">2.6.3.2 GREBE Coverage</h4>
+<ul>
+<li><strong>GREBE-GCC</strong></li>
+</ul>
+<p>​ <a
+href="https://github.com/whoismissing/grebe-gcc/commit/172f8e6694c41c5c4cf532d86dc4edaaafaad6ed?diff=split">add
+grebe code changes · whoismissing/grebe-gcc@172f8e6
+(github.com)</a>这里可以看到GREBE对GCC9.3.0版本做了怎样的修改，其修改了两个文件：<code>sancov.c</code>和<code>sanitizer.def</code>。</p>
+<p>​ 首先，GREBE在sancov.c中定义了存储关键对象的结构struct_maps:</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230702170621.png" style="zoom:67%;" /></p>
+<p>​
+定义了init_structs()函数，用于将从analyzer生成的内核关键对象读取到st_map-&gt;st数组中：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230702170920.png" style="zoom:67%;" /></p>
+<p>​ 定义了process_tree()函数，用于匹配关键内核对象：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230702171220.png" style="zoom:67%;" /></p>
+<p>​ 定义了find_st()函数，用于从tree中找出符合关键内核对象的子树：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230702171333.png" style="zoom:67%;" /></p>
+<p>​ 然后在sancov_pass()函数中插入以下代码：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230702171718.png" style="zoom:67%;" /></p>
+<p>​ 这段代码的大致作用是选择对basic
+block做插桩的函数，<code>BUILT_IN_SANITIZER_COV_TRACE_PC</code>是kcov原本的插桩函数，<code>BUILT_IN_SANITIZER_OBJ_COV_TRACE_PC</code>是GREBE实现的插桩函数，二者都在对应内核的kernel/kcov.c文件中实现，二者的区别如下：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230702172042.png" /></p>
+<p>​
+其中，<code>_RET_IP_</code>代表当前函数的返回地址，可以发现，GREBE实现的<code>BUILT_IN_SANITIZER_OBJ_COV_TRACE_PC</code>相较于<code>BUILT_IN_SANITIZER_COV_TRACE_PC</code>就是将返回地址截取了前32位。</p>
+<p>​
+回到sancov_pass()，其遍历每个基本块，对于非空基本块判断其是否是关键内核对象，如果是则将<code>fndecl</code>设置为<code>BUILT_IN_SANITIZER_OBJ_COV_TRACE_PC</code>，否则设置为<code>BUILT_IN_SANITIZER_COV_TRACE_PC</code>。然后代码根据<code>fndecl</code>设置一个gcall，将其插入到代码块之前。</p>
+<p>​
+最后，在sanitizer.def文件中，将自己实现的__sanitizer_obj_cov_trace_pc()定义为sanitizer函数:</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230702173055.png" style="zoom:67%;" /></p>
+<ul>
+<li><strong>GREBE-Syzkaller</strong></li>
+</ul>
 <h1 id="错误日志">3. 错误日志</h1>
 <ul>
 <li><p><strong>问题1：编译llvm时报错：</strong></p>
@@ -633,14 +703,30 @@ patch for LLVM to generate O0 bitcode (github.com)</a></li>
 <li><a href="https://phoenixnap.com/kb/build-linux-kernel">How To Build
 Linux Kernel {Step-By-Step} | phoenixNAP KB</a></li>
 <li><a
-href="https://github.com/google/syzkaller/blob/master/docs/linux/setup_ubuntu-host_qemu-vm_x86-64-kernel.md">syzkaller/docs/linux/setup_ubuntu-host_qemu-vm_x86-64-kernel.md
-at master · google/syzkaller · GitHub</a></li>
-<li><a
 href="https://android.googlesource.com/platform/external/syzkaller/+/HEAD/docs/linux/setup_ubuntu-host_qemu-vm_x86-64-kernel.md">Setup:
 Ubuntu host, QEMU vm, x86-64 kernel (googlesource.com)</a></li>
 <li><a
+href="https://www.kernel.org/doc/html/latest/dev-tools/kcov.html">KCOV:
+code coverage for fuzzing — The Linux Kernel documentation</a></li>
+<li><a
+href="https://www.kernel.org/doc/html/latest/translations/zh_CN/dev-tools/testing-overview.html#id3">内核测试指南
+— The Linux Kernel documentation</a></li>
+</ul></li>
+<li>Syzkaller：
+<ul>
+<li><a
+href="https://github.com/google/syzkaller/blob/master/docs/internals.md">syzkaller/docs/internals.md
+at master · google/syzkaller · GitHub</a></li>
+<li><a
+href="https://github.com/google/syzkaller/blob/master/docs/linux/setup_ubuntu-host_qemu-vm_x86-64-kernel.md">syzkaller/docs/linux/setup_ubuntu-host_qemu-vm_x86-64-kernel.md
+at master · google/syzkaller · GitHub</a></li>
+<li><a
 href="https://shawdox.github.io/2023/06/11/%5B技术积累%5DSyzkaller环境配置/">(技术积累)Syzkaller环境配置
 | Shaw (shawdox.github.io)</a></li>
+<li><a
+href="https://davejingtian.org/2017/06/01/understanding-kcov-play-with-fsanitize-coveragetrace-pc-from-the-user-space/#:~:text=kcov%20is%20a%20kernel%20feature%20used%20to%20support,patched%20to%20enable%20this%20feature%20where%20is%20propriate.">Understanding
+kcov – play with -fsanitize-coverage=trace-pc from the user space |
+davejingtian.org</a></li>
 </ul></li>
 </ul>
 ]]></content>
