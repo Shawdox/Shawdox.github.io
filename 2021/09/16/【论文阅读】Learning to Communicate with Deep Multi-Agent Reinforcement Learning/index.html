@@ -13,18 +13,25 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="【论文阅读】Learning to Communicate with Deep Multi-Agent Reinforcement Learning  作者：Jakob N. Foerster ，Yannis M. Assael ，Nando de Freitas，Shimon Whiteson（哈佛大学，Google Deepmind） 时间：2017  Abstract: ​">
+  <meta name="description" content="【论文阅读】Learning to Communicate with Deep Multi-Agent Reinforcement Learning 作者：Jakob N. Foerster ，Yannis M. Assael  ，Nando de Freitas，Shimon Whiteson（哈佛大学，Google Deepmind） 时间：2017  Abstract:​    我们考虑这样">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Learning to Communicate with Deep Multi-Agent Reinforcement Learning">
 <meta property="og:url" content="http://example.com/2021/09/16/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Learning%20to%20Communicate%20with%20Deep%20Multi-Agent%20Reinforcement%20Learning/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="【论文阅读】Learning to Communicate with Deep Multi-Agent Reinforcement Learning  作者：Jakob N. Foerster ，Yannis M. Assael ，Nando de Freitas，Shimon Whiteson（哈佛大学，Google Deepmind） 时间：2017  Abstract: ​">
+<meta property="og:description" content="【论文阅读】Learning to Communicate with Deep Multi-Agent Reinforcement Learning 作者：Jakob N. Foerster ，Yannis M. Assael  ，Nando de Freitas，Shimon Whiteson（哈佛大学，Google Deepmind） 时间：2017  Abstract:​    我们考虑这样">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211015211416.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211015213709.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211015215914.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211009165843.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211009170433.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211009200856.png">
 <meta property="article:published_time" content="2021-09-16T11:48:03.527Z">
 <meta property="article:modified_time" content="2022-07-16T02:10:31.007Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="RL">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211015211416.png">
   
     <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
   
@@ -151,169 +158,76 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1
-id="论文阅读learning-to-communicate-with-deep-multi-agent-reinforcement-learning">【论文阅读】Learning
-to Communicate with Deep Multi-Agent Reinforcement Learning</h1>
-<blockquote>
-<p><strong>作者：Jakob N. Foerster ，Yannis M. Assael ，Nando de
-Freitas，Shimon Whiteson</strong>（哈佛大学，Google Deepmind）</p>
+        <h1 id="【论文阅读】Learning-to-Communicate-with-Deep-Multi-Agent-Reinforcement-Learning"><a href="#【论文阅读】Learning-to-Communicate-with-Deep-Multi-Agent-Reinforcement-Learning" class="headerlink" title="【论文阅读】Learning to Communicate with Deep Multi-Agent Reinforcement Learning"></a>【论文阅读】Learning to Communicate with Deep Multi-Agent Reinforcement Learning</h1><blockquote>
+<p><strong>作者：Jakob N. Foerster ，Yannis M. Assael  ，Nando de Freitas，Shimon Whiteson</strong>（哈佛大学，Google Deepmind）</p>
 <p><strong>时间：2017</strong></p>
 </blockquote>
-<h3 id="abstract">Abstract:</h3>
-<p>​
-我们考虑这样一个问题：多个智能体在环境中通过感知和行动来最大化他们的分享能力。在这些环境中，
-智能体必须学习共同协议以此来分享解决问题的必要信息。通过引入深度神经网络，我们可以成功地演示在复杂的环境中的端对端协议学习。我们提出了两种在这个领域学习的方法：<strong>Reinforced
-Inter-Agent Learning (RIAL) </strong>和 <strong>Differentiable
-Inter-Agent Learning (DIAL)</strong>。</p>
-<p>​
-前者使用深度Q-learning，后者揭示了在学习过程中智能体可以通过communication
-channels反向传播错误的梯度，因此，这种方法使用集中学习（centralised
-learning），分散执行（decentralised execution）。</p>
-<p>​
-我们的实验介绍了用于学习通信协议的新环境，展示了一系列工程上的创新。</p>
+<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract:"></a>Abstract:</h3><p>​    我们考虑这样一个问题：多个智能体在环境中通过感知和行动来最大化他们的分享能力。在这些环境中， 智能体必须学习共同协议以此来分享解决问题的必要信息。通过引入深度神经网络，我们可以成功地演示在复杂的环境中的端对端协议学习。我们提出了两种在这个领域学习的方法：<strong>Reinforced Inter-Agent Learning (RIAL) </strong>和 <strong>Differentiable Inter-Agent Learning (DIAL)</strong>。</p>
+<p>​    前者使用深度Q-learning，后者揭示了在学习过程中智能体可以通过communication channels反向传播错误的梯度，因此，这种方法使用集中学习（centralised learning），分散执行（decentralised execution）。</p>
+<p>​    我们的实验介绍了用于学习通信协议的新环境，展示了一系列工程上的创新。</p>
 <p>PS：</p>
-<p>​ 1. <strong>端对端（end-to-end,e2e）,</strong>
-将多步骤/模块的任务用一个步骤/模型解决的模型。</p>
-<p>​
-可以理解为从输入端到输出端中间只用一个步骤或模块，比如神经网络训练的过程就是一个典型的端对端学习，我们只能知道输入端与输出端的信息，中间的训练过程就是一个黑盒，我们知晓中间的训练过程。</p>
-<p>​ 2.<strong><em>centralised learning</em> but <em>decentralised
-execution</em></strong>，中心化学习但是分散执行。</p>
-<table style="width:10%;">
-<colgroup>
-<col style="width: 9%" />
-</colgroup>
-<tbody>
-<tr class="odd">
-<td><span id="more"></span> ### 1. Introduction</td>
-</tr>
-<tr class="even">
-<td>​ 1.1 <strong>回答的问题：</strong></td>
-</tr>
-<tr class="odd">
-<td>1. 智能体之间如何使用机器学习来自动地发现符合他们需求的通信规则？ 2.
-深度学习也可以吗？ 3.
-我们能从智能体之间学习成功或者失败的经验中学到什么？</td>
-</tr>
-<tr class="even">
-<td>​ 1.2 <strong>研究思路：</strong></td>
-</tr>
-<tr class="odd">
-<td>1.
-<strong>提出一系列经典需要交流的多智能体任务</strong>，每个智能体可以采取行动来影响环境，也可以通过一个离散的有限带宽的通道来跟其它有限的智能体进行通信；
-2.
-<strong>为1中的任务制定几个学习算法</strong>，由于每个智能体的观察范围有限，同时通信通道能力有限，所有智能体必须找到一个可以在此限制下帮助他们完成任务的通信规则；
-3. <strong>分析这些算法如何学习通讯规则，或者如何失败的</strong>。</td>
-</tr>
-<tr class="even">
-<td>​ 1.3 <strong>主要贡献：</strong></td>
-</tr>
-<tr class="odd">
-<td>​ 提出两个方法，<strong><em>reinforced inter-agent
-learning</em>(RIAL)</strong>和 <strong><em>differentiable inter-agent
-learning</em> (DIAL)</strong></td>
-</tr>
-<tr class="even">
-<td>​
-结果表明，这两种方法在MNIST数据集上可以很好的解决问题，并且智能体们学到的通信协议往往十分优雅。</td>
-</tr>
-<tr class="odd">
-<td>​
-结果同样指出深度学习更好的利用了中心化学习的优点，是一个学习这样通信协议的有力工具。</td>
-</tr>
-</tbody>
-</table>
-<h3 id="related-work">2. Related Work</h3>
-<hr />
-<h3 id="background">3. Background</h3>
-<h4 id="deep-q-networksdqn">3.1 Deep Q-Networks(DQN)</h4>
-<p>​ Deep Learning + Q-Learning，在游戏领域应用广泛。</p>
-<h4 id="independent-dqn">3.2 Independent DQN·</h4>
-<h4 id="deep-recurrent-q-networks">3.3 Deep Recurrent Q-Networks</h4>
-<hr />
-<h3 id="setting">4. Setting</h3>
-<p>​ 在强化学习的背景下，每个智能体的观察能力有限。</p>
-<p>​
-所有智能体的共同目标就是最大化同一个折算后的总奖赏R<sub>t</sub>，但同时，没有智能体可以观察到当前环境隐藏的马尔科夫状态S<sub>t</sub>，每个智能体a分别接收到一个与S<sub>t</sub>相关的观察值相关联的值<span
-class="math inline">\(O^{a}_{t}\)</span>。</p>
-<p>​ 在每一步t，每个智能体选择一个<em>environment action</em> <span
-class="math inline">\(u^{a}_{t}\)</span>来影响环境，同时选择一个<em>communication
-action</em> <span
-class="math inline">\(m^{a}_{t}\)</span>来被其他智能体观察，但<span
-class="math inline">\(m^{a}_{t}\)</span>对环境没有直接影响。</p>
-<p>​ 没有通信协议被预先给定，智能体们需要自己学习。</p>
-<p>​
-由于协议是从动作观测历史到消息序列的映射，所以协议的空间维度是非常高的。自动地在这个空间发现有效的通信协议是非常困难的，这体现在智能体需要协调发送消息和解释消息。举个例子，如果一个智能体发送了一个有效的信息，它只有在接受方正确解释并回应的情况下才会受到正反馈，如果没有，反而会打击其发送有效信息的积极性。</p>
-<p>​
-因此，积极的reward是稀少的，只有在发送和解释协调操作时才会发生，这通过随机探索很难实现。</p>
-<p>​ 在这里，我们聚焦于<strong><em>centralised learning</em> but
-<em>decentralised
-execution</em></strong>的情况，在学习的时候智能体之间的通信没有限制，在实施过程时，智能体之间仅仅能通过一条带宽有限的通道通信。</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211015211416.png" /></p>
-<hr />
-<h3 id="methods">5. Methods</h3>
-<h4 id="rialreinforced-inter-agent-learning">5.1 RIAL（<em>Reinforced
-Inter-Agent Learning</em>）</h4>
-<p>​ 简单直接的说，<strong>RIAL就是将DRQN(<em>Deep Recurrent
-Q-Learning</em>)与Q-learning相结合来进行action（影响环境）与communication（与其它智能体通信）选择的方法</strong>。</p>
-<p>​ 每个智能体的<em>Q</em>-network可以表示为：<span
-class="math inline">\(Q^{a}(o^{a}_{t},m^{a^{,}}_{t-1},h^{a}_{t-1},u^{a})\)</span>。</p>
-<p>​
-四个参数分别代表：环境观察值，其它智能体上一步传来的消息，智能体自己的隐藏状态，选择的action。</p>
-<p>​
-如果直接学习输出最终的Q表，得到的输出将有|U||M|大小。为了避免输出过大，将Q-network拆分为两个<span
-class="math inline">\(Q^{a}_{u}\)</span>与<span
-class="math inline">\(Q^{a}_{m}\)</span>，分别表示影响环境的action与同智能体的通信（communication），学习方式使用ε-贪心算法。</p>
-<p>​ <span class="math inline">\(Q^{a}_{u}\)</span>与<span
-class="math inline">\(Q^{a}_{m}\)</span>都使用DQN训练方法，但所使用的DQN有以下两点改进：</p>
-<ol type="1">
+<p>​    1. <strong>端对端（end-to-end,e2e）,</strong> 将多步骤/模块的任务用一个步骤/模型解决的模型。</p>
+<p>​    可以理解为从输入端到输出端中间只用一个步骤或模块，比如神经网络训练的过程就是一个典型的端对端学习，我们只能知道输入端与输出端的信息，中间的训练过程就是一个黑盒，我们知晓中间的训练过程。</p>
+<p>​    2.<strong><em>centralised learning</em> but <em>decentralised execution</em></strong>，中心化学习但是分散执行。</p>
+<hr>
+<span id="more"></span>
+<h3 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h3><p>​    1.1 <strong>回答的问题：</strong></p>
+<pre><code>    1. 智能体之间如何使用机器学习来自动地发现符合他们需求的通信规则？
+    2. 深度学习也可以吗？
+    3. 我们能从智能体之间学习成功或者失败的经验中学到什么？
+</code></pre><p>​    1.2 <strong>研究思路：</strong></p>
+<ol>
+<li><strong>提出一系列经典需要交流的多智能体任务</strong>，每个智能体可以采取行动来影响环境，也可以通过一个离散的有限带宽的通道来跟其它有限的智能体进行通信；</li>
+<li><strong>为1中的任务制定几个学习算法</strong>，由于每个智能体的观察范围有限，同时通信通道能力有限，所有智能体必须找到一个可以在此限制下帮助他们完成任务的通信规则；</li>
+<li><strong>分析这些算法如何学习通讯规则，或者如何失败的</strong>。</li>
+</ol>
+<p>​    1.3 <strong>主要贡献：</strong></p>
+<p>​        提出两个方法，<strong><em>reinforced inter-agent learning</em>(RIAL)</strong>和 <strong><em>differentiable inter-agent learning</em> (DIAL)</strong></p>
+<p>​        结果表明，这两种方法在MNIST数据集上可以很好的解决问题，并且智能体们学到的通信协议往往十分优雅。</p>
+<p>​        结果同样指出深度学习更好的利用了中心化学习的优点，是一个学习这样通信协议的有力工具。</p>
+<hr>
+<h3 id="2-Related-Work"><a href="#2-Related-Work" class="headerlink" title="2. Related Work"></a>2. Related Work</h3><hr>
+<h3 id="3-Background"><a href="#3-Background" class="headerlink" title="3. Background"></a>3. Background</h3><h4 id="3-1-Deep-Q-Networks-DQN"><a href="#3-1-Deep-Q-Networks-DQN" class="headerlink" title="3.1 Deep Q-Networks(DQN)"></a>3.1 Deep Q-Networks(DQN)</h4><p>​    Deep Learning + Q-Learning，在游戏领域应用广泛。</p>
+<h4 id="3-2-Independent-DQN·"><a href="#3-2-Independent-DQN·" class="headerlink" title="3.2 Independent DQN·"></a>3.2 Independent DQN·</h4><h4 id="3-3-Deep-Recurrent-Q-Networks"><a href="#3-3-Deep-Recurrent-Q-Networks" class="headerlink" title="3.3 Deep Recurrent Q-Networks"></a>3.3 Deep Recurrent Q-Networks</h4><hr>
+<h3 id="4-Setting"><a href="#4-Setting" class="headerlink" title="4. Setting"></a>4. Setting</h3><p>​    在强化学习的背景下，每个智能体的观察能力有限。</p>
+<p>​    所有智能体的共同目标就是最大化同一个折算后的总奖赏R~t~，但同时，没有智能体可以观察到当前环境隐藏的马尔科夫状态S~t~，每个智能体a分别接收到一个与S~t~相关的观察值相关联的值$O^{a}_{t}$。</p>
+<p>​    在每一步t，每个智能体选择一个<em>environment action</em>   $u^{a}_{t}$来影响环境，同时选择一个<em>communication action</em>   $m^{a}_{t}$来被其他智能体观察，但$m^{a}_{t}$对环境没有直接影响。</p>
+<p>​    没有通信协议被预先给定，智能体们需要自己学习。</p>
+<p>​    由于协议是从动作观测历史到消息序列的映射，所以协议的空间维度是非常高的。自动地在这个空间发现有效的通信协议是非常困难的，这体现在智能体需要协调发送消息和解释消息。举个例子，如果一个智能体发送了一个有效的信息，它只有在接受方正确解释并回应的情况下才会受到正反馈，如果没有，反而会打击其发送有效信息的积极性。</p>
+<p>​    因此，积极的reward是稀少的，只有在发送和解释协调操作时才会发生，这通过随机探索很难实现。</p>
+<p>​    在这里，我们聚焦于<strong><em>centralised learning</em> but <em>decentralised execution</em></strong>的情况，在学习的时候智能体之间的通信没有限制，在实施过程时，智能体之间仅仅能通过一条带宽有限的通道通信。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211015211416.png" alt=""></p>
+<hr>
+<h3 id="5-Methods"><a href="#5-Methods" class="headerlink" title="5. Methods"></a>5. Methods</h3><h4 id="5-1-RIAL（Reinforced-Inter-Agent-Learning）"><a href="#5-1-RIAL（Reinforced-Inter-Agent-Learning）" class="headerlink" title="5.1 RIAL（Reinforced Inter-Agent Learning）"></a>5.1 RIAL（<em>Reinforced Inter-Agent Learning</em>）</h4><p>​    简单直接的说，<strong>RIAL就是将DRQN(<em>Deep Recurrent Q-Learning</em>)与Q-learning相结合来进行action（影响环境）与communication（与其它智能体通信）选择的方法</strong>。</p>
+<p>​    每个智能体的<em>Q</em>-network可以表示为：$Q^{a}(o^{a}_{t},m^{a^{,}}_{t-1},h^{a}_{t-1},u^{a})$。</p>
+<p>​    四个参数分别代表：环境观察值，其它智能体上一步传来的消息，智能体自己的隐藏状态，选择的action。</p>
+<p>​    如果直接学习输出最终的Q表，得到的输出将有|U||M|大小。为了避免输出过大，将Q-network拆分为两个$Q^{a}_{u}$与$Q^{a}_{m}$，分别表示影响环境的action与同智能体的通信（communication），学习方式使用ε-贪心算法。</p>
+<p>​    $Q^{a}_{u}$与$Q^{a}_{m}$都使用DQN训练方法，但所使用的DQN有以下两点改进：</p>
+<ol>
 <li>禁止experience replay;</li>
 <li>为了考虑部分可观测性，我们将每个智能体所采取的操作u和m作为下一步的输入;</li>
 </ol>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211015213709.png" /></p>
-<p>​
-RIAL可以扩展到通过在智能体之间之间共享参数来利用集中学习，在这种情况下，由于智能体观察不同，因此也进化出了不同的隐藏状态。参数共享大大减少了必须学习的参数数量，从而加快了学习速度。</p>
-<p>​ 在参数共享情况下，智能体学习两个Q函数<span
-class="math inline">\(Q_{u}(o^{a}_{t},m^{a^{,}}_{t-1},h^{a}_{t-1},u^{a}_{t-1},m^{a}_{t-1},a,u^{a}_{t})\)</span>与<span
-class="math inline">\(Q_{m}(o^{a}_{t},m^{a^{,}}_{t-1},h^{a}_{t-1},u^{a}_{t-1},m^{a}_{t-1},a,u^{a}_{t})\)</span>。</p>
-<h4 id="dialdifferentiable-inter-agent-learning">5.1
-DIAL（<em>Differentiable Inter-Agent Learning</em>）</h4>
-<p>​ 虽然RIAL可以进行参数共享，但其仍不能在通信过程中给其他智能反馈。</p>
-<p>​
-打个比方，在人类通信活动中，listener即使不说话也会给出及时，丰富的反馈来表明listener对谈话的兴趣和理解程度，而RIAL反而缺少了这个反馈机制，仿佛对着一个面无表情的人在说话，显然，这个方式存在缺点。</p>
-<p>​ DIAL就是为了解决这个问题而存在的，<strong>通过结合centralised
-learning与Q-networks，不仅可以共享参数，而且可以通过通信信道将梯度从一个Agent推向另一个Agent。</strong></p>
-<p>​ <img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211015215914.png" /></p>
-<hr />
-<h3 id="experiments">6. Experiments</h3>
-<p>​
-在测试中，我们评估了RIAL与DIAL在有无参数共享的情况下进行多智能体任务的情况，并跟一个无交流，参数共享的基准方法进行比较。</p>
-<p>​ 在整个过程中，奖励是通过访问真实状态( Oracle
-)所能获得的最高平均奖励来规范的。</p>
-<p>​ 我们使用ε-贪心算法（ε = 0.05）。</p>
-<h4 id="switch-riddles开关谜题">6.1 Switch Riddles（开关谜题）</h4>
-<p>​
-一百名囚犯入狱。典狱长告诉他们，从明天开始，每个人都会被安置在一个孤立的牢房里，无法相互交流。每天，监狱长都会随意统一挑选其中一名被替换的犯人，并将其安置在中央审讯室，室内只装有一个带有切换开关的灯泡。囚犯将能够观察灯泡的当前状态。如果他愿意，他可以拨动灯泡的开关。他还可以宣布，他相信所有的囚犯都已经访问了审讯室。如果这个公告是真的，那么所有囚犯都被释放，但如果是假的，所有囚犯都被处死。</p>
-<p>​ <img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211009165843.png" /></p>
-<h4 id="results1">6.2 Results1</h4>
-<p>​ <img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211009170433.png" /></p>
-<p>​
-（a）可以看到，在n=3时四种方法的效果都比Baseline的效果好，参数共享加速了算法。</p>
-<p>​
-（b）在n=4时，参数共享的DIAL方法最好。不带参数共享的RIAL没有baseline效果好。可以看出，智能体们独立的学习出相同的策略是很难的。</p>
-<p>​ （c）n=3时智能体使用DIAL学习到的策略。</p>
-<h4 id="colour-digit-mnist">6.3 Colour-Digit MNIST</h4>
-<p>​ <img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211009200856.png" /></p>
-<h4 id="effect-of-channel-noise">6.4 Effect of Channel Noise</h4>
-<p>​ <u><em>这里没太看懂</em></u></p>
-<p>​</p>
-<h3 id="section"></h3>
-
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211015213709.png" alt=""></p>
+<p>​    RIAL可以扩展到通过在智能体之间之间共享参数来利用集中学习，在这种情况下，由于智能体观察不同，因此也进化出了不同的隐藏状态。参数共享大大减少了必须学习的参数数量，从而加快了学习速度。</p>
+<p>​    在参数共享情况下，智能体学习两个Q函数$Q_{u}(o^{a}_{t},m^{a^{,}}_{t-1},h^{a}_{t-1},u^{a}_{t-1},m^{a}_{t-1},a,u^{a}_{t})$与$Q_{m}(o^{a}_{t},m^{a^{,}}_{t-1},h^{a}_{t-1},u^{a}_{t-1},m^{a}_{t-1},a,u^{a}_{t})$。</p>
+<h4 id="5-1-DIAL（Differentiable-Inter-Agent-Learning）"><a href="#5-1-DIAL（Differentiable-Inter-Agent-Learning）" class="headerlink" title="5.1 DIAL（Differentiable Inter-Agent Learning）"></a>5.1 DIAL（<em>Differentiable Inter-Agent Learning</em>）</h4><p>​    虽然RIAL可以进行参数共享，但其仍不能在通信过程中给其他智能反馈。</p>
+<p>​    打个比方，在人类通信活动中，listener即使不说话也会给出及时，丰富的反馈来表明listener对谈话的兴趣和理解程度，而RIAL反而缺少了这个反馈机制，仿佛对着一个面无表情的人在说话，显然，这个方式存在缺点。</p>
+<p>​    DIAL就是为了解决这个问题而存在的，<strong>通过结合centralised learning与Q-networks，不仅可以共享参数，而且可以通过通信信道将梯度从一个Agent推向另一个Agent。</strong></p>
+<p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211015215914.png" alt=""></p>
+<hr>
+<h3 id="6-Experiments"><a href="#6-Experiments" class="headerlink" title="6. Experiments"></a>6. Experiments</h3><p>​    在测试中，我们评估了RIAL与DIAL在有无参数共享的情况下进行多智能体任务的情况，并跟一个无交流，参数共享的基准方法进行比较。</p>
+<p>​    在整个过程中，奖励是通过访问真实状态( Oracle )所能获得的最高平均奖励来规范的。</p>
+<p>​    我们使用ε-贪心算法（ε = 0.05）。</p>
+<h4 id="6-1-Switch-Riddles（开关谜题）"><a href="#6-1-Switch-Riddles（开关谜题）" class="headerlink" title="6.1 Switch Riddles（开关谜题）"></a>6.1 Switch Riddles（开关谜题）</h4><p>​     一百名囚犯入狱。典狱长告诉他们，从明天开始，每个人都会被安置在一个孤立的牢房里，无法相互交流。每天，监狱长都会随意统一挑选其中一名被替换的犯人，并将其安置在中央审讯室，室内只装有一个带有切换开关的灯泡。囚犯将能够观察灯泡的当前状态。如果他愿意，他可以拨动灯泡的开关。他还可以宣布，他相信所有的囚犯都已经访问了审讯室。如果这个公告是真的，那么所有囚犯都被释放，但如果是假的，所有囚犯都被处死。</p>
+<p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211009165843.png" alt=""></p>
+<h4 id="6-2-Results1"><a href="#6-2-Results1" class="headerlink" title="6.2 Results1"></a>6.2 Results1</h4><p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211009170433.png" alt=""></p>
+<p>​        （a）可以看到，在n=3时四种方法的效果都比Baseline的效果好，参数共享加速了算法。</p>
+<p>​        （b）在n=4时，参数共享的DIAL方法最好。不带参数共享的RIAL没有baseline效果好。可以看出，智能体们独立的学习出相同的策略是很难的。</p>
+<p>​        （c）n=3时智能体使用DIAL学习到的策略。</p>
+<h4 id="6-3-Colour-Digit-MNIST"><a href="#6-3-Colour-Digit-MNIST" class="headerlink" title="6.3  Colour-Digit MNIST"></a>6.3  Colour-Digit MNIST</h4><p>​        <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211009200856.png" alt=""></p>
+<h4 id="6-4-Effect-of-Channel-Noise"><a href="#6-4-Effect-of-Channel-Noise" class="headerlink" title="6.4 Effect of Channel Noise"></a>6.4 Effect of Channel Noise</h4><p>​    <u><em>这里没太看懂</em></u></p>
+<p>​    </p>
+<h3 id=""><a href="#" class="headerlink" title=" "></a> </h3>
       
     </div>
     <footer class="entry-meta entry-footer">
@@ -359,10 +273,7 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211009200856.png" /></p>
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BBlearning-to-communicate-with-deep-multi-agent-reinforcement-learning"><span class="nav-number">1.</span> <span class="nav-text">【论文阅读】Learning
-to Communicate with Deep Multi-Agent Reinforcement Learning</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#abstract"><span class="nav-number">1.0.1.</span> <span class="nav-text">Abstract:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#related-work"><span class="nav-number">1.0.2.</span> <span class="nav-text">2. Related Work</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#background"><span class="nav-number">1.0.3.</span> <span class="nav-text">3. Background</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#deep-q-networksdqn"><span class="nav-number">1.0.3.1.</span> <span class="nav-text">3.1 Deep Q-Networks(DQN)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#independent-dqn"><span class="nav-number">1.0.3.2.</span> <span class="nav-text">3.2 Independent DQN·</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#deep-recurrent-q-networks"><span class="nav-number">1.0.3.3.</span> <span class="nav-text">3.3 Deep Recurrent Q-Networks</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#setting"><span class="nav-number">1.0.4.</span> <span class="nav-text">4. Setting</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#methods"><span class="nav-number">1.0.5.</span> <span class="nav-text">5. Methods</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#rialreinforced-inter-agent-learning"><span class="nav-number">1.0.5.1.</span> <span class="nav-text">5.1 RIAL（Reinforced
-Inter-Agent Learning）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#dialdifferentiable-inter-agent-learning"><span class="nav-number">1.0.5.2.</span> <span class="nav-text">5.1
-DIAL（Differentiable Inter-Agent Learning）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#experiments"><span class="nav-number">1.0.6.</span> <span class="nav-text">6. Experiments</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#switch-riddles%E5%BC%80%E5%85%B3%E8%B0%9C%E9%A2%98"><span class="nav-number">1.0.6.1.</span> <span class="nav-text">6.1 Switch Riddles（开关谜题）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#results1"><span class="nav-number">1.0.6.2.</span> <span class="nav-text">6.2 Results1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#colour-digit-mnist"><span class="nav-number">1.0.6.3.</span> <span class="nav-text">6.3 Colour-Digit MNIST</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#effect-of-channel-noise"><span class="nav-number">1.0.6.4.</span> <span class="nav-text">6.4 Effect of Channel Noise</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#section"><span class="nav-number">1.0.7.</span> <span class="nav-text"></span></a></li></ol></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Learning-to-Communicate-with-Deep-Multi-Agent-Reinforcement-Learning"><span class="nav-number">1.</span> <span class="nav-text">【论文阅读】Learning to Communicate with Deep Multi-Agent Reinforcement Learning</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Abstract"><span class="nav-number">1.0.1.</span> <span class="nav-text">Abstract:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Introduction"><span class="nav-number">1.0.2.</span> <span class="nav-text">1. Introduction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Related-Work"><span class="nav-number">1.0.3.</span> <span class="nav-text">2. Related Work</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Background"><span class="nav-number">1.0.4.</span> <span class="nav-text">3. Background</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-Deep-Q-Networks-DQN"><span class="nav-number">1.0.4.1.</span> <span class="nav-text">3.1 Deep Q-Networks(DQN)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-Independent-DQN%C2%B7"><span class="nav-number">1.0.4.2.</span> <span class="nav-text">3.2 Independent DQN·</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-Deep-Recurrent-Q-Networks"><span class="nav-number">1.0.4.3.</span> <span class="nav-text">3.3 Deep Recurrent Q-Networks</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Setting"><span class="nav-number">1.0.5.</span> <span class="nav-text">4. Setting</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Methods"><span class="nav-number">1.0.6.</span> <span class="nav-text">5. Methods</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-RIAL%EF%BC%88Reinforced-Inter-Agent-Learning%EF%BC%89"><span class="nav-number">1.0.6.1.</span> <span class="nav-text">5.1 RIAL（Reinforced Inter-Agent Learning）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-DIAL%EF%BC%88Differentiable-Inter-Agent-Learning%EF%BC%89"><span class="nav-number">1.0.6.2.</span> <span class="nav-text">5.1 DIAL（Differentiable Inter-Agent Learning）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-Experiments"><span class="nav-number">1.0.7.</span> <span class="nav-text">6. Experiments</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#6-1-Switch-Riddles%EF%BC%88%E5%BC%80%E5%85%B3%E8%B0%9C%E9%A2%98%EF%BC%89"><span class="nav-number">1.0.7.1.</span> <span class="nav-text">6.1 Switch Riddles（开关谜题）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-2-Results1"><span class="nav-number">1.0.7.2.</span> <span class="nav-text">6.2 Results1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-3-Colour-Digit-MNIST"><span class="nav-number">1.0.7.3.</span> <span class="nav-text">6.3  Colour-Digit MNIST</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-4-Effect-of-Channel-Noise"><span class="nav-number">1.0.7.4.</span> <span class="nav-text">6.4 Effect of Channel Noise</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">1.0.8.</span> <span class="nav-text"> </span></a></li></ol></li></ol></li></ol>
     
     </div>
   </aside>
@@ -556,20 +467,5 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>

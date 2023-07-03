@@ -13,18 +13,19 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="Concolic Execution for WebAssembly  时间：2022 作者：Filipe Marques、José Fragoso Santos、Nuno Santos（里斯本大学） 会议：ECOOP’2022（软工CCF-B）  Abstract ​ WebAssembly（Wasm）是一种新的二进制指令格式，允许用高级语言编写的目标编译代码以接近原生的速度">
+  <meta name="description" content="Concolic Execution for WebAssembly 时间：2022 作者：Filipe Marques、José Fragoso Santos、Nuno Santos（里斯本大学） 会议：ECOOP’2022（软工CCF-B）  Abstract​    WebAssembly（Wasm）是一种新的二进制指令格式，允许用高级语言编写的目标编译代码以接近原生的速度被浏览器的Java">
 <meta property="og:type" content="article">
 <meta property="og:title" content="(论文阅读) Concolic Execution for WebAssembly">
 <meta property="og:url" content="http://example.com/2023/06/20/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Concolic-Execution-for-WebAssembly/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="Concolic Execution for WebAssembly  时间：2022 作者：Filipe Marques、José Fragoso Santos、Nuno Santos（里斯本大学） 会议：ECOOP’2022（软工CCF-B）  Abstract ​ WebAssembly（Wasm）是一种新的二进制指令格式，允许用高级语言编写的目标编译代码以接近原生的速度">
+<meta property="og:description" content="Concolic Execution for WebAssembly 时间：2022 作者：Filipe Marques、José Fragoso Santos、Nuno Santos（里斯本大学） 会议：ECOOP’2022（软工CCF-B）  Abstract​    WebAssembly（Wasm）是一种新的二进制指令格式，允许用高级语言编写的目标编译代码以接近原生的速度被浏览器的Java">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620193746.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620210915.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620195227.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620195505.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620195611.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620210942.png">
 <meta property="article:published_time" content="2023-06-20T11:16:32.576Z">
 <meta property="article:modified_time" content="2023-06-20T13:15:31.319Z">
 <meta property="article:author" content="Shaw">
@@ -158,70 +159,42 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="concolic-execution-for-webassembly">Concolic Execution for
-WebAssembly</h1>
-<blockquote>
+        <h1 id="Concolic-Execution-for-WebAssembly"><a href="#Concolic-Execution-for-WebAssembly" class="headerlink" title="Concolic Execution for WebAssembly"></a>Concolic Execution for WebAssembly</h1><blockquote>
 <p>时间：2022</p>
-<p>作者：Filipe Marques、José Fragoso Santos、Nuno
-Santos（里斯本大学）</p>
+<p>作者：Filipe Marques、José Fragoso Santos、Nuno Santos（里斯本大学）</p>
 <p>会议：ECOOP’2022（软工CCF-B）</p>
 </blockquote>
-<h2 id="abstract">Abstract</h2>
-<p>​
-WebAssembly（Wasm）是一种新的二进制指令格式，允许用高级语言编写的目标编译代码以接近原生的速度被浏览器的JavaScript引擎执行。<u>尽管Wasm有明显的性能优势，但它为网络程序引入错误或安全漏洞提供了机会，因为用不安全语言编写的程序中已有的问题可以转移到交叉编译的二进制文件中。</u>这种二进制文件的源代码经常无法用于静态分析，这就需要有能够直接处理Wasm代码的工具。尽管这种潜在的安全关键情况，仍然明显缺乏分析Wasm二进制文件的工具支持。</p>
-<p>​
-我们提出了WASP，一个用于测试Wasm模块的符号执行引擎，它直接在Wasm代码上工作，并建立在一个符合标准的Wasm参考实现之上。我们对WASP进行了全面的评估：它被用来符号执行测试C语言的通用数据结构库和C语言的亚马逊加密SDK，证明它可以为真实世界的C语言应用找到错误并产生高覆盖率的测试输入；并进一步针对Test-Comp基准进行测试，获得了与成熟的C语言符号执行和测试工具相当的结果。</p>
+<h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>​    WebAssembly（Wasm）是一种新的二进制指令格式，允许用高级语言编写的目标编译代码以接近原生的速度被浏览器的JavaScript引擎执行。<u>尽管Wasm有明显的性能优势，但它为网络程序引入错误或安全漏洞提供了机会，因为用不安全语言编写的程序中已有的问题可以转移到交叉编译的二进制文件中。</u>这种二进制文件的源代码经常无法用于静态分析，这就需要有能够直接处理Wasm代码的工具。尽管这种潜在的安全关键情况，仍然明显缺乏分析Wasm二进制文件的工具支持。</p>
+<p>​    我们提出了WASP，一个用于测试Wasm模块的符号执行引擎，它直接在Wasm代码上工作，并建立在一个符合标准的Wasm参考实现之上。我们对WASP进行了全面的评估：它被用来符号执行测试C语言的通用数据结构库和C语言的亚马逊加密SDK，证明它可以为真实世界的C语言应用找到错误并产生高覆盖率的测试输入；并进一步针对Test-Comp基准进行测试，获得了与成熟的C语言符号执行和测试工具相当的结果。</p>
 <span id="more"></span>
-<h2 id="问题背景">问题背景</h2>
-<h3 id="concolic-execution">1. Concolic execution</h3>
-<p>​ Concolic
-execution是符号执行的一种特殊变体，在这种情况下，人们将具体的执行与纯粹的符号执行配对，通过一次探索一个执行路径来避免与底层SMT求解器的交互。<u>Concolic执行引擎为符号输入分配具体数值，并同时以具体和符号方式执行给定的程序，只遵循具体路径，但像纯符号执行那样构建与该路径对应的路径条件。</u></p>
-<p>​
-更具体地说，它可以用来为符号变量生成新的具体输入，从而强制探索不同的路径。为此，人们需要否定上一次执行获得的路径条件，并查询底层求解器，以获得公式的模型。<u>通过跟踪所有通过Concolic执行产生的路径条件，引擎可以列举出所有的程序执行路径，直到一个边界，其优点是每个探索的路径只需要与底层求解器交互一次。<strong>请注意，在纯粹的符号执行中，引擎必须在每次遇到分支点时查询求解器，以确定其then-和else-分支是否可行。</strong></u></p>
-<p>​ 以如下代码为例(<em>参考《Robust Symbolic Execution for
-WebAssembly》</em>)：</p>
+<h2 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h2><h3 id="1-Concolic-execution"><a href="#1-Concolic-execution" class="headerlink" title="1. Concolic execution"></a>1. Concolic execution</h3><p>​    Concolic execution是符号执行的一种特殊变体，在这种情况下，人们将具体的执行与纯粹的符号执行配对，通过一次探索一个执行路径来避免与底层SMT求解器的交互。<u>Concolic执行引擎为符号输入分配具体数值，并同时以具体和符号方式执行给定的程序，只遵循具体路径，但像纯符号执行那样构建与该路径对应的路径条件。</u></p>
+<p>​    更具体地说，它可以用来为符号变量生成新的具体输入，从而强制探索不同的路径。为此，人们需要否定上一次执行获得的路径条件，并查询底层求解器，以获得公式的模型。<u>通过跟踪所有通过Concolic执行产生的路径条件，引擎可以列举出所有的程序执行路径，直到一个边界，其优点是每个探索的路径只需要与底层求解器交互一次。<strong>请注意，在纯粹的符号执行中，引擎必须在每次遇到分支点时查询求解器，以确定其then-和else-分支是否可行。</strong></u></p>
+<p>​    以如下代码为例(<em>参考《Robust Symbolic Execution for WebAssembly》</em>)：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620193746.png" style="zoom:50%;" /></p>
-<p>​ <strong>目标：测试assert语句成立的条件。</strong></p>
+<p>​    <strong>目标：测试assert语句成立的条件。</strong></p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620210915.png" style="zoom:50%;" /></p>
-<p>​ 如上图所示，程序有三条可能的执行路径，对于每一个执行路径（execution
-path），我们称其为一个<strong><em>concolic iteration</em></strong>。</p>
-<p>​ 在Concolic execution中：</p>
-<ol type="1">
-<li><p>第一个concolic
-iteration开始前，变量x与y被赋予具值0与2，这些输入导致Concolic
-execution引擎探索上图最右边的路径，产生最后的路径条件：<strong>X≤0</strong>；</p></li>
-<li><p>第二个concolic iteration开始前，Concolic
-execution引擎查询底层SMT求解器，为符号输入寻找一个满足公式<strong>x&gt;0</strong>的输入值，即对应于第一个路径条件的否定。让我们假设求解器返回x=1和y=0。这些输入导致引擎探索中间的执行路径，产生路径条件：<strong>（x&gt;0）∧（x≥y）</strong>；</p></li>
-<li><p>第三个concolic
-iteration开始前，同2，引擎继续利用SMT求解器查找对2生成条件的否定，得到：(x
-&gt; 0) ∧ ((x ≤ 0) ∨ (x &lt; y))，也就是等价于：<strong>(x &gt; 0) ∧ (x
-&lt;
-y)</strong>。假设这里得到了具体输入x=1和y=2，程序探索了最左边的执行路径，<strong><u>但此时这个输入并没有触发断言，其导致a=4，b=6</u></strong>。当这条路径执行到断言语句时，条件为：</p>
+<p>​    如上图所示，程序有三条可能的执行路径，对于每一个执行路径（execution path），我们称其为一个<strong><em>concolic iteration</em></strong>。</p>
+<p>​    在Concolic execution中：</p>
+<ol>
+<li><p>第一个concolic iteration开始前，变量x与y被赋予具值0与2，这些输入导致Concolic execution引擎探索上图最右边的路径，产生最后的路径条件：<strong>X≤0</strong>；</p>
+</li>
+<li><p>第二个concolic iteration开始前，Concolic execution引擎查询底层SMT求解器，为符号输入寻找一个满足公式<strong>x&gt;0</strong>的输入值，即对应于第一个路径条件的否定。让我们假设求解器返回x=1和y=0。这些输入导致引擎探索中间的执行路径，产生路径条件：<strong>（x&gt;0）∧（x≥y）</strong>；</p>
+</li>
+<li><p>第三个concolic iteration开始前，同2，引擎继续利用SMT求解器查找对2生成条件的否定，得到：(x &gt; 0) ∧ ((x ≤ 0) ∨ (x &lt; y))，也就是等价于：<strong>(x &gt; 0) ∧ (x &lt; y)</strong>。假设这里得到了具体输入x=1和y=2，程序探索了最左边的执行路径，<strong><u>但此时这个输入并没有触发断言，其导致a=4，b=6</u></strong>。当这条路径执行到断言语句时，条件为：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620195227.png" style="zoom:50%;" /></p>
-<p>符号执行引擎会继续对这个条件做分析，即在满足PC条件（x&gt;0 and
-x&lt;y）下，是否可以推出：</p>
+<p>符号执行引擎会继续对这个条件做分析，即在满足PC条件（x&gt;0 and x&lt;y）下，是否可以推出：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620195505.png" style="zoom:50%;" /></p>
 <p>即是否存在反例：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620195611.png" style="zoom:50%;" /></p>
-<p>SMT求解这个式子很容易得出，x=1,y=4，故这条路径上存在导致断言失败的输入。</p></li>
+<p>SMT求解这个式子很容易得出，x=1,y=4，故这条路径上存在导致断言失败的输入。</p>
+</li>
 </ol>
-<h3 id="现有wasm符号执行工具">2. 现有WASM符号执行工具</h3>
-<p>​ 据我们所知，目前只有两个工具用于象征性地执行Wasm代码：
-WANA[73]和Manticore[51]。然而，这两个工具主要是针对智能合约的分析，并有重要的限制，限制了它们对独立的Wasm模块的应用。<u>WANA[73]处于初步开发阶段，只能应用于EOSIO和Ethereum智能合约，因为它不包括可以独立运行的Wasm的符号执行引擎。</u><u>Manticore[51]最近获得了对Wasm[33]的支持，但尚未对Wasm代码进行系统的评估。此外，它对Wasm模块的应用需要为每个可能的输入内存手动设置一个复杂的Python脚本，这使得它很麻烦，难以实现自动化。</u></p>
-<p>​</p>
-<h2 id="贡献">贡献</h2>
-<p>​
-我们提出了WebAssembly符号处理器，WASP，一个用于测试Wasm（1.0版）模块的新型Concolic
-execution引擎。WASP遵循所谓的Concolic discipline[28,
-64]，将具体执行与符号执行相结合，一次探索一条执行路径。<strong><u>然而，与大多数通过对程序插桩的Concolic
-execution引擎[65, 79, 64,
-63]不同，我们通过对Haas等人[30]开发的Wasm解释器的插桩实现WASP。</u></strong>为此，我们将作者的参考解释器从具体数值提升到具体数值和符号数值对。通过将插桩转移到解释器层面，我们为Concolic
-execution中的一系列优化提供了可能性。</p>
+<h3 id="2-现有WASM符号执行工具"><a href="#2-现有WASM符号执行工具" class="headerlink" title="2. 现有WASM符号执行工具"></a>2. 现有WASM符号执行工具</h3><p>​    据我们所知，目前只有两个工具用于象征性地执行Wasm代码： WANA[73]和Manticore[51]。然而，这两个工具主要是针对智能合约的分析，并有重要的限制，限制了它们对独立的Wasm模块的应用。<u>WANA[73]处于初步开发阶段，只能应用于EOSIO和Ethereum智能合约，因为它不包括可以独立运行的Wasm的符号执行引擎。</u><u>Manticore[51]最近获得了对Wasm[33]的支持，但尚未对Wasm代码进行系统的评估。此外，它对Wasm模块的应用需要为每个可能的输入内存手动设置一个复杂的Python脚本，这使得它很麻烦，难以实现自动化。</u></p>
+<p>​     </p>
+<h2 id="贡献"><a href="#贡献" class="headerlink" title="贡献"></a>贡献</h2><p>​    我们提出了WebAssembly符号处理器，WASP，一个用于测试Wasm（1.0版）模块的新型Concolic execution引擎。WASP遵循所谓的Concolic discipline[28, 64]，将具体执行与符号执行相结合，一次探索一条执行路径。<strong><u>然而，与大多数通过对程序插桩的Concolic execution引擎[65, 79, 64, 63]不同，我们通过对Haas等人[30]开发的Wasm解释器的插桩实现WASP。</u></strong>为此，我们将作者的参考解释器从具体数值提升到具体数值和符号数值对。通过将插桩转移到解释器层面，我们为Concolic execution中的一系列优化提供了可能性。</p>
 <pre><code>1. WASP能够分析独立的Wasm模块（不同于WANA），它能够被用作一个通用的平台，为编译成Wasm的高级编程语言建立符号分析；
-2. WASP能够分析大多数C语言库；</code></pre>
-<h2 id="模型">模型</h2>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620210942.png" /></p>
+2. WASP能够分析大多数C语言库；
+</code></pre><h2 id="模型"><a href="#模型" class="headerlink" title="模型"></a>模型</h2><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620210942.png" alt=""></p>
 
       
     </div>
@@ -268,8 +241,7 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620210942.png" /></p>
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#concolic-execution-for-webassembly"><span class="nav-number">1.</span> <span class="nav-text">Concolic Execution for
-WebAssembly</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#abstract"><span class="nav-number">1.1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E8%83%8C%E6%99%AF"><span class="nav-number">1.2.</span> <span class="nav-text">问题背景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#concolic-execution"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. Concolic execution</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8E%B0%E6%9C%89wasm%E7%AC%A6%E5%8F%B7%E6%89%A7%E8%A1%8C%E5%B7%A5%E5%85%B7"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 现有WASM符号执行工具</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%A1%E7%8C%AE"><span class="nav-number">1.3.</span> <span class="nav-text">贡献</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.4.</span> <span class="nav-text">模型</span></a></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Concolic-Execution-for-WebAssembly"><span class="nav-number">1.</span> <span class="nav-text">Concolic Execution for WebAssembly</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Abstract"><span class="nav-number">1.1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E8%83%8C%E6%99%AF"><span class="nav-number">1.2.</span> <span class="nav-text">问题背景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Concolic-execution"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. Concolic execution</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%8E%B0%E6%9C%89WASM%E7%AC%A6%E5%8F%B7%E6%89%A7%E8%A1%8C%E5%B7%A5%E5%85%B7"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 现有WASM符号执行工具</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%A1%E7%8C%AE"><span class="nav-number">1.3.</span> <span class="nav-text">贡献</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.4.</span> <span class="nav-text">模型</span></a></li></ol></li></ol>
     
     </div>
   </aside>
@@ -463,20 +435,5 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>

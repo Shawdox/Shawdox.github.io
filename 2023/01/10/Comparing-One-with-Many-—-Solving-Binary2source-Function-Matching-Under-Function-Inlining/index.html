@@ -13,22 +13,29 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="【论文阅读】Comparing One with Many — Solving Binary2source Function Matching Under Function Inlining 一、ABSTRACT 为了在函数内联下施行b2s函数匹配，我们提出了一个叫O2NMatcher的方法，通过其生成的Source function Sets (SFSs)作为匹配结果。 我们首先提出">
+  <meta name="description" content="【论文阅读】Comparing One with Many — Solving Binary2source Function Matching Under  Function Inlining一、ABSTRACT为了在函数内联下施行b2s函数匹配，我们提出了一个叫O2NMatcher的方法，通过其生成的Source function Sets (SFSs)作为匹配结果。 我们首先提出了一个模型EO">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Comparing One with Many — Solving Binary2source Function Matching Under  Function Inlining">
 <meta property="og:url" content="http://example.com/2023/01/10/Comparing-One-with-Many-%E2%80%94-Solving-Binary2source-Function-Matching-Under-Function-Inlining/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="【论文阅读】Comparing One with Many — Solving Binary2source Function Matching Under Function Inlining 一、ABSTRACT 为了在函数内联下施行b2s函数匹配，我们提出了一个叫O2NMatcher的方法，通过其生成的Source function Sets (SFSs)作为匹配结果。 我们首先提出">
+<meta property="og:description" content="【论文阅读】Comparing One with Many — Solving Binary2source Function Matching Under  Function Inlining一、ABSTRACT为了在函数内联下施行b2s函数匹配，我们提出了一个叫O2NMatcher的方法，通过其生成的Source function Sets (SFSs)作为匹配结果。 我们首先提出了一个模型EO">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230110172929.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230110205834.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230111162237.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230111165709.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230111235130.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230112145603.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230112150531.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230112152928.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230113001842.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116181546.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116190905.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116191213.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116191540.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116205243.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116205306.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116205338.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116205512.png">
 <meta property="article:published_time" content="2023-01-10T07:27:48.471Z">
 <meta property="article:modified_time" content="2023-02-16T11:58:32.219Z">
@@ -36,7 +43,7 @@
 <meta property="article:tag" content="Binary">
 <meta property="article:tag" content="ML">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230110205834.png">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230110172929.png">
   
     <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
   
@@ -163,254 +170,156 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1
-id="论文阅读comparing-one-with-many-solving-binary2source-function-matching-under-function-inlining">【论文阅读】Comparing
-One with Many — Solving Binary2source Function Matching Under Function
-Inlining</h1>
-<h2 id="一abstract">一、ABSTRACT</h2>
-<p><strong><u>为了在函数内联下施行b2s函数匹配，我们提出了一个叫O2NMatcher的方法，通过其生成的Source
-function Sets (SFSs)作为匹配结果。</u></strong></p>
-<p>我们首先提出了一个模型<strong>EOOCJ48</strong>来预测内联的位置，
-为了训练这个模型，我们利用可编译的开源软件（Open Source
-Software）生成一个带有标记的调用点（内联或不内联）的数据集，从调用点中提取几个特征，并通过检查不同编译之间的内联相关性来设计一个基于编译器-选项的多标签分类器。</p>
+        <h1 id="【论文阅读】Comparing-One-with-Many-—-Solving-Binary2source-Function-Matching-Under-Function-Inlining"><a href="#【论文阅读】Comparing-One-with-Many-—-Solving-Binary2source-Function-Matching-Under-Function-Inlining" class="headerlink" title="【论文阅读】Comparing One with Many — Solving Binary2source Function Matching Under  Function Inlining"></a>【论文阅读】Comparing One with Many — Solving Binary2source Function Matching Under  Function Inlining</h1><h2 id="一、ABSTRACT"><a href="#一、ABSTRACT" class="headerlink" title="一、ABSTRACT"></a>一、ABSTRACT</h2><p><strong><u>为了在函数内联下施行b2s函数匹配，我们提出了一个叫O2NMatcher的方法，通过其生成的Source function Sets (SFSs)作为匹配结果。</u></strong></p>
+<p>我们首先提出了一个模型<strong>EOOCJ48</strong>来预测内联的位置， 为了训练这个模型，我们利用可编译的开源软件（Open Source Software）生成一个带有标记的调用点（内联或不内联）的数据集，从调用点中提取几个特征，并通过检查不同编译之间的内联相关性来设计一个基于编译器-选项的多标签分类器。</p>
 <p>然后，我们使用这个模型来预测不可编译的开源项目，得到带标记的函数调用图。接下来，我们将SFSs的构建视为一个子树生成问题，并设计根节点选择和边缘扩展规则来自动构建SFSs。最后，这些SFSs将被添加到源函数的语料库中，并与有内联的二进制函数进行比较。</p>
 <p>我们对OSNMatcher进行了一些实验测试，结果表明我们的方法超过所有state-of-the-art，将结果提升了6%。</p>
 <span id="more"></span>
-<h2 id="二背景知识">二、背景知识</h2>
-<ol type="1">
-<li><p><strong>Function
-inlining：</strong>函数内联。使用inline关键字，<strong>编译器将函数调用语句替换为函数代码本身</strong>（称为扩展的过程），然后编译整个代码。因此，<strong>使用内联函数，编译器不必跳转到另一个位置来执行该函数，然后跳回。</strong>因为被调用函数的代码已经可用于调用程序。</p>
-<p><a
-target="_blank" rel="noopener" href="https://devblogs.microsoft.com/cppblog/inlining-decisions-in-visual-studio/#:~:text=Inlining%20is%20perhaps%20the%20most%20important%20optimization%20a,in%20either%20the%20caller%20or%20callee%20by%20themselves.">Inlining
-Decisions in Visual Studio - C++ Team Blog (microsoft.com)</a></p></li>
-<li><p><strong>Binary2source function
-matching</strong>，二进制到源码函数匹配：</p></li>
+<h2 id="二、背景知识"><a href="#二、背景知识" class="headerlink" title="二、背景知识"></a>二、背景知识</h2><ol>
+<li><p><strong>Function inlining：</strong>函数内联。使用inline关键字，<strong>编译器将函数调用语句替换为函数代码本身</strong>（称为扩展的过程），然后编译整个代码。因此，<strong>使用内联函数，编译器不必跳转到另一个位置来执行该函数，然后跳回。</strong>因为被调用函数的代码已经可用于调用程序。</p>
+<p><a target="_blank" rel="noopener" href="https://devblogs.microsoft.com/cppblog/inlining-decisions-in-visual-studio/#:~:text=Inlining is perhaps the most important optimization a,in either the caller or callee by themselves.">Inlining Decisions in Visual Studio - C++ Team Blog (microsoft.com)</a></p>
+</li>
+<li><p><strong>Binary2source function matching</strong>，二进制到源码函数匹配：</p>
+</li>
 </ol>
 <ul>
 <li><strong>1-to-1</strong>匹配：一个二进制函数与一个源码函数匹配；</li>
 <li><strong>1-to-n</strong>匹配：由于内联函数的存在，一个二进制函数匹配多个源码函数。</li>
 </ul>
-<ol start="3" type="1">
-<li><p><strong>Stripped
-binary：</strong>不含调试符号信息的二进制可执行文件。</p></li>
-<li><p><strong>Multi-Label Classification (MLC)
-problem：</strong>多标签分类，一个样本有多个标签。</p></li>
-<li><p><strong>FCG</strong> ：Function Call
-Graph，函数调用图。在FCG图中，点是函数，边是调用关系。</p></li>
-<li><p><strong>Jaccard similaritie：</strong>又称为Jaccard
-index，用于比较有限样本集合之间的相似性和差异性。其值越大说明相似性越高。</p></li>
-<li><p><strong>Binary
-Relevance：</strong>核心思想是将多标签分类问题进行分解，将其转换为q个二元分类问题，其中每个二元分类器对应一个待预测的标签。</p></li>
-<li><p><strong>Classifier
-Chains：</strong>核心思想是将多标签分类问题进行分解，将其转换成为一个二元分类器链的形式，其中链后的二元分类器的构建式在前面分类器预测结果的基础上的。在模型构建的时候，首先将标签顺序进行shuffle打乱排序操作，然后按照从头到尾分别构建每个标签对应的模型。</p></li>
-<li><p><strong>Ensemble Method：</strong>集成学习算法。</p></li>
+<ol>
+<li><p><strong>Stripped binary：</strong>不含调试符号信息的二进制可执行文件。</p>
+</li>
+<li><p><strong>Multi-Label Classification (MLC) problem：</strong>多标签分类，一个样本有多个标签。</p>
+</li>
+<li><p><strong>FCG</strong> ：Function Call Graph，函数调用图。在FCG图中，点是函数，边是调用关系。</p>
+</li>
+<li><p><strong>Jaccard similaritie：</strong>又称为Jaccard index，用于比较有限样本集合之间的相似性和差异性。其值越大说明相似性越高。</p>
+</li>
+<li><p><strong>Binary Relevance：</strong>核心思想是将多标签分类问题进行分解，将其转换为q个二元分类问题，其中每个二元分类器对应一个待预测的标签。</p>
+</li>
+<li><p><strong>Classifier Chains：</strong>核心思想是将多标签分类问题进行分解，将其转换成为一个二元分类器链的形式，其中链后的二元分类器的构建式在前面分类器预测结果的基础上的。在模型构建的时候，首先将标签顺序进行shuffle打乱排序操作，然后按照从头到尾分别构建每个标签对应的模型。</p>
+</li>
+<li><p><strong>Ensemble Method：</strong>集成学习算法。</p>
+</li>
 </ol>
-<h2 id="三提出问题">三、提出问题</h2>
-<ol type="1">
-<li><h4 id="b2s匹配的作用"><strong>B2S匹配的作用：</strong></h4>
-<p>当前软件开发基本都会使用公共开源库中的代码，这就造成一个问题，若公共开源项目OSS中存在漏洞会传播非常快（例如一个OpenSSL中的漏洞就可以造成互联网上17%web服务存在漏洞）。</p>
-<p>由于以上问题的存在，检测软件中对OSS的依赖就很重要，<strong>Software
-Component Analysis
-(SCA)</strong>就是用来检测软件对OSS的依赖问题的。当商业软件公司发布了自己的二进制可执行程序时，SCA服务商就会将此二进制文件与OSS文件相比较，检测其包含使用了哪些OSS文件。</p>
-<p>binary2source function matching就是其应用场景。</p></li>
-<li><h4
-id="内联函数带来的问题"><strong>内联函数带来的问题：</strong></h4>
-<p>举例如下图所示，当将二进制函数中的<strong><em>dtls1_get_record</em></strong>函数与源码中的<strong><em>dtls1_get_record</em></strong>函数比较时，使用CodeCMR给出的相似性还不足60%，这显然是匹配失败的。</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230110172929.png" /></p>
-<p>如果深入去看二进制函数<strong><em>dtls1_get_record</em></strong>的汇编代码就可以发现，这个函数在编译的时候内联了<strong><em>dtls1_process_buffered_records</em></strong>,<strong><em>dtls1_get_bitmap</em></strong>
-和
-<strong><em>dtls1_record_replay_check</em></strong>的函数代码，极大的改变了其函数的内部代码内容，故影响了函数的匹配结果。</p>
-<p><strong><u>有上述例子可以看出，由于内联函数的存在会改变函数的代码内容，故直接对其进行匹配的结果是不尽如人意的。</u></strong></p></li>
-<li><h4
-id="解决这个问题面临的挑战"><strong>解决这个问题面临的挑战：</strong></h4>
-<p>想要解决在内联函数下的B2S问题，还需面对以下挑战：</p>
-<p>1）
-<strong>OOD问题：</strong>Out-of-domain，待检测二进制函数可能是由多个函数生成的，故OSS源码资料库中可能没有对应的二进制匹配；</p>
-<p>2）
-<strong>有些二进制文件不含调试信息：</strong>对于许多不含调试信息的二进制文件，由于其没有标注内联点，故检测哪些函数是通过内联函数生成的和哪些源码函数被内联进了二进制函数中就更加困难；</p>
-<p>3）
-<strong>不同文件内联选择的不同：</strong>对于不同的编译设置导致的不同内联函数的选择（对某个函数，是否选择内联），很难覆盖所有情况。</p></li>
+<h2 id="三、提出问题"><a href="#三、提出问题" class="headerlink" title="三、提出问题"></a>三、提出问题</h2><ol>
+<li><h4 id="B2S匹配的作用："><a href="#B2S匹配的作用：" class="headerlink" title="B2S匹配的作用："></a><strong>B2S匹配的作用：</strong></h4><p>当前软件开发基本都会使用公共开源库中的代码，这就造成一个问题，若公共开源项目OSS中存在漏洞会传播非常快（例如一个OpenSSL中的漏洞就可以造成互联网上17%web服务存在漏洞）。</p>
+<p>由于以上问题的存在，检测软件中对OSS的依赖就很重要，<strong>Software Component Analysis (SCA)</strong>就是用来检测软件对OSS的依赖问题的。当商业软件公司发布了自己的二进制可执行程序时，SCA服务商就会将此二进制文件与OSS文件相比较，检测其包含使用了哪些OSS文件。</p>
+<p> binary2source function matching就是其应用场景。</p>
+</li>
 </ol>
-<h2 id="四模型方法">四、模型方法</h2>
-<p>​
-我们的方法<strong>O2NMatcher</strong>就是为了解决上述挑战而生的。</p>
+<ol>
+<li><h4 id="内联函数带来的问题："><a href="#内联函数带来的问题：" class="headerlink" title="内联函数带来的问题："></a><strong>内联函数带来的问题：</strong></h4><p>举例如下图所示，当将二进制函数中的<strong><em>dtls1_get_record</em></strong>函数与源码中的<strong><em>dtls1_get_record</em></strong>函数比较时，使用CodeCMR给出的相似性还不足60%，这显然是匹配失败的。</p>
+</li>
+</ol>
+<p>   <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230110172929.png" alt=""></p>
+<p>   如果深入去看二进制函数<strong><em>dtls1_get_record</em></strong>的汇编代码就可以发现，这个函数在编译的时候内联了<strong><em>dtls1_process_buffered_records</em></strong>,<strong><em>dtls1_get_bitmap</em></strong> 和 <strong><em>dtls1_record_replay_check</em></strong>的函数代码，极大的改变了其函数的内部代码内容，故影响了函数的匹配结果。</p>
+<p>   <strong><u>有上述例子可以看出，由于内联函数的存在会改变函数的代码内容，故直接对其进行匹配的结果是不尽如人意的。</u></strong></p>
+<ol>
+<li><h4 id="解决这个问题面临的挑战："><a href="#解决这个问题面临的挑战：" class="headerlink" title="解决这个问题面临的挑战："></a><strong>解决这个问题面临的挑战：</strong></h4><p>想要解决在内联函数下的B2S问题，还需面对以下挑战：</p>
+<p>1） <strong>OOD问题：</strong>Out-of-domain，待检测二进制函数可能是由多个函数生成的，故OSS源码资料库中可能没有对应的二进制匹配；</p>
+<p>2） <strong>有些二进制文件不含调试信息：</strong>对于许多不含调试信息的二进制文件，由于其没有标注内联点，故检测哪些函数是通过内联函数生成的和哪些源码函数被内联进了二进制函数中就更加困难；</p>
+<p>3） <strong>不同文件内联选择的不同：</strong>对于不同的编译设置导致的不同内联函数的选择（对某个函数，是否选择内联），很难覆盖所有情况。</p>
+</li>
+</ol>
+<h2 id="四、模型方法"><a href="#四、模型方法" class="headerlink" title="四、模型方法"></a>四、模型方法</h2><p>​    我们的方法<strong>O2NMatcher</strong>就是为了解决上述挑战而生的。</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230110205834.png" style="zoom:80%;" /></p>
-<p>​ 为了解决第一个挑战，我们生成了<strong><em>Source Function Sets
-(SFSs)</em></strong>来完善资料库，以此应对有内联函数的二进制函数查询匹配。</p>
-<p>​
-为了解决第二个挑战，我们使用可以编译的OSS项目训练了一个预测分类器来预测不可编译的OSS项目的内联位置。同时，我们提出了一个数据集自动化打标签的方法来生成数据。</p>
-<p>​
-为了解决第三个挑战，分类器被在多种不同的编译设置环境下训练，我们将其建模为多标签分类（MLC）问题，并根据不同编译设置下内联决策的相关性提出了基于编译器-选择的分类器。</p>
-<p>​
-通过给定的OSS生成SFSs，然后使用已有的“1-to-1”方法将这些SFSs与二进制函数相比较即可。</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230111162237.png" /></p>
-<h3 id="模型训练">模型训练</h3>
-<h4 id="生成数据集">1. 生成数据集</h4>
-<p>​
-在生成数据集过程中，我们充分利用了编译过程生成的调试信息（用的都是可编译的OSS项目）。其会生成b2s行级别和函数级别的映射，并附带函数调用处的内联信息（是否内联）。</p>
-<p>​
-在开源项目编译时使用"-g"选项，可以使编译出的二进制文件附带从二进制地址到源文件某一行的映射信息（<u>行级别映射</u>），再利用<strong>Understand</strong>或者<strong>IDA
-Pro，tree-sitter，Chidra</strong>等工具，我们可以生成从二进制地址到源文件某一函数的映射信息（<u>函数级别映射</u>）。</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230111165709.png" /></p>
-<p>​
-如上图所示，圆圈是源码函数，方框是编译后的二进制函数。在（a）中，由于A只调用了C一次，故在编译后的二进制函数中C就被内联进了A中；但在（b）中，A调用了两次B，A和B都调用了C，无法很清楚的判断到底哪次调用需要被内联，故编译出的二进制函数也与编译选项有关，并不绝对。</p>
-<p>​
-<strong>上述例子可以看出，即使我们得到的源码函数之间的相互调用关系我们也无法确定哪些函数会被内联。</strong></p>
-<p>​
-但如果我们知道其二进制调用关系图，反过来看，若二进制图中某个调用在源码调用图中也存在（如上图a中的A–&gt;B），则这个函数就不是内联函数，反之就是内联函数。这样，通过对调试信息的使用，可以成功的将可编译OSS项目的内联位置标注出来。</p>
-<h4 id="特征提取">2. 特征提取</h4>
-<p>​
-考虑到编译器一般通过评估内联的利弊来决定是否内联，我们总结了几个可以评估内联操作利弊的特征：</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230111235130.png" /></p>
-<p>​
-如上表所示，特征共分为两大类<strong>Caller/Callee</strong>和<strong>Call
-Instruciton</strong>：</p>
+<p>​    为了解决第一个挑战，我们生成了<strong><em>Source Function Sets (SFSs)</em></strong>来完善资料库，以此应对有内联函数的二进制函数查询匹配。</p>
+<p>​    为了解决第二个挑战，我们使用可以编译的OSS项目训练了一个预测分类器来预测不可编译的OSS项目的内联位置。同时，我们提出了一个数据集自动化打标签的方法来生成数据。</p>
+<p>​    为了解决第三个挑战，分类器被在多种不同的编译设置环境下训练，我们将其建模为多标签分类（MLC）问题，并根据不同编译设置下内联决策的相关性提出了基于编译器-选择的分类器。</p>
+<p>​    通过给定的OSS生成SFSs，然后使用已有的“1-to-1”方法将这些SFSs与二进制函数相比较即可。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230111162237.png" alt=""></p>
+<h3 id="模型训练"><a href="#模型训练" class="headerlink" title="模型训练"></a>模型训练</h3><h4 id="1-生成数据集"><a href="#1-生成数据集" class="headerlink" title="1. 生成数据集"></a>1. 生成数据集</h4><p>​    在生成数据集过程中，我们充分利用了编译过程生成的调试信息（用的都是可编译的OSS项目）。其会生成b2s行级别和函数级别的映射，并附带函数调用处的内联信息（是否内联）。</p>
+<p>​    在开源项目编译时使用”-g”选项，可以使编译出的二进制文件附带从二进制地址到源文件某一行的映射信息（<u>行级别映射</u>），再利用<strong>Understand</strong>或者<strong>IDA Pro，tree-sitter，Chidra</strong>等工具，我们可以生成从二进制地址到源文件某一函数的映射信息（<u>函数级别映射</u>）。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230111165709.png" alt=""></p>
+<p>​    如上图所示，圆圈是源码函数，方框是编译后的二进制函数。在（a）中，由于A只调用了C一次，故在编译后的二进制函数中C就被内联进了A中；但在（b）中，A调用了两次B，A和B都调用了C，无法很清楚的判断到底哪次调用需要被内联，故编译出的二进制函数也与编译选项有关，并不绝对。</p>
+<p>​    <strong>上述例子可以看出，即使我们得到的源码函数之间的相互调用关系我们也无法确定哪些函数会被内联。</strong></p>
+<p>​    但如果我们知道其二进制调用关系图，反过来看，若二进制图中某个调用在源码调用图中也存在（如上图a中的A–&gt;B），则这个函数就不是内联函数，反之就是内联函数。这样，通过对调试信息的使用，可以成功的将可编译OSS项目的内联位置标注出来。</p>
+<h4 id="2-特征提取"><a href="#2-特征提取" class="headerlink" title="2. 特征提取"></a>2. 特征提取</h4><p>​    考虑到编译器一般通过评估内联的利弊来决定是否内联，我们总结了几个可以评估内联操作利弊的特征：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230111235130.png" alt=""></p>
+<p>​    如上表所示，特征共分为两大类<strong>Caller/Callee</strong>和<strong>Call Instruciton</strong>：</p>
 <ul>
 <li><p><strong>Caller/Callee</strong>：</p>
-<p>caller这里指调用其他公共开源函数的函数，callee指被许多其他函数调用的函数。这部分特征分为函数内部语句，函数定义语句和函数调用次数。</p></li>
+<p>caller这里指调用其他公共开源函数的函数，callee指被许多其他函数调用的函数。这部分特征分为函数内部语句，函数定义语句和函数调用次数。</p>
+</li>
 <li><p><strong>Call Instruciton：</strong></p>
-<p>调用函数指令，这里关注其调用的位置和参数声明，例如在内联循环中的函数调用就可以显著减少调用次数。同理，如果调用含有常量参数，可以帮助减少内联函数的大小。</p></li>
+<p> 调用函数指令，这里关注其调用的位置和参数声明，例如在内联循环中的函数调用就可以显著减少调用次数。同理，如果调用含有常量参数，可以帮助减少内联函数的大小。</p>
+</li>
 </ul>
-<h4 id="模型训练-1">3. 模型训练</h4>
-<h5 id="训练数据分析">3.1 训练数据分析</h5>
-<p>​ 我们这里提出了一个名为<strong>ECOCCJ48(<em>Ensemble of Compiler
-Optimization based Classifier Chains built with
-J48</em>)</strong>的MLC模型来预测内联函数位置。在多标签任务中，标签之间通常存在联系，下表展示了两个编译器（gcc-8.2.0和clang-7.0）在O<sub>x</sub>优化下的内联措施的差异和联系：</p>
+<h4 id="3-模型训练"><a href="#3-模型训练" class="headerlink" title="3. 模型训练"></a>3. 模型训练</h4><h5 id="3-1-训练数据分析"><a href="#3-1-训练数据分析" class="headerlink" title="3.1 训练数据分析"></a>3.1 训练数据分析</h5><p>​    我们这里提出了一个名为<strong>ECOCCJ48(<em>Ensemble of Compiler Optimization based Classifier Chains built with J48</em>)</strong>的MLC模型来预测内联函数位置。在多标签任务中，标签之间通常存在联系，下表展示了两个编译器（gcc-8.2.0和clang-7.0）在O~x~优化下的内联措施的差异和联系：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230112145603.png" style="zoom:80%;" /></p>
 <p><em>PS：opt1-opt2意味着使用优化措施opt1时内联，使用优化措施opt2时不内联的数量；opt1&amp;opt2意味着使用两个都内联的数量。</em></p>
-<p>​
-<strong>在同一编译器不同优化设置的条件下</strong>，由上图可以看出，94.78%的内联操作如果出现在低级优化措施的条件下，也会出现在更高级的优化措施条件下。所以在同一行内opt1&amp;opt2的数量都大于opt1-opt2。</p>
-<p>​
-<strong>在不同编译器的条件下</strong>，如下图所示，展示了不同优化措施下所做决策的Jaccard系数：</p>
+<p>​    <strong>在同一编译器不同优化设置的条件下</strong>，由上图可以看出，94.78%的内联操作如果出现在低级优化措施的条件下，也会出现在更高级的优化措施条件下。所以在同一行内opt1&amp;opt2的数量都大于opt1-opt2。</p>
+<p>​    <strong>在不同编译器的条件下</strong>，如下图所示，展示了不同优化措施下所做决策的Jaccard系数：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230112150531.png" style="zoom: 67%;" /></p>
-<p>​
-<strong>在同一编译器家族（例如GCC的不同版本）比较时，其内联决策的相似性很高。</strong>当使用O<sub>0</sub>-O<sub>3</sub>优化措施测试gcc-6.4.0
-和
-gcc-7.2.0，87%的函数调用采用了相同的内联决策。<strong>在不同编译器的条件下，</strong>其内联决策没有明显的联系。</p>
-<h5 id="ecoccj48模型">3.2 ECOCCJ48模型</h5>
-<p>​ ECOOCJ48分为两个部分，使用binary
-relevance来预测不同编译器下的标签，使用整合分类器链来预测同一编译器下不同优化措施的标签。</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230112152928.png" /></p>
-<h5 id="不平衡的数据集">3.3 不平衡的数据集</h5>
-<p>​ 目前存在的数据集有以下问题：</p>
-<p>​
-1.大多数的函数调用在被编译的过程中是不会被内联的，在使用O<sub>X</sub>优化时，大约只有20%的函数调用会被内联；</p>
-<p>​ 2.不同优化措施编译时内联点的比例也不同。</p>
-<p>​
-这些差异导致了训练数据集的不平衡，训练会更偏向于正常的调用。我们使用了集成学习方法来处理这些不平衡，其使用随机选择的数据集来训练，通过整合不同基础分类器的结果来预测标签。因为不同基础分类器在不同的资料库中被训练，故他们可以抓住内联模式。</p>
-<h3 id="sfs生成">SFS生成</h3>
-<h4 id="fcg构建与ics预测">1. FCG构建与ICS预测</h4>
-<p>​
-对于不可编译的OSS项目，首先使用一个解析器（parser）来提取代码中的函数调用点，构建FCG图。两个节点之间可以有多个有向边，<strong>边上附带函数调用的位置信息。</strong></p>
-<p>​
-对于FCG中的每个调用点，我们从其调用者，被调用者和调用指令中提取特征，将其作为ECOCCJ48的输入，得到所有编译设置（不同编译器+优化措施）的标签。</p>
-<h4 id="sfs生成-1">2. SFS生成</h4>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230113001842.png" style="zoom:80%;" /></p>
-<p>​
-如上图所示，（a）就是已经构建好的FCG图，其中红圈代表有内联函数的函数，黑圈则没有；红边代表内联操作，蓝边代表正常调用。<strong>假设FCG是一个有向无环图，SFS的生成就可以抽象成从FCG图中选择内联子树。</strong>这里将SFS的生成分为两个部分：根节点的选择（b）和边扩展。</p>
-<p>​ <strong>根节点的选择上</strong>，有以下原则：</p>
-<p>​ 1） 内联子树的根节点，如A,D；</p>
-<p>​
-2）非内联子树的根节点，但是既内联调用了其他函数，也被其他函数普通调用，如C。</p>
-<p>​
-除去这两种情况，要么一个节点没有指向其他节点的红色边，要么在内联子树上仅仅被其它红边所指。第一种情况显然不能进入SFS，第二种情况会被内联进其调用者之中。</p>
-<p>​ <strong>边扩展上</strong>，遵循以下规则：</p>
-<p>​ 1）
-对每个根节点，若其指向的节点仅有一条红边，则向下遍历其能遇到的所有节点（如对A，有A-&gt;C，A-&gt;C-&gt;E两条）；</p>
-<p>​
-2）对每个根节点，若其指向的节点有两条相异颜色的边，则红色的边继续向下搜索生成，蓝色的边仅在下个点处停止。（如对C-&gt;E）。</p>
-<p>​
-若FCG成环，我们仅需注意，如果一个被调用节点已经在SFS中了，就不必再次遍历即可避免重复。</p>
-<h4 id="sfs汇总">3. SFS汇总</h4>
-<p>​ 得到函数的SFS后，我们将被调用函数的代码直接放进调用函数中。</p>
-<h3 id="测试评估">测试评估</h3>
-<p>​ 测试部分回答了以下问题：</p>
+<p>​    <strong>在同一编译器家族（例如GCC的不同版本）比较时，其内联决策的相似性很高。</strong>当使用O~0~-O~3~优化措施测试gcc-6.4.0 和 gcc-7.2.0，87%的函数调用采用了相同的内联决策。<strong>在不同编译器的条件下，</strong>其内联决策没有明显的联系。</p>
+<h5 id="3-2-ECOCCJ48模型"><a href="#3-2-ECOCCJ48模型" class="headerlink" title="3.2 ECOCCJ48模型"></a>3.2 ECOCCJ48模型</h5><p>​    ECOOCJ48分为两个部分，使用binary relevance来预测不同编译器下的标签，使用整合分类器链来预测同一编译器下不同优化措施的标签。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230112152928.png" alt=""></p>
+<h5 id="3-3-不平衡的数据集"><a href="#3-3-不平衡的数据集" class="headerlink" title="3.3  不平衡的数据集"></a>3.3  不平衡的数据集</h5><p>​    目前存在的数据集有以下问题：</p>
+<p>​    1.大多数的函数调用在被编译的过程中是不会被内联的，在使用O~X~优化时，大约只有20%的函数调用会被内联；</p>
+<p>​    2.不同优化措施编译时内联点的比例也不同。</p>
+<p>​    这些差异导致了训练数据集的不平衡，训练会更偏向于正常的调用。我们使用了集成学习方法来处理这些不平衡，其使用随机选择的数据集来训练，通过整合不同基础分类器的结果来预测标签。因为不同基础分类器在不同的资料库中被训练，故他们可以抓住内联模式。</p>
+<h3 id="SFS生成"><a href="#SFS生成" class="headerlink" title="SFS生成"></a>SFS生成</h3><h4 id="1-FCG构建与ICS预测"><a href="#1-FCG构建与ICS预测" class="headerlink" title="1. FCG构建与ICS预测"></a>1. FCG构建与ICS预测</h4><p>​    对于不可编译的OSS项目，首先使用一个解析器（parser）来提取代码中的函数调用点，构建FCG图。两个节点之间可以有多个有向边，<strong>边上附带函数调用的位置信息。</strong></p>
+<p>​    对于FCG中的每个调用点，我们从其调用者，被调用者和调用指令中提取特征，将其作为ECOCCJ48的输入，得到所有编译设置（不同编译器+优化措施）的标签。</p>
+<h4 id="2-SFS生成"><a href="#2-SFS生成" class="headerlink" title="2. SFS生成"></a>2. SFS生成</h4><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230113001842.png" style="zoom:80%;" /></p>
+<p>​    如上图所示，（a）就是已经构建好的FCG图，其中红圈代表有内联函数的函数，黑圈则没有；红边代表内联操作，蓝边代表正常调用。<strong>假设FCG是一个有向无环图，SFS的生成就可以抽象成从FCG图中选择内联子树。</strong>这里将SFS的生成分为两个部分：根节点的选择（b）和边扩展。</p>
+<p>​    <strong>根节点的选择上</strong>，有以下原则：</p>
+<p>​    1） 内联子树的根节点，如A,D；</p>
+<p>​    2）非内联子树的根节点，但是既内联调用了其他函数，也被其他函数普通调用，如C。</p>
+<p>​    除去这两种情况，要么一个节点没有指向其他节点的红色边，要么在内联子树上仅仅被其它红边所指。第一种情况显然不能进入SFS，第二种情况会被内联进其调用者之中。</p>
+<p>​    <strong>边扩展上</strong>，遵循以下规则：</p>
+<p>​    1） 对每个根节点，若其指向的节点仅有一条红边，则向下遍历其能遇到的所有节点（如对A，有A-&gt;C，A-&gt;C-&gt;E两条）；</p>
+<p>​    2）对每个根节点，若其指向的节点有两条相异颜色的边，则红色的边继续向下搜索生成，蓝色的边仅在下个点处停止。（如对C-&gt;E）。    </p>
+<p>​    若FCG成环，我们仅需注意，如果一个被调用节点已经在SFS中了，就不必再次遍历即可避免重复。</p>
+<h4 id="3-SFS汇总"><a href="#3-SFS汇总" class="headerlink" title="3. SFS汇总"></a>3. SFS汇总</h4><p>​    得到函数的SFS后，我们将被调用函数的代码直接放进调用函数中。</p>
+<h3 id="测试评估"><a href="#测试评估" class="headerlink" title="测试评估"></a>测试评估</h3><p>​    测试部分回答了以下问题：</p>
 <blockquote>
-<ol type="1">
+<ol>
 <li>O2NMatcher可以提高现有1-to-1工作的表现吗？</li>
-<li>与<em>Bingo</em> 和
-<em>ASM2Vec</em>比较，O2NMatcher生成的SFS有多准确？</li>
+<li>与<em>Bingo</em> 和 <em>ASM2Vec</em>比较，O2NMatcher生成的SFS有多准确？</li>
 <li>与现有的多标签分类工作相比，<em>ECOCCJ48</em>的表现如何？</li>
 <li>O2NMatcher在训练，预测和生成SFS的时间花费如何？</li>
 <li>我们选取的特征集在ICS预测上有什么贡献？</li>
 </ol>
 </blockquote>
-<h4 id="研究背景">1. 研究背景</h4>
-<h5 id="测试数据集">1.1 测试数据集</h5>
-<p>​
-我们从GNU项目选择了51个包，使用9种编译器、4种优化措施编译成x86-64，得到8460个二进制文件和4294478个二进制函数。这些数据包含了诸如Coreutils、OpenSSL等在二进制相似性检测工作中广泛被使用的包。如下表所示：</p>
+<h4 id="1-研究背景"><a href="#1-研究背景" class="headerlink" title="1. 研究背景"></a>1. 研究背景</h4><h5 id="1-1-测试数据集"><a href="#1-1-测试数据集" class="headerlink" title="1.1 测试数据集"></a>1.1 测试数据集</h5><p>​    我们从GNU项目选择了51个包，使用9种编译器、4种优化措施编译成x86-64，得到8460个二进制文件和4294478个二进制函数。这些数据包含了诸如Coreutils、OpenSSL等在二进制相似性检测工作中广泛被使用的包。如下表所示：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116181546.png" style="zoom:80%;" /></p>
-<h5 id="benchmark">1.2 Benchmark</h5>
-<p>​
-因为O2NMatcher是一个对其它b2s方法的补充，我们需要选择一个baseline。这里我们选择<strong>CodeCMR</strong>，一个现有工作表现最好的b2s方法。CodeCMR有一个开放工具BinaryAI，可以方便后续测试。</p>
-<p>（Zeping Yu, Wenxin Zheng, Jiaqi Wang, Qiyi Tang, Sen Nie, and Shi
-Wu. 2020. Codecmr: Cross-modal retrieval for function-level binary
-source code matching. <em>Advances in Neural Information Processing
-Systems</em> 33 (2020), 3872–3883.）</p>
-<h5 id="实验设置">1.3 实验设置</h5>
-<p>​
-<strong>90%随机选择的训练集以及10%测试集。</strong>由于相同编译器的内联选择比较相似，这里测试集仅用两个编译器生成：gcc-2.2.0和clang-7.0。测试集包含1.1中所有的编译器生成的数据。<u>分类器在训练集上训练，然后对测试集生成SFSs</u>。为了避免误差我们重复实验10次。</p>
-<p>​ 测试时，使用不带调试信息的stripped
-binary，并且OSS文件不能被编译。</p>
-<h5 id="评估标准">1.4 评估标准</h5>
-<p>​
-<strong>使用标准召回率recall@K来评估O2NMatcher准确率</strong>。（Recall@K召回率是指前topK结果中检索出的相关结果数和库中所有的相关结果数的比率，衡量的是检索系统的查全率。）在这里，recall@K代表前k个模型返回的源码函数中真正的源码函数占比。对于1-to-1匹配，真正的源码函数就是该待检测二进制函数的源码；对于我们的1-to-n匹配，在SFSs中，某个函数的根函数是真正的源码函数也可以算作阳性样本。在接下来的实验中我们会使用K
-= 1、10和50来测试。</p>
-<p>​ <strong>使用SFS大小（SFS size）来评估O2NMatcher成本</strong>。SFS
-size是已生成的SFSs数量比上原函数集的数量。因为新增的SFSs增加了资料库的大小，故可能影响查询匹配的时间。</p>
-<p>​
-<strong>使用precision、recall和F1-score来评估ECOCCJ48准确率。</strong></p>
-<h5 id="o2nmatcher的实现">1.5 O2NMatcher的实现</h5>
-<p>​
-在数据集标注工作上，我们使用<strong>Understand</strong>对源码做语法分析，使用<strong>IDA
-Pro</strong>来反汇编二进制文件。在FCG构建上，我们使用<strong>Understand</strong>来提取所有函数调用点，对源码生成FCG图，使用<strong>IDA
-Pro</strong>对二进制文件生成FCG图。在函数调用特征提取上，我们使用<strong>tree-sitter</strong>来提取函数体、函数定义和函数调用指令的特征，使用<strong>Understand</strong>提取函数调用次数特征。</p>
-<p>​
-在模型训练工作上，我们使用Python工具<strong><em>scikit-multilearn</em></strong>来实现ECOCCJ48模型和其他MCL方法。整个程序在Ubuntu
-18.04、Intel Xeon Gold 6266C、1024GB DDR4 RAM、Nvidia RTX3090
-GPU环境上运行。</p>
-<h4 id="对问题一的回答o2nmatcher的效果">2.
-对问题一的回答：O2NMatcher的效果</h4>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116190905.png" style="zoom:80%;" /></p>
-<h4 id="对问题二的回答sfss的效果">3. 对问题二的回答：SFSs的效果</h4>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116191213.png" style="zoom:80%;" /></p>
-<p>​ 上表比较了O2NMatcher、Bingo和ASM2Vec生成的SFSs与标准答案的结果。</p>
+<h5 id="1-2-Benchmark"><a href="#1-2-Benchmark" class="headerlink" title="1.2 Benchmark"></a>1.2 Benchmark</h5><p>​    因为O2NMatcher是一个对其它b2s方法的补充，我们需要选择一个baseline。这里我们选择<strong>CodeCMR</strong>，一个现有工作表现最好的b2s方法。CodeCMR有一个开放工具BinaryAI，可以方便后续测试。</p>
+<p>（Zeping Yu, Wenxin Zheng, Jiaqi Wang, Qiyi Tang, Sen Nie, and Shi Wu. 2020. Codecmr: Cross-modal retrieval for function-level binary source code matching. <em>Advances in Neural Information Processing Systems</em> 33 (2020), 3872–3883.）</p>
+<h5 id="1-3-实验设置"><a href="#1-3-实验设置" class="headerlink" title="1.3 实验设置"></a>1.3 实验设置</h5><p>​    <strong>90%随机选择的训练集以及10%测试集。</strong>由于相同编译器的内联选择比较相似，这里测试集仅用两个编译器生成：gcc-2.2.0和clang-7.0。测试集包含1.1中所有的编译器生成的数据。<u>分类器在训练集上训练，然后对测试集生成SFSs</u>。为了避免误差我们重复实验10次。</p>
+<p>​    测试时，使用不带调试信息的stripped binary，并且OSS文件不能被编译。</p>
+<h5 id="1-4-评估标准"><a href="#1-4-评估标准" class="headerlink" title="1.4 评估标准"></a>1.4 评估标准</h5><p>​    <strong>使用标准召回率recall@K来评估O2NMatcher准确率</strong>。（Recall@K召回率是指前topK结果中检索出的相关结果数和库中所有的相关结果数的比率，衡量的是检索系统的查全率。）在这里，recall@K代表前k个模型返回的源码函数中真正的源码函数占比。对于1-to-1匹配，真正的源码函数就是该待检测二进制函数的源码；对于我们的1-to-n匹配，在SFSs中，某个函数的根函数是真正的源码函数也可以算作阳性样本。在接下来的实验中我们会使用K = 1、10和50来测试。</p>
+<p>​    <strong>使用SFS大小（SFS size）来评估O2NMatcher成本</strong>。SFS size是已生成的SFSs数量比上原函数集的数量。因为新增的SFSs增加了资料库的大小，故可能影响查询匹配的时间。</p>
+<p>​    <strong>使用precision、recall和F1-score来评估ECOCCJ48准确率。</strong></p>
+<h5 id="1-5-O2NMatcher的实现"><a href="#1-5-O2NMatcher的实现" class="headerlink" title="1.5 O2NMatcher的实现"></a>1.5 O2NMatcher的实现</h5><p>​    在数据集标注工作上，我们使用<strong>Understand</strong>对源码做语法分析，使用<strong>IDA Pro</strong>来反汇编二进制文件。在FCG构建上，我们使用<strong>Understand</strong>来提取所有函数调用点，对源码生成FCG图，使用<strong>IDA Pro</strong>对二进制文件生成FCG图。在函数调用特征提取上，我们使用<strong>tree-sitter</strong>来提取函数体、函数定义和函数调用指令的特征，使用<strong>Understand</strong>提取函数调用次数特征。</p>
+<p>​    在模型训练工作上，我们使用Python工具<strong><em>scikit-multilearn</em></strong>来实现ECOCCJ48模型和其他MCL方法。整个程序在Ubuntu 18.04、Intel Xeon Gold 6266C、1024GB DDR4 RAM、Nvidia RTX3090 GPU环境上运行。</p>
+<h4 id="2-对问题一的回答：O2NMatcher的效果"><a href="#2-对问题一的回答：O2NMatcher的效果" class="headerlink" title="2. 对问题一的回答：O2NMatcher的效果"></a>2. 对问题一的回答：O2NMatcher的效果</h4><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116190905.png" style="zoom:80%;" /></p>
+<h4 id="3-对问题二的回答：SFSs的效果"><a href="#3-对问题二的回答：SFSs的效果" class="headerlink" title="3. 对问题二的回答：SFSs的效果"></a>3. 对问题二的回答：SFSs的效果</h4><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116191213.png" style="zoom:80%;" /></p>
+<p>​    上表比较了O2NMatcher、Bingo和ASM2Vec生成的SFSs与标准答案的结果。</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116191540.png" style="zoom:80%;" /></p>
-<h4 id="对问题三的回答ecoccj48的效果">4.
-对问题三的回答：ECOCCJ48的效果</h4>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116205243.png" /></p>
+<h4 id="4-对问题三的回答：ECOCCJ48的效果"><a href="#4-对问题三的回答：ECOCCJ48的效果" class="headerlink" title="4. 对问题三的回答：ECOCCJ48的效果"></a>4. 对问题三的回答：ECOCCJ48的效果</h4><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116205243.png" alt=""></p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116205306.png" style="zoom:80%;" /></p>
-<h4 id="对问题四的回答o2nmatcher的成本">5.
-对问题四的回答：O2NMatcher的成本</h4>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116205338.png" /></p>
-<h4 id="对问题五的回答特征选择的作用">6.
-对问题五的回答：特征选择的作用</h4>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116205512.png" style="zoom:80%;" /></p>
-<h2 id="五问题">五、问题</h2>
-<ol type="1">
+<h4 id="5-对问题四的回答：O2NMatcher的成本"><a href="#5-对问题四的回答：O2NMatcher的成本" class="headerlink" title="5. 对问题四的回答：O2NMatcher的成本"></a>5. 对问题四的回答：O2NMatcher的成本</h4><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116205338.png" alt=""></p>
+<h4 id="6-对问题五的回答：特征选择的作用"><a href="#6-对问题五的回答：特征选择的作用" class="headerlink" title="6. 对问题五的回答：特征选择的作用"></a>6. 对问题五的回答：特征选择的作用</h4><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116205512.png" style="zoom:80%;" /></p>
+<h2 id="五、问题"><a href="#五、问题" class="headerlink" title="五、问题"></a>五、问题</h2><ol>
 <li><p>该方法模型怎么结合已有的方法？</p>
-<p>原来怎么比现在就怎么比，只是从源码库变成了SFS。</p></li>
+<p>原来怎么比现在就怎么比，只是从源码库变成了SFS。</p>
+</li>
+</ol>
+<ol>
 <li><p>SFSs怎么起作用？</p>
-<p>将可能内联的函数体放进原函数的新代码库。</p></li>
+<p>将可能内联的函数体放进原函数的新代码库。</p>
+</li>
+</ol>
+<ol>
 <li><p>不平衡的数据集怎么处理的？</p>
-<p>“We use ensemble methods to handle the imbalanced dataset. The
-ensemble method trains the base classifiers on the randomly selected
-dataset and predicts the labels by ggregating the predictions from the
-base classifiers. As different base lassifiers are trained in different
-corpora, they can capture the inlining patterns of some rare
-labels”这部分没看懂什么意思</p></li>
+<p>“We use ensemble methods to handle the imbalanced dataset. The ensemble method trains the base classifiers on the randomly selected dataset and predicts the labels by  ggregating the predictions from the base classifiers. As different base  lassifiers are trained in different corpora, they can capture the inlining patterns of some rare labels”这部分没看懂什么意思</p>
+</li>
+</ol>
+<ol>
 <li><p>在汇总SFS时：</p>
-<p>“Directly, there are two ways to aggregate the SFS: conduct inlining
-for the source functions in the SFSs such as the inlining during
-compilation or directly aggregate the content of all the functions in
-the SFS”，这两种方式具体什么区别？</p></li>
+<p>“Directly, there are two ways to aggregate the SFS: conduct inlining for the source functions in the SFSs such as the inlining during compilation or directly aggregate the content of all the functions in the SFS”，这两种方式具体什么区别？</p>
+</li>
 </ol>
 
       
@@ -458,13 +367,7 @@ the SFS”，这两种方式具体什么区别？</p></li>
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BBcomparing-one-with-many-solving-binary2source-function-matching-under-function-inlining"><span class="nav-number">1.</span> <span class="nav-text">【论文阅读】Comparing
-One with Many — Solving Binary2source Function Matching Under Function
-Inlining</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80abstract"><span class="nav-number">1.1.</span> <span class="nav-text">一、ABSTRACT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E8%83%8C%E6%99%AF%E7%9F%A5%E8%AF%86"><span class="nav-number">1.2.</span> <span class="nav-text">二、背景知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E6%8F%90%E5%87%BA%E9%97%AE%E9%A2%98"><span class="nav-number">1.3.</span> <span class="nav-text">三、提出问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#b2s%E5%8C%B9%E9%85%8D%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">1.3.0.1.</span> <span class="nav-text">B2S匹配的作用：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%85%E8%81%94%E5%87%BD%E6%95%B0%E5%B8%A6%E6%9D%A5%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">1.3.0.2.</span> <span class="nav-text">内联函数带来的问题：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E8%BF%99%E4%B8%AA%E9%97%AE%E9%A2%98%E9%9D%A2%E4%B8%B4%E7%9A%84%E6%8C%91%E6%88%98"><span class="nav-number">1.3.0.3.</span> <span class="nav-text">解决这个问题面临的挑战：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E6%A8%A1%E5%9E%8B%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">四、模型方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-number">1.4.1.</span> <span class="nav-text">模型训练</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">1.4.1.1.</span> <span class="nav-text">1. 生成数据集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E6%8F%90%E5%8F%96"><span class="nav-number">1.4.1.2.</span> <span class="nav-text">2. 特征提取</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83-1"><span class="nav-number">1.4.1.3.</span> <span class="nav-text">3. 模型训练</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90"><span class="nav-number">1.4.1.3.1.</span> <span class="nav-text">3.1 训练数据分析</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ecoccj48%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.4.1.3.2.</span> <span class="nav-text">3.2 ECOCCJ48模型</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%8D%E5%B9%B3%E8%A1%A1%E7%9A%84%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">1.4.1.3.3.</span> <span class="nav-text">3.3 不平衡的数据集</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sfs%E7%94%9F%E6%88%90"><span class="nav-number">1.4.2.</span> <span class="nav-text">SFS生成</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#fcg%E6%9E%84%E5%BB%BA%E4%B8%8Eics%E9%A2%84%E6%B5%8B"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">1. FCG构建与ICS预测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sfs%E7%94%9F%E6%88%90-1"><span class="nav-number">1.4.2.2.</span> <span class="nav-text">2. SFS生成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sfs%E6%B1%87%E6%80%BB"><span class="nav-number">1.4.2.3.</span> <span class="nav-text">3. SFS汇总</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E8%AF%84%E4%BC%B0"><span class="nav-number">1.4.3.</span> <span class="nav-text">测试评估</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A0%94%E7%A9%B6%E8%83%8C%E6%99%AF"><span class="nav-number">1.4.3.1.</span> <span class="nav-text">1. 研究背景</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">1.4.3.1.1.</span> <span class="nav-text">1.1 测试数据集</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#benchmark"><span class="nav-number">1.4.3.1.2.</span> <span class="nav-text">1.2 Benchmark</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.4.3.1.3.</span> <span class="nav-text">1.3 实验设置</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%E6%A0%87%E5%87%86"><span class="nav-number">1.4.3.1.4.</span> <span class="nav-text">1.4 评估标准</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#o2nmatcher%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.4.3.1.5.</span> <span class="nav-text">1.5 O2NMatcher的实现</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%B9%E9%97%AE%E9%A2%98%E4%B8%80%E7%9A%84%E5%9B%9E%E7%AD%94o2nmatcher%E7%9A%84%E6%95%88%E6%9E%9C"><span class="nav-number">1.4.3.2.</span> <span class="nav-text">2.
-对问题一的回答：O2NMatcher的效果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%B9%E9%97%AE%E9%A2%98%E4%BA%8C%E7%9A%84%E5%9B%9E%E7%AD%94sfss%E7%9A%84%E6%95%88%E6%9E%9C"><span class="nav-number">1.4.3.3.</span> <span class="nav-text">3. 对问题二的回答：SFSs的效果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%B9%E9%97%AE%E9%A2%98%E4%B8%89%E7%9A%84%E5%9B%9E%E7%AD%94ecoccj48%E7%9A%84%E6%95%88%E6%9E%9C"><span class="nav-number">1.4.3.4.</span> <span class="nav-text">4.
-对问题三的回答：ECOCCJ48的效果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%B9%E9%97%AE%E9%A2%98%E5%9B%9B%E7%9A%84%E5%9B%9E%E7%AD%94o2nmatcher%E7%9A%84%E6%88%90%E6%9C%AC"><span class="nav-number">1.4.3.5.</span> <span class="nav-text">5.
-对问题四的回答：O2NMatcher的成本</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%B9%E9%97%AE%E9%A2%98%E4%BA%94%E7%9A%84%E5%9B%9E%E7%AD%94%E7%89%B9%E5%BE%81%E9%80%89%E6%8B%A9%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">1.4.3.6.</span> <span class="nav-text">6.
-对问题五的回答：特征选择的作用</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E9%97%AE%E9%A2%98"><span class="nav-number">1.5.</span> <span class="nav-text">五、问题</span></a></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Comparing-One-with-Many-%E2%80%94-Solving-Binary2source-Function-Matching-Under-Function-Inlining"><span class="nav-number">1.</span> <span class="nav-text">【论文阅读】Comparing One with Many — Solving Binary2source Function Matching Under  Function Inlining</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81ABSTRACT"><span class="nav-number">1.1.</span> <span class="nav-text">一、ABSTRACT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E8%83%8C%E6%99%AF%E7%9F%A5%E8%AF%86"><span class="nav-number">1.2.</span> <span class="nav-text">二、背景知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%8F%90%E5%87%BA%E9%97%AE%E9%A2%98"><span class="nav-number">1.3.</span> <span class="nav-text">三、提出问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#B2S%E5%8C%B9%E9%85%8D%E7%9A%84%E4%BD%9C%E7%94%A8%EF%BC%9A"><span class="nav-number">1.3.0.1.</span> <span class="nav-text">B2S匹配的作用：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%85%E8%81%94%E5%87%BD%E6%95%B0%E5%B8%A6%E6%9D%A5%E7%9A%84%E9%97%AE%E9%A2%98%EF%BC%9A"><span class="nav-number">1.3.0.2.</span> <span class="nav-text">内联函数带来的问题：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E8%BF%99%E4%B8%AA%E9%97%AE%E9%A2%98%E9%9D%A2%E4%B8%B4%E7%9A%84%E6%8C%91%E6%88%98%EF%BC%9A"><span class="nav-number">1.3.0.3.</span> <span class="nav-text">解决这个问题面临的挑战：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%A8%A1%E5%9E%8B%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">四、模型方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-number">1.4.1.</span> <span class="nav-text">模型训练</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E7%94%9F%E6%88%90%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">1.4.1.1.</span> <span class="nav-text">1. 生成数据集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E7%89%B9%E5%BE%81%E6%8F%90%E5%8F%96"><span class="nav-number">1.4.1.2.</span> <span class="nav-text">2. 特征提取</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-number">1.4.1.3.</span> <span class="nav-text">3. 模型训练</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-1-%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90"><span class="nav-number">1.4.1.3.1.</span> <span class="nav-text">3.1 训练数据分析</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2-ECOCCJ48%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.4.1.3.2.</span> <span class="nav-text">3.2 ECOCCJ48模型</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-3-%E4%B8%8D%E5%B9%B3%E8%A1%A1%E7%9A%84%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">1.4.1.3.3.</span> <span class="nav-text">3.3  不平衡的数据集</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SFS%E7%94%9F%E6%88%90"><span class="nav-number">1.4.2.</span> <span class="nav-text">SFS生成</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-FCG%E6%9E%84%E5%BB%BA%E4%B8%8EICS%E9%A2%84%E6%B5%8B"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">1. FCG构建与ICS预测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-SFS%E7%94%9F%E6%88%90"><span class="nav-number">1.4.2.2.</span> <span class="nav-text">2. SFS生成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-SFS%E6%B1%87%E6%80%BB"><span class="nav-number">1.4.2.3.</span> <span class="nav-text">3. SFS汇总</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E8%AF%84%E4%BC%B0"><span class="nav-number">1.4.3.</span> <span class="nav-text">测试评估</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E7%A0%94%E7%A9%B6%E8%83%8C%E6%99%AF"><span class="nav-number">1.4.3.1.</span> <span class="nav-text">1. 研究背景</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-1-%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">1.4.3.1.1.</span> <span class="nav-text">1.1 测试数据集</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#1-2-Benchmark"><span class="nav-number">1.4.3.1.2.</span> <span class="nav-text">1.2 Benchmark</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#1-3-%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.4.3.1.3.</span> <span class="nav-text">1.3 实验设置</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#1-4-%E8%AF%84%E4%BC%B0%E6%A0%87%E5%87%86"><span class="nav-number">1.4.3.1.4.</span> <span class="nav-text">1.4 评估标准</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#1-5-O2NMatcher%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.4.3.1.5.</span> <span class="nav-text">1.5 O2NMatcher的实现</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E5%AF%B9%E9%97%AE%E9%A2%98%E4%B8%80%E7%9A%84%E5%9B%9E%E7%AD%94%EF%BC%9AO2NMatcher%E7%9A%84%E6%95%88%E6%9E%9C"><span class="nav-number">1.4.3.2.</span> <span class="nav-text">2. 对问题一的回答：O2NMatcher的效果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E5%AF%B9%E9%97%AE%E9%A2%98%E4%BA%8C%E7%9A%84%E5%9B%9E%E7%AD%94%EF%BC%9ASFSs%E7%9A%84%E6%95%88%E6%9E%9C"><span class="nav-number">1.4.3.3.</span> <span class="nav-text">3. 对问题二的回答：SFSs的效果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E5%AF%B9%E9%97%AE%E9%A2%98%E4%B8%89%E7%9A%84%E5%9B%9E%E7%AD%94%EF%BC%9AECOCCJ48%E7%9A%84%E6%95%88%E6%9E%9C"><span class="nav-number">1.4.3.4.</span> <span class="nav-text">4. 对问题三的回答：ECOCCJ48的效果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-%E5%AF%B9%E9%97%AE%E9%A2%98%E5%9B%9B%E7%9A%84%E5%9B%9E%E7%AD%94%EF%BC%9AO2NMatcher%E7%9A%84%E6%88%90%E6%9C%AC"><span class="nav-number">1.4.3.5.</span> <span class="nav-text">5. 对问题四的回答：O2NMatcher的成本</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-%E5%AF%B9%E9%97%AE%E9%A2%98%E4%BA%94%E7%9A%84%E5%9B%9E%E7%AD%94%EF%BC%9A%E7%89%B9%E5%BE%81%E9%80%89%E6%8B%A9%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">1.4.3.6.</span> <span class="nav-text">6. 对问题五的回答：特征选择的作用</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E9%97%AE%E9%A2%98"><span class="nav-number">1.5.</span> <span class="nav-text">五、问题</span></a></li></ol></li></ol>
     
     </div>
   </aside>
@@ -658,20 +561,5 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>

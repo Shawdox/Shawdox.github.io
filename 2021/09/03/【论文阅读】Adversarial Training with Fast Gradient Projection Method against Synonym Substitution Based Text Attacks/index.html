@@ -13,13 +13,20 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="【论文阅读】Adversarial Training with Fast Gradient Projection Method against Synonym Substitution Based Text Attacks  时间：2020 作者：王晓森，杨逸辰等 华中科技大学 会议：AAAI  总结：  做了什么？  提出了一种速度更快的，更容易应用在复杂神经网络和大数据">
+  <meta name="description" content="【论文阅读】Adversarial Training with Fast Gradient Projection Method against Synonym Substitution Based Text Attacks 时间：2020 作者：王晓森，杨逸辰等      华中科技大学 会议：AAAI  总结： 做了什么？  提出了一种速度更快的，更容易应用在复杂神经网络和大数据集上的，基于同义词">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Adversarial Training with Fast Gradient Projection Method against Synonym Substitution Based Text Attacks">
 <meta property="og:url" content="http://example.com/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Adversarial%20Training%20with%20Fast%20Gradient%20Projection%20Method%20against%20Synonym%20Substitution%20Based%20Text%20Attacks/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="【论文阅读】Adversarial Training with Fast Gradient Projection Method against Synonym Substitution Based Text Attacks  时间：2020 作者：王晓森，杨逸辰等 华中科技大学 会议：AAAI  总结：  做了什么？  提出了一种速度更快的，更容易应用在复杂神经网络和大数据">
+<meta property="og:description" content="【论文阅读】Adversarial Training with Fast Gradient Projection Method against Synonym Substitution Based Text Attacks 时间：2020 作者：王晓森，杨逸辰等      华中科技大学 会议：AAAI  总结： 做了什么？  提出了一种速度更快的，更容易应用在复杂神经网络和大数据集上的，基于同义词">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904144444.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904134852.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904135419.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904135842.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904140647.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904141719.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904142406.png">
 <meta property="article:published_time" content="2021-09-03T08:19:51.193Z">
 <meta property="article:modified_time" content="2021-09-04T06:45:15.015Z">
 <meta property="article:author" content="Shaw">
@@ -27,6 +34,7 @@
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="AD training">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904144444.png">
   
     <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
   
@@ -153,136 +161,79 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1
-id="论文阅读adversarial-training-with-fast-gradient-projection-method-against-synonym-substitution-based-text-attacks">【论文阅读】Adversarial
-Training with Fast Gradient Projection Method against Synonym
-Substitution Based Text Attacks</h1>
-<blockquote>
+        <h1 id="【论文阅读】Adversarial-Training-with-Fast-Gradient-Projection-Method-against-Synonym-Substitution-Based-Text-Attacks"><a href="#【论文阅读】Adversarial-Training-with-Fast-Gradient-Projection-Method-against-Synonym-Substitution-Based-Text-Attacks" class="headerlink" title="【论文阅读】Adversarial Training with Fast Gradient Projection Method against Synonym Substitution Based Text Attacks"></a>【论文阅读】Adversarial Training with Fast Gradient Projection Method against Synonym Substitution Based Text Attacks</h1><blockquote>
 <p><strong>时间：2020</strong></p>
-<p><strong>作者：王晓森，杨逸辰等 </strong>华中科技大学</p>
+<p><strong>作者：王晓森，杨逸辰等      </strong>华中科技大学</p>
 <p><strong>会议：AAAI</strong></p>
 </blockquote>
-<h3 id="总结">总结：</h3>
-<ol type="1">
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><ol>
 <li><p><strong>做了什么？</strong></p>
 <ul>
-<li><p>提出了一种速度更快的，更容易应用在复杂神经网络和大数据集上的，基于同义词替换的NLP对抗样本生成方法，FGPM；</p></li>
-<li><p>将FGPM纳入对抗训练中，以提高深度神经网络的鲁棒性。</p></li>
-</ul></li>
-<li><p><strong>怎么做的？</strong></p></li>
+<li><p>提出了一种速度更快的，更容易应用在复杂神经网络和大数据集上的，基于同义词替换的NLP对抗样本生成方法，FGPM；</p>
+</li>
+<li><p>将FGPM纳入对抗训练中，以提高深度神经网络的鲁棒性。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>怎么做的？</strong></p>
+</li>
+</ol>
+<ol>
 <li><p><strong>实验结果？</strong></p>
 <ul>
 <li>FGPM的效果不是最高的，但也跟最高的差不多，但生成对抗样本的时间对比同类方法，缩减了1-3个数量级。</li>
 <li>ATFL的对抗样本防御能力和抗转移能力很强。</li>
-</ul></li>
+</ul>
+</li>
 </ol>
-<hr />
-<h3 id="abstract">Abstract:</h3>
-<p>​
-对抗训练是对于提升图像分类深度神经网络鲁棒性的，基于实验的最成功的进步所在。</p>
-<p>​
-然而，对于文本分类，现有的基于同义词替换的对抗样本攻击十分奏效，但却没有被很有效地合并入实际的文本对抗训练中。</p>
-<p>​
-基于梯度的攻击对于图像很有效，但因为文本的词汇，语法，语义结构的限制以及离散的文本输入空间，不能很好的应用于基于近义词替换的文本攻击中。</p>
-<p>​
-因此，我们提出了一个基于同义词的替换的快速的文本对抗抗攻击方法名为<strong><em>Fast
-Gradient Projection Method
-(FGPM)</em></strong>。它的速度是已有文本攻击方法的20余倍，攻击效果也跟这些方法差不多。</p>
-<p>​
-我们接着将FGPM合并入对抗训练中，提出了一个文本防御方法，<strong><em>Adversarial
-Training with FGPM enhanced by Logit pairing</em>(ATFL)</strong>。</p>
-<p>​
-实验结果表明ATFL可以显著提高模型的鲁棒性，破坏对抗样本的可转移性。</p>
-<hr />
-<h3 id="introduction">1 Introduction:</h3>
-<p>​
-现有的针对NLP的攻击方法包括了：字符等级攻击，单词等级攻击，句子等级攻击。</p>
-<p>​ 对于字符等级的攻击，最近的工作（<em>Pruthi, Dhingra, and Lipton
-2019</em>）表明了拼写检查器很容易修正样本中的扰动；</p>
-<p>​
-对于句子等级的攻击，其一般需要基于改述，故需要更长的时间来生成对抗样本；</p>
-<p>​ 对于单词等级的攻击，基于嵌入扰动的替换（<em>replacing word based on
-embedding
-perturbation</em>），添加，删除单词都会很容易改变句子的语法语义结构与正确性，<strong>故同义词替换的方法可以更好的处理上述问题，同时保证对抗样本更难被人类观察者发现</strong>。</p>
-<p>​
-但不幸的是，基于同义词替换的攻击相较于如今对图像的攻击展现出了更低的功效。</p>
-<p>​</p>
-<p>​
-据我们所知，对抗训练，对图像数据最有效的防御方法之一，并没有在对抗基于同义词替换的攻击上很好的实施过。</p>
-<p>​
-一方面，现有的基于同义词替换的攻击方法通常效率要低得多，难以纳入对抗训练。另一方面，尽管对图像的方法很有效，但其并不能直接移植到文本数据上。</p>
-<p>​</p>
-<h4 id="adversarial-defense">1.1 Adversarial Defense:</h4>
-<p>​
-有一系列工作对词嵌入进行扰动，并将扰动作为正则化策略用于对抗训练(<em>Miyato,
-Dai, and Goodfellow</em></p>
-<p><em>2016; Sato et al. 2018; Barham and Feizi 2019</em>)
-。这些工作目的是提高模型对于原始数据集的表现，并不是为了防御对抗样本攻击，因此，我们不会考虑这些工作。</p>
-<p>​
-不同于如今现有的防御方法，我们的工作聚焦于快速对抗样本生成，容易应用在复杂的神经网络和大数据集上的防御方法。</p>
-<hr />
-<h3 id="fast-gradient-projection-methodfgpm">2 Fast Gradient Projection
-Method（FGPM）:</h3>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904144444.png" /></p>
-<hr />
-<h3 id="adversarial-training-with-fgpm">3 Adversarial Training with
-FGPM：</h3>
-<p>​ 具体算法中文描述见：</p>
-<p><a
-target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/248425749">《基于同义词替换的快速梯度映射（FGPM）文本对抗攻击方法》阅读笔记
-- 知乎 (zhihu.com)</a></p>
-<hr />
-<h3 id="experimental-results">4 Experimental Results：</h3>
-<p>​ 我们衡量FGPM使用四种攻击准则，衡量ATFL使用两种防御准则。</p>
-<p>​
-我们在三个很受欢迎的基准数据集上，同时包括CNN和RNN模型上进行测试，代码开源：https://github.com/JHL-HUST/FGPM</p>
-<h4 id="baselines">4.1 Baselines:</h4>
-<p>​ 为了评估FGPM的攻击效能，我们将其与Papernot’、GSA (
-Kuleshov等人的4种对抗性攻击进行了比较。2018 )、PWWS ( Ren et al . 2019
-)和Iga ( Wang，jin，and he 2019 )。</p>
-<p>​ 此外，为了验证我们的ATFL的防御能力，我们采用了SEM ( Wang，Jin，He
-2019 )和IBP ( Jia et al . 2019
-)，针对上述Word-Level攻击。由于攻击基线的效率很低，我们在每个数据集上随机抽取200个示例，并在各种模型上生成对抗样本。</p>
-<h4 id="datasets">4.2 Datasets:</h4>
-<p>​ <em>AG’s News</em>, <em>DBPedia ontology</em> and <em>Yahoo!
-Answers</em> (Zhang,Zhao, and LeCun 2015).</p>
-<h4 id="models">4.3 Models:</h4>
-<p>​
-我们使用了CNNs,RNNs,来达到主流的文本分类表现，所有模型的嵌入维度均为300。</p>
-<h4 id="evaluation-on-attack-effectiveness">4.4 Evaluation on Attack
-Effectiveness：</h4>
-<p>​ 我们评估模型在攻击下的准确率和转移率：</p>
-<p>​ <strong>准确率：</strong></p>
-<p>​ <img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904134852.png" /></p>
-<p>​ <strong>转移率：</strong></p>
-<p>​ <img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904135419.png" /></p>
-<h4 id="evaluation-on-attack-efficiency">4.4 Evaluation on Attack
-Efficiency：</h4>
-<p>​
-对抗训练需要高效率的生成对抗样本以有效地提升模型鲁棒性。因此，我们评估了不同攻击方法在三个数据集上生成生成200个对抗样本的总时间。</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904135842.png" /></p>
-<h4 id="evaluation-on-adversarial-training">4.5 Evaluation on
-Adversarial Training：</h4>
-<p>​ 我们评估ATFL的对抗样本防御能力和抗转移能力：</p>
-<p>​ <strong>对抗样本防御能力：</strong></p>
-<p>​ <img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904140647.png" /></p>
-<p>​ <strong>抗转移能力：</strong></p>
-<p>​ <img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904141719.png" /></p>
-<h4 id="evaluation-on-adversarial-training-variants">4.6 Evaluation on
-Adversarial Training Variants:</h4>
-<p>​
-许多对抗训练的变体，例如CLP和ALP，TRADES等，已经尝试采用不同的正则化方法来提高针对图像数据的对抗训练准确率。</p>
-<p>​
-在这里，我们回答一个问题：这些变体方法也可以提高文本数据准确率吗？</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904142406.png" /></p>
-<p>​ 从表中可以看出，只有ALP可以长远地提升对抗训练的表现。</p>
+<hr>
+<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract:"></a>Abstract:</h3><p>​    对抗训练是对于提升图像分类深度神经网络鲁棒性的，基于实验的最成功的进步所在。</p>
+<p>​    然而，对于文本分类，现有的基于同义词替换的对抗样本攻击十分奏效，但却没有被很有效地合并入实际的文本对抗训练中。</p>
+<p>​    基于梯度的攻击对于图像很有效，但因为文本的词汇，语法，语义结构的限制以及离散的文本输入空间，不能很好的应用于基于近义词替换的文本攻击中。</p>
+<p>​    因此，我们提出了一个基于同义词的替换的快速的文本对抗抗攻击方法名为<strong><em>Fast Gradient Projection Method (FGPM)</em></strong>。它的速度是已有文本攻击方法的20余倍，攻击效果也跟这些方法差不多。</p>
+<p>​    我们接着将FGPM合并入对抗训练中，提出了一个文本防御方法，<strong><em>Adversarial Training with FGPM enhanced by Logit pairing</em>(ATFL)</strong>。</p>
+<p>​    实验结果表明ATFL可以显著提高模型的鲁棒性，破坏对抗样本的可转移性。</p>
+<hr>
+<h3 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction:"></a>1 Introduction:</h3><p>​    现有的针对NLP的攻击方法包括了：字符等级攻击，单词等级攻击，句子等级攻击。</p>
+<p>​    对于字符等级的攻击，最近的工作（<em>Pruthi, Dhingra, and Lipton 2019</em>）表明了拼写检查器很容易修正样本中的扰动；</p>
+<p>​    对于句子等级的攻击，其一般需要基于改述，故需要更长的时间来生成对抗样本；</p>
+<p>​    对于单词等级的攻击，基于嵌入扰动的替换（<em>replacing word based on embedding perturbation</em>），添加，删除单词都会很容易改变句子的语法语义结构与正确性，<strong>故同义词替换的方法可以更好的处理上述问题，同时保证对抗样本更难被人类观察者发现</strong>。</p>
+<p>​    但不幸的是，基于同义词替换的攻击相较于如今对图像的攻击展现出了更低的功效。</p>
+<p>​    </p>
+<p>​    据我们所知，对抗训练，对图像数据最有效的防御方法之一，并没有在对抗基于同义词替换的攻击上很好的实施过。</p>
+<p>​    一方面，现有的基于同义词替换的攻击方法通常效率要低得多，难以纳入对抗训练。另一方面，尽管对图像的方法很有效，但其并不能直接移植到文本数据上。</p>
+<p>​    </p>
+<h4 id="1-1-Adversarial-Defense"><a href="#1-1-Adversarial-Defense" class="headerlink" title="1.1 Adversarial Defense:"></a>1.1 Adversarial Defense:</h4><p>​    有一系列工作对词嵌入进行扰动，并将扰动作为正则化策略用于对抗训练(<em>Miyato, Dai, and Goodfellow</em></p>
+<p><em>2016; Sato et al. 2018; Barham and Feizi 2019</em>) 。这些工作目的是提高模型对于原始数据集的表现，并不是为了防御对抗样本攻击，因此，我们不会考虑这些工作。</p>
+<p>​        不同于如今现有的防御方法，我们的工作聚焦于快速对抗样本生成，容易应用在复杂的神经网络和大数据集上的防御方法。</p>
+<hr>
+<h3 id="2-Fast-Gradient-Projection-Method（FGPM）"><a href="#2-Fast-Gradient-Projection-Method（FGPM）" class="headerlink" title="2 Fast Gradient Projection Method（FGPM）:"></a>2 Fast Gradient Projection Method（FGPM）:</h3><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904144444.png" alt=""></p>
+<hr>
+<h3 id="3-Adversarial-Training-with-FGPM："><a href="#3-Adversarial-Training-with-FGPM：" class="headerlink" title="3 Adversarial Training with FGPM："></a>3 Adversarial Training with FGPM：</h3><p>​    具体算法中文描述见：</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/248425749">《基于同义词替换的快速梯度映射（FGPM）文本对抗攻击方法》阅读笔记 - 知乎 (zhihu.com)</a></p>
+<hr>
+<h3 id="4-Experimental-Results："><a href="#4-Experimental-Results：" class="headerlink" title="4 Experimental Results："></a>4 Experimental Results：</h3><p>​    我们衡量FGPM使用四种攻击准则，衡量ATFL使用两种防御准则。</p>
+<p>​    我们在三个很受欢迎的基准数据集上，同时包括CNN和RNN模型上进行测试，代码开源：<a target="_blank" rel="noopener" href="https://github.com/JHL-HUST/FGPM">https://github.com/JHL-HUST/FGPM</a></p>
+<h4 id="4-1-Baselines"><a href="#4-1-Baselines" class="headerlink" title="4.1 Baselines:"></a>4.1 Baselines:</h4><p>​    为了评估FGPM的攻击效能，我们将其与Papernot’、GSA ( Kuleshov等人的4种对抗性攻击进行了比较。2018 )、PWWS ( Ren et al . 2019 )和Iga ( Wang，jin，and he 2019 )。</p>
+<p>​    此外，为了验证我们的ATFL的防御能力，我们采用了SEM ( Wang，Jin，He 2019 )和IBP ( Jia et al . 2019 )，针对上述Word-Level攻击。由于攻击基线的效率很低，我们在每个数据集上随机抽取200个示例，并在各种模型上生成对抗样本。</p>
+<h4 id="4-2-Datasets"><a href="#4-2-Datasets" class="headerlink" title="4.2 Datasets:"></a>4.2 Datasets:</h4><p>​    <em>AG’s News</em>, <em>DBPedia ontology</em> and <em>Yahoo! Answers</em> (Zhang,Zhao, and LeCun 2015).</p>
+<h4 id="4-3-Models"><a href="#4-3-Models" class="headerlink" title="4.3 Models:"></a>4.3 Models:</h4><p>​    我们使用了CNNs,RNNs,来达到主流的文本分类表现，所有模型的嵌入维度均为300。</p>
+<h4 id="4-4-Evaluation-on-Attack-Effectiveness："><a href="#4-4-Evaluation-on-Attack-Effectiveness：" class="headerlink" title="4.4 Evaluation on Attack Effectiveness："></a>4.4 Evaluation on Attack Effectiveness：</h4><p>​    我们评估模型在攻击下的准确率和转移率：</p>
+<p>​    <strong>准确率：</strong></p>
+<p>​        <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904134852.png" alt=""></p>
+<p>​    <strong>转移率：</strong></p>
+<p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904135419.png" alt=""></p>
+<h4 id="4-4-Evaluation-on-Attack-Efficiency："><a href="#4-4-Evaluation-on-Attack-Efficiency：" class="headerlink" title="4.4 Evaluation on Attack Efficiency："></a>4.4 Evaluation on Attack Efficiency：</h4><p>​        对抗训练需要高效率的生成对抗样本以有效地提升模型鲁棒性。因此，我们评估了不同攻击方法在三个数据集上生成生成200个对抗样本的总时间。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904135842.png" alt=""></p>
+<h4 id="4-5-Evaluation-on-Adversarial-Training："><a href="#4-5-Evaluation-on-Adversarial-Training：" class="headerlink" title="4.5 Evaluation on Adversarial Training："></a>4.5 Evaluation on Adversarial Training：</h4><p>​        我们评估ATFL的对抗样本防御能力和抗转移能力：</p>
+<p>​    <strong>对抗样本防御能力：</strong></p>
+<p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904140647.png" alt=""></p>
+<p>​    <strong>抗转移能力：</strong></p>
+<p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904141719.png" alt=""></p>
+<h4 id="4-6-Evaluation-on-Adversarial-Training-Variants"><a href="#4-6-Evaluation-on-Adversarial-Training-Variants" class="headerlink" title="4.6 Evaluation on Adversarial Training Variants:"></a>4.6 Evaluation on Adversarial Training Variants:</h4><p>​        许多对抗训练的变体，例如CLP和ALP，TRADES等，已经尝试采用不同的正则化方法来提高针对图像数据的对抗训练准确率。</p>
+<p>​        在这里，我们回答一个问题：这些变体方法也可以提高文本数据准确率吗？</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904142406.png" alt=""></p>
+<p>​        从表中可以看出，只有ALP可以长远地提升对抗训练的表现。</p>
 
       
     </div>
@@ -329,15 +280,7 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904142406.png" /></p>
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BBadversarial-training-with-fast-gradient-projection-method-against-synonym-substitution-based-text-attacks"><span class="nav-number">1.</span> <span class="nav-text">【论文阅读】Adversarial
-Training with Fast Gradient Projection Method against Synonym
-Substitution Based Text Attacks</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">1.0.1.</span> <span class="nav-text">总结：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#abstract"><span class="nav-number">1.0.2.</span> <span class="nav-text">Abstract:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#introduction"><span class="nav-number">1.0.3.</span> <span class="nav-text">1 Introduction:</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#adversarial-defense"><span class="nav-number">1.0.3.1.</span> <span class="nav-text">1.1 Adversarial Defense:</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fast-gradient-projection-methodfgpm"><span class="nav-number">1.0.4.</span> <span class="nav-text">2 Fast Gradient Projection
-Method（FGPM）:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#adversarial-training-with-fgpm"><span class="nav-number">1.0.5.</span> <span class="nav-text">3 Adversarial Training with
-FGPM：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#experimental-results"><span class="nav-number">1.0.6.</span> <span class="nav-text">4 Experimental Results：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#baselines"><span class="nav-number">1.0.6.1.</span> <span class="nav-text">4.1 Baselines:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#datasets"><span class="nav-number">1.0.6.2.</span> <span class="nav-text">4.2 Datasets:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#models"><span class="nav-number">1.0.6.3.</span> <span class="nav-text">4.3 Models:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#evaluation-on-attack-effectiveness"><span class="nav-number">1.0.6.4.</span> <span class="nav-text">4.4 Evaluation on Attack
-Effectiveness：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#evaluation-on-attack-efficiency"><span class="nav-number">1.0.6.5.</span> <span class="nav-text">4.4 Evaluation on Attack
-Efficiency：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#evaluation-on-adversarial-training"><span class="nav-number">1.0.6.6.</span> <span class="nav-text">4.5 Evaluation on
-Adversarial Training：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#evaluation-on-adversarial-training-variants"><span class="nav-number">1.0.6.7.</span> <span class="nav-text">4.6 Evaluation on
-Adversarial Training Variants:</span></a></li></ol></li></ol></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Adversarial-Training-with-Fast-Gradient-Projection-Method-against-Synonym-Substitution-Based-Text-Attacks"><span class="nav-number">1.</span> <span class="nav-text">【论文阅读】Adversarial Training with Fast Gradient Projection Method against Synonym Substitution Based Text Attacks</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A"><span class="nav-number">1.0.1.</span> <span class="nav-text">总结：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Abstract"><span class="nav-number">1.0.2.</span> <span class="nav-text">Abstract:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Introduction"><span class="nav-number">1.0.3.</span> <span class="nav-text">1 Introduction:</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-Adversarial-Defense"><span class="nav-number">1.0.3.1.</span> <span class="nav-text">1.1 Adversarial Defense:</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Fast-Gradient-Projection-Method%EF%BC%88FGPM%EF%BC%89"><span class="nav-number">1.0.4.</span> <span class="nav-text">2 Fast Gradient Projection Method（FGPM）:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Adversarial-Training-with-FGPM%EF%BC%9A"><span class="nav-number">1.0.5.</span> <span class="nav-text">3 Adversarial Training with FGPM：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Experimental-Results%EF%BC%9A"><span class="nav-number">1.0.6.</span> <span class="nav-text">4 Experimental Results：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-Baselines"><span class="nav-number">1.0.6.1.</span> <span class="nav-text">4.1 Baselines:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-Datasets"><span class="nav-number">1.0.6.2.</span> <span class="nav-text">4.2 Datasets:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-Models"><span class="nav-number">1.0.6.3.</span> <span class="nav-text">4.3 Models:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-Evaluation-on-Attack-Effectiveness%EF%BC%9A"><span class="nav-number">1.0.6.4.</span> <span class="nav-text">4.4 Evaluation on Attack Effectiveness：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-Evaluation-on-Attack-Efficiency%EF%BC%9A"><span class="nav-number">1.0.6.5.</span> <span class="nav-text">4.4 Evaluation on Attack Efficiency：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-5-Evaluation-on-Adversarial-Training%EF%BC%9A"><span class="nav-number">1.0.6.6.</span> <span class="nav-text">4.5 Evaluation on Adversarial Training：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-6-Evaluation-on-Adversarial-Training-Variants"><span class="nav-number">1.0.6.7.</span> <span class="nav-text">4.6 Evaluation on Adversarial Training Variants:</span></a></li></ol></li></ol></li></ol></li></ol>
     
     </div>
   </aside>
@@ -531,20 +474,5 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>
