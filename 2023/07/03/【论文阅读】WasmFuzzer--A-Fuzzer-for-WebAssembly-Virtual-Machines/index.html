@@ -13,12 +13,12 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="WasmFuzzer: A Fuzzer for WebAssembly Virtual Machines 时间：2022 作者：Bo Jiang, Zichao Li（北航） 期刊：SEKE（CCF-C）  Abstract​    WebAssembly是一种快速、安全、可移植的低级语言，适用于各种应用场景，Web浏览器或区块链平台广泛使用WebAssembly虚拟机作为执行引擎。当Wasm虚">
+  <meta name="description" content="WasmFuzzer: A Fuzzer for WebAssembly Virtual Machines  时间：2022 作者：Bo Jiang, Zichao Li（北航） 期刊：SEKE（CCF-C）  Abstract ​ WebAssembly是一种快速、安全、可移植的低级语言，适用于各种应用场景，Web浏览器或区块链平台广泛使用WebAssembly虚拟机作为执行引">
 <meta property="og:type" content="article">
 <meta property="og:title" content="(论文阅读)WasmFuzzer- A Fuzzer for WebAssembly Virtual Machines">
 <meta property="og:url" content="http://example.com/2023/07/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91WasmFuzzer--A-Fuzzer-for-WebAssembly-Virtual-Machines/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="WasmFuzzer: A Fuzzer for WebAssembly Virtual Machines 时间：2022 作者：Bo Jiang, Zichao Li（北航） 期刊：SEKE（CCF-C）  Abstract​    WebAssembly是一种快速、安全、可移植的低级语言，适用于各种应用场景，Web浏览器或区块链平台广泛使用WebAssembly虚拟机作为执行引擎。当Wasm虚">
+<meta property="og:description" content="WasmFuzzer: A Fuzzer for WebAssembly Virtual Machines  时间：2022 作者：Bo Jiang, Zichao Li（北航） 期刊：SEKE（CCF-C）  Abstract ​ WebAssembly是一种快速、安全、可移植的低级语言，适用于各种应用场景，Web浏览器或区块链平台广泛使用WebAssembly虚拟机作为执行引">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230703210321.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230703211206.png">
@@ -158,48 +158,87 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="WasmFuzzer-A-Fuzzer-for-WebAssembly-Virtual-Machines"><a href="#WasmFuzzer-A-Fuzzer-for-WebAssembly-Virtual-Machines" class="headerlink" title="WasmFuzzer: A Fuzzer for WebAssembly Virtual Machines"></a>WasmFuzzer: A Fuzzer for WebAssembly Virtual Machines</h1><blockquote>
+        <h1
+id="wasmfuzzer-a-fuzzer-for-webassembly-virtual-machines">WasmFuzzer: A
+Fuzzer for WebAssembly Virtual Machines</h1>
+<blockquote>
 <p><strong>时间：</strong>2022</p>
 <p><strong>作者：</strong>Bo Jiang, Zichao Li（北航）</p>
 <p><strong>期刊：</strong>SEKE（CCF-C）</p>
 </blockquote>
-<h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>​    WebAssembly是一种快速、安全、可移植的低级语言，适用于各种应用场景，Web浏览器或区块链平台广泛使用WebAssembly虚拟机作为执行引擎。当Wasm虚拟机的实现存在bug时，WebAssembly的执行可能导致应用程序中的错误或漏洞。由于WASM虚拟机的语法检查机制，二进制级别的fuzzing无法暴露bug，因为大多数输入无法到达WASM虚拟机的深层逻辑。</p>
-<p>​    在这项工作中，我们提出了WasmFuzzer，<u>一个用于WASM虚拟机的bytecode级fuzzing工具</u>。WasmFuzzer提出在Wasm字节码级别上生成初始种子进行fuzzing，并设计了一套系统的Wasm字节码突变mutation operators。此外，WasmFuzzer还提出了一种自适应的突变策略，以寻找适用于不同fuzzing目标的最佳mutator。</p>
-<p>​    我们对三个真实的Wasm虚拟机进行评估，结果显示WasmFuzzer在代码覆盖率和唯一崩溃(unique crash)方面明显优于AFL。</p>
+<h2 id="abstract">Abstract</h2>
+<p>​
+WebAssembly是一种快速、安全、可移植的低级语言，适用于各种应用场景，Web浏览器或区块链平台广泛使用WebAssembly虚拟机作为执行引擎。当Wasm虚拟机的实现存在bug时，WebAssembly的执行可能导致应用程序中的错误或漏洞。由于WASM虚拟机的语法检查机制，二进制级别的fuzzing无法暴露bug，因为大多数输入无法到达WASM虚拟机的深层逻辑。</p>
+<p>​
+在这项工作中，我们提出了WasmFuzzer，<u>一个用于WASM虚拟机的bytecode级fuzzing工具</u>。WasmFuzzer提出在Wasm字节码级别上生成初始种子进行fuzzing，并设计了一套系统的Wasm字节码突变mutation
+operators。此外，WasmFuzzer还提出了一种自适应的突变策略，以寻找适用于不同fuzzing目标的最佳mutator。</p>
+<p>​
+我们对三个真实的Wasm虚拟机进行评估，结果显示WasmFuzzer在代码覆盖率和唯一崩溃(unique
+crash)方面明显优于AFL。</p>
 <span id="more"></span>
 <blockquote>
-<p>“Unique crash”（唯一崩溃）指的是在软件或系统中发生的独特的错误或异常情况，导致程序的崩溃或异常终止。这种崩溃是指与其他崩溃不同的、独特的错误情况，可能由于特定的输入或特定的执行路径引起。在上述文本中，作者提到WasmFuzzer在唯一崩溃方面的表现优于AFL，意味着WasmFuzzer能够发现更多不同于其他测试工具的独特错误情况。</p>
+<p>"Unique
+crash"（唯一崩溃）指的是在软件或系统中发生的独特的错误或异常情况，导致程序的崩溃或异常终止。这种崩溃是指与其他崩溃不同的、独特的错误情况，可能由于特定的输入或特定的执行路径引起。在上述文本中，作者提到WasmFuzzer在唯一崩溃方面的表现优于AFL，意味着WasmFuzzer能够发现更多不同于其他测试工具的独特错误情况。</p>
 </blockquote>
-<h2 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h2><p>​    WebAssembly是在WebAssembly虚拟机[7]中执行的，现有的Wasm虚拟机实现包括<u>WAVM[8]、Wasmtime[9]、Wasmer[10]</u>等。虚拟机是执行WebAssembly的基础设施，其应该正确、高效、鲁棒地实现。然而，如果虚拟机的实现有错误，WebAssembly的执行可能会导致错误的结果，或者程序会异常退出，其中一些错误甚至会导致安全漏洞。例如，在2018年，<u>有7个CVE报告给名为WAVM的Wasm虚拟机[8]</u>，为了避免这些情况，我们可以采用模糊技术[11]来识别虚拟机实现中的错误。</p>
-<p>​    <strong>针对Wasm VM的fuzzing需要面对两大挑战：</strong></p>
+<h2 id="问题背景">问题背景</h2>
+<p>​
+WebAssembly是在WebAssembly虚拟机[7]中执行的，现有的Wasm虚拟机实现包括<u>WAVM[8]、Wasmtime[9]、Wasmer[10]</u>等。虚拟机是执行WebAssembly的基础设施，其应该正确、高效、鲁棒地实现。然而，如果虚拟机的实现有错误，WebAssembly的执行可能会导致错误的结果，或者程序会异常退出，其中一些错误甚至会导致安全漏洞。例如，在2018年，<u>有7个CVE报告给名为WAVM的Wasm虚拟机[8]</u>，为了避免这些情况，我们可以采用模糊技术[11]来识别虚拟机实现中的错误。</p>
+<p>​ <strong>针对Wasm VM的fuzzing需要面对两大挑战：</strong></p>
 <ul>
-<li>首先，Wasm VM经常在执行前进行Wasm代码验证（validation），这使得它很难产生有效的输入以达到虚拟机内的深层逻辑。虽然主流的fuzzing软件AFL可以用来测试用C/C++编写的WebAssembly虚拟机，但它们生成的测试用例都是二进制数据，没有考虑Wasm字节码语法，很难通过Wasm虚拟机通常进行的代码验证；</li>
-<li>其次，WASM VM有许多不同的实现，它们有不同的代码结构和bug模式，使用固定的突变策略很难适应这些Wasm VM之间的差异，从而达到最佳的fuzzing效果。</li>
+<li>首先，Wasm
+VM经常在执行前进行Wasm代码验证（validation），这使得它很难产生有效的输入以达到虚拟机内的深层逻辑。虽然主流的fuzzing软件AFL可以用来测试用C/C++编写的WebAssembly虚拟机，但它们生成的测试用例都是二进制数据，没有考虑Wasm字节码语法，很难通过Wasm虚拟机通常进行的代码验证；</li>
+<li>其次，WASM
+VM有许多不同的实现，它们有不同的代码结构和bug模式，使用固定的突变策略很难适应这些Wasm
+VM之间的差异，从而达到最佳的fuzzing效果。</li>
 </ul>
-<h2 id="贡献"><a href="#贡献" class="headerlink" title="贡献"></a>贡献</h2><ul>
+<h2 id="贡献">贡献</h2>
+<ul>
 <li>提出了一个名为WasmFuzzer的Wasm字节码级fuzzing框架，用于Wasm虚拟机，该工具可以生成和变异Wasm字节码模块，以达到Wasm虚拟机的深层逻辑;</li>
-<li>提出了一种自适应突变策略，可以动态地更新不同mutation operator的概率，通过这种方式，我们可以为测试目标优化mutation operator的配置；</li>
+<li>提出了一种自适应突变策略，可以动态地更新不同mutation
+operator的概率，通过这种方式，我们可以为测试目标优化mutation
+operator的配置；</li>
 <li>用WasmFuzzer对3个现实生活中的Wasm虚拟机进行了系统的fuzzing测试。我们的评估结果显示，WasmFuzzer在代码覆盖率和错误检测方面都比AFL更有效，而且WasmFuzzer在WAVM、WAMR和EOS-VM中检测到235个独特的崩溃。</li>
 </ul>
-<h2 id="模型"><a href="#模型" class="headerlink" title="模型"></a>模型</h2><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230703210321.png" style="zoom:67%;" /></p>
-<h3 id="1-The-Generation-of-Wasm-Bytecode"><a href="#1-The-Generation-of-Wasm-Bytecode" class="headerlink" title="1. The Generation of Wasm Bytecode"></a>1. The Generation of Wasm Bytecode</h3><p>​    为WASM指令生成对应的参数分为两种情况：</p>
+<h2 id="模型">模型</h2>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230703210321.png" style="zoom:67%;" /></p>
+<h3 id="the-generation-of-wasm-bytecode">1. The Generation of Wasm
+Bytecode</h3>
+<p>​ 为WASM指令生成对应的参数分为两种情况：</p>
 <ul>
-<li><strong>从module中选择参数：</strong>如<code>global.set  id</code>指令，其作用是将编号为id的全局变量置于栈顶，故其参数范围只能是module中global array中的参数（否则就会非法），故对于这种指令仅仅从module中选择对应的参数；</li>
+<li><strong>从module中选择参数：</strong>如<code>global.set  id</code>指令，其作用是将编号为id的全局变量置于栈顶，故其参数范围只能是module中global
+array中的参数（否则就会非法），故对于这种指令仅仅从module中选择对应的参数；</li>
 <li><strong>从对应数据域内选择参数：</strong>对于确定参数type的指令，从对应的数据域随机选择一个数即可。</li>
 </ul>
-<p>​    WasmFuzzer扩展了WebAssembly Binary Toolkit（WABT）以帮助生成不同种类的指令。具体来说，它使用WABT的内部功能来生成不同种类的操作码，这些操作码与相应的参数相结合，以建立不同的指令。最后，这些指令被进一步组装成函数和模块，作为种子输入。</p>
-<h3 id="2-Mutation-Operator-for-Wasm-Bytecode"><a href="#2-Mutation-Operator-for-Wasm-Bytecode" class="headerlink" title="2.  Mutation Operator for Wasm Bytecode"></a>2.  Mutation Operator for Wasm Bytecode</h3><h4 id="2-1-Mutation-operations"><a href="#2-1-Mutation-operations" class="headerlink" title="2.1 Mutation operations"></a>2.1 Mutation operations</h4><p>​    Mutation operations被分为两类，对指令的变异和对其它的变异:</p>
+<p>​ WasmFuzzer扩展了WebAssembly Binary
+Toolkit（WABT）以帮助生成不同种类的指令。具体来说，它使用WABT的内部功能来生成不同种类的操作码，这些操作码与相应的参数相结合，以建立不同的指令。最后，这些指令被进一步组装成函数和模块，作为种子输入。</p>
+<h3 id="mutation-operator-for-wasm-bytecode">2. Mutation Operator for
+Wasm Bytecode</h3>
+<h4 id="mutation-operations">2.1 Mutation operations</h4>
+<p>​ Mutation operations被分为两类，对指令的变异和对其它的变异:</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230703211206.png" style="zoom:67%;" /></p>
-<p>​    为了确保变异的WebAssembly代码能够通过Wasm VM的验证[12]过程，我们控制不同的mutator的概率，使新生成的Wasm模块有更大的机会成为有效的输入。</p>
-<h4 id="2-2-Adaptive-Random-Mutation-Strategy"><a href="#2-2-Adaptive-Random-Mutation-Strategy" class="headerlink" title="2.2 Adaptive Random Mutation Strategy"></a>2.2 Adaptive Random Mutation Strategy</h4><p>​    在变异步骤中，每个mutator都有被选中的概率。一般来说，我们的突变策略将通过动态增加mutator的概率来奖励导致新的代码覆盖率或崩溃的mutator，这样一来，那些更有 “前途 “的mutator就有更大的机会被选中。</p>
+<p>​ 为了确保变异的WebAssembly代码能够通过Wasm
+VM的验证[12]过程，我们控制不同的mutator的概率，使新生成的Wasm模块有更大的机会成为有效的输入。</p>
+<h4 id="adaptive-random-mutation-strategy">2.2 Adaptive Random Mutation
+Strategy</h4>
+<p>​
+在变异步骤中，每个mutator都有被选中的概率。一般来说，我们的突变策略将通过动态增加mutator的概率来奖励导致新的代码覆盖率或崩溃的mutator，这样一来，那些更有
+"前途 "的mutator就有更大的机会被选中。</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230703211713.png" style="zoom:67%;" /></p>
-<h4 id="2-3-Test-Oracle-and-Bug-Report-Generation"><a href="#2-3-Test-Oracle-and-Bug-Report-Generation" class="headerlink" title="2.3 Test Oracle and Bug Report Generation"></a>2.3 Test Oracle and Bug Report Generation</h4><p>​    当被测试的软件在fuzzing过程中崩溃或中止时，系统将发出信号，如SIGSEGV或SIGABT，WasmFuzer将捕获这些信号来报告错误。此外，WasmFuzzer还利用AddressSanitizer[13]来检测与内存有关的软件错误，如UAF、缓冲区溢出、堆栈溢出、内存泄漏等。</p>
-<p>​    当WasmFuzzer检测到一个错误，它将生成错误报告，以方便进一步调试。错误报告包括两个部分：引发独特崩溃的Wasm字节码，以及引发独特挂起的Wasm字节码。通过 “独特”，它意味着这些Wasm字节码的执行导致了独特的代码路径。此外，我们还测量了在fuzzing过程中实现的代码覆盖率，作为另一个指标。</p>
-<p>​    </p>
-<h3 id="3-EVALUATION"><a href="#3-EVALUATION" class="headerlink" title="3. EVALUATION"></a>3. EVALUATION</h3><p>​    测试了三个WASM VM：WAVM, WAMR, EOS VM，都是使用C/C++编写。</p>
+<h4 id="test-oracle-and-bug-report-generation">2.3 Test Oracle and Bug
+Report Generation</h4>
+<p>​
+当被测试的软件在fuzzing过程中崩溃或中止时，系统将发出信号，如SIGSEGV或SIGABT，WasmFuzer将捕获这些信号来报告错误。此外，WasmFuzzer还利用AddressSanitizer[13]来检测与内存有关的软件错误，如UAF、缓冲区溢出、堆栈溢出、内存泄漏等。</p>
+<p>​
+当WasmFuzzer检测到一个错误，它将生成错误报告，以方便进一步调试。错误报告包括两个部分：引发独特崩溃的Wasm字节码，以及引发独特挂起的Wasm字节码。通过
+"独特"，它意味着这些Wasm字节码的执行导致了独特的代码路径。此外，我们还测量了在fuzzing过程中实现的代码覆盖率，作为另一个指标。</p>
+<p>​</p>
+<h3 id="evaluation">3. EVALUATION</h3>
+<p>​ 测试了三个WASM VM：WAVM, WAMR, EOS VM，都是使用C/C++编写。</p>
 <ul>
-<li><strong><em>WebAssembly virtual machine</em></strong>（github 2.5k starred），WAVM，是一个为非浏览器WASM应用设计的应用；</li>
-<li><strong><em>WebAssembly Micro Runtime</em></strong>（github 3.9k starred），WAMR，是一个小型WASM虚拟机，经常用在嵌入式系统中；</li>
+<li><strong><em>WebAssembly virtual machine</em></strong>（github 2.5k
+starred），WAVM，是一个为非浏览器WASM应用设计的应用；</li>
+<li><strong><em>WebAssembly Micro Runtime</em></strong>（github 3.9k
+starred），WAMR，是一个小型WASM虚拟机，经常用在嵌入式系统中；</li>
 <li><strong><em>EOS-VM</em></strong>，是一个为区块链应用设计的WASM虚拟机。</li>
 </ul>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230703212629.png" style="zoom:67%;" /></p>
@@ -250,7 +289,12 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#WasmFuzzer-A-Fuzzer-for-WebAssembly-Virtual-Machines"><span class="nav-number">1.</span> <span class="nav-text">WasmFuzzer: A Fuzzer for WebAssembly Virtual Machines</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Abstract"><span class="nav-number">1.1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E8%83%8C%E6%99%AF"><span class="nav-number">1.2.</span> <span class="nav-text">问题背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%A1%E7%8C%AE"><span class="nav-number">1.3.</span> <span class="nav-text">贡献</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.4.</span> <span class="nav-text">模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-The-Generation-of-Wasm-Bytecode"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. The Generation of Wasm Bytecode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Mutation-Operator-for-Wasm-Bytecode"><span class="nav-number">1.4.2.</span> <span class="nav-text">2.  Mutation Operator for Wasm Bytecode</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-Mutation-operations"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">2.1 Mutation operations</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-Adaptive-Random-Mutation-Strategy"><span class="nav-number">1.4.2.2.</span> <span class="nav-text">2.2 Adaptive Random Mutation Strategy</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-Test-Oracle-and-Bug-Report-Generation"><span class="nav-number">1.4.2.3.</span> <span class="nav-text">2.3 Test Oracle and Bug Report Generation</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-EVALUATION"><span class="nav-number">1.4.3.</span> <span class="nav-text">3. EVALUATION</span></a></li></ol></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#wasmfuzzer-a-fuzzer-for-webassembly-virtual-machines"><span class="nav-number">1.</span> <span class="nav-text">WasmFuzzer: A
+Fuzzer for WebAssembly Virtual Machines</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#abstract"><span class="nav-number">1.1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E8%83%8C%E6%99%AF"><span class="nav-number">1.2.</span> <span class="nav-text">问题背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%A1%E7%8C%AE"><span class="nav-number">1.3.</span> <span class="nav-text">贡献</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.4.</span> <span class="nav-text">模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#the-generation-of-wasm-bytecode"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. The Generation of Wasm
+Bytecode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mutation-operator-for-wasm-bytecode"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. Mutation Operator for
+Wasm Bytecode</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#mutation-operations"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">2.1 Mutation operations</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#adaptive-random-mutation-strategy"><span class="nav-number">1.4.2.2.</span> <span class="nav-text">2.2 Adaptive Random Mutation
+Strategy</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#test-oracle-and-bug-report-generation"><span class="nav-number">1.4.2.3.</span> <span class="nav-text">2.3 Test Oracle and Bug
+Report Generation</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#evaluation"><span class="nav-number">1.4.3.</span> <span class="nav-text">3. EVALUATION</span></a></li></ol></li></ol></li></ol>
     
     </div>
   </aside>

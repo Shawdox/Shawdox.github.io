@@ -13,23 +13,19 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="【论文阅读】Learning Multiagent Communication with Backpropagation 作者： Sainbayar Sukhbaatar，Rob Fergus， Arthur Szlam（纽约大学，FacebookAI） 时间：2016 出版社：NIPS  Abstract​    在AI领域许多任务都需要智能体之间的同心合作，一般地，代理之间的通信协议是人为指定">
+  <meta name="description" content="【论文阅读】Learning Multiagent Communication with Backpropagation  作者： Sainbayar Sukhbaatar，Rob Fergus， Arthur Szlam（纽约大学，FacebookAI） 时间：2016 出版社：NIPS  Abstract ​ 在AI领域许多任务都需要智能体之间的同心合作，一般地，代理之间">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Learning Multiagent Communication with Backpropagation">
 <meta property="og:url" content="http://example.com/2021/09/21/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Learning%20Multiagent%20Communication%20with%20Backpropagation/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="【论文阅读】Learning Multiagent Communication with Backpropagation 作者： Sainbayar Sukhbaatar，Rob Fergus， Arthur Szlam（纽约大学，FacebookAI） 时间：2016 出版社：NIPS  Abstract​    在AI领域许多任务都需要智能体之间的同心合作，一般地，代理之间的通信协议是人为指定">
+<meta property="og:description" content="【论文阅读】Learning Multiagent Communication with Backpropagation  作者： Sainbayar Sukhbaatar，Rob Fergus， Arthur Szlam（纽约大学，FacebookAI） 时间：2016 出版社：NIPS  Abstract ​ 在AI领域许多任务都需要智能体之间的同心合作，一般地，代理之间">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210921211706.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210921213910.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210921214250.png">
 <meta property="article:published_time" content="2021-09-21T12:35:21.677Z">
 <meta property="article:modified_time" content="2022-07-16T02:09:52.931Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="RL">
 <meta property="article:tag" content="Mutiagent">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210921211706.png">
   
     <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
   
@@ -156,42 +152,80 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="【论文阅读】Learning-Multiagent-Communication-with-Backpropagation"><a href="#【论文阅读】Learning-Multiagent-Communication-with-Backpropagation" class="headerlink" title="【论文阅读】Learning Multiagent Communication with Backpropagation"></a>【论文阅读】Learning Multiagent Communication with Backpropagation</h1><blockquote>
-<p><strong>作者：</strong> <strong>Sainbayar Sukhbaatar</strong>，<strong>Rob Fergus</strong>， <strong>Arthur Szlam</strong>（纽约大学，FacebookAI）</p>
+        <h1
+id="论文阅读learning-multiagent-communication-with-backpropagation">【论文阅读】Learning
+Multiagent Communication with Backpropagation</h1>
+<blockquote>
+<p><strong>作者：</strong> <strong>Sainbayar
+Sukhbaatar</strong>，<strong>Rob Fergus</strong>， <strong>Arthur
+Szlam</strong>（纽约大学，FacebookAI）</p>
 <p><strong>时间：</strong>2016</p>
 <p><strong>出版社：</strong>NIPS</p>
 </blockquote>
-<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h3><p>​    在AI领域许多任务都需要智能体之间的同心合作，一般地，代理之间的通信协议是人为指定的，其并不在训练过程中改变。在这篇文章中，我们提出了一个简单的神经模型CommNet，其使用持续不断的通信来完成完全合作的任务。该模型由许多代理组成，他们之间的通信基于设定的策略学习，我们将此模型应用于一系列不同的任务中，显示了代理学会相互通信的能力，从而比非通信代理的模型和baselines有更好的性能。<br><span id="more"></span></p>
-<h3 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h3><p>​    虽然控制每个代理的模型是通过强化学习来学习的，但通信的规范和格式通常是预定的。</p>
-<p>​    在本工作中，每个代理单元都被一个深度前馈神经网络控制，这个网络接入了一个携带连续向量的通信信道。在这个通信信道中每个代理传输的内容不是被指定的，而是通过学习得来的。因为communication是连续的，因此模型可以通过反向传播训练得到。这样就可以结合标准的单智能体RL算法或者监督学习。此外，该模型允许代理的数量和类型在运行时动态变化，这在移动汽车之间的通信等应用中很重要。</p>
-<p>​    我们考虑的是我们有J个代理的环境，所有的合作都是为了在某些环境中最大化报酬R。我们简化了代理人之间充分合作的假设，从而每个代理人收到R独立于他们的贡献。在此设置中，每个代理都有自己的控制器，或者将它们看作控制所有代理的更大模型的一部分，这两者之间没有区别。从后一个角度来看，我们的控制器是一个大型的前馈神经网络，它将所有Agent的输入映射到它们的动作上，每个Agent占据一个单元的子集。</p>
-<p>​    我们在两种任务下探索这个模型，在有些情况下，对每项行动都提供监督，而对另一些行动则零星地给予监督。在前一种情况，每个代理单元的控制器通过在连接模型中反向传播错误信号来学习；在后一种情况下，强化学习必须被作为一个额外的外部循环使用，为了给每个时间步骤提供训练信号。</p>
-<hr>
-<h3 id="2-Communication-Model"><a href="#2-Communication-Model" class="headerlink" title="2. Communication Model"></a>2. Communication Model</h3><p>​    我们现在描述一个模型，用来计算在给定时间t (省略时间指标)下动作p ( a ( t ) | s ( t )，θ )的分布。</p>
-<p>​    S~j~ 表示第j个代理单元所观测到的环境信息，将所有S~j~合并就成了控制器的输入S = {S~1~，S~2~…… S~J~}。</p>
-<p>​    控制器的输出<strong>a</strong> = {a~1~，a~2~…… a~J~}，表示各个代理单元会做出的动作。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210921211706.png" alt=""></p>
-<p>​    该框架中所有灰色模块部分的参数均是所有智能体共享的，这一定程度上提升了算法的可扩展性。从上图可以看出，算法接收所有智能体的局部观察作为输入，然后输出所有智能体的决策。</p>
-<p>​    本算法采用的信息传递方式是采用广播的方式，文中认为可以对算法做出些许修改，让每个智能体只接收其相邻k个智能体的信息。</p>
-<p>​    拿上图中间的框架图来说明，即上层网络每个模块的输入，不再都是所有智能体消息的平均，而是每个模块只接受满足条件的下层消息的输出，这个条件即下层模块对应的智能体位于其领域范围内。<strong>这样通过增加网络层数，即可增大智能体的感受野（借用计算机视觉的术语），从而间接了解全局的信息。</strong></p>
-<p>​    除此之外，文中还提出了两种对上述算法可以采取的改进方式：</p>
+<h3 id="abstract">Abstract</h3>
+<p>​
+在AI领域许多任务都需要智能体之间的同心合作，一般地，代理之间的通信协议是人为指定的，其并不在训练过程中改变。在这篇文章中，我们提出了一个简单的神经模型CommNet，其使用持续不断的通信来完成完全合作的任务。该模型由许多代理组成，他们之间的通信基于设定的策略学习，我们将此模型应用于一系列不同的任务中，显示了代理学会相互通信的能力，从而比非通信代理的模型和baselines有更好的性能。
+<span id="more"></span></p>
+<h3 id="introduction">1. Introduction</h3>
+<p>​
+虽然控制每个代理的模型是通过强化学习来学习的，但通信的规范和格式通常是预定的。</p>
+<p>​
+在本工作中，每个代理单元都被一个深度前馈神经网络控制，这个网络接入了一个携带连续向量的通信信道。在这个通信信道中每个代理传输的内容不是被指定的，而是通过学习得来的。因为communication是连续的，因此模型可以通过反向传播训练得到。这样就可以结合标准的单智能体RL算法或者监督学习。此外，该模型允许代理的数量和类型在运行时动态变化，这在移动汽车之间的通信等应用中很重要。</p>
+<p>​
+我们考虑的是我们有J个代理的环境，所有的合作都是为了在某些环境中最大化报酬R。我们简化了代理人之间充分合作的假设，从而每个代理人收到R独立于他们的贡献。在此设置中，每个代理都有自己的控制器，或者将它们看作控制所有代理的更大模型的一部分，这两者之间没有区别。从后一个角度来看，我们的控制器是一个大型的前馈神经网络，它将所有Agent的输入映射到它们的动作上，每个Agent占据一个单元的子集。</p>
+<p>​
+我们在两种任务下探索这个模型，在有些情况下，对每项行动都提供监督，而对另一些行动则零星地给予监督。在前一种情况，每个代理单元的控制器通过在连接模型中反向传播错误信号来学习；在后一种情况下，强化学习必须被作为一个额外的外部循环使用，为了给每个时间步骤提供训练信号。</p>
+<hr />
+<h3 id="communication-model">2. Communication Model</h3>
+<p>​ 我们现在描述一个模型，用来计算在给定时间t (省略时间指标)下动作p ( a
+( t ) | s ( t )，θ )的分布。</p>
+<p>​ S<sub>j</sub>
+表示第j个代理单元所观测到的环境信息，将所有S<sub>j</sub>合并就成了控制器的输入S
+= {S<sub>1</sub>，S<sub>2</sub>…… S<sub>J</sub>}。</p>
+<p>​ 控制器的输出<strong>a</strong> = {a<sub>1</sub>，a<sub>2</sub>……
+a<sub>J</sub>}，表示各个代理单元会做出的动作。</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210921211706.png" /></p>
+<p>​
+该框架中所有灰色模块部分的参数均是所有智能体共享的，这一定程度上提升了算法的可扩展性。从上图可以看出，算法接收所有智能体的局部观察作为输入，然后输出所有智能体的决策。</p>
+<p>​
+本算法采用的信息传递方式是采用广播的方式，文中认为可以对算法做出些许修改，让每个智能体只接收其相邻k个智能体的信息。</p>
+<p>​
+拿上图中间的框架图来说明，即上层网络每个模块的输入，不再都是所有智能体消息的平均，而是每个模块只接受满足条件的下层消息的输出，这个条件即下层模块对应的智能体位于其领域范围内。<strong>这样通过增加网络层数，即可增大智能体的感受野（借用计算机视觉的术语），从而间接了解全局的信息。</strong></p>
+<p>​ 除此之外，文中还提出了两种对上述算法可以采取的改进方式：</p>
 <ul>
-<li>可以对上图中间的结构加上 skip connection，类似于 ResNet。这样可以使得智能体在学习的过程中同时考虑局部信息以及全局信息，类似于计算机视觉领域 multi-scale 的思想</li>
-<li>可以将灰色模块的网络结构换成 RNN-like，例如 LSTM 或者 GRU 等等，这是为了处理局部观察所带来的 POMDP 问题。</li>
+<li>可以对上图中间的结构加上 skip connection，类似于
+ResNet。这样可以使得智能体在学习的过程中同时考虑局部信息以及全局信息，类似于计算机视觉领域
+multi-scale 的思想</li>
+<li>可以将灰色模块的网络结构换成 RNN-like，例如 LSTM 或者 GRU
+等等，这是为了处理局部观察所带来的 POMDP 问题。</li>
 </ul>
-<hr>
-<h3 id="3-Related-Work"><a href="#3-Related-Work" class="headerlink" title="3. Related Work"></a>3. Related Work</h3><hr>
-<h3 id="4-Experiments"><a href="#4-Experiments" class="headerlink" title="4. Experiments"></a>4. Experiments</h3><h4 id="4-1-Baselines（3个）"><a href="#4-1-Baselines（3个）" class="headerlink" title="4.1 Baselines（3个）:"></a>4.1 Baselines（3个）:</h4><p>​    <strong>Independent controller: </strong>每个代理单元都被独立控制，他们之间相互没有通信。这个模型的好处是智能体可以自由加入或者离开队伍，但是很难将智能体学会合作。</p>
-<p>​    <strong>Fully-connected: </strong>创建一个全连接层的多代理神经网络，这个模型运行智能体之间互相通信，但是这个模型不够灵活，也就是说智能体的数目必须固定。</p>
-<p>​    <strong>Discrete communication:</strong> 通过在训练中学习到的symbols来通信。因为在这个模型中存在离散的操作，并且这个操作不可微分，这种情况一般使用强化学习。</p>
-<h4 id="4-2-Simple-Demonstration-with-a-Lever-Pulling-Task"><a href="#4-2-Simple-Demonstration-with-a-Lever-Pulling-Task" class="headerlink" title="4.2  Simple Demonstration with a Lever Pulling Task"></a>4.2  Simple Demonstration with a Lever Pulling Task</h4><p>​    <strong>任务</strong>：一共有m个杆子，N个智能体。在每个回合，m个智能体从N个智能体中随机取出，然后他们要选择拉动的杆子。他们的目标是尽可能的拉动不同的杆子，他们的奖励正比于拉动的不同杆子的数量。</p>
-<p>​    <strong>测试结果：</strong></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210921213910.png" alt=""></p>
-<p>​    可以看出，CommNet的结果非常好。</p>
-<h4 id="4-3-Multi-turn-Games"><a href="#4-3-Multi-turn-Games" class="headerlink" title="4.3 Multi-turn Games"></a>4.3 Multi-turn Games</h4><p>​    <strong>任务：</strong></p>
-<p>​        <strong>Traffic Junction: </strong>控制车辆通过交通枢纽，使流量最大的同时保证不发生碰撞；</p>
-<p>​        <strong>Combat Task: </strong> 多个智能体攻击其他多个敌方单位。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210921214250.png" alt=""></p>
+<hr />
+<h3 id="related-work">3. Related Work</h3>
+<hr />
+<h3 id="experiments">4. Experiments</h3>
+<h4 id="baselines3个">4.1 Baselines（3个）:</h4>
+<p>​ <strong>Independent controller:
+</strong>每个代理单元都被独立控制，他们之间相互没有通信。这个模型的好处是智能体可以自由加入或者离开队伍，但是很难将智能体学会合作。</p>
+<p>​ <strong>Fully-connected:
+</strong>创建一个全连接层的多代理神经网络，这个模型运行智能体之间互相通信，但是这个模型不够灵活，也就是说智能体的数目必须固定。</p>
+<p>​ <strong>Discrete communication:</strong>
+通过在训练中学习到的symbols来通信。因为在这个模型中存在离散的操作，并且这个操作不可微分，这种情况一般使用强化学习。</p>
+<h4 id="simple-demonstration-with-a-lever-pulling-task">4.2 Simple
+Demonstration with a Lever Pulling Task</h4>
+<p>​
+<strong>任务</strong>：一共有m个杆子，N个智能体。在每个回合，m个智能体从N个智能体中随机取出，然后他们要选择拉动的杆子。他们的目标是尽可能的拉动不同的杆子，他们的奖励正比于拉动的不同杆子的数量。</p>
+<p>​ <strong>测试结果：</strong></p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210921213910.png" /></p>
+<p>​ 可以看出，CommNet的结果非常好。</p>
+<h4 id="multi-turn-games">4.3 Multi-turn Games</h4>
+<p>​ <strong>任务：</strong></p>
+<p>​ <strong>Traffic Junction:
+</strong>控制车辆通过交通枢纽，使流量最大的同时保证不发生碰撞；</p>
+<p>​ <strong>Combat Task: </strong> 多个智能体攻击其他多个敌方单位。</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210921214250.png" /></p>
 
       
     </div>
@@ -238,7 +272,9 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Learning-Multiagent-Communication-with-Backpropagation"><span class="nav-number">1.</span> <span class="nav-text">【论文阅读】Learning Multiagent Communication with Backpropagation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Abstract"><span class="nav-number">1.0.1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Introduction"><span class="nav-number">1.0.2.</span> <span class="nav-text">1. Introduction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Communication-Model"><span class="nav-number">1.0.3.</span> <span class="nav-text">2. Communication Model</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Related-Work"><span class="nav-number">1.0.4.</span> <span class="nav-text">3. Related Work</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Experiments"><span class="nav-number">1.0.5.</span> <span class="nav-text">4. Experiments</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-Baselines%EF%BC%883%E4%B8%AA%EF%BC%89"><span class="nav-number">1.0.5.1.</span> <span class="nav-text">4.1 Baselines（3个）:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-Simple-Demonstration-with-a-Lever-Pulling-Task"><span class="nav-number">1.0.5.2.</span> <span class="nav-text">4.2  Simple Demonstration with a Lever Pulling Task</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-Multi-turn-Games"><span class="nav-number">1.0.5.3.</span> <span class="nav-text">4.3 Multi-turn Games</span></a></li></ol></li></ol></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BBlearning-multiagent-communication-with-backpropagation"><span class="nav-number">1.</span> <span class="nav-text">【论文阅读】Learning
+Multiagent Communication with Backpropagation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#abstract"><span class="nav-number">1.0.1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#introduction"><span class="nav-number">1.0.2.</span> <span class="nav-text">1. Introduction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#communication-model"><span class="nav-number">1.0.3.</span> <span class="nav-text">2. Communication Model</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#related-work"><span class="nav-number">1.0.4.</span> <span class="nav-text">3. Related Work</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#experiments"><span class="nav-number">1.0.5.</span> <span class="nav-text">4. Experiments</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#baselines3%E4%B8%AA"><span class="nav-number">1.0.5.1.</span> <span class="nav-text">4.1 Baselines（3个）:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#simple-demonstration-with-a-lever-pulling-task"><span class="nav-number">1.0.5.2.</span> <span class="nav-text">4.2 Simple
+Demonstration with a Lever Pulling Task</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#multi-turn-games"><span class="nav-number">1.0.5.3.</span> <span class="nav-text">4.3 Multi-turn Games</span></a></li></ol></li></ol></li></ol></li></ol>
     
     </div>
   </aside>

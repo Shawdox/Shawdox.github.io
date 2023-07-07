@@ -13,24 +13,21 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="Symbolic Execution：从思维上理解符号执行​    符号执行作为软件分析、漏洞发掘领域经常出现的技术，国内已经有不少文章总结讨论。但新手直接翻阅学习这些总结性质的文章时碰到的诸如“符号路径约束”、“约束求解”、“执行状态”等专有名词会难以理解，思维逻辑与理论概念不易同轨。本文从国外的一些热门教程入手， 将符号执行从思维上捋一遍， 诠才末学，仅做抛砖引玉之用。 1. 引子：1.0 一">
+  <meta name="description" content="Symbolic Execution：从思维上理解符号执行 ​ 符号执行作为软件分析、漏洞发掘领域经常出现的技术，国内已经有不少文章总结讨论。但新手直接翻阅学习这些总结性质的文章时碰到的诸如“符号路径约束”、“约束求解”、“执行状态”等专有名词会难以理解，思维逻辑与理论概念不易同轨。本文从国外的一些热门教程入手， 将符号执行从思维上捋一遍， 诠才末学，仅做抛砖引玉之用。 1. 引子：">
 <meta property="og:type" content="article">
 <meta property="og:title" content="(技术积累)Symbolic Execution----从思维上理解符号执行">
 <meta property="og:url" content="http://example.com/2023/02/16/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Symbolic%20Execution-%E7%AC%A6%E5%8F%B7%E6%89%A7%E8%A1%8C/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="Symbolic Execution：从思维上理解符号执行​    符号执行作为软件分析、漏洞发掘领域经常出现的技术，国内已经有不少文章总结讨论。但新手直接翻阅学习这些总结性质的文章时碰到的诸如“符号路径约束”、“约束求解”、“执行状态”等专有名词会难以理解，思维逻辑与理论概念不易同轨。本文从国外的一些热门教程入手， 将符号执行从思维上捋一遍， 诠才末学，仅做抛砖引玉之用。 1. 引子：1.0 一">
+<meta property="og:description" content="Symbolic Execution：从思维上理解符号执行 ​ 符号执行作为软件分析、漏洞发掘领域经常出现的技术，国内已经有不少文章总结讨论。但新手直接翻阅学习这些总结性质的文章时碰到的诸如“符号路径约束”、“约束求解”、“执行状态”等专有名词会难以理解，思维逻辑与理论概念不易同轨。本文从国外的一些热门教程入手， 将符号执行从思维上捋一遍， 诠才末学，仅做抛砖引玉之用。 1. 引子：">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216152920.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216154301.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216155417.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216160440.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216160626.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216160745.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217193952.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216161133.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216161214.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216161307.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216164653.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217143933.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217150537.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217152355.png">
@@ -39,8 +36,6 @@
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217162143.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217165438.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217170143.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217170538.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217172729.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217185901.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217190852.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217191054.png">
@@ -179,85 +174,148 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="Symbolic-Execution：从思维上理解符号执行"><a href="#Symbolic-Execution：从思维上理解符号执行" class="headerlink" title="Symbolic Execution：从思维上理解符号执行"></a>Symbolic Execution：从思维上理解符号执行</h1><p>​    符号执行作为软件分析、漏洞发掘领域经常出现的技术，国内已经有不少文章总结讨论。但新手直接翻阅学习这些总结性质的文章时碰到的诸如“符号路径约束”、“约束求解”、“执行状态”等专有名词会难以理解，思维逻辑与理论概念不易同轨。本文从国外的一些热门教程入手， 将符号执行从思维上捋一遍， 诠才末学，仅做抛砖引玉之用。</p>
-<h2 id="1-引子："><a href="#1-引子：" class="headerlink" title="1. 引子："></a>1. 引子：</h2><h3 id="1-0-一个样例"><a href="#1-0-一个样例" class="headerlink" title="1.0 一个样例"></a>1.0 一个样例</h3><p>​    从一段经典的代码入手，解释符号执行的核心思路。</p>
+        <h1 id="symbolic-execution从思维上理解符号执行">Symbolic
+Execution：从思维上理解符号执行</h1>
+<p>​
+符号执行作为软件分析、漏洞发掘领域经常出现的技术，国内已经有不少文章总结讨论。但新手直接翻阅学习这些总结性质的文章时碰到的诸如“符号路径约束”、“约束求解”、“执行状态”等专有名词会难以理解，思维逻辑与理论概念不易同轨。本文从国外的一些热门教程入手，
+将符号执行从思维上捋一遍， 诠才末学，仅做抛砖引玉之用。</p>
+<h2 id="引子">1. 引子：</h2>
+<h3 id="一个样例">1.0 一个样例</h3>
+<p>​ 从一段经典的代码入手，解释符号执行的核心思路。</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216152920.png" style="zoom:50%;" /></p>
-<p>​    <strong>分析目标：对于任意可能的输入组合(a,b)，找到使得断言assert语句失败的所有输入。</strong></p>
+<p>​
+<strong>分析目标：对于任意可能的输入组合(a,b)，找到使得断言assert语句失败的所有输入。</strong></p>
 <span id="more"></span>
-<p>​    对于以上函数，如果使用随机测试的方法，共有2^32^×2^32^种输入组合，想要找到所有的符合条件的输入就得遍历所有输入，显然，这么做效率低下，费时费力。</p>
-<p>​    符号执行的核心思想有以下几点：</p>
-<ol>
-<li>每一个输入变量都被映射为了一个符号，例如int i ——&gt; α~i~   ；</li>
-<li>每一个符号代表所有可能的输入值的集合，例如 α~i~ ∈[0，2^32^-1] ；</li>
-<li>程序中的语句都由符号来完成运算，例如i*2 + 5 ——&gt; 2· α~i~ + 5 ；</li>
+<p>​
+对于以上函数，如果使用随机测试的方法，共有2<sup>32</sup>×2<sup>32</sup>种输入组合，想要找到所有的符合条件的输入就得遍历所有输入，显然，这么做效率低下，费时费力。</p>
+<p>​ 符号执行的核心思想有以下几点：</p>
+<ol type="1">
+<li>每一个输入变量都被映射为了一个符号，例如int i ——&gt; α<sub>i</sub>
+；</li>
+<li>每一个符号代表所有可能的输入值的集合，例如 α<sub>i</sub>
+∈[0，2<sup>32</sup>-1] ；</li>
+<li>程序中的语句都由符号来完成运算，例如i*2 + 5 ——&gt; 2· α<sub>i</sub>
++ 5 ；</li>
 </ol>
-<p>​    如果遇到了分支条件，需要考虑每一个分支下可能执行的路径：</p>
+<p>​ 如果遇到了分支条件，需要考虑每一个分支下可能执行的路径：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216154301.png" style="zoom: 50%;" /></p>
-<p>​    在开始第一次符号执行演练之前，这里定义执行状态（Execution state）的概念：</p>
-<script type="math/tex; mode=display">
-Execution\enspace state=\{stmt,\sigma,\pi\}</script><ol>
+<p>​ 在开始第一次符号执行演练之前，这里定义执行状态（Execution
+state）的概念： <span class="math display">\[
+Execution\enspace state=\{stmt,\sigma,\pi\}
+\]</span></p>
+<ol type="1">
 <li>stmt是当前状态的下一个状态；</li>
 <li>σ是将程序变量映射到符号或者常数的映射，如果变量的值不确定就是映射到符号，反之映射到常量；</li>
-<li>π表示路径上的限制，即到达当前状态需要什么限制条件。例如对于上述函数，只有a^(!b)才能到达第6行，所以若程序在第6行的π = $(\alpha_a \neq 0 )\and (\alpha_b = 0)$，π的初始值为true。</li>
+<li>π表示路径上的限制，即到达当前状态需要什么限制条件。例如对于上述函数，只有a^(!b)才能到达第6行，所以若程序在第6行的π
+= <span class="math inline">\((\alpha_a \neq 0 )\and (\alpha_b =
+0)\)</span>，π的初始值为true。</li>
 </ol>
-<p>​    如果使用符号执行来分析上述函数，在程序的开头，会得到第一个执行状态。根据上述定义，其stmt是它的下个待分析状态，也就是程序的第二行：“int x = 1, y = 0;”；其σ会将第一行引入的变量a,b映射到符号，由于a,b是输入，都不是常量，故可以得到：$\sigma=\{a\rightarrow \alpha_a, b\rightarrow \alpha_b\}$；1开始并没有遇到条件判断语句，故π为初始值true。如下图所示：</p>
+<p>​
+如果使用符号执行来分析上述函数，在程序的开头，会得到第一个执行状态。根据上述定义，其stmt是它的下个待分析状态，也就是程序的第二行：“int
+x = 1, y =
+0;”；其σ会将第一行引入的变量a,b映射到符号，由于a,b是输入，都不是常量，故可以得到：<span
+class="math inline">\(\sigma=\{a\rightarrow \alpha_a, b\rightarrow
+\alpha_b\}\)</span>；1开始并没有遇到条件判断语句，故π为初始值true。如下图所示：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216155417.png" style="zoom: 50%;" /></p>
-<p>​    当状态A接着执行，我们遇到了一个整型声明语句，其添加了两个新变量x，y并赋初始值。故从状态A到状态B其σ添加了新的映射，stmt变为下一条待执行语句，π不变：</p>
+<p>​
+当状态A接着执行，我们遇到了一个整型声明语句，其添加了两个新变量x，y并赋初始值。故从状态A到状态B其σ添加了新的映射，stmt变为下一条待执行语句，π不变：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216160440.png" style="zoom:50%;" /></p>
-<p>​    从状态B的stmt表明接下来的分析遇到了条件判断语句，对于if语句的两种可能，衍生出两个执行状态：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216160626.png" alt=""></p>
-<p>​    当状态D继续执行就遇到了assert断言语句，在断言处我们判断当前的条件（σ、π）下是否满足断言条件：</p>
+<p>​
+从状态B的stmt表明接下来的分析遇到了条件判断语句，对于if语句的两种可能，衍生出两个执行状态：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216160626.png" /></p>
+<p>​
+当状态D继续执行就遇到了assert断言语句，在断言处我们判断当前的条件（σ、π）下是否满足断言条件：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216160745.png" style="zoom: 67%;" /></p>
-<p>​    如图所示，在x = 1，y = 0，且α~a~ = 0的条件下，x-y ≠ 0 ，断言并未触发，此条分支执行结束。</p>
-<p>​    当C状态继续执行，遇到了y = 3 + x赋值语句，这时就要改变σ中的映射关系：</p>
+<p>​ 如图所示，在x = 1，y = 0，且α<sub>a</sub> = 0的条件下，x-y ≠ 0
+，断言并未触发，此条分支执行结束。</p>
+<p>​ 当C状态继续执行，遇到了y = 3 +
+x赋值语句，这时就要改变σ中的映射关系：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217193952.png" style="zoom:67%;" /></p>
-<p>​    状态E继续执行，遇到条件判断语句，同理，生成两个分支：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216161133.png" alt=""></p>
-<p>​    状态G进行逻辑判断，并未触发：</p>
+<p>​ 状态E继续执行，遇到条件判断语句，同理，生成两个分支：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216161133.png" /></p>
+<p>​ 状态G进行逻辑判断，并未触发：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216161214.png" style="zoom:67%;" /></p>
-<p>​    状态F继续执行，进行判断，触发错误条件：</p>
+<p>​ 状态F继续执行，进行判断，触发错误条件：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216161307.png" style="zoom:67%;" /></p>
-<p>​    到此为止，所有分支执行完毕，符号执行判断出当a=2且b=0时，断言语句会被触发。如果我们的测试目标从触发断言语句改为触发漏洞行为，符号测试就是进行漏洞的排查。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216164653.png" alt=""></p>
-<h3 id="1-1-机器如何判断？"><a href="#1-1-机器如何判断？" class="headerlink" title="1.1 机器如何判断？"></a>1.1 机器如何判断？</h3><p>​    上文所述的例子描述了符号执行的基本逻辑：<strong>用符号代替变量，判断最终生成的布尔表达式是否可满足</strong>。在上文中，我们当然可以轻松地用大脑分析出只要输入a = 2且b = 0，断言就会被触发。但在面对复杂且庞大的逻辑表达式时，我们不能每次都去人工分析，想要完整的利用计算机实现符号执行，就需要解决自动化判断逻辑表达式是否可满足的问题。</p>
-<p>​    SAT，布尔可满足性问题，它询问给定布尔公式的变量是否可以用值TRUE或FALSE一致地替换，以使该公式的值为TRUE。例如$a\and b $就是可满足的，而 $a \and !a$ 就是不可满足的。SAT在理论上已经被证明是NP问题，虽然可以快速验证这个问题的解，但不能确定其求解速度。目前已经有很多成熟的SAT算法。</p>
-<p>​    SMT将SAT实例中的一些二进制变量（True or False）替换为非二进制变量，非二进制变量包括线性不等式（x+2y &gt; 4）、符号等式（$f(f(u,v),v) = f(u,v)$）。SMT的背景符合符号执行所面临的的问题，利用已有的SMT解法就可以解决上述的逻辑表达式自动化判断问题。可以看到，我们将符号执行过程中的一系列限制条件称为约束（constraint），而使用SMT对该约束进行求解的过程就叫约束求解。</p>
-<p>​    使用符号执行不并一定要具体的理解SMT的技术细节，但其逻辑大体如下：</p>
+<p>​
+到此为止，所有分支执行完毕，符号执行判断出当a=2且b=0时，断言语句会被触发。如果我们的测试目标从触发断言语句改为触发漏洞行为，符号测试就是进行漏洞的排查。</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230216164653.png" /></p>
+<h3 id="机器如何判断">1.1 机器如何判断？</h3>
+<p>​
+上文所述的例子描述了符号执行的基本逻辑：<strong>用符号代替变量，判断最终生成的布尔表达式是否可满足</strong>。在上文中，我们当然可以轻松地用大脑分析出只要输入a
+= 2且b =
+0，断言就会被触发。但在面对复杂且庞大的逻辑表达式时，我们不能每次都去人工分析，想要完整的利用计算机实现符号执行，就需要解决自动化判断逻辑表达式是否可满足的问题。</p>
+<p>​
+SAT，布尔可满足性问题，它询问给定布尔公式的变量是否可以用值TRUE或FALSE一致地替换，以使该公式的值为TRUE。例如$a\and
+b $就是可满足的，而 <span class="math inline">\(a \and !a\)</span>
+就是不可满足的。SAT在理论上已经被证明是NP问题，虽然可以快速验证这个问题的解，但不能确定其求解速度。目前已经有很多成熟的SAT算法。</p>
+<p>​ SMT将SAT实例中的一些二进制变量（True or
+False）替换为非二进制变量，非二进制变量包括线性不等式（x+2y &gt;
+4）、符号等式（<span class="math inline">\(f(f(u,v),v) =
+f(u,v)\)</span>）。SMT的背景符合符号执行所面临的的问题，利用已有的SMT解法就可以解决上述的逻辑表达式自动化判断问题。可以看到，我们将符号执行过程中的一系列限制条件称为约束（constraint），而使用SMT对该约束进行求解的过程就叫约束求解。</p>
+<p>​
+使用符号执行不并一定要具体的理解SMT的技术细节，但其逻辑大体如下：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217143933.png" style="zoom:50%;" /></p>
-<p>​    对于SMT这类NP完全问题，在指定时间内SMT求解器会给出是否满足的结果，若超出时间则给出“不知道”。</p>
-<p>​    <strong>综上，在使用前文定义的符号执行流程分析后，配合SMT Slover即可进行完整的符号执行分析。</strong></p>
-<h3 id="1-2-如何证明没有其它样例？"><a href="#1-2-如何证明没有其它样例？" class="headerlink" title="1.2 如何证明没有其它样例？"></a>1.2 如何证明没有其它样例？</h3><p>​    如何证明我们找到的”a=2且b=0”就是所有的满足条件的输入了？</p>
-<p>​    从理论上来说，符号执行遍历执行了程序所有可能的条件分支，分析了所有可能路径下的SMT问题，以此得出的结果必然是完整的，没有其它特例的。但在实际应用中，存在一些很难被解决的限制，执行生成的路径可能特别多，并且影响程序执行路径的因素不再是a，b几个变量这么简单，这些因素导致了在实际的符号执行中不便于做理论完整的评估。</p>
-<h2 id="2-进一步深入"><a href="#2-进一步深入" class="headerlink" title="2. 进一步深入"></a>2. 进一步深入</h2><h3 id="2-1-memory-model"><a href="#2-1-memory-model" class="headerlink" title="2.1 memory model"></a>2.1 memory model</h3><p>​    看看如下代码：</p>
+<p>​
+对于SMT这类NP完全问题，在指定时间内SMT求解器会给出是否满足的结果，若超出时间则给出“不知道”。</p>
+<p>​ <strong>综上，在使用前文定义的符号执行流程分析后，配合SMT
+Slover即可进行完整的符号执行分析。</strong></p>
+<h3 id="如何证明没有其它样例">1.2 如何证明没有其它样例？</h3>
+<p>​ 如何证明我们找到的"a=2且b=0"就是所有的满足条件的输入了？</p>
+<p>​
+从理论上来说，符号执行遍历执行了程序所有可能的条件分支，分析了所有可能路径下的SMT问题，以此得出的结果必然是完整的，没有其它特例的。但在实际应用中，存在一些很难被解决的限制，执行生成的路径可能特别多，并且影响程序执行路径的因素不再是a，b几个变量这么简单，这些因素导致了在实际的符号执行中不便于做理论完整的评估。</p>
+<h2 id="进一步深入">2. 进一步深入</h2>
+<h3 id="memory-model">2.1 memory model</h3>
+<p>​ 看看如下代码：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217150537.png" style="zoom:50%;" /></p>
-<p>​    当代码中涉及到对内存的操作时，又如何设计相应符号呢？事实上我们将整个内存看成一个大数组MEM[]，对内存的操作不过是对数组的操作：</p>
+<p>​
+当代码中涉及到对内存的操作时，又如何设计相应符号呢？事实上我们将整个内存看成一个大数组MEM[]，对内存的操作不过是对数组的操作：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217152355.png" style="zoom:50%;" /></p>
-<p>​    这里的y1与y不完全相同，y代表地址，y1代表MEM数组中的位置。在C语言中，y = x + 10其实是y指针往后移动了10个x指针类型的位置，也就是y1 = x1 + 10*sizeof(int)。而对于malloc函数，可以将其简单看做返回未使用空间起始地址的函数，下面是一个简单的抽象：</p>
+<p>​
+这里的y1与y不完全相同，y代表地址，y1代表MEM数组中的位置。在C语言中，y =
+x + 10其实是y指针往后移动了10个x指针类型的位置，也就是y1 = x1 +
+10*sizeof(int)。而对于malloc函数，可以将其简单看做返回未使用空间起始地址的函数，下面是一个简单的抽象：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217152702.png" style="zoom:50%;" /></p>
-<p>​    当将堆内存抽象为数组操作时，现有SMT求解器支持基于数组的逻辑操作（Theory of arrays）。对数组的操作可以抽象为：</p>
-<script type="math/tex; mode=display">
+<p>​
+当将堆内存抽象为数组操作时，现有SMT求解器支持基于数组的逻辑操作（Theory
+of arrays）。对数组的操作可以抽象为： <span class="math display">\[
 \begin{equation}
 a\{i\rightarrow e\}[k] = \left\{
 \begin{array}{cl}
-a[k] & if & k \neq i \\
-e &  if & k = i 
+a[k] &amp; if &amp; k \neq i \\
+e &amp;  if &amp; k = i
 \end{array} \right \\
-\end{equation}</script><p>​    经过一系列的数组操作：</p>
-<script type="math/tex; mode=display">
-a\{i\rightarrow 5\}\{j\rightarrow 7\}···[k] = 5 \Leftrightarrow ···</script><p>​    SMT引擎会将数组操作转化为对应的布尔操作，进而进行求解。当然，这个函数与C语言中malloc具体实现很不一样，其忽略了很多细节，例如对当前分配空间是否使用的检查。但经过这样简单的抽象，就可以使用上述的思路进行符号执行的判断。</p>
-<p>​    <strong>memory model，翻译为“内存建模”，从以上的例子可以看出，面对复杂的数据结构、函数操作甚至是陌生的第三方库，在使用符号执行前需要对其进行合适的抽象建模。</strong>目前已经有许多研究成果针对C语言的第三方库建模。建模的好坏也直接影响符号执行的性能与效率，例如对于上述的malloc，如果我们仅仅想检测最简单的缓冲区溢出漏洞，考虑malloc复杂的堆分配机制就是多余的。</p>
+\end{equation}
+\]</span> ​ 经过一系列的数组操作： <span class="math display">\[
+a\{i\rightarrow 5\}\{j\rightarrow 7\}···[k] = 5 \Leftrightarrow ···
+\]</span> ​
+SMT引擎会将数组操作转化为对应的布尔操作，进而进行求解。当然，这个函数与C语言中malloc具体实现很不一样，其忽略了很多细节，例如对当前分配空间是否使用的检查。但经过这样简单的抽象，就可以使用上述的思路进行符号执行的判断。</p>
+<p>​ <strong>memory
+model，翻译为“内存建模”，从以上的例子可以看出，面对复杂的数据结构、函数操作甚至是陌生的第三方库，在使用符号执行前需要对其进行合适的抽象建模。</strong>目前已经有许多研究成果针对C语言的第三方库建模。建模的好坏也直接影响符号执行的性能与效率，例如对于上述的malloc，如果我们仅仅想检测最简单的缓冲区溢出漏洞，考虑malloc复杂的堆分配机制就是多余的。</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217151607.png" style="zoom:50%;" /></p>
-<h3 id="2-2-path-explosion"><a href="#2-2-path-explosion" class="headerlink" title="2.2 path explosion"></a>2.2 path explosion</h3><p>​    抛开上述举例的toy code，现实中需要检测的商业软件一般都有成千上万行代码，其结构包含大量分支、循环、内存操作等等，如果还按照上文的思路进行执行，不仅会导致搜索时间的过长，还会使最终的执行状态过大。</p>
-<p>​    在设计符号时，就应该避免引入无关/作用不大的符号，避免状态过大。且在路径搜索时可以使用深度优先、随机路径、广度优先、错误路路径优先等算法优化搜索方法，以求达到广度与深度的平衡。（又是经典的exploration and exploitation问题）</p>
-<p>​    具体的进一步深入可以查看：Baldoni R, Coppa E, D’elia D C, et al. <strong>A survey of symbolic execution techniques</strong>[J]. ACM Computing Surveys (CSUR), 2018, 51(3): 1-39.</p>
-<h2 id="3-实践一下"><a href="#3-实践一下" class="headerlink" title="3. 实践一下"></a>3. 实践一下</h2><p>​    对于源代码分析，KLEE[4]是很个很棒的框架工具；对于二进制分析，S2E[5]是个非常强有力工具，但使用稍显复杂。</p>
-<p>​    这里使用angr，angr[6]是一个分析二进制的python框架，使用非常便捷。</p>
+<h3 id="path-explosion">2.2 path explosion</h3>
+<p>​ 抛开上述举例的toy
+code，现实中需要检测的商业软件一般都有成千上万行代码，其结构包含大量分支、循环、内存操作等等，如果还按照上文的思路进行执行，不仅会导致搜索时间的过长，还会使最终的执行状态过大。</p>
+<p>​
+在设计符号时，就应该避免引入无关/作用不大的符号，避免状态过大。且在路径搜索时可以使用深度优先、随机路径、广度优先、错误路路径优先等算法优化搜索方法，以求达到广度与深度的平衡。（又是经典的exploration
+and exploitation问题）</p>
+<p>​ 具体的进一步深入可以查看：Baldoni R, Coppa E, D’elia D C, et al.
+<strong>A survey of symbolic execution techniques</strong>[J]. ACM
+Computing Surveys (CSUR), 2018, 51(3): 1-39.</p>
+<h2 id="实践一下">3. 实践一下</h2>
+<p>​
+对于源代码分析，KLEE[4]是很个很棒的框架工具；对于二进制分析，S2E[5]是个非常强有力工具，但使用稍显复杂。</p>
+<p>​
+这里使用angr，angr[6]是一个分析二进制的python框架，使用非常便捷。</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217162143.png" style="zoom:50%;" /></p>
 <blockquote>
 <p><strong>目标1：</strong>使用angr符号执行分析本文举出的第一个例子，follbar()的二进制文件.</p>
 <p><strong>目标2：</strong>使用angr符号执行分析logic-bomb二进制程序.</p>
 </blockquote>
-<p>​    安装相应虚拟环境：</p>
+<p>​ 安装相应虚拟环境：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#安装python虚拟环境</span>
 <span class="token function">sudo</span> pip3 <span class="token function">install</span> virtualenvwrapper 
 <span class="token comment">#创建目录用来存放虚拟环境</span>
@@ -272,18 +330,22 @@ mkvirtualenv angr
 workon angr
 pip3 <span class="token function">install</span> angr
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="3-1-foolbar"><a href="#3-1-foolbar" class="headerlink" title="3.1 foolbar"></a>3.1 foolbar</h3><p>​    使用idafree-7.0打开slide-example/example文件，找到foolbar函数：</p>
+<h3 id="foolbar">3.1 foolbar</h3>
+<p>​ 使用idafree-7.0打开slide-example/example文件，找到foolbar函数：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217165438.png" style="zoom:80%;" /></p>
-<p>​    打开行前缀选项：Options–&gt;General–&gt;Disassembly–&gt;Line prefixes(graph)，可以显示汇编指令地址：</p>
+<p>​ 打开行前缀选项：Options–&gt;General–&gt;Disassembly–&gt;Line
+prefixes(graph)，可以显示汇编指令地址：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217170143.png" style="zoom:80%;" /></p>
-<p>​    想要使用angr分析函数，需要给定其：</p>
+<p>​ 想要使用angr分析函数，需要给定其：</p>
 <ul>
 <li>start target：代码开始运行地址；</li>
 <li>find target：代码结束运行地址；</li>
 <li>avoid targets：哪些路径（地址）被忽略，以此来避免路径爆炸问题；</li>
 </ul>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217170538.png" alt=""></p>
-<p>​    由于angr不知道什么是符号什么是常数，后续还需要定义输入的符号。angr分析脚本如下：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217170538.png" /></p>
+<p>​
+由于angr不知道什么是符号什么是常数，后续还需要定义输入的符号。angr分析脚本如下：</p>
 <pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> angr
 
 proj <span class="token operator">=</span> angr<span class="token punctuation">.</span>Project<span class="token punctuation">(</span><span class="token string">'example'</span><span class="token punctuation">)</span>
@@ -314,19 +376,26 @@ sm <span class="token operator">=</span> proj<span class="token punctuation">.</
         <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"%edi = "</span> <span class="token operator">+</span> <span class="token builtin">str</span><span class="token punctuation">(</span>state<span class="token punctuation">.</span>solver<span class="token punctuation">.</span>eval_upto<span class="token punctuation">(</span>a<span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
         <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"%esi = "</span> <span class="token operator">+</span> <span class="token builtin">str</span><span class="token punctuation">(</span>state<span class="token punctuation">.</span>solver<span class="token punctuation">.</span>eval_upto<span class="token punctuation">(</span>b<span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
         <span class="token keyword">break</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    代码整体很简洁，angr.Project构建Project类，Project类是angr模块的主类，它对一个二进制文件进行初始的分析以及参数配置，并将数据存储起来进行后续进一步分析。proj.factory.blank_state()指定任意地址开始运行。在Angr中，程序每执行一步（也就是step）就会产生一个状态（state，在SM这里叫做stashe）,Simulation_Manager就是提供给我们管理这些state的接口。注意到，符号变量是使用寄存器进行存储的。</p>
-<p>​    运行脚本：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217172729.png" alt=""></p>
-<p>​    可以看到，脚本程序分析出，当edi(a)=2或者2147483650，esi(b)=0时会触发断言，这里2147483650显然就是整数溢出后的2。以此可见符号执行的程序实现需要考虑到计算机数字与数学数字的区别。</p>
-<h3 id="3-2-logic-bomb"><a href="#3-2-logic-bomb" class="headerlink" title="3.2 logic-bomb"></a>3.2 logic-bomb</h3><p>​    logic-bomb是一个没有源码的二进制程序，你需要依次输入正确答案以此逃过爆炸：</p>
+<p>​
+代码整体很简洁，angr.Project构建Project类，Project类是angr模块的主类，它对一个二进制文件进行初始的分析以及参数配置，并将数据存储起来进行后续进一步分析。proj.factory.blank_state()指定任意地址开始运行。在Angr中，程序每执行一步（也就是step）就会产生一个状态（state，在SM这里叫做stashe）,Simulation_Manager就是提供给我们管理这些state的接口。注意到，符号变量是使用寄存器进行存储的。</p>
+<p>​ 运行脚本：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217172729.png" /></p>
+<p>​
+可以看到，脚本程序分析出，当edi(a)=2或者2147483650，esi(b)=0时会触发断言，这里2147483650显然就是整数溢出后的2。以此可见符号执行的程序实现需要考虑到计算机数字与数学数字的区别。</p>
+<h3 id="logic-bomb">3.2 logic-bomb</h3>
+<p>​
+logic-bomb是一个没有源码的二进制程序，你需要依次输入正确答案以此逃过爆炸：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217185901.png" style="zoom:50%;" /></p>
-<p>​    用IDA打开：</p>
+<p>​ 用IDA打开：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217190852.png" style="zoom:67%;" /></p>
-<p>​    可以看到程序从主函数开始分别调用phase_1()、phase_2()······phase_6()，进入phase_1()：</p>
+<p>​
+可以看到程序从主函数开始分别调用phase_1()、phase_2()······phase_6()，进入phase_1()：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217191054.png" style="zoom: 67%;" /></p>
-<p>​    如果你懂得逆向的知识，可以尝试人工分析去解开这个bomb，但如果使用符号执行分析，只需要确定使其成功通过的地址即可：</p>
+<p>​
+如果你懂得逆向的知识，可以尝试人工分析去解开这个bomb，但如果使用符号执行分析，只需要确定使其成功通过的地址即可：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217191243.png" style="zoom: 50%;" /></p>
-<p>​    分析脚本如下：</p>
+<p>​ 分析脚本如下：</p>
 <pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> angr
 <span class="token keyword">import</span> logging
 <span class="token keyword">import</span> claripy
@@ -392,18 +461,27 @@ start_time <span class="token operator">=</span> time<span class="token punctuat
 <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"Memory usage: "</span> <span class="token operator">+</span>
       <span class="token builtin">str</span><span class="token punctuation">(</span>resource<span class="token punctuation">.</span>getrusage<span class="token punctuation">(</span>resource<span class="token punctuation">.</span>RUSAGE_SELF<span class="token punctuation">)</span><span class="token punctuation">.</span>ru_maxrss <span class="token operator">/</span> <span class="token number">1024</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">" MB"</span><span class="token punctuation">)</span>
 <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"Elapsed time: "</span> <span class="token operator">+</span> <span class="token builtin">str</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>time<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span> start_time<span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    执行脚本：</p>
+<p>​ 执行脚本：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217191715.png" style="zoom:67%;" /></p>
-<p>​    可以看到，符号执行仅用40秒就找到了phase1()的口令：“Border relations with Canada have never been better.”</p>
+<p>​ 可以看到，符号执行仅用40秒就找到了phase1()的口令：“Border relations
+with Canada have never been better.”</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230217191903.png" style="zoom:67%;" /></p>
-<p>​    对于phase_2()······phase_6()使用同样的方法即可破解，这里略。</p>
-<p>​    综上，我们可以看到符号执行在面对复杂的二进制文件时卓越的能力表现，在logic-bomb中，其二进制文件并没有经过混淆处理，相应的函数名，完整字符串都可以经过IDA分析后直接看到，所以对logic-bomb人工分析其实也并不复杂。但在真实的软件测试环境里，大量的二进制文件都是经过混淆加壳处理的，人工分析无法直接定位关键函数的作用（logic-bomb直接用函数名体现了函数的作用），甚至定位函数的进出口都变得具有挑战性，这时符号执行的优越性就有更明显的体现。</p>
-<p>​    </p>
-<h2 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h2><p>[1] <a target="_blank" rel="noopener" href="https://docs.google.com/presentation/d/e/2PACX-1vR7ZG-wQu9SvGA2wv7GFn2pLU9z3N_yAfoqiHRgn5I3RU-9k9XTEsjdKHZBUshau3TBY1fLZe2vnHmx/pub?start=false&amp;loop=false&amp;delayms=3000&amp;slide=id.g460cbb2cfe_0_7">Symbolic Execution </a></p>
-<p>[2] <a target="_blank" rel="noopener" href="https://github.com/ercoppa/symbolic-execution-tutorial/blob/master/setup/README.md">symbolic-execution-tutorial/README.md at master · ercoppa/symbolic-execution-tutorial (github.com)</a></p>
-<p>[3] <a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=yRVZPvHYHzw">MIT 6.858 Computer Systems Security, Fall 2014—–10. Symbolic Execution </a></p>
+<p>​ 对于phase_2()······phase_6()使用同样的方法即可破解，这里略。</p>
+<p>​
+综上，我们可以看到符号执行在面对复杂的二进制文件时卓越的能力表现，在logic-bomb中，其二进制文件并没有经过混淆处理，相应的函数名，完整字符串都可以经过IDA分析后直接看到，所以对logic-bomb人工分析其实也并不复杂。但在真实的软件测试环境里，大量的二进制文件都是经过混淆加壳处理的，人工分析无法直接定位关键函数的作用（logic-bomb直接用函数名体现了函数的作用），甚至定位函数的进出口都变得具有挑战性，这时符号执行的优越性就有更明显的体现。</p>
+<p>​</p>
+<h2 id="参考">参考：</h2>
+<p>[1] <a
+target="_blank" rel="noopener" href="https://docs.google.com/presentation/d/e/2PACX-1vR7ZG-wQu9SvGA2wv7GFn2pLU9z3N_yAfoqiHRgn5I3RU-9k9XTEsjdKHZBUshau3TBY1fLZe2vnHmx/pub?start=false&amp;loop=false&amp;delayms=3000&amp;slide=id.g460cbb2cfe_0_7">Symbolic
+Execution</a></p>
+<p>[2] <a
+target="_blank" rel="noopener" href="https://github.com/ercoppa/symbolic-execution-tutorial/blob/master/setup/README.md">symbolic-execution-tutorial/README.md
+at master · ercoppa/symbolic-execution-tutorial (github.com)</a></p>
+<p>[3] <a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=yRVZPvHYHzw">MIT 6.858
+Computer Systems Security, Fall 2014—–10. Symbolic Execution</a></p>
 <p>[4] <a target="_blank" rel="noopener" href="http://klee.github.io/">KLEE</a></p>
-<p>[5] <a target="_blank" rel="noopener" href="https://s2e.systems/">Overview - S²E: A Platform for In-Vivo Analysis of Software Systems (s2e.systems)</a></p>
+<p>[5] <a target="_blank" rel="noopener" href="https://s2e.systems/">Overview - S²E: A Platform for
+In-Vivo Analysis of Software Systems (s2e.systems)</a></p>
 <p>[6] <a target="_blank" rel="noopener" href="https://angr.io/">angr</a></p>
 
       
@@ -451,7 +529,8 @@ start_time <span class="token operator">=</span> time<span class="token punctuat
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Symbolic-Execution%EF%BC%9A%E4%BB%8E%E6%80%9D%E7%BB%B4%E4%B8%8A%E7%90%86%E8%A7%A3%E7%AC%A6%E5%8F%B7%E6%89%A7%E8%A1%8C"><span class="nav-number">1.</span> <span class="nav-text">Symbolic Execution：从思维上理解符号执行</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%BC%95%E5%AD%90%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">1. 引子：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-0-%E4%B8%80%E4%B8%AA%E6%A0%B7%E4%BE%8B"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.0 一个样例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E6%9C%BA%E5%99%A8%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%EF%BC%9F"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.1 机器如何判断？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E5%A6%82%E4%BD%95%E8%AF%81%E6%98%8E%E6%B2%A1%E6%9C%89%E5%85%B6%E5%AE%83%E6%A0%B7%E4%BE%8B%EF%BC%9F"><span class="nav-number">1.1.3.</span> <span class="nav-text">1.2 如何证明没有其它样例？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E8%BF%9B%E4%B8%80%E6%AD%A5%E6%B7%B1%E5%85%A5"><span class="nav-number">1.2.</span> <span class="nav-text">2. 进一步深入</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-memory-model"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 memory model</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-path-explosion"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 path explosion</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%AE%9E%E8%B7%B5%E4%B8%80%E4%B8%8B"><span class="nav-number">1.3.</span> <span class="nav-text">3. 实践一下</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-foolbar"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 foolbar</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-logic-bomb"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2 logic-bomb</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%EF%BC%9A"><span class="nav-number">1.4.</span> <span class="nav-text">参考：</span></a></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#symbolic-execution%E4%BB%8E%E6%80%9D%E7%BB%B4%E4%B8%8A%E7%90%86%E8%A7%A3%E7%AC%A6%E5%8F%B7%E6%89%A7%E8%A1%8C"><span class="nav-number">1.</span> <span class="nav-text">Symbolic
+Execution：从思维上理解符号执行</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E5%AD%90"><span class="nav-number">1.1.</span> <span class="nav-text">1. 引子：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E6%A0%B7%E4%BE%8B"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.0 一个样例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%BA%E5%99%A8%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.1 机器如何判断？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E8%AF%81%E6%98%8E%E6%B2%A1%E6%9C%89%E5%85%B6%E5%AE%83%E6%A0%B7%E4%BE%8B"><span class="nav-number">1.1.3.</span> <span class="nav-text">1.2 如何证明没有其它样例？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E4%B8%80%E6%AD%A5%E6%B7%B1%E5%85%A5"><span class="nav-number">1.2.</span> <span class="nav-text">2. 进一步深入</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#memory-model"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 memory model</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#path-explosion"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 path explosion</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E8%B7%B5%E4%B8%80%E4%B8%8B"><span class="nav-number">1.3.</span> <span class="nav-text">3. 实践一下</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#foolbar"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 foolbar</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#logic-bomb"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2 logic-bomb</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">1.4.</span> <span class="nav-text">参考：</span></a></li></ol></li></ol>
     
     </div>
   </aside>

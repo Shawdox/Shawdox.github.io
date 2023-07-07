@@ -158,6 +158,164 @@
 <!-- Table of Contents -->
 
   
+    <article id="post-【论文阅读】Everything-Old-is-New-Again--Binary-Security-of-WebAssembly"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2023/07/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Everything-Old-is-New-Again--Binary-Security-of-WebAssembly/">(论文阅读)Everything Old is New Again- Binary Security of WebAssembly</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/07/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Everything-Old-is-New-Again--Binary-Security-of-WebAssembly/" class="article-date">
+	  <time datetime="2023-07-04T03:35:50.683Z" itemprop="datePublished">七月 4, 2023</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+
+          
+            <div class="entry-thumbnail">
+              <a href="/2023/07/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Everything-Old-is-New-Again--Binary-Security-of-WebAssembly/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+            </div>
+          
+          <div class="entry-summary">
+          Everything
+Old is New Again: Binary Security of WebAssembly
+
+时间：2020
+作者：Daniel Lehmann（德国斯图加特大学），Johannes
+Kinder（慕尼黑联邦国防大学）
+会议：USENIX'2020
+
+Abstract
+​
+WebAssembly是一种越来越流行的编译目标，其旨在通过严格分离代码和数据、强制执行类型和限制间接控制流，在浏览器和其他平台上安全可靠地运行代码。不过，内存不安全的源语言的漏洞仍然可以转化为WebAssembly二进制文件的漏洞。
+​
+在文本中，我们分析了什么样的漏洞在WASM二进制文件中是可利用的，以及其与本地代码的比较。我们发现，许多经典的漏洞，由于常见的缓解措施，在本地二进制文件中不再可利用，但在WebAssembly中却完全暴露。另外，WebAssembly能够实现一些独特的攻击，例如覆盖所谓的常量数据或使用堆栈溢出操纵堆。
+​
+我们提出了一套攻击原语，使攻击者(i)能够写入任意内存，(ii)能够覆盖敏感数据，以及(iii)能够通过转移控制流或操纵主机环境来触发意外行为。我们提供了一套易受攻击的POC应用程序，以及完整的端到端漏洞，其中涵盖了三个WebAssembly平台。对真实世界的二进制文件和SPEC
+CPU程序编译成WebAssembly的经验性风险评估表明，我们的攻击原语在实践中可能是可行的。总的来说，我们的发现表明，WebAssembly缺乏二进制的安全性，这也许是令人惊讶的，我们讨论了潜在的保护机制，以减轻由此产生的风险。
+
+        
+          <p class="article-more-link">
+            <a href="/2023/07/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Everything-Old-is-New-Again--Binary-Security-of-WebAssembly/#more">阅读全文</a>
+          </p>
+        </div>
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WASM/" rel="tag">WASM</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
+    <article id="post-【论文阅读】Fuzzm-Finding-Memory-Bugs-through-Binary-Only-Instrumentation-and-Fuzzing-of-WebAssembly"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2023/07/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Fuzzm-Finding-Memory-Bugs-through-Binary-Only-Instrumentation-and-Fuzzing-of-WebAssembly/">(论文阅读)Fuzzm-Finding Memory Bugs through Binary-Only Instrumentation and Fuzzing of WebAssembly</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/07/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Fuzzm-Finding-Memory-Bugs-through-Binary-Only-Instrumentation-and-Fuzzing-of-WebAssembly/" class="article-date">
+	  <time datetime="2023-07-04T03:06:36.336Z" itemprop="datePublished">七月 4, 2023</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+
+          
+            <div class="entry-thumbnail">
+              <a href="/2023/07/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Fuzzm-Finding-Memory-Bugs-through-Binary-Only-Instrumentation-and-Fuzzing-of-WebAssembly/"><img src="http://lorempixel.com/750/450/city/7" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+            </div>
+          
+          <div class="entry-summary">
+          Fuzzm:
+Finding Memory Bugs through Binary-Only Instrumentation and Fuzzing of
+WebAssembly
+
+时间：2021
+作者：Daniel Lehmann（德国斯图加特大学），Martin
+Toldam Torp（丹麦奥胡斯大学）
+
+Abstract
+​
+WebAssembly二进制文件通常是由内存不安全的语言，如C和C++编译而成。由于WebAssembly的线性内存和缺失的保护功能，例如堆栈canaries，源码级的内存漏洞在编译的WebAssembly二进制文件中是可以利用的，有时甚至比本地代码更容易。
+​
+本文通过第一个只针对WebAssembly的二进制fuzzer来解决检测此类漏洞的问题。我们的方法被称为Fuzzm，它结合了检测堆栈和堆的溢出的canaries插桩、有效的代码覆盖率插桩、WebAssembly虚拟机和一个流行的AFL
+fuzzer的输入生成算法。除了作为fuzzer的oracle，我们的canary还可以作为独立的二进制加固技术，以防止生产中的脆弱二进制文件被利用。
+​
+我们用28个真实世界的WebAssembly二进制文件来评估Fuzzm，其中一些是从源代码编译的，还有一些是在野外发现的，没有源代码。该fuzzer探索了数以千计的执行路径，触发了几十次崩溃，每秒执行数百次程序执行。当用于二进制加固时，该方法可以防止先前公布的针对脆弱的WebAssembly二进制文件的漏洞，同时施加较低的运行时间开销。
+
+        
+          <p class="article-more-link">
+            <a href="/2023/07/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Fuzzm-Finding-Memory-Bugs-through-Binary-Only-Instrumentation-and-Fuzzing-of-WebAssembly/#more">阅读全文</a>
+          </p>
+        </div>
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WASM/" rel="tag">WASM</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
     <article id="post-【论文阅读】WAFL--Binary-Only-WebAssembly-Fuzzing-with-Fast-Snapshots-Oracle-for-WebAssembly"  class="article article-type-post" itemscope itemprop="blogPost" >
   <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
     
@@ -190,7 +348,7 @@
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/07/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91WAFL--Binary-Only-WebAssembly-Fuzzing-with-Fast-Snapshots-Oracle-for-WebAssembly/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/07/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91WAFL--Binary-Only-WebAssembly-Fuzzing-with-Fast-Snapshots-Oracle-for-WebAssembly/"><img src="http://lorempixel.com/750/450/city/4" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -274,18 +432,26 @@ AFL++ 模糊测试工具的覆盖率数据。借助于提前编译（AOT）的 W
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/07/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91WasmFuzzer--A-Fuzzer-for-WebAssembly-Virtual-Machines/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/07/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91WasmFuzzer--A-Fuzzer-for-WebAssembly-Virtual-Machines/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          WasmFuzzer: A Fuzzer for WebAssembly Virtual Machines
+          WasmFuzzer: A
+Fuzzer for WebAssembly Virtual Machines
+
 时间：2022
 作者：Bo Jiang, Zichao Li（北航）
 期刊：SEKE（CCF-C）
 
-Abstract​    WebAssembly是一种快速、安全、可移植的低级语言，适用于各种应用场景，Web浏览器或区块链平台广泛使用WebAssembly虚拟机作为执行引擎。当Wasm虚拟机的实现存在bug时，WebAssembly的执行可能导致应用程序中的错误或漏洞。由于WASM虚拟机的语法检查机制，二进制级别的fuzzing无法暴露bug，因为大多数输入无法到达WASM虚拟机的深层逻辑。
-​    在这项工作中，我们提出了WasmFuzzer，一个用于WASM虚拟机的bytecode级fuzzing工具。WasmFuzzer提出在Wasm字节码级别上生成初始种子进行fuzzing，并设计了一套系统的Wasm字节码突变mutation operators。此外，WasmFuzzer还提出了一种自适应的突变策略，以寻找适用于不同fuzzing目标的最佳mutator。
-​    我们对三个真实的Wasm虚拟机进行评估，结果显示WasmFuzzer在代码覆盖率和唯一崩溃(unique crash)方面明显优于AFL。
+Abstract
+​
+WebAssembly是一种快速、安全、可移植的低级语言，适用于各种应用场景，Web浏览器或区块链平台广泛使用WebAssembly虚拟机作为执行引擎。当Wasm虚拟机的实现存在bug时，WebAssembly的执行可能导致应用程序中的错误或漏洞。由于WASM虚拟机的语法检查机制，二进制级别的fuzzing无法暴露bug，因为大多数输入无法到达WASM虚拟机的深层逻辑。
+​
+在这项工作中，我们提出了WasmFuzzer，一个用于WASM虚拟机的bytecode级fuzzing工具。WasmFuzzer提出在Wasm字节码级别上生成初始种子进行fuzzing，并设计了一套系统的Wasm字节码突变mutation
+operators。此外，WasmFuzzer还提出了一种自适应的突变策略，以寻找适用于不同fuzzing目标的最佳mutator。
+​
+我们对三个真实的Wasm虚拟机进行评估，结果显示WasmFuzzer在代码覆盖率和唯一崩溃(unique
+crash)方面明显优于AFL。
 
         
           <p class="article-more-link">
@@ -345,18 +511,26 @@ Abstract​    WebAssembly是一种快速、安全、可移植的低级语言，
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/06/30/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Fuzzing-A-Survey-for-Roadmap/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/06/30/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Fuzzing-A-Survey-for-Roadmap/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
           Fuzzing: A Survey for Roadmap
+
 时间：2022
-作者：Xiaogang Zhu、Sheng Wen（澳洲斯威本科技大学）
+作者：Xiaogang Zhu、Sheng
+Wen（澳洲斯威本科技大学）
 期刊：ACM Computing Surveys（中科院一区）
 
-Abstract​    最近，模糊测试（fuzzing）在检测安全缺陷方面有着大量使用，它产生了大量的测试案例，并监控缺陷的执行情况，fuzzing已经在各种应用程序中发现了成千上万的错误和漏洞。
-​    Fuzzing虽然有效，但对其所面临的问题缺乏系统的分析。作为一种缺陷检测技术，fuzzing需要缩小整个输入空间（input space）和缺陷空间（defect space）之间的差距。如果对生成的输入没有限制，输入空间是无限的，然而，应用中的缺陷是稀疏的，这表明缺陷空间要比整个输入空间小得多。此外，由于fuzzing会产生大量的测试用例来反复检查目标，这就要求fuzzing以自动的方式进行，由于应用程序和漏洞的复杂性，对不同的应用程序进行自动化执行具有挑战性
-​    在这篇文章中，我们系统地回顾和分析了这些gap以及它们的解决方案，同时考虑了广度和深度。这项调查可以作为初学者和高级开发人员更好地了解fuzzing的路线图。
+Abstract
+​
+最近，模糊测试（fuzzing）在检测安全缺陷方面有着大量使用，它产生了大量的测试案例，并监控缺陷的执行情况，fuzzing已经在各种应用程序中发现了成千上万的错误和漏洞。
+​
+Fuzzing虽然有效，但对其所面临的问题缺乏系统的分析。作为一种缺陷检测技术，fuzzing需要缩小整个输入空间（input
+space）和缺陷空间（defect
+space）之间的差距。如果对生成的输入没有限制，输入空间是无限的，然而，应用中的缺陷是稀疏的，这表明缺陷空间要比整个输入空间小得多。此外，由于fuzzing会产生大量的测试用例来反复检查目标，这就要求fuzzing以自动的方式进行，由于应用程序和漏洞的复杂性，对不同的应用程序进行自动化执行具有挑战性
+​
+在这篇文章中，我们系统地回顾和分析了这些gap以及它们的解决方案，同时考虑了广度和深度。这项调查可以作为初学者和高级开发人员更好地了解fuzzing的路线图。
 
         
           <p class="article-more-link">
@@ -416,17 +590,23 @@ Abstract​    最近，模糊测试（fuzzing）在检测安全缺陷方面有�
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/06/20/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Concolic-Execution-for-WebAssembly/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/06/20/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Concolic-Execution-for-WebAssembly/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          Concolic Execution for WebAssembly
+          Concolic Execution for
+WebAssembly
+
 时间：2022
-作者：Filipe Marques、José Fragoso Santos、Nuno Santos（里斯本大学）
+作者：Filipe Marques、José Fragoso Santos、Nuno
+Santos（里斯本大学）
 会议：ECOOP’2022（软工CCF-B）
 
-Abstract​    WebAssembly（Wasm）是一种新的二进制指令格式，允许用高级语言编写的目标编译代码以接近原生的速度被浏览器的JavaScript引擎执行。尽管Wasm有明显的性能优势，但它为网络程序引入错误或安全漏洞提供了机会，因为用不安全语言编写的程序中已有的问题可以转移到交叉编译的二进制文件中。这种二进制文件的源代码经常无法用于静态分析，这就需要有能够直接处理Wasm代码的工具。尽管这种潜在的安全关键情况，仍然明显缺乏分析Wasm二进制文件的工具支持。
-​    我们提出了WASP，一个用于测试Wasm模块的符号执行引擎，它直接在Wasm代码上工作，并建立在一个符合标准的Wasm参考实现之上。我们对WASP进行了全面的评估：它被用来符号执行测试C语言的通用数据结构库和C语言的亚马逊加密SDK，证明它可以为真实世界的C语言应用找到错误并产生高覆盖率的测试输入；并进一步针对Test-Comp基准进行测试，获得了与成熟的C语言符号执行和测试工具相当的结果。
+Abstract
+​
+WebAssembly（Wasm）是一种新的二进制指令格式，允许用高级语言编写的目标编译代码以接近原生的速度被浏览器的JavaScript引擎执行。尽管Wasm有明显的性能优势，但它为网络程序引入错误或安全漏洞提供了机会，因为用不安全语言编写的程序中已有的问题可以转移到交叉编译的二进制文件中。这种二进制文件的源代码经常无法用于静态分析，这就需要有能够直接处理Wasm代码的工具。尽管这种潜在的安全关键情况，仍然明显缺乏分析Wasm二进制文件的工具支持。
+​
+我们提出了WASP，一个用于测试Wasm模块的符号执行引擎，它直接在Wasm代码上工作，并建立在一个符合标准的Wasm参考实现之上。我们对WASP进行了全面的评估：它被用来符号执行测试C语言的通用数据结构库和C语言的亚马逊加密SDK，证明它可以为真实世界的C语言应用找到错误并产生高覆盖率的测试输入；并进一步针对Test-Comp基准进行测试，获得了与成熟的C语言符号执行和测试工具相当的结果。
 
         
           <p class="article-more-link">
@@ -486,17 +666,22 @@ Abstract​    WebAssembly（Wasm）是一种新的二进制指令格式，允�
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/06/19/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91WANA-Symbolic-Execution-of-Wasm-Bytecode-for-Extensible-Smart-Contract-Vulnerability-Detection/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/06/19/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91WANA-Symbolic-Execution-of-Wasm-Bytecode-for-Extensible-Smart-Contract-Vulnerability-Detection/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          (论文阅读)WANA: Symbolic Execution of Wasm Bytecode for Extensible Smart Contract Vulnerability Detection
+          (论文阅读)WANA:
+Symbolic Execution of Wasm Bytecode for Extensible Smart Contract
+Vulnerability Detection
+
 时间： 2021
 作者： B Jiang, Y Chen, D Wang（北航）
 会议： QRS‘2021 （软工CCF-C）
 开源： https://github.com/gongbell/WANA
 
-Abstract​    许多流行的区块链平台支持智能合约，以建立去中心化的应用程序。然而，智能合约内的漏洞已经证明导致其终端用户的严重经济损失。特别是EOSIO智能合约平台上的智能合约导致了大约38万个EOS代币的损失，在攻击发生时，价值约为190万美元。EOSIO智能合约平台是基于Wasm虚拟机的，它也是支持其他智能合约平台以及网络应用的底层系统。在这项工作中，我们提出了WANA，一个基于Wasm字节码符号执行的可扩展智能合约漏洞检测工具。WANA提出了一套基于Wasm字节码分析的算法来检测EOSIO智能合约的漏洞。我们的实验分析表明，WANA可以有效地、高效地检测EOSIO智能合约中的漏洞。此外，我们的案例研究还表明，WANA可以扩展到有效检测Ethereum智能合约的漏洞。
+Abstract
+​
+许多流行的区块链平台支持智能合约，以建立去中心化的应用程序。然而，智能合约内的漏洞已经证明导致其终端用户的严重经济损失。特别是EOSIO智能合约平台上的智能合约导致了大约38万个EOS代币的损失，在攻击发生时，价值约为190万美元。EOSIO智能合约平台是基于Wasm虚拟机的，它也是支持其他智能合约平台以及网络应用的底层系统。在这项工作中，我们提出了WANA，一个基于Wasm字节码符号执行的可扩展智能合约漏洞检测工具。WANA提出了一套基于Wasm字节码分析的算法来检测EOSIO智能合约的漏洞。我们的实验分析表明，WANA可以有效地、高效地检测EOSIO智能合约中的漏洞。此外，我们的案例研究还表明，WANA可以扩展到有效检测Ethereum智能合约的漏洞。
 
         
           <p class="article-more-link">
@@ -556,20 +741,30 @@ Abstract​    许多流行的区块链平台支持智能合约，以建立去�
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/06/18/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Eunomia-Enabling-User-specified-Fine-Grained-Search-in-Symbolically-Executing-WebAssembly-Binaries/"><img src="http://lorempixel.com/750/450/city/7" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/06/18/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Eunomia-Enabling-User-specified-Fine-Grained-Search-in-Symbolically-Executing-WebAssembly-Binaries/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          Eunomia: Enabling User-specified Fine-Grained Search in Symbolically Executing WebAssembly Binaries
+          Eunomia:
+Enabling User-specified Fine-Grained Search in Symbolically Executing
+WebAssembly Binaries
+
 时间：2023.4
-作者：Ningyu He、Zhehao Zhao（北大）/Haoyu Wang（华科）
+作者：Ningyu He、Zhehao Zhao（北大）/Haoyu
+Wang（华科）
 会议：ISSTA‘2023
 开源： https://github.com/HNYuuu/Eunomia-ISSTA23
 
-Abstract​    尽管现有的技术已经提出了自动化的方法来缓解符号执行的路径爆炸问题，但用户仍然需要通过仔细应用各种搜索策略来优化符号执行。由于现有的方法主要只支持粗粒度的全局搜索策略，它们不能有效地遍历复杂的代码结构。在本文中，我们提出了Eunomia，一种符号执行技术，允许用户指定局部领域知识，以实现细粒度搜索。
-​    在Eunomia中，我们设计了一个富有表现力的领域特定语言(DSL)，即AES，让用户可以精确地将本地搜索策略定位到目标程序的不同部分。为了进一步优化局部搜索策略，我们设计了一种基于区间的算法，该算法可以自动隔离不同局部搜索策略的变量背景，避免同一变量的局部搜索策略之间的冲突。
-​    我们将Eunomia作为一个针对WebAssembly的符号执行平台来实现，这使我们能够分析用各种语言（如C和Go）编写但可以编译成WebAssembly的应用程序。据我们所知，Eunomia是第一个支持WebAssembly运行时全部功能的符号执行引擎。
-​    我们用一个专门的符号执行微基准套件和六个真实世界的应用来评估Eunomia。我们的评估显示，Eunomia在现实世界的应用中加速了错误检测，最多可达到三个数量级。根据一项全面的用户研究结果，用户可以通过编写一个简单直观的AES脚本来显著提高符号执行的效率和效果。除了验证六个已知的真实世界的bug，Eunomia还在一个流行的开源项目Collections-C中检测到两个新的0-day bug。
+Abstract
+​
+尽管现有的技术已经提出了自动化的方法来缓解符号执行的路径爆炸问题，但用户仍然需要通过仔细应用各种搜索策略来优化符号执行。由于现有的方法主要只支持粗粒度的全局搜索策略，它们不能有效地遍历复杂的代码结构。在本文中，我们提出了Eunomia，一种符号执行技术，允许用户指定局部领域知识，以实现细粒度搜索。
+​
+在Eunomia中，我们设计了一个富有表现力的领域特定语言(DSL)，即AES，让用户可以精确地将本地搜索策略定位到目标程序的不同部分。为了进一步优化局部搜索策略，我们设计了一种基于区间的算法，该算法可以自动隔离不同局部搜索策略的变量背景，避免同一变量的局部搜索策略之间的冲突。
+​
+我们将Eunomia作为一个针对WebAssembly的符号执行平台来实现，这使我们能够分析用各种语言（如C和Go）编写但可以编译成WebAssembly的应用程序。据我们所知，Eunomia是第一个支持WebAssembly运行时全部功能的符号执行引擎。
+​
+我们用一个专门的符号执行微基准套件和六个真实世界的应用来评估Eunomia。我们的评估显示，Eunomia在现实世界的应用中加速了错误检测，最多可达到三个数量级。根据一项全面的用户研究结果，用户可以通过编写一个简单直观的AES脚本来显著提高符号执行的效率和效果。除了验证六个已知的真实世界的bug，Eunomia还在一个流行的开源项目Collections-C中检测到两个新的0-day
+bug。
 
         
           <p class="article-more-link">
@@ -629,11 +824,14 @@ Abstract​    尽管现有的技术已经提出了自动化的方法来缓解�
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/06/11/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91GREBE-Unveiling-Exploitation-Potential-for-Linux-Kernel-Bugs/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/06/11/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91GREBE-Unveiling-Exploitation-Potential-for-Linux-Kernel-Bugs/"><img src="http://lorempixel.com/750/450/city/3" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          (论文复现)GREBE: Unveiling Exploitation Potential for Linux Kernel Bugs源码：Markakd/GREBE (github.com)
+          (论文复现)GREBE:
+Unveiling Exploitation Potential for Linux Kernel Bugs
+源码：Markakd/GREBE
+(github.com)
 
         
           <p class="article-more-link">
@@ -650,138 +848,6 @@ Abstract​    尽管现有的技术已经提出了自动化的方法来缓解�
       
   <span class="ico-tags"></span>
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AEG/" rel="tag">AEG</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Vulnerability/" rel="tag">Vulnerability</a></li></ul>
-
-      
-    </footer>
-    <hr class="entry-footer-hr">
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
-    <article id="post-【技术积累】Syzkaller环境配置"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2023/06/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Syzkaller%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/">(技术积累)Syzkaller环境配置</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2023/06/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Syzkaller%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" class="article-date">
-	  <time datetime="2023-06-11T07:19:53.173Z" itemprop="datePublished">六月 11, 2023</time>
-	</a>
-
-      
-	<span class="ico-folder"></span>
-    <a class="article-category-link" href="/categories/Paper/">Paper</a>
- 
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-
-          
-            <div class="entry-thumbnail">
-              <a href="/2023/06/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Syzkaller%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
-            </div>
-          
-          <div class="entry-summary">
-          Syzkaller环境配置
-Syzkaller内核模糊测试工具环境搭建，简单测试
-项目地址：google/syzkaller: syzkaller is an unsupervised coverage-guided kernel fuzzer (github.com)
-
-
-        
-          <p class="article-more-link">
-            <a href="/2023/06/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Syzkaller%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/#more">阅读全文</a>
-          </p>
-        </div>
-      
-    </div>
-    <footer class="entry-meta entry-footer">
-      
-	<span class="ico-folder"></span>
-    <a class="article-category-link" href="/categories/Paper/">Paper</a>
-
-      
-  <span class="ico-tags"></span>
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AEG/" rel="tag">AEG</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Vulnerability/" rel="tag">Vulnerability</a></li></ul>
-
-      
-    </footer>
-    <hr class="entry-footer-hr">
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
-    <article id="post-【技术积累】Klee安装使用"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2023/05/30/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Klee%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8/">(技术积累)Klee安装使用</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2023/05/30/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Klee%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8/" class="article-date">
-	  <time datetime="2023-05-30T09:09:53.697Z" itemprop="datePublished">五月 30, 2023</time>
-	</a>
-
-      
-	<span class="ico-folder"></span>
-    <a class="article-category-link" href="/categories/Project/">Project</a>
- 
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-
-          
-            <div class="entry-thumbnail">
-              <a href="/2023/05/30/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Klee%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
-            </div>
-          
-          <div class="entry-summary">
-          Klee安装使用
-Linux系统下著名符号执行工具Klee的安装使用
-
-        
-          <p class="article-more-link">
-            <a href="/2023/05/30/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Klee%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8/#more">阅读全文</a>
-          </p>
-        </div>
-      
-    </div>
-    <footer class="entry-meta entry-footer">
-      
-	<span class="ico-folder"></span>
-    <a class="article-category-link" href="/categories/Project/">Project</a>
-
-      
-  <span class="ico-tags"></span>
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Klee/" rel="tag">Klee</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Symbolic-Execution/" rel="tag">Symbolic Execution</a></li></ul>
 
       
     </footer>
@@ -902,6 +968,30 @@ Linux系统下著名符号执行工具Klee的安装使用
               <div class="widget-entry-summary" style="margin: 0;">
             
 
+              <h6 style="margin: 0;"><a href="/2023/07/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Everything-Old-is-New-Again--Binary-Security-of-WebAssembly/">(论文阅读)Everything Old is New Again- Binary Security of WebAssembly</a></h6>
+              <span>七月 4, 2023</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
+              <h6 style="margin: 0;"><a href="/2023/07/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Fuzzm-Finding-Memory-Bugs-through-Binary-Only-Instrumentation-and-Fuzzing-of-WebAssembly/">(论文阅读)Fuzzm-Finding Memory Bugs through Binary-Only Instrumentation and Fuzzing of WebAssembly</a></h6>
+              <span>七月 4, 2023</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
               <h6 style="margin: 0;"><a href="/2023/07/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91WAFL--Binary-Only-WebAssembly-Fuzzing-with-Fast-Snapshots-Oracle-for-WebAssembly/">(论文阅读)WAFL- Binary-Only WebAssembly Fuzzing with Fast Snapshots Oracle for WebAssembly</a></h6>
               <span>七月 3, 2023</span>
             </div>
@@ -944,30 +1034,6 @@ Linux系统下著名符号执行工具Klee的安装使用
 
           </li>
         
-          <li class="clearfix">
-
-            
-              <div class="widget-entry-summary" style="margin: 0;">
-            
-
-              <h6 style="margin: 0;"><a href="/2023/06/19/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91WANA-Symbolic-Execution-of-Wasm-Bytecode-for-Extensible-Smart-Contract-Vulnerability-Detection/">(论文阅读) WANA-Symbolic Execution of Wasm Bytecode for Extensible Smart Contract Vulnerability Detection</a></h6>
-              <span>六月 19, 2023</span>
-            </div>
-
-          </li>
-        
-          <li class="clearfix">
-
-            
-              <div class="widget-entry-summary" style="margin: 0;">
-            
-
-              <h6 style="margin: 0;"><a href="/2023/06/18/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Eunomia-Enabling-User-specified-Fine-Grained-Search-in-Symbolically-Executing-WebAssembly-Binaries/">(论文阅读) Eunomia-enabling User-specified Fine-Grained Search in Symbolically Executing WebAssembly Binaries</a></h6>
-              <span>六月 18, 2023</span>
-            </div>
-
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -977,7 +1043,7 @@ Linux系统下著名符号执行工具Klee的安装使用
   <div class="widget-wrap">
     <h3 class="widget-title">分类</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Book/">Book</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Code/">Code</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kaggle/">Kaggle</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Paper/">Paper</a><span class="category-list-count">33</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Project/">Project</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Reproduce/">Reproduce</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Something/">Something</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/paper/">paper</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Book/">Book</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Code/">Code</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kaggle/">Kaggle</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Paper/">Paper</a><span class="category-list-count">35</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Project/">Project</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Reproduce/">Reproduce</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Something/">Something</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/paper/">paper</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -987,7 +1053,7 @@ Linux系统下著名符号执行工具Klee的安装使用
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD/" rel="tag">AD</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD-training/" rel="tag">AD training</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AEG/" rel="tag">AEG</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BCSA/" rel="tag">BCSA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary/" rel="tag">Binary</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Botnet/" rel="tag">Botnet</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CV/" rel="tag">CV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cloud/" rel="tag">Cloud</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNN/" rel="tag">DNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDS/" rel="tag">IDS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Klee/" rel="tag">Klee</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LLVM/" rel="tag">LLVM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ML/" rel="tag">ML</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Malware-Classifiers/" rel="tag">Malware Classifiers</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Math/" rel="tag">Math</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mutiagent/" rel="tag">Mutiagent</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/" rel="tag">NLP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDF/" rel="tag">PDF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RL/" rel="tag">RL</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RNN/" rel="tag">RNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Symbolic-Execution/" rel="tag">Symbolic Execution</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UAF/" rel="tag">UAF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vulnerability/" rel="tag">Vulnerability</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WASM/" rel="tag">WASM</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/" rel="tag">Windows</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/obfuscation/" rel="tag">obfuscation</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD/" rel="tag">AD</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD-training/" rel="tag">AD training</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AEG/" rel="tag">AEG</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BCSA/" rel="tag">BCSA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary/" rel="tag">Binary</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Botnet/" rel="tag">Botnet</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CV/" rel="tag">CV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cloud/" rel="tag">Cloud</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNN/" rel="tag">DNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDS/" rel="tag">IDS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Klee/" rel="tag">Klee</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LLVM/" rel="tag">LLVM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ML/" rel="tag">ML</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Malware-Classifiers/" rel="tag">Malware Classifiers</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Math/" rel="tag">Math</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mutiagent/" rel="tag">Mutiagent</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/" rel="tag">NLP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDF/" rel="tag">PDF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RL/" rel="tag">RL</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RNN/" rel="tag">RNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Symbolic-Execution/" rel="tag">Symbolic Execution</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UAF/" rel="tag">UAF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vulnerability/" rel="tag">Vulnerability</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WASM/" rel="tag">WASM</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/" rel="tag">Windows</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/obfuscation/" rel="tag">obfuscation</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -997,7 +1063,7 @@ Linux系统下著名符号执行工具Klee的安装使用
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/AD/" style="font-size: 20px;">AD</a> <a href="/tags/AD-training/" style="font-size: 10px;">AD training</a> <a href="/tags/AEG/" style="font-size: 16.67px;">AEG</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/BCSA/" style="font-size: 10px;">BCSA</a> <a href="/tags/Binary/" style="font-size: 13.33px;">Binary</a> <a href="/tags/Botnet/" style="font-size: 10px;">Botnet</a> <a href="/tags/CV/" style="font-size: 10px;">CV</a> <a href="/tags/Cloud/" style="font-size: 10px;">Cloud</a> <a href="/tags/DDoS/" style="font-size: 10px;">DDoS</a> <a href="/tags/DNN/" style="font-size: 10px;">DNN</a> <a href="/tags/Fuzzing/" style="font-size: 15px;">Fuzzing</a> <a href="/tags/IDS/" style="font-size: 11.67px;">IDS</a> <a href="/tags/Klee/" style="font-size: 10px;">Klee</a> <a href="/tags/LLVM/" style="font-size: 10px;">LLVM</a> <a href="/tags/ML/" style="font-size: 13.33px;">ML</a> <a href="/tags/Machine-Learning/" style="font-size: 11.67px;">Machine Learning</a> <a href="/tags/Malware-Classifiers/" style="font-size: 18.33px;">Malware Classifiers</a> <a href="/tags/Math/" style="font-size: 10px;">Math</a> <a href="/tags/Mutiagent/" style="font-size: 10px;">Mutiagent</a> <a href="/tags/NLP/" style="font-size: 13.33px;">NLP</a> <a href="/tags/PDF/" style="font-size: 10px;">PDF</a> <a href="/tags/Pytorch/" style="font-size: 11.67px;">Pytorch</a> <a href="/tags/RL/" style="font-size: 15px;">RL</a> <a href="/tags/RNN/" style="font-size: 10px;">RNN</a> <a href="/tags/Symbolic-Execution/" style="font-size: 15px;">Symbolic Execution</a> <a href="/tags/UAF/" style="font-size: 10px;">UAF</a> <a href="/tags/Vulnerability/" style="font-size: 18.33px;">Vulnerability</a> <a href="/tags/WASM/" style="font-size: 16.67px;">WASM</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/obfuscation/" style="font-size: 10px;">obfuscation</a>
+      <a href="/tags/AD/" style="font-size: 20px;">AD</a> <a href="/tags/AD-training/" style="font-size: 10px;">AD training</a> <a href="/tags/AEG/" style="font-size: 15.71px;">AEG</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/BCSA/" style="font-size: 10px;">BCSA</a> <a href="/tags/Binary/" style="font-size: 12.86px;">Binary</a> <a href="/tags/Botnet/" style="font-size: 10px;">Botnet</a> <a href="/tags/CV/" style="font-size: 10px;">CV</a> <a href="/tags/Cloud/" style="font-size: 10px;">Cloud</a> <a href="/tags/DDoS/" style="font-size: 10px;">DDoS</a> <a href="/tags/DNN/" style="font-size: 10px;">DNN</a> <a href="/tags/Fuzzing/" style="font-size: 15.71px;">Fuzzing</a> <a href="/tags/IDS/" style="font-size: 11.43px;">IDS</a> <a href="/tags/Klee/" style="font-size: 10px;">Klee</a> <a href="/tags/LLVM/" style="font-size: 10px;">LLVM</a> <a href="/tags/ML/" style="font-size: 12.86px;">ML</a> <a href="/tags/Machine-Learning/" style="font-size: 11.43px;">Machine Learning</a> <a href="/tags/Malware-Classifiers/" style="font-size: 17.14px;">Malware Classifiers</a> <a href="/tags/Math/" style="font-size: 10px;">Math</a> <a href="/tags/Mutiagent/" style="font-size: 10px;">Mutiagent</a> <a href="/tags/NLP/" style="font-size: 12.86px;">NLP</a> <a href="/tags/PDF/" style="font-size: 10px;">PDF</a> <a href="/tags/Pytorch/" style="font-size: 11.43px;">Pytorch</a> <a href="/tags/RL/" style="font-size: 14.29px;">RL</a> <a href="/tags/RNN/" style="font-size: 10px;">RNN</a> <a href="/tags/Symbolic-Execution/" style="font-size: 14.29px;">Symbolic Execution</a> <a href="/tags/UAF/" style="font-size: 10px;">UAF</a> <a href="/tags/Vulnerability/" style="font-size: 17.14px;">Vulnerability</a> <a href="/tags/WASM/" style="font-size: 18.57px;">WASM</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/obfuscation/" style="font-size: 10px;">obfuscation</a>
     </div>
   </div>
 
@@ -1007,7 +1073,7 @@ Linux系统下著名符号执行工具Klee的安装使用
     <h3 class="widget-title">归档</h3>
 
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/07/">七月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">14</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/07/">七月 2023</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">14</span></li></ul>
     </div>
   </div>
 
