@@ -28,8 +28,11 @@
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230707163716.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230707201510.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230707202946.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230708143708.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230708144727.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230708153721.png">
 <meta property="article:published_time" content="2023-07-04T03:35:50.683Z">
-<meta property="article:modified_time" content="2023-07-07T12:43:45.596Z">
+<meta property="article:modified_time" content="2023-07-08T07:53:04.210Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="WASM">
 <meta name="twitter:card" content="summary">
@@ -451,7 +454,7 @@ text.”等字符串都是存储在unmanaged线性内存中的data section（图
 <li>其可以被buffer
 overflow修改，故fopen函数就可以打开任意文件，并以任意模式写入任意内容。</li>
 </ol>
-<h2 id="量化评估">量化评估</h2>
+<h2 id="量化评估">6. 量化评估</h2>
 <p>​
 为了更好地了解到目前为止所描述的攻击在实践中的真实性，我们现在对真实世界的WebAssembly二进制文件进行了定量评估。我们解决了以下研究问题：</p>
 <ul>
@@ -471,6 +474,200 @@ buffer overflow，也可作为覆写的目标，例如操纵敏感数据。</li>
 VM对间接调用目标进行的运行时验证与CFI防御相似，我们在CFI等价类和类大小方面对两者进行了比较。</li>
 </ul></li>
 </ul>
+<h3 id="experimental-setup-and-analysis-process">6.1 Experimental Setup
+and Analysis Process</h3>
+<ul>
+<li><p><strong>Program Corpus</strong></p>
+<p>测试使用的二进制程序分为两部分：</p>
+<ul>
+<li><p>真实世界的9个已部署的程序：</p>
+<table>
+<colgroup>
+<col style="width: 43%" />
+<col style="width: 56%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">名称</th>
+<th style="text-align: center;">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Adobe’s Document Cloud View SDK7
+renders</td>
+<td style="text-align: center;">可以在浏览器中渲染和注释PDF</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Figma8</td>
+<td style="text-align: center;">一个合作的用户界面设计网络应用</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">1Password X 1.17</td>
+<td
+style="text-align: center;">浏览器扩展插件，包含一个用于生成密码的WebAssembly组件。</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Doom 3（《毁灭战士》系列）</td>
+<td style="text-align: center;">一个大型游戏引擎移植到WebAssembly上</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">一组编解码器（webp, mozjpeg, optipng,
+hqx）</td>
+<td style="text-align: center;">用于浏览器内的图像转换</td>
+</tr>
+</tbody>
+</table>
+<p>这些二进制程序被应用在不同的领域（文档编辑、游戏、编码解码等），以及不同的语言（C、C++、Rust），<u>所以我们相信这些样本是对真实Wasm样本分布的一个很好的初步近似</u>。</p></li>
+<li><p><strong>SPEC CPU</strong>
+2017基准套件中的17个C和C++程序，其被编译为WebAssembly：</p>
+<p>SPEC
+CPU以前曾被用来研究WebAssembly的性能[37]，它也被用来评估原生代码的CFI技术的安全性[21,
+69]，使我们能够解决RQ3。这些程序来自于计算量大的领域（编程语言的实现、模拟、视频编解码器、压缩），与WebAssembly的原始用例相匹配。</p></li>
+</ul>
+<p><img
+src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Everything-Old-is-New-Again--Binary-Security-of-WebAssembly/image-20230708115725573.png" /></p></li>
+<li><p><strong>Static Analysis</strong></p>
+<p>为了解决我们的研究问题，我们开发了一个轻量静态分析工具。据我们所知，它是第一个用于WebAssembly二进制文件的安全分析工具，其是用Rust语言编写的，并且可以做到：</p>
+<ul>
+<li>提取程序的一般信息，如指令数、函数数和它们的类型等；</li>
+<li>通过推断哪个global是stack指针，哪个函数可以访问它，以及stack指针如何增减来分析unmanaged
+stack；</li>
+<li>分析table
+section和其静态初始化，来查找哪些函数在其中表示，以及每个初始化table索引的函数类型；</li>
+<li>分析间接调用edges，以提取允许call_indirect目标的静态编码类型，有多少函数符合该类型，对调用目标的额外限制，以及CFI等价类及其大小。</li>
+</ul></li>
+</ul>
+<h3 id="measuring-unmanaged-stack-usage">6.2 Measuring Unmanaged Stack
+Usage</h3>
+<p>​ 这一节回答问题RQ1，有多少程序数据存储在unmanaged stack中。</p>
+<h4 id="stack-analysis">6.2.1 Stack Analysis</h4>
+<p>​ 我们的静态分析测量每个非import函数在unmanaged
+stack上的栈帧的大小，<u>该分析在没有调试信息的优化、剥离的二进制文件上运行</u>，就像现实中的攻击者一样，因此必须直接从字节码中推断出unmanaged
+stack的使用。</p>
+<p>​
+首先，分析需要确定stack指针。与本地二进制文件不同，这里不能使用固定寄存器（如x86上的rsp，在WebAssembly中不存在）或全局变量作为stack指针。<u>相反，分析会提取所有修改globals的指令，并选择最经常被读写的指令。</u>人工分析证实，这种启发式方法可靠地找到了stack指针。从确定的全局的静态初始化中，我们也知道了线性内存中unmanaged
+stack的基址。</p>
+<pre><code>其次，对于每个函数，分析推断出unmanaged stack上的栈帧的大小。在所有被分析的二进制文件中，先前确定的stack指针被修改，其协议类似于本地二进制文件中的**function prologue**和**function epilogue**。具体来说，我们的分析会匹配与下面的指令序列，并提取`delta`值，然后得出栈帧大小：</code></pre>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230708143708.png" style="zoom:67%;" /></p>
+<p>​
+上图首先从全局变量<code>$i</code>读取当前的栈指针，然后增加或减少它（取决于堆栈是向上还是向下增长，见第3.2节），可以选择将它保存到一个局部变量（类似于一个基本指针），最后将修改后的值写回去。</p>
+<blockquote>
+<p><strong>function
+prologue：</strong>函数开头的几行汇编代码，它为堆栈和寄存器做准备，以便在函数中使用。</p>
+<p><strong>function
+epilogue：</strong>出现在函数的末尾的汇编代码，将堆栈和寄存器恢复到函数被调用前的状态。</p>
+</blockquote>
+<h4 id="results">6.2.2 Results</h4>
+<p>​
+下图显示了所有被分析的二进制文件中栈帧大小的分布，包括直方图（图10a）和累积分布（图10b）：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230708144727.png" style="zoom: 33%;" /></p>
+<ul>
+<li>1/3（32,651）的函数在unmanaged
+stack中存储数据，最小的栈帧为16字节，由13620个函数（占所有函数的14%）分配；</li>
+<li>栈帧的大小跨越从16字节到1MB的整个范围，1MB是最大的静态stack分配。从图10b的累积分布中，我们看到6%（6127）的函数在unmanaged
+stack上分配了128字节或更多，1.3%（1232）的函数分配了至少1KiB；</li>
+<li>总的来说，许多函数使用了unmanaged
+stack，这不仅容易受到任意内存写入的影响，也容易受到缓冲区溢出的影响。这意味着，随着调用深度的增加，攻击者至少找到一些数据进行覆盖的机会也会迅速增加，例如，如果有10个嵌套调用（假设函数分布均匀），在unmanaged
+stack上会有一些数据的概率为<span class="math inline">\(1-((1-0.33)^{10})
+≈ 98.2\%\)</span>。</li>
+</ul>
+<p>​ <strong>我们的结论是：</strong></p>
+<p>​ （1）Wasm
+中存在大量的stack数据容易被缓冲区溢出和任意写原语覆盖；</p>
+<p>​ （2）在unmanaged
+stack上隔离堆栈帧是很重要的，例如，使用canaries。</p>
+<h3 id="measuring-indirect-calls-and-targets">6.3 Measuring Indirect
+Calls and Targets</h3>
+<p>​ 这一节回答问题RQ2，分析了间接调用。</p>
+<h4 id="indirect-calls">6.3.1 Indirect Calls</h4>
+<p>​
+<u>我们对表2中的所有二进制文件进行了反汇编，并对<code>call_indirect</code>
+指令的数量进行了统计</u>。间接调用在所有调用中占的百分比在不同的程序中差异很大，其分布从0.6%到31.3%都有。</p>
+<p>​
+我们还发现，间接调用的比例与源语言是C还是C++无关，从所有26个程序的平均值来看，9.8%的调用指令是间接调用，也就是说，几乎每十个调用都有可能被转移到其他函数上。</p>
+<h4 id="indirectly-callable-functions">6.3.2 Indirectly Callable
+Functions</h4>
+<p>​
+想要成功地通过间接调用改变控制流，不仅需要间接调用指令，还需要找到合适的target函数（type相同，其该函数必须位于table中）。</p>
+<p>​
+我们的静态分析工具在程序启动时发现哪些函数在table中被初始化。Table中的条目不能被WebAssembly程序本身所操纵，原则上，host环境，如浏览器中的JavaScript，可以在运行时添加或删除条目。我们手动验证了由Emscripten生成的JavaScript代码<strong>不会修改该表</strong>，因此假设我们的分析精确地测量了间接调用的潜在目标。</p>
+<p>​ 表2中的“Indirectly
+Callable”表明了有多少函数在table中的同时至少跟一个<code>call_indirect</code>指令的type相吻合。<u>可间接调用的函数的百分比从5%到77.3%不等，平均占程序corpus中所有函数的49.2%。</u></p>
+<h4 id="function-pointers-in-memory">6.2.4 Function Pointers in
+Memory</h4>
+<p>​
+上述分析给出了通过间接调用来劫持控制流的“上限”，但在实践中，如果传递给<code>call_indirect</code>的table索引来自一个局部变量、全局变量、或者是一连串指令运行的结果，那么攻击者可以选择的索引可能会更受限制。</p>
+<p>​ 为了找出这种攻击方式的“下限”，我们还测量了有多少table
+index是直接从内存中读取的，我们通过对间接调用之前的指令进行静态分析来获得这个数字。表2中的"Idx.from
+mem.
+"列显示了类型兼容和表内函数的数量，其中至少有一个间接调用直接从线性内存中获取其table
+index。</p>
+<p>​
+对于每个这样的函数，给定一个任意的写入线性内存的原语，一个间接调用就可以被转移以到该函数。也许令人惊讶的是，这个可达函数的“下限”与“上限”非常接近：
+平<u>均来说，48.1%的函数可以通过从线性内存中获取参数的间接调用来达到。</u></p>
+<p>​
+总的来说，我们对间接调用目标的分析显示了控制流劫持攻击的巨大潜力。许多函数是可以间接调用的（平均49.2%），而且大多数函数可以通过简单地覆盖存储在线性内存中的索引来达到（48.1%）。我们得出结论，间接函数调用对WebAssembly中控制流的完整性构成严重威胁。</p>
+<p>​</p>
+<h3 id="comparing-with-existing-cfi-policies">6.4 Comparing with
+Existing CFI Policies</h3>
+<p>​
+Wasm对于间接调用的type检查可以看做一种CFI，这里将WebAssembly的类型检查与最先进的本地二进制文件的CFI防御进行比较（RQ3）。</p>
+<h4 id="equivalence-classes">6.4.1 Equivalence Classes</h4>
+<p>​
+按照先前关于CFI的工作[21]，我们通过分析一个间接转移可能（根据CFI机制）被转移到的目标集合来衡量其有效性，这个集合就是<strong><em>CFI
+equivalence
+class</em></strong>。为了评估CFI防御的有效性，我们使用两个衡量标准：</p>
+<ul>
+<li><strong>类的数量</strong>，即存在多少个不同的类；
+<ul>
+<li>类的数量如果很小意味着CFI对目标的区分很小，给了攻击者更多控制流转移的选择。</li>
+</ul></li>
+<li><strong>类的大小</strong>，即每个类中有多少个目标；
+<ul>
+<li>类的大小如果很大意味着大量的target都可以由一个间接调用指令到达，也是不安全的。</li>
+</ul></li>
+</ul>
+<p>​
+对于WebAssembly，我们通过分析可间接调用的函数的类型签名来衡量CFI的等价类，<u>将所有具有相同类型签名的函数分配到一个等价类</u>。此外，我们还分析了间接调用之前的指令，以确定它们是否将表的索引限制在较小的范围内，例如，通过比特掩码。</p>
+<p>​
+表2的最后一列显示了分析结果，平均来说，每个程序有62个等价类，每个类包含33.2个函数。最大的等价类，在Blender程序中，包含超过5300个函数。<u>总的来说，这表明攻击者有大量的调用目标可以选择。</u></p>
+<h4 id="comparing-with-native-cfi-defenses">6.4.2 Comparing with Native
+CFI Defenses</h4>
+<p>​
+为了正确看待关于等价类的结果，我们将其与本地CFI的结果进行比较[21]。</p>
+<p>​
+如下图11a和图11b中的表格分别比较了等价类的数量和大小。例如，MCFI[48]和πCFI[49]将xalancbmk的控制流目标分别划分为1534和1200个类，而WebAssembly的间接调用目标限制只产生77个这样的类。关于等价类的大小，WebAssembly对omnetpp和xalancbmk的等价类特别大，而对其他程序的等价类大小与本地防御相似。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230708153721.png" style="zoom: 50%;" /></p>
+<p>​
+有趣的是，omnetpp和xalancbmk是大量使用虚拟函数的面向对象编程的C++程序。源码级的类型信息，例如关于类的层次结构，可以帮助基于编译器的CFI方法识别更精确的，从而限制的等价类。相比之下，WebAssembly的类型检查只有四种低级原始类型（组合）来处理，这可能解释了与本地方案的明显区别。</p>
+<p>​
+总的来说，<strong><u>WebAssembly的类型检查往往不如本地二进制文件的现代CFI防御措施有效</u></strong>。尽管与没有任何CFI防御措施相比，类型检查的间接调用当然是一个进步，但适应更复杂的CFI防御措施可以大大加强目前生产的二进制文件。例如，Clang的CFI方案使用源码级信息，在编译成WebAssembly时，也可以通过传递<code>-fsanitize=cfi</code>来使用。</p>
+<h2 id="关于缓解措施的讨论">7. 关于缓解措施的讨论</h2>
+<p>​
+下面讨论了几种可以击败本文提出的攻击的缓解措施，例如，通过修改语言规范、更新编译器，或者由应用程序和库的开发者来实现。</p>
+<h3 id="webassembly-language">7.1 WebAssembly Language</h3>
+<p>​
+一些关于扩展核心WebAssembly语言的建议可以解决我们的一些攻击原语。</p>
+<ul>
+<li><p>多存储器方案[54]给了<strong>一个模块拥有多个线性内存</strong>的选择。在该提议下，内存操作静态地编码它们操作的内存，例如，i32.load
+$mem2指令只能从内存2加载数据。多个内存将使堆栈、堆和常量数据分离。<u>因此，一个内存部分的溢出将不再影响另一个内存的数据</u>。</p>
+<p>另外，指向heap的指针不能再被伪造成指向stack，反之亦然。最后，如果编译器只对一个特定的内存区发出加载指令，它就会变成有效的只读区域，因为对其他内存的存储不能修改它，这将防止对常量的修改。这个建议的一个挑战是，对多个内存进行编译并不简单。由于内存访问被静态地限制在某个内存中，必须处理不同区域指针的代码必须在内存之间重复或明确地复制对象。</p></li>
+<li><p>参考类型方案[55]允许<strong>模块有多个表用于间接调用</strong>。我们的调用重定向攻击之所以强大，只是因为目前所有可间接调用的函数都在同一个表中。多个table可以实现更细化的防御，一种选择是定义不同的保护域，例如，每个静态链接库一个，并为每个保护域保留一个单独的表；另一个选择是将调用目标分成等价类，类似于现有的本地二进制文件的CFI技术，并为每个等价类保留一个单独的表。</p></li>
+<li><p>MS-Wasm方案[26]明确地针对内存安全，它建议在WebAssembly中增加所谓的段（segment），即<strong>具有定义的大小和寿命的内存区域</strong>。进入这些段的处理程序被提升为第一类类型，有自己的分配和分片操作，这需要主机的一些实现工作，除非提供内存安全的硬件支持，否则可能会产生性能开销。</p></li>
+</ul>
+<h3 id="compilers-and-tooling">7.2 Compilers and Tooling</h3>
+<p>​
+防止我们许多攻击原语的最简单方法是对编译器插桩，<u>使编译器、链接器和分配器支持已经为本地编译目标提供的安全功能</u>。几十年来对二进制安全的研究[61]已经产生了一些可以应用于WebAssembly的缓解措施。有利于
+WebAssembly 编译器的例子是类似 FORTIFY_SOURCE
+的代码重写、堆栈canaries、CFI
+防御和内存分配器中的安全unlink。特别是对于堆栈canaries和overwirte通常被利用的C语言字符串函数，我们认为在部署上没有原则性的障碍。我们希望它们能在未来被编译器实现，因为它们能以相对较少的变化给生态系统带来良好的安全效益，而不像语言变化那样。</p>
+<p>​
+编译器中的一个较长期的缓解措施是使用上面讨论的WebAssembly语言扩展，一旦它们可用。例如，当把C/C++编译成WebAssembly时，多个内存可以模仿本地代码中页面保护所提供的一些安全功能。</p>
+<h3 id="application-and-library-developers">7.3 Application and Library
+Developers</h3>
+<p>​ WebAssembly应用程序的开发者可以通过尽可能少地使用 "不安全
+"语言（如C）的代码来降低风险。为了减少攻击面，开发者还应该确保只从主机环境中导入那些绝对必要的API。例如，调用关键的主机函数，如eval或exec是不可能的，除非这些函数在WebAssembly模块中被导入。</p>
 
       
     </div>
@@ -519,7 +716,15 @@ Calls</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="
 Host Environment</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#application-specific-data-overwrite"><span class="nav-number">1.5.3.3.</span> <span class="nav-text">4.3.3 Application-specific
 Data Overwrite</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AB%AF%E5%88%B0%E7%AB%AF%E6%94%BB%E5%87%BB%E6%96%B9%E6%B3%95"><span class="nav-number">1.6.</span> <span class="nav-text">5. 端到端攻击方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#end-to-end-attacks"><span class="nav-number">1.6.1.</span> <span class="nav-text">5.1 End-to-End Attacks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#remote-code-execution-in-node.js"><span class="nav-number">1.6.2.</span> <span class="nav-text">5.2 Remote Code Execution in
 Node.js</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#arbitrary-file-write-in-stand-alone-vm"><span class="nav-number">1.6.3.</span> <span class="nav-text">5.3 Arbitrary File Write
-in Stand-alone VM</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8F%E5%8C%96%E8%AF%84%E4%BC%B0"><span class="nav-number">1.7.</span> <span class="nav-text">量化评估</span></a></li></ol></li></ol>
+in Stand-alone VM</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8F%E5%8C%96%E8%AF%84%E4%BC%B0"><span class="nav-number">1.7.</span> <span class="nav-text">6. 量化评估</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#experimental-setup-and-analysis-process"><span class="nav-number">1.7.1.</span> <span class="nav-text">6.1 Experimental Setup
+and Analysis Process</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#measuring-unmanaged-stack-usage"><span class="nav-number">1.7.2.</span> <span class="nav-text">6.2 Measuring Unmanaged Stack
+Usage</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#stack-analysis"><span class="nav-number">1.7.2.1.</span> <span class="nav-text">6.2.1 Stack Analysis</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#results"><span class="nav-number">1.7.2.2.</span> <span class="nav-text">6.2.2 Results</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#measuring-indirect-calls-and-targets"><span class="nav-number">1.7.3.</span> <span class="nav-text">6.3 Measuring Indirect
+Calls and Targets</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#indirect-calls"><span class="nav-number">1.7.3.1.</span> <span class="nav-text">6.3.1 Indirect Calls</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#indirectly-callable-functions"><span class="nav-number">1.7.3.2.</span> <span class="nav-text">6.3.2 Indirectly Callable
+Functions</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#function-pointers-in-memory"><span class="nav-number">1.7.3.3.</span> <span class="nav-text">6.2.4 Function Pointers in
+Memory</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#comparing-with-existing-cfi-policies"><span class="nav-number">1.7.4.</span> <span class="nav-text">6.4 Comparing with
+Existing CFI Policies</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#equivalence-classes"><span class="nav-number">1.7.4.1.</span> <span class="nav-text">6.4.1 Equivalence Classes</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#comparing-with-native-cfi-defenses"><span class="nav-number">1.7.4.2.</span> <span class="nav-text">6.4.2 Comparing with Native
+CFI Defenses</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E7%BC%93%E8%A7%A3%E6%8E%AA%E6%96%BD%E7%9A%84%E8%AE%A8%E8%AE%BA"><span class="nav-number">1.8.</span> <span class="nav-text">7. 关于缓解措施的讨论</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#webassembly-language"><span class="nav-number">1.8.1.</span> <span class="nav-text">7.1 WebAssembly Language</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#compilers-and-tooling"><span class="nav-number">1.8.2.</span> <span class="nav-text">7.2 Compilers and Tooling</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#application-and-library-developers"><span class="nav-number">1.8.3.</span> <span class="nav-text">7.3 Application and Library
+Developers</span></a></li></ol></li></ol></li></ol>
     
     </div>
   </aside>
