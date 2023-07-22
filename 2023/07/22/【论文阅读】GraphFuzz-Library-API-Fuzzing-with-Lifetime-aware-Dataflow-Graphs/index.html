@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>(论文阅读)GraphFuzz-Library API Fuzzing with Lifetime-aware Dataflow Graphs | Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Fuzzing" />
+  
+  
+  
+    <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
+  
+  
+  <meta name="description" content="GraphFuzz: Library API Fuzzing with Lifetime-aware Dataflow Graphs  时间：2022 作者：Harrison Green、Thanassis Avgerinos 会议：ICSE 开源：https:&#x2F;&#x2F;github.com&#x2F;ForAllSecure&#x2F;GraphFuzz  Abstract ​ 提出了一种新fuzzer">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(论文阅读)GraphFuzz-Library API Fuzzing with Lifetime-aware Dataflow Graphs">
+<meta property="og:url" content="http://example.com/2023/07/22/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91GraphFuzz-Library-API-Fuzzing-with-Lifetime-aware-Dataflow-Graphs/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="GraphFuzz: Library API Fuzzing with Lifetime-aware Dataflow Graphs  时间：2022 作者：Harrison Green、Thanassis Avgerinos 会议：ICSE 开源：https:&#x2F;&#x2F;github.com&#x2F;ForAllSecure&#x2F;GraphFuzz  Abstract ​ 提出了一种新fuzzer">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230722154718.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230722154733.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230722204159.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230722204723.png">
+<meta property="article:published_time" content="2023-07-22T06:23:23.676Z">
+<meta property="article:modified_time" content="2023-07-22T13:14:35.154Z">
+<meta property="article:author" content="Shaw">
+<meta property="article:tag" content="Fuzzing">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230722154718.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-【论文阅读】GraphFuzz-Library-API-Fuzzing-with-Lifetime-aware-Dataflow-Graphs" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      (论文阅读)GraphFuzz-Library API Fuzzing with Lifetime-aware Dataflow Graphs
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/07/22/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91GraphFuzz-Library-API-Fuzzing-with-Lifetime-aware-Dataflow-Graphs/" class="article-date">
+	  <time datetime="2023-07-22T06:23:23.676Z" itemprop="datePublished">七月 22, 2023</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1
+id="graphfuzz-library-api-fuzzing-with-lifetime-aware-dataflow-graphs">GraphFuzz:
+Library API Fuzzing with Lifetime-aware Dataflow Graphs</h1>
+<blockquote>
+<p><strong>时间：</strong>2022</p>
+<p><strong>作者：</strong>Harrison Green、Thanassis Avgerinos</p>
+<p><strong>会议：</strong>ICSE</p>
+<p><strong>开源：</strong>https://github.com/ForAllSecure/GraphFuzz</p>
+</blockquote>
+<h2 id="abstract">Abstract</h2>
+<p>​ 提出了一种新fuzzer：GraphFuzz，能够自动测试<strong>low-level Library
+APIs</strong>。与其他fuzzer不同的是，GraphFuzz
+将已执行函数的序列建模为数据流图，因此能够在data和execution跟踪级别执行graph-based
+mutations。GraphFuzz
+自带自动规范生成器，可最大限度地减少开发人员的集成工作。</p>
+<p>​ 我们使用 GraphFuzz 对 Skia（经过严格测试的 Google Chrome
+浏览器图形库）进行分析，并将 GraphFuzz 生成的fuzzing
+harnesses与手工优化、精心编写的 libFuzzer
+harnesses进行比较。我们发现，GraphFuzz生成的测试用例平均代码覆盖率提高了2-3倍，而开发工作量却很小，而且在此过程中还发现了以前未知的缺陷。我们通过分析另外四个开源库，发现了数十个以前未知的缺陷，从而证明了
+GraphFuzz 在<strong>low-level Library
+APIs</strong>上的适用性。开发人员已经报告并修复了所有与安全相关的发现。</p>
+<span id="more"></span>
+<blockquote>
+<p>A fuzzing harness is a test case or a particular test target.</p>
+</blockquote>
+<h2 id="background">Background</h2>
+<p>​ <u>尽管近来fuzzing研究方兴未艾，但能够对 C/C++
+库进行模糊测试的系统却明显不足</u>。</p>
+<ul>
+<li>现有的greybox-fuzzing（如 libFuzzer
+[3]）特别适合一次fuzz一个或两个端点，但要同时fuzz多个端点，则需要人工操作（如使用
+FDP）；</li>
+<li>CSmith [6] 可以合成逼真的 C 代码，但当目标是 C 库而不是 C
+编译器时，每次迭代时重新编译的代价都很高；</li>
+<li>FUDGE [7]
+是一种很有前途的meta-fuzzing技术，它通过分析和切分客户端代码的种子语料库来自动生成harnesses，但是，它依赖于谷歌的内部基础设施，并不是开源的。</li>
+</ul>
+<h2 id="api-fuzzing-methods">API Fuzzing Methods</h2>
+<h3 id="method-1harness">Method 1:Harness</h3>
+<p>​ Standard grey-box harness可通过手动配置充当 API
+fuzzer，例如，开发人员可以通过在for-loop和/或switch语句中程序化地调用函数，对C++库进行fuzzing。通常情况下，来自非结构化模糊器的原始字节序列被用来初始化这些伪随机值。</p>
+<p>​ 同样，可以将 libProtobuf-mutator (LPM) [5] 与 libFuzzer [3]
+等coveraged-based fuzzer结合使用，构建tree-based API fuzzer。例如，在
+Chromium 的 AppCache fuzzer[12]中，Protocol Buffer实例代表了 IPC
+的调用序列。</p>
+<h3 id="method-2code-gen">Method 2:Code-gen</h3>
+<p>​ 一些API fuzzer合成并运行程序源代码来测试API，这种方法最适用于
+JavaScript 和 Ruby
+等基于脚本的语言，因为它们在执行前不需要昂贵的编译步骤[6]。</p>
+<p>​ 虽然这些fuzzer可以通过使用context-free
+grammars或类似模型生成逼真的语法模式，但它们往往无法生成高级的、语义上有意义的代码。例如，Han
+等人[13]指出，jsfunfuzz [9]（一种流行的 JavaScript fuzzer）99%
+的测试用例仅在 3 条语句后就会引发运行时错误。</p>
+<h3 id="method-3harness-gen">Method 3:Harness-gen</h3>
+<p>​ 相较于手工生成测试用例，也可以自动生成测试用例。</p>
+<ul>
+<li>IMF[14]跟踪系统调用日志以识别依赖关系，并合成可对这些系统调用进行fuzzing的
+C语言测试用例；</li>
+<li>FUDGE[7]和FuzzGen[15]分析了大量客户端C/C++代码库，并提取代码片段来创建测试用例；</li>
+</ul>
+<p>​
+虽然上述这些系统可以生成不同的harnesses，但单个测试用例中的应用程序API调用结构在fuzzing时是静态的，只有值会发生变化。</p>
+<h3 id="method-3dynamic">Method 3:Dynamic</h3>
+<p>​ 在 API fuzzing的动态方法中，每个测试用例代表一个完整的 API
+交互序列。Fuzzer动态处理每个测试用例，逐个调用端点。</p>
+<p>​
+动态fuzzer与code-gen的主要区别在于，在动态fuzzer中，API交互的结构是在fuzzing时指定的（作为测试用例的一部分），这使得fuzzer可以控制API调用的值和结构。Code-gen
+fuzzer也可以在fuzzing时通过重新编译（如 CSmith [6]）改变 API
+调用的结构，而 <strong>Syzkaller</strong> [16] 和
+GraphFuzz（本作品）等动态fuzzer则绕过了这一高成本的重新编译步骤。</p>
+<h2 id="contribution">Contribution</h2>
+<p>​ 为了弥补这一不足，我们引入了<strong><u>dataflow graphbased
+fuzzing</u></strong>，即用数据流图来表示库应用程序API的交互。我们介绍了
+C/C++
+库中数据流图突变、生成和执行的算法，在许可协议下开源了基于数据流图的模糊测试实现（名为
+GraphFuzz），并通过查找真实世界目标中的错误来证明其有效性，同时将其性能与
+Skia 图形库中最先进的工具进行量化比较。</p>
+<ul>
+<li><strong>Model-based API Fuzzer Survey:</strong>
+对迄今为的model-based fuzzers进行了分类，并展示了 GraphFuzz
+在设计领域的优势；</li>
+<li><strong>Dataflow graph-based fuzzing:</strong>
+我们正式定义了dataflow graphbased
+fuzzing，并介绍了在基于coverage的fuzzing中执行图突变和生成的算法；</li>
+<li><strong>GraphFuzz for C/C++:</strong> 介绍了名为 GraphFuzz
+的dataflow graphbased fuzzing开源实现，它能够对 C 和 C++
+库进行半自动模糊测试。我们通过发现现实世界中的错误来验证这项技术，并将其性能与当前最先进的harnesses进行量化比较。</li>
+</ul>
+<h2 id="model">Model</h2>
+<h3 id="一些问题">1. 一些问题：</h3>
+<ul>
+<li><p><strong>low-level library APIs
+中的“low-level”代表什么？</strong></p>
+<p>“A low-level API, also known as a system-level or hardware-level API,
+refers to an interface provided by an operating system or software
+library that allows direct interaction with the underlying system or
+hardware components. It provides a way for developers to access and
+control the lower-level functionalities of a system, such as hardware
+devices, system calls, and system resources.”</p></li>
+<li><p><strong>dataflow graphbased
+fuzzing中的“graphbaesd”代表什么？</strong></p>
+<p>一个test
+case中有多个个API调用，这些调用组成一个API序列，以数据流图的方式表示。</p></li>
+</ul>
+<h3 id="dataflow-graph">2. Dataflow graph</h3>
+<p>​ 下图是一个触发UAF漏洞的C++代码片段：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230722154718.png" style="zoom: 50%;" /></p>
+<p>​ 下图将这个Bug表示为了dataflow
+graph，数据流图，函数是顶点，对象是边：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230722154733.png" style="zoom: 67%;" /></p>
+<p>​ <strong>GraphFuzz
+的关键是这两种表示法是等价的，我们可以通过编译和运行图 1 中的 C++
+代码或动态执行图 2 中的数据流图来调用此测试用例。</strong></p>
+<h4 id="graph-mutations">2.1 Graph Mutations</h4>
+<p>​ 如何对数据流图做mutate；</p>
+<h4 id="graph-completion">2.2 Graph Completion</h4>
+<p>​
+如何补全图，以防止因为生成图本身的问题而在fuzzing中导致的假阳性。</p>
+<h4 id="graph-minimization">2.3 Graph Minimization</h4>
+<p>​
+只保留那些表现出相同崩溃且较小的graph，我们就能获得接近手工最小化示例大小的数据流图。</p>
+<h3 id="graphfuzz-for-cc">3. Graphfuzz for C/C++</h3>
+<p>​
+GraphFuzz分为两个部分：libgraphfuzz（一个用C++写的对数据流图做突变的工具）和gfuzz（Python
+命令行工具，用于生成harness文件并执行图最小化和自动模式提取等其他任务。）</p>
+<p>​ Graphfuzz
+harness的核心是<code>schema</code>，<code>schema</code>是一个用YAML写的可读文件，其中包含了API
+endpoints，object
+types等信息，GraphFuzz通过使用<code>schema</code>来自动生成exec和write
+fuzzer harnesses。</p>
+<p>​ <code>schema</code>样例：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230722204159.png" style="zoom: 50%;" /></p>
+<p>​ 生成harness的过程：</p>
+<ol type="1">
+<li><strong>Instrumentation：</strong>使用现有的fuzzer coverage
+sanitizer对目标library做插桩，例如在使用Clang是使用<code>-fsanitize=fuzzer</code>；</li>
+<li><strong>Schema Inference(可选)：</strong>可以使用使用 gfuzz
+运行shcema提取工具，从library源代码中自动提取类、结构体、枚举、类型定义和方法到shcema中，生成的schema可以作为人工修改的基础；</li>
+<li><strong>Manual
+Revision：</strong>根据对API的理解，通过添加/删除类、添加函数或重新定义函数的输入和输出类型，手动修复schema；</li>
+<li><strong>Harness
+Generation：</strong>运行gfuzz工具来自动化生成两种harness：fuzzExec（运行数据流图）和fuzzWrite（将数据流图转换为普通C/C++代码，使测试样例可以被外部继续编译）；</li>
+<li><strong>Compilation/Linking：</strong> 将生成的两种hanesses
+link到目标库中来生成libFuzzer可执行文件。</li>
+</ol>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230722204723.png" style="zoom: 50%;" /></p>
+<p>​ GraphFuzz 是在 libFuzzer
+基础上作为自定义突变引擎实现的（好巧妙的写法hhh），fuzzing的过程就如普通fuzzer一样，只是Mutation的过程变成了作者自定义的graph-level
+mutaitons。</p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2023/07/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Everything-Old-is-New-Again--Binary-Security-of-WebAssembly/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">(论文阅读)Everything Old is New Again- Binary Security of WebAssembly</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#graphfuzz-library-api-fuzzing-with-lifetime-aware-dataflow-graphs"><span class="nav-number">1.</span> <span class="nav-text">GraphFuzz:
+Library API Fuzzing with Lifetime-aware Dataflow Graphs</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#abstract"><span class="nav-number">1.1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#background"><span class="nav-number">1.2.</span> <span class="nav-text">Background</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#api-fuzzing-methods"><span class="nav-number">1.3.</span> <span class="nav-text">API Fuzzing Methods</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#method-1harness"><span class="nav-number">1.3.1.</span> <span class="nav-text">Method 1:Harness</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#method-2code-gen"><span class="nav-number">1.3.2.</span> <span class="nav-text">Method 2:Code-gen</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#method-3harness-gen"><span class="nav-number">1.3.3.</span> <span class="nav-text">Method 3:Harness-gen</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#method-3dynamic"><span class="nav-number">1.3.4.</span> <span class="nav-text">Method 3:Dynamic</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#contribution"><span class="nav-number">1.4.</span> <span class="nav-text">Contribution</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#model"><span class="nav-number">1.5.</span> <span class="nav-text">Model</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98"><span class="nav-number">1.5.1.</span> <span class="nav-text">1. 一些问题：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dataflow-graph"><span class="nav-number">1.5.2.</span> <span class="nav-text">2. Dataflow graph</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#graph-mutations"><span class="nav-number">1.5.2.1.</span> <span class="nav-text">2.1 Graph Mutations</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#graph-completion"><span class="nav-number">1.5.2.2.</span> <span class="nav-text">2.2 Graph Completion</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#graph-minimization"><span class="nav-number">1.5.2.3.</span> <span class="nav-text">2.3 Graph Minimization</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#graphfuzz-for-cc"><span class="nav-number">1.5.3.</span> <span class="nav-text">3. Graphfuzz for C&#x2F;C++</span></a></li></ol></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+<footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2023 Shaw All Rights Reserved.
+        
+          <span id="busuanzi_container_site_pv">
+            本站总访问量<span id="busuanzi_value_site_pv"></span>次
+          </span>
+          <span class="post-meta-divider">|</span>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            本站访客数<span id="busuanzi_value_site_uv"></span>人
+          </span>
+          <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+
+  
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'true', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+<!-- Gaug.es Analytics -->
+<script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', 'true');
+    t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+    t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+<!-- End Gaug.es Analytics -->
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+	<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2439014eb270056ee1808a49956fe114";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<!-- Tencent Analytics -->
+	<script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId={{ theme.tencent_analytics }}";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+<!-- End Tencent Analytics -->
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>

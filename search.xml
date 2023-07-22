@@ -757,6 +757,193 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221212232550.png" /></p>
 ]]></content>
   </entry>
   <entry>
+    <title>(技术总结)The Kernel Address Sanitizer(KASAN)</title>
+    <url>/2023/05/04/%E3%80%90%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93%E3%80%91The%20Kernel%20Address%20Sanitizer(KASAN)/</url>
+    <content><![CDATA[<h1 id="the-kernel-address-sanitizerkasan">The Kernel Address
+Sanitizer(KASAN)</h1>
+<h3 id="兼容性">1. 兼容性</h3>
+<p>​
+KASAN是一个动态内存安全错误检测器，旨在发现内核out-of-bounds和UAF错误。KASAN有三个模块：<code>Generic KASAN</code>、<code>Software Tag-Based KASAN</code>、<code>Hardware Tag-Based KASAN</code>。<code>Generic KASAN</code>兼容许多CPU架构，但性能开销很大；<code>Software Tag-Based KASAN</code>和<code>Hardware Tag-Based KASAN</code>都只兼容arm64架构的CPU，性能开销会更小。</p>
+<p>​
+一般的，称<code>Generic KASAN</code>和<code>Software Tag-Based KASAN</code>为<strong>software
+KASAN</strong>；</p>
+<p>​
+称<code>Software Tag-Based KASAN</code>和<code>Hardware Tag-Based KASAN</code>为<strong>tag-based
+KASAN</strong>。</p>
+<p>​ <code>Generic KASAN</code>支持的指令集架构有：x86_64, arm, arm64,
+powerpc, riscv, s390, 和
+xtensa；<code>tag-based KASAN</code>只支持arm64。 <span id="more"></span> ### 2.
+编译器要求</p>
+<p>​
+KASAN对内存检查的逻辑是在编译的时候在内存访问操作之前插入相关检查指令，故需要相应的编译器支持该操作。</p>
+<blockquote>
+<p>​ <code>Generic KASAN</code>需要GCC
+8.3.0+/任何版本的Clang(只要内核支持)；</p>
+<p>​ <code>Software Tag-Based KASAN</code>需要GCC
+11+/任何版本的Clang(只要内核支持)；</p>
+<p>​ <code>Hardware Tag-Based KASAN</code>需要GCC10+/Clang12+。</p>
+</blockquote>
+<h3 id="使用方法">3. 使用方法</h3>
+<p>​ 开启KASAN需要在内核配置文件中开启对应配置：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token assign-left variable">CONFIG_KASAN</span><span class="token operator">=</span>y<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​
+然后根据选择的KASAN类型选择标签：<code>CONFIG_KASAN_GENERIC</code>、<code>CONFIG_KASAN_SW_TAGS</code>、<code>CONFIG_KASAN_HW_TAGS</code>。</p>
+<p>​ 对于software
+KASAN，其需要指定其编译插装类型：<code>CONFIG_KASAN_OUTLINE</code>、<code>CONFIG_KASAN_INLINE</code>，outline类型生成体积更小的二进制代码，而inline类型速度比outline快两倍。</p>
+<p>​ 为了在报告中包括受影响的slab对象的stack
+traces，指定：<code>CONFIG_STACKTRACE</code>;包括受影响的物理页的stack
+traces，指定<code>CONFIG_PAGE_OWNER</code>并<code>page_owner=on</code>。</p>
+<h3 id="report">4. Report</h3>
+<p>​ 默认情况下，KASAN只对第一个无效的内存访问打印错误报告。使用
+<code>kasan_multi_shot</code>，KASAN对每一个无效的访问都打印一份报告。这会禁用
+了KASAN报告的 <code>panic_on_warn</code>。</p>
+<p>​ 典型的KASAN报告如下所示:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span>
+BUG: KASAN: slab-out-of-bounds <span class="token keyword">in</span> kmalloc_oob_right+0xa8/0xbc <span class="token punctuation">[</span>test_kasan<span class="token punctuation">]</span>
+Write of size <span class="token number">1</span> at addr ffff8801f44ec37b by task insmod/2760
+
+CPU: <span class="token number">1</span> PID: <span class="token number">2760</span> Comm: insmod Not tainted <span class="token number">4.19</span>.0-rc3+ <span class="token comment">#698</span>
+Hardware name: QEMU Standard PC <span class="token punctuation">(</span>i440FX + PIIX, <span class="token number">1996</span><span class="token punctuation">)</span>, BIOS <span class="token number">1.10</span>.2-1 04/01/2014
+Call Trace:
+ dump_stack+0x94/0xd8
+ print_address_description+0x73/0x280
+ kasan_report+0x144/0x187
+ __asan_report_store1_noabort+0x17/0x20
+ kmalloc_oob_right+0xa8/0xbc <span class="token punctuation">[</span>test_kasan<span class="token punctuation">]</span>
+ kmalloc_tests_init+0x16/0x700 <span class="token punctuation">[</span>test_kasan<span class="token punctuation">]</span>
+ do_one_initcall+0xa5/0x3ae
+ do_init_module+0x1b6/0x547
+ load_module+0x75df/0x8070
+ __do_sys_init_module+0x1c6/0x200
+ __x64_sys_init_module+0x6e/0xb0
+ do_syscall_64+0x9f/0x2c0
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x7f96443109da
+RSP: 002b:00007ffcf0b51b08 EFLAGS: 00000202 ORIG_RAX: 00000000000000af
+RAX: ffffffffffffffda RBX: 000055dc3ee521a0 RCX: 00007f96443109da
+RDX: 00007f96445cff88 RSI: 0000000000057a50 RDI: 00007f9644992000
+RBP: 000055dc3ee510b0 R08: 0000000000000003 R09: 0000000000000000
+R10: 00007f964430cd0a R11: 0000000000000202 R12: 00007f96445cff88
+R13: 000055dc3ee51090 R14: 0000000000000000 R15: 0000000000000000
+
+Allocated by task <span class="token number">2760</span>:
+ save_stack+0x43/0xd0
+ kasan_kmalloc+0xa7/0xd0
+ kmem_cache_alloc_trace+0xe1/0x1b0
+ kmalloc_oob_right+0x56/0xbc <span class="token punctuation">[</span>test_kasan<span class="token punctuation">]</span>
+ kmalloc_tests_init+0x16/0x700 <span class="token punctuation">[</span>test_kasan<span class="token punctuation">]</span>
+ do_one_initcall+0xa5/0x3ae
+ do_init_module+0x1b6/0x547
+ load_module+0x75df/0x8070
+ __do_sys_init_module+0x1c6/0x200
+ __x64_sys_init_module+0x6e/0xb0
+ do_syscall_64+0x9f/0x2c0
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Freed by task <span class="token number">815</span>:
+ save_stack+0x43/0xd0
+ __kasan_slab_free+0x135/0x190
+ kasan_slab_free+0xe/0x10
+ kfree+0x93/0x1a0
+ umh_complete+0x6a/0xa0
+ call_usermodehelper_exec_async+0x4c3/0x640
+ ret_from_fork+0x35/0x40
+
+The buggy address belongs to the object at ffff8801f44ec300
+ <span class="token function">which</span> belongs to the cache kmalloc-128 of size <span class="token number">128</span>
+The buggy address is located <span class="token number">123</span> bytes inside of
+ <span class="token number">128</span>-byte region <span class="token punctuation">[</span>ffff8801f44ec300, ffff8801f44ec380<span class="token punctuation">)</span>
+The buggy address belongs to the page:
+page:ffffea0007d13b00 count:1 mapcount:0 mapping:ffff8801f7001640 index:0x0
+flags: 0x200000000000100<span class="token punctuation">(</span>slab<span class="token punctuation">)</span>
+raw: 0200000000000100 ffffea0007d11dc0 0000001a0000001a ffff8801f7001640
+raw: 0000000000000000 0000000080150015 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff8801f44ec200: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
+ ffff8801f44ec280: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+<span class="token operator">></span>ffff8801f44ec300: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 03
+                                                                ^
+ ffff8801f44ec380: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
+ ffff8801f44ec400: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ <code>BUG: KASAN:</code>
+第一行报告了错误类型，slab-out-of-bounds；</p>
+<p>​ <code>Call Trace</code>:表明了当前error的堆栈跟踪；</p>
+<p>​
+<code>Allocated by task 2760</code>:表明了所访问内存分配位置的堆栈跟踪（“where
+the accessed memory was allocated ”）；</p>
+<p>​
+<code>Freed by task 815</code>:表明了对象被释放的位置的堆栈跟踪（“where
+the object was freed”）；</p>
+<p>​
+<code>The buggy address belongs to ……</code>:表明了访问的slab对象的相关描述；</p>
+<p>​
+<code>Memory state around the buggy address:</code>表明了访问slab对象周围的内存情况。</p>
+<h3 id="影子内存">5. 影子内存</h3>
+<p>​
+KASAN的原理是利用“额外”的内存来标记那些可以被使用的内存的状态。这些做标记的区域被称为影子区域（shadow
+region）。了解 Linux
+内存管理的读者知道，内存中的每个物理页在内存中都会有一个 struct page
+这样的结构体来表示，即每 4KB 的页需要 40B 的结构体，大约 1%
+的内存用来表示内存本身。Kasan 与其类似但“浪费”更为严重，影子区域的比例是
+1:8，即总内存的九分之一会被“浪费”。用官方文档中的例子，如果有 128TB
+的可用内存，需要有额外 16TB 的内存用来做标记。</p>
+<figure>
+<img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230504141838.png"
+alt="Shadow Memory of KASAN" />
+<figcaption aria-hidden="true">Shadow Memory of KASAN</figcaption>
+</figure>
+<p>​ 做标记的方法比较简单，将可用内存按照 8
+子节的大小分组，如果每组中所有 8
+个字节都可以访问，则影子内存中相应的地方用全零（0x00）表示；如果可用内存的前
+N（1 到 7 范围之间）个字节可用，则影子内存中响应的位置用 N
+表示；其它情况影子内存用负数表示该内存不可用（<em>KASAN使用不同的负值来区分不同类型的不可访问内存，如redzones
+或已释放的内存，参见 mm/kasan/kasan.h</em>）。</p>
+<p>​
+上述Report中，箭头指向的影子字节<code>03</code>，表示访问的地址是部分可访问的。报告中可访问的内存是“00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00
+03”，一共15个<code>00</code>和一个<code>03</code>，其表明了一共有15×8+3=123个字节可以访问，当试图访问这123个字节之外的内容时，就会报错out-of-bounds。</p>
+<p>​ <strong>KASAN错误标题（如 <code>slab-out-of-bounds</code> 或
+<code>use-after-free</code> ）
+是尽量接近的KASAN根据其拥有的有限信息打印出最可能的错误类型。错误的实际类型
+可能会有所不同。</strong></p>
+<h2 id="reference">Reference</h2>
+<ul>
+<li><p>文档：</p>
+<ul>
+<li><a
+href="https://www.kernel.org/doc/html/latest/dev-tools/kasan.html">The
+Kernel Address Sanitizer (KASAN) — The Linux Kernel
+documentation</a></li>
+<li><a
+href="https://www.kernel.org/doc/html/latest/translations/zh_CN/dev-tools/kasan.html">内核地址消毒剂(KASAN)
+— The Linux Kernel documentation</a></li>
+<li><a href="https://cloud.tencent.com/developer/article/1518011">Kasan
+- Linux 内核的内存检测工具 - 腾讯云开发者社区-腾讯云
+(tencent.com)</a></li>
+</ul></li>
+<li><p>内存分配:</p>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/358891862">Linux 内核 |
+内存管理——slab 分配器 - 知乎 (zhihu.com)</a></li>
+<li><a
+href="https://blog.csdn.net/weixin_42262944/article/details/119853846">(60条消息)
+Linux内存子系统——分配物理页面（alloc_pages）_绍兴小贵宁的博客-CSDN博客</a></li>
+</ul></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Code</category>
+      </categories>
+      <tags>
+        <tag>Vulnerability</tag>
+        <tag>AEG</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>《统计学习方法》</title>
     <url>/2021/09/03/%E3%80%90%E4%B9%A6%E7%B1%8D%E9%98%85%E8%AF%BB%E3%80%91%E3%80%8A%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95%E3%80%8B/</url>
     <content><![CDATA[<h1 id="书籍阅读统计学习方法">【书籍阅读】《统计学习方法》</h1>
@@ -964,193 +1151,6 @@ ci表示某种决策规则下一组测试用例的表决结果。经由以上推
       </categories>
       <tags>
         <tag>Machine Learning</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>(技术总结)The Kernel Address Sanitizer(KASAN)</title>
-    <url>/2023/05/04/%E3%80%90%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93%E3%80%91The%20Kernel%20Address%20Sanitizer(KASAN)/</url>
-    <content><![CDATA[<h1 id="the-kernel-address-sanitizerkasan">The Kernel Address
-Sanitizer(KASAN)</h1>
-<h3 id="兼容性">1. 兼容性</h3>
-<p>​
-KASAN是一个动态内存安全错误检测器，旨在发现内核out-of-bounds和UAF错误。KASAN有三个模块：<code>Generic KASAN</code>、<code>Software Tag-Based KASAN</code>、<code>Hardware Tag-Based KASAN</code>。<code>Generic KASAN</code>兼容许多CPU架构，但性能开销很大；<code>Software Tag-Based KASAN</code>和<code>Hardware Tag-Based KASAN</code>都只兼容arm64架构的CPU，性能开销会更小。</p>
-<p>​
-一般的，称<code>Generic KASAN</code>和<code>Software Tag-Based KASAN</code>为<strong>software
-KASAN</strong>；</p>
-<p>​
-称<code>Software Tag-Based KASAN</code>和<code>Hardware Tag-Based KASAN</code>为<strong>tag-based
-KASAN</strong>。</p>
-<p>​ <code>Generic KASAN</code>支持的指令集架构有：x86_64, arm, arm64,
-powerpc, riscv, s390, 和
-xtensa；<code>tag-based KASAN</code>只支持arm64。 <span id="more"></span> ### 2.
-编译器要求</p>
-<p>​
-KASAN对内存检查的逻辑是在编译的时候在内存访问操作之前插入相关检查指令，故需要相应的编译器支持该操作。</p>
-<blockquote>
-<p>​ <code>Generic KASAN</code>需要GCC
-8.3.0+/任何版本的Clang(只要内核支持)；</p>
-<p>​ <code>Software Tag-Based KASAN</code>需要GCC
-11+/任何版本的Clang(只要内核支持)；</p>
-<p>​ <code>Hardware Tag-Based KASAN</code>需要GCC10+/Clang12+。</p>
-</blockquote>
-<h3 id="使用方法">3. 使用方法</h3>
-<p>​ 开启KASAN需要在内核配置文件中开启对应配置：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token assign-left variable">CONFIG_KASAN</span><span class="token operator">=</span>y<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>​
-然后根据选择的KASAN类型选择标签：<code>CONFIG_KASAN_GENERIC</code>、<code>CONFIG_KASAN_SW_TAGS</code>、<code>CONFIG_KASAN_HW_TAGS</code>。</p>
-<p>​ 对于software
-KASAN，其需要指定其编译插装类型：<code>CONFIG_KASAN_OUTLINE</code>、<code>CONFIG_KASAN_INLINE</code>，outline类型生成体积更小的二进制代码，而inline类型速度比outline快两倍。</p>
-<p>​ 为了在报告中包括受影响的slab对象的stack
-traces，指定：<code>CONFIG_STACKTRACE</code>;包括受影响的物理页的stack
-traces，指定<code>CONFIG_PAGE_OWNER</code>并<code>page_owner=on</code>。</p>
-<h3 id="report">4. Report</h3>
-<p>​ 默认情况下，KASAN只对第一个无效的内存访问打印错误报告。使用
-<code>kasan_multi_shot</code>，KASAN对每一个无效的访问都打印一份报告。这会禁用
-了KASAN报告的 <code>panic_on_warn</code>。</p>
-<p>​ 典型的KASAN报告如下所示:</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span>
-BUG: KASAN: slab-out-of-bounds <span class="token keyword">in</span> kmalloc_oob_right+0xa8/0xbc <span class="token punctuation">[</span>test_kasan<span class="token punctuation">]</span>
-Write of size <span class="token number">1</span> at addr ffff8801f44ec37b by task insmod/2760
-
-CPU: <span class="token number">1</span> PID: <span class="token number">2760</span> Comm: insmod Not tainted <span class="token number">4.19</span>.0-rc3+ <span class="token comment">#698</span>
-Hardware name: QEMU Standard PC <span class="token punctuation">(</span>i440FX + PIIX, <span class="token number">1996</span><span class="token punctuation">)</span>, BIOS <span class="token number">1.10</span>.2-1 04/01/2014
-Call Trace:
- dump_stack+0x94/0xd8
- print_address_description+0x73/0x280
- kasan_report+0x144/0x187
- __asan_report_store1_noabort+0x17/0x20
- kmalloc_oob_right+0xa8/0xbc <span class="token punctuation">[</span>test_kasan<span class="token punctuation">]</span>
- kmalloc_tests_init+0x16/0x700 <span class="token punctuation">[</span>test_kasan<span class="token punctuation">]</span>
- do_one_initcall+0xa5/0x3ae
- do_init_module+0x1b6/0x547
- load_module+0x75df/0x8070
- __do_sys_init_module+0x1c6/0x200
- __x64_sys_init_module+0x6e/0xb0
- do_syscall_64+0x9f/0x2c0
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x7f96443109da
-RSP: 002b:00007ffcf0b51b08 EFLAGS: 00000202 ORIG_RAX: 00000000000000af
-RAX: ffffffffffffffda RBX: 000055dc3ee521a0 RCX: 00007f96443109da
-RDX: 00007f96445cff88 RSI: 0000000000057a50 RDI: 00007f9644992000
-RBP: 000055dc3ee510b0 R08: 0000000000000003 R09: 0000000000000000
-R10: 00007f964430cd0a R11: 0000000000000202 R12: 00007f96445cff88
-R13: 000055dc3ee51090 R14: 0000000000000000 R15: 0000000000000000
-
-Allocated by task <span class="token number">2760</span>:
- save_stack+0x43/0xd0
- kasan_kmalloc+0xa7/0xd0
- kmem_cache_alloc_trace+0xe1/0x1b0
- kmalloc_oob_right+0x56/0xbc <span class="token punctuation">[</span>test_kasan<span class="token punctuation">]</span>
- kmalloc_tests_init+0x16/0x700 <span class="token punctuation">[</span>test_kasan<span class="token punctuation">]</span>
- do_one_initcall+0xa5/0x3ae
- do_init_module+0x1b6/0x547
- load_module+0x75df/0x8070
- __do_sys_init_module+0x1c6/0x200
- __x64_sys_init_module+0x6e/0xb0
- do_syscall_64+0x9f/0x2c0
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Freed by task <span class="token number">815</span>:
- save_stack+0x43/0xd0
- __kasan_slab_free+0x135/0x190
- kasan_slab_free+0xe/0x10
- kfree+0x93/0x1a0
- umh_complete+0x6a/0xa0
- call_usermodehelper_exec_async+0x4c3/0x640
- ret_from_fork+0x35/0x40
-
-The buggy address belongs to the object at ffff8801f44ec300
- <span class="token function">which</span> belongs to the cache kmalloc-128 of size <span class="token number">128</span>
-The buggy address is located <span class="token number">123</span> bytes inside of
- <span class="token number">128</span>-byte region <span class="token punctuation">[</span>ffff8801f44ec300, ffff8801f44ec380<span class="token punctuation">)</span>
-The buggy address belongs to the page:
-page:ffffea0007d13b00 count:1 mapcount:0 mapping:ffff8801f7001640 index:0x0
-flags: 0x200000000000100<span class="token punctuation">(</span>slab<span class="token punctuation">)</span>
-raw: 0200000000000100 ffffea0007d11dc0 0000001a0000001a ffff8801f7001640
-raw: 0000000000000000 0000000080150015 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff8801f44ec200: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
- ffff8801f44ec280: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
-<span class="token operator">></span>ffff8801f44ec300: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 03
-                                                                ^
- ffff8801f44ec380: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
- ffff8801f44ec400: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
-<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​ <code>BUG: KASAN:</code>
-第一行报告了错误类型，slab-out-of-bounds；</p>
-<p>​ <code>Call Trace</code>:表明了当前error的堆栈跟踪；</p>
-<p>​
-<code>Allocated by task 2760</code>:表明了所访问内存分配位置的堆栈跟踪（“where
-the accessed memory was allocated ”）；</p>
-<p>​
-<code>Freed by task 815</code>:表明了对象被释放的位置的堆栈跟踪（“where
-the object was freed”）；</p>
-<p>​
-<code>The buggy address belongs to ……</code>:表明了访问的slab对象的相关描述；</p>
-<p>​
-<code>Memory state around the buggy address:</code>表明了访问slab对象周围的内存情况。</p>
-<h3 id="影子内存">5. 影子内存</h3>
-<p>​
-KASAN的原理是利用“额外”的内存来标记那些可以被使用的内存的状态。这些做标记的区域被称为影子区域（shadow
-region）。了解 Linux
-内存管理的读者知道，内存中的每个物理页在内存中都会有一个 struct page
-这样的结构体来表示，即每 4KB 的页需要 40B 的结构体，大约 1%
-的内存用来表示内存本身。Kasan 与其类似但“浪费”更为严重，影子区域的比例是
-1:8，即总内存的九分之一会被“浪费”。用官方文档中的例子，如果有 128TB
-的可用内存，需要有额外 16TB 的内存用来做标记。</p>
-<figure>
-<img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230504141838.png"
-alt="Shadow Memory of KASAN" />
-<figcaption aria-hidden="true">Shadow Memory of KASAN</figcaption>
-</figure>
-<p>​ 做标记的方法比较简单，将可用内存按照 8
-子节的大小分组，如果每组中所有 8
-个字节都可以访问，则影子内存中相应的地方用全零（0x00）表示；如果可用内存的前
-N（1 到 7 范围之间）个字节可用，则影子内存中响应的位置用 N
-表示；其它情况影子内存用负数表示该内存不可用（<em>KASAN使用不同的负值来区分不同类型的不可访问内存，如redzones
-或已释放的内存，参见 mm/kasan/kasan.h</em>）。</p>
-<p>​
-上述Report中，箭头指向的影子字节<code>03</code>，表示访问的地址是部分可访问的。报告中可访问的内存是“00
-00 00 00 00 00 00 00 00 00 00 00 00 00 00
-03”，一共15个<code>00</code>和一个<code>03</code>，其表明了一共有15×8+3=123个字节可以访问，当试图访问这123个字节之外的内容时，就会报错out-of-bounds。</p>
-<p>​ <strong>KASAN错误标题（如 <code>slab-out-of-bounds</code> 或
-<code>use-after-free</code> ）
-是尽量接近的KASAN根据其拥有的有限信息打印出最可能的错误类型。错误的实际类型
-可能会有所不同。</strong></p>
-<h2 id="reference">Reference</h2>
-<ul>
-<li><p>文档：</p>
-<ul>
-<li><a
-href="https://www.kernel.org/doc/html/latest/dev-tools/kasan.html">The
-Kernel Address Sanitizer (KASAN) — The Linux Kernel
-documentation</a></li>
-<li><a
-href="https://www.kernel.org/doc/html/latest/translations/zh_CN/dev-tools/kasan.html">内核地址消毒剂(KASAN)
-— The Linux Kernel documentation</a></li>
-<li><a href="https://cloud.tencent.com/developer/article/1518011">Kasan
-- Linux 内核的内存检测工具 - 腾讯云开发者社区-腾讯云
-(tencent.com)</a></li>
-</ul></li>
-<li><p>内存分配:</p>
-<ul>
-<li><a href="https://zhuanlan.zhihu.com/p/358891862">Linux 内核 |
-内存管理——slab 分配器 - 知乎 (zhihu.com)</a></li>
-<li><a
-href="https://blog.csdn.net/weixin_42262944/article/details/119853846">(60条消息)
-Linux内存子系统——分配物理页面（alloc_pages）_绍兴小贵宁的博客-CSDN博客</a></li>
-</ul></li>
-</ul>
-]]></content>
-      <categories>
-        <category>Code</category>
-      </categories>
-      <tags>
-        <tag>Vulnerability</tag>
-        <tag>AEG</tag>
       </tags>
   </entry>
   <entry>
@@ -2084,144 +2084,6 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230213123532.png" /></p>
       </tags>
   </entry>
   <entry>
-    <title>A Benchmark API Call Dataset For Windows PE Malware Classification</title>
-    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91A%20Benchmark%20API%20Call%20Dataset%20For%20Windows%20PE%20Malware%20Classification/</url>
-    <content><![CDATA[<h1
-id="论文阅读a-benchmark-api-call-dataset-for-windows-pe-malware-classification">【论文阅读】A
-Benchmark API Call Dataset For Windows PE Malware Classification</h1>
-<blockquote>
-<p><strong>作者：Ferhat Ozgur Catak（土耳其）</strong></p>
-<p>​ <strong>Ahmet Faruk Yazi（土耳其）</strong></p>
-<p><strong>时间：2021.2.23</strong></p>
-<p><strong>关键词：恶意软件分析，网络空间安全，数据集，沙箱环境，恶意软件分类</strong></p>
-</blockquote>
-<h3 id="abstract">1. Abstract</h3>
-<p>​
-在Windows操作系统中，系统API调用的使用在监控恶意PE程序中是一个很有前途的方法。这个方法被定义为在安全隔离的沙箱环境中运行恶意软件，记录其调用的Windows系统API，再顺序分析这些调用。
-​
-在这里，我们在隔离沙箱中分析了7107个属于不同家族（病毒，后门，木马等）的恶意软件，并把这些分析结果转化为了不同分类算法和方法可以使用的形式。
-​
-<strong>首先</strong>，我们会解释如何得到这些恶意软件；<strong>其次</strong>，我们会解释如何将这些软件捆绑至家族中；<strong>最后，</strong>我们会描述如何使用这些数据集来通过不同的方法实现恶意软件的分类。</p>
-<table style="width:10%;">
-<colgroup>
-<col style="width: 9%" />
-</colgroup>
-<tbody>
-<tr class="odd">
-<td><span id="more"></span></td>
-</tr>
-<tr class="even">
-<td>### 2. Introduction</td>
-</tr>
-<tr class="odd">
-<td>#### 2.1 简单介绍了恶意软件</td>
-</tr>
-<tr class="even">
-<td>#### 2.2 恶意软件与恶意软件识别之间的竞争</td>
-</tr>
-<tr class="odd">
-<td>​ 相互促进</td>
-</tr>
-<tr class="even">
-<td>#### 2.3 变形恶意软件（Metamorphic malware）</td>
-</tr>
-<tr class="odd">
-<td>​
-恶意软件家族里很先进的一种，这种软件可以持续不断的改变自身源代码以此改变自身结构，通过这种方式来改变自身代码特征。还有，这种软件可能还可以通过强度反算（counter-analysis）来识别自身运行的环境，以此来隐藏自身的恶意功能。</td>
-</tr>
-<tr class="even">
-<td>​ 变形恶意软件很难识别。</td>
-</tr>
-<tr class="odd">
-<td>#### 2.4 恶意软件的识别：</td>
-</tr>
-<tr class="even">
-<td>​
-所有恶意软件都会有恶意行为以达成其目的，如果可以很好的分析恶意行为，就可以做成恶意软件的识别与分类。
-​
-恶意软件的识别包括了很多需要解决的问题，例如在汇编中不正确的跳转操作码，PE文本段代码隐藏，代码加密。本研究收集了现有的恶意软件及其变式，例如WannaCry，Zeus，特别是在Github上。</td>
-</tr>
-<tr class="odd">
-<td>​
-我们通过在VirusTotal网站上寻找每个恶意软件的哈希值，从而获得了得到了其家族类。</td>
-</tr>
-<tr class="even">
-<td>​ 最后，所有我们记录的行为都是在Cuckoo沙盒环境中运行的。</td>
-</tr>
-<tr class="odd">
-<td>​
-我们发现几乎所有恶意软件都会使用很多方法改变其行为，但即使这样，恶意软件还是有一个目标，有一个确定的模式来达到此目标。还有，恶意软件会做出一些不必要的API调用，但其还是可以被一个训练好的分析器识别，因为其行为模式是相同的。</td>
-</tr>
-<tr class="even">
-<td>​ 恶意软件分析被视为网络空间安全的一个分支，其由两方面组成：</td>
-</tr>
-<tr class="odd">
-<td>##### <strong>1. 静态分析 </strong>：</td>
-</tr>
-<tr class="even">
-<td>​
-静态分析可以可以定义为通过执行一个孤立的环境检查可执行文件而不查看实际指令。例如MD5校验和，其通过反病毒检测攻击识别，查找字符串。</td>
-</tr>
-<tr class="odd">
-<td>##### 2. 动态分析</td>
-</tr>
-<tr class="even">
-<td>​
-动态分析指运行恶意程序来理解其功能，观察其表现，识别其技术指标。几乎所有的重要行为都包含API调用序列。</td>
-</tr>
-<tr class="odd">
-<td>​
-<strong>大多数动态分析领域的研究都只关注分类算法，有个基本问题是没有标准的数据集来检查所提出模型的效率。</strong></td>
-</tr>
-<tr class="even">
-<td>​
-<strong>我们在Github上分享了我们的数据集：https://github.com/ocatak/malware_api_class
-，该数据集包含了基于Cuckoo沙箱的已知恶意软件执行和基于VirusTotal的文件MD5特征分类的原始数据。</strong></td>
-</tr>
-</tbody>
-</table>
-<h3 id="methods">3. Methods</h3>
-<h4 id="windows-api-calls">3.1 Windows API Calls：</h4>
-<p>​ 软件安全知识，略</p>
-<h4 id="cuckoo-sandbox">3.2 Cuckoo SandBox</h4>
-<p>​ 免费软件，高度集成，开源，可以自动分析Winodws,OS
-X,Linux,Android系统下的恶意文件。</p>
-<h4 id="virustotal">3.3 VirusTotal</h4>
-<p>​
-可以在线免费分析文件或者URL。其提供了一个API，可以不通过浏览器来提供分析结果，可以自动分析。其以JSON文件的形式提供分析结果，不同反病毒应用引擎和浏览器的分析结果会分开存放。</p>
-<h4 id="数据集生成">3.4 数据集生成</h4>
-<p>​
-本文的数据集有着简单明了的结构。数据集以CVS格式文件提供来提高互操作性，而且并不需要特定的软件或者库来读取他们。数据由来自不同Github页面的Git命令实施收集，数据集中的每一行都是在沙箱中分析的Windows操作系统的API调用序列。</p>
-<p>​ 数据集的生成过程如下：</p>
-<p>​ <strong>1. 沙箱环境准备：</strong></p>
-<p>​
-分析机器使用Ubuntu系统，将Cuckoo沙箱安装在其中，分析机运行虚拟服务，Windows操作系统就运行在虚拟服务上，同时关掉防火墙，系统升级。</p>
-<p>​ <strong>2. 分析恶意软件:</strong></p>
-<p>​
-虚拟机中同时运行超过20000个恶意软件，应用程序会将每个恶意软件的分析结果写入MongoDB数据库，分析结果中包含恶意软件的行为数据，这些数据都是恶意软件在Win7上的API调用请求。</p>
-<p>​ <strong>3. 处理API调用：</strong></p>
-<p>​
-我们在数据集中收集到了342种API调用，这些调用会被以0-341来标记，以此生成一个新数据集。我们使用了该数据集中至少有10个不同API调用的恶意软件的分析结果。</p>
-<p>​ <strong>4. 使用Virus Total公用API分析恶意软件：</strong></p>
-<p>​ 作为分析的补充，所有在数据集中的恶意软件也会被Virus
-Total所分析，通过这种方式，每个恶意软件都会被不同的反病毒引擎所分析，结果会被记录。</p>
-<p>​ <strong>5. 处理分析结果：</strong></p>
-<p>​ Virus
-Total服务使用大约66个不同的防病毒应用程序进行文件分析。利用我们利用这个服务得到的每个研究结果，我们识别了每个恶意软件的家族。通过观察，我们发现对于同一恶意软件，不同的防病毒应用程序给出了不同的结果。此外，观察到并非每一个防病毒应用程序都能检测到一些恶意软件。因此，在检测每一个恶意软件类时，认为它属于所有分析中的大多数类。</p>
-<p><img
-src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210716172418.png" /></p>
-<p><img
-src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210716172518.png" /></p>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>AD</tag>
-        <tag>Malware Classifiers</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Adversarial Training with Fast Gradient Projection Method against Synonym Substitution Based Text Attacks</title>
     <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Adversarial%20Training%20with%20Fast%20Gradient%20Projection%20Method%20against%20Synonym%20Substitution%20Based%20Text%20Attacks/</url>
     <content><![CDATA[<h1
@@ -2362,144 +2224,6 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904142406.png" /></p>
         <tag>AD</tag>
         <tag>NLP</tag>
         <tag>AD training</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>(论文阅读)Automated WebAssembly Function Purpose Identification With Semantics-Aware Analysis</title>
-    <url>/2023/05/29/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Automated-WebAssembly-Function-Purpose-Identification-With-Semantics-Aware-Analysis/</url>
-    <content><![CDATA[<h1
-id="automated-webassembly-function-purpose-identification-with-semantics-aware-analysis">Automated
-WebAssembly Function Purpose Identification With Semantics-Aware
-Analysis</h1>
-<blockquote>
-<p><strong>会议：</strong>WWW'23（International World Wide Web
-Conference，CCF-A）</p>
-<p><strong>作者：</strong>Alan Romano、Weihang Wang（USC）</p>
-<p><strong>时间：</strong>2023.4</p>
-</blockquote>
-<h1 id="abstract">ABSTRACT</h1>
-<p>​
-WebAssembly是最近建立的一个网络标准，用于提高网络应用的性能。该标准定义了一种二进制代码格式，作为各种语言的编译目标，如C、C++和Rust。该标准还定义了一种可读性的文本表示法，不过，WebAssembly模块很难被人类读者解释，无论他们的经验水平如何。这使得理解和维护任何现有的WebAssembly代码变得困难。因此，第三方WebAssembly模块需要被开发者隐含地信任，因为验证功能本身可能是不可行的。</p>
-<p>​
-为此，我们构建了<strong>WASPur</strong>，一个自动识别WebAssembly函数功能的工具。为了构建这个工具，我们首先构建了一个广泛的WebAssembly样本集，代表了WebAssembly的状态。其次，我们分析数据集，并确定所收集的WebAssembly模块的不同使用情况。我们利用WebAssembly模块的数据集来构建模块中功能的语义感知的中间表示（IR）。我们对函数IR进行编码，用于机器学习分类器，我们发现这个分类器可以预测一个给定函数与已知命名函数的相似性，其准确率为88.07%。我们希望我们的工具能够检查优化和减化的WebAssembly模块，这些模块去除了函数名称和大多数其他语义标识符。</p>
-<span id="more"></span>
-<h1 id="知识背景">知识背景</h1>
-<p>​ <strong>WebAssembly阅读困难的原因：</strong></p>
-<ol type="1">
-<li>WebAssembly只有四种数字数据类型，i32、i64、f32和f64，这使得例如字符串操作和加密散列等操作的指令序列变得十分相似，难以阅读;</li>
-<li>其次，它的堆栈机设计使得在某个位置推导出一个变量的值很困难。必须从一个给定的位置追踪堆栈，以确定特定代码位置的计算值。</li>
-</ol>
-<p>​
-由于许多第三方模块交付时并没有源码，故确定该WASM模块的功能就需要手工验证。有以前的工作研究了WASM样本本身的目的，但是没有工作帮助开发者理解WASM模块的函数功能。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230526213539080.png" style="zoom: 67%;" /></p>
-<p>​
-WebAssembly模块有一个明确的结构定义。每个模块由10个部分组成，分别描述模块的不同组成部分：</p>
-<table>
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Types</td>
-<td>所有函数参数和返回值类型</td>
-</tr>
-<tr class="even">
-<td>Functions</td>
-<td>所有WASM函数的类型、使用的局部变量和WASM指令组成的函数体</td>
-</tr>
-<tr class="odd">
-<td>Tables</td>
-<td>间接调用目标函数表</td>
-</tr>
-<tr class="even">
-<td>Memory</td>
-<td>本模块线性内存部分属性</td>
-</tr>
-<tr class="odd">
-<td>Globals</td>
-<td>该模块使用的全局变量</td>
-</tr>
-<tr class="even">
-<td>Elements</td>
-<td>用于初始化指定函数表的函数索引</td>
-</tr>
-<tr class="odd">
-<td>Data</td>
-<td>用于初始化指定的线性内存部分的字节序列</td>
-</tr>
-<tr class="even">
-<td>Start</td>
-<td>模块初始化函数</td>
-</tr>
-<tr class="odd">
-<td>Import</td>
-<td>从JS导入，并在WASM调用的函数</td>
-</tr>
-<tr class="even">
-<td>Exports</td>
-<td>导出到JS中被调用的函数</td>
-</tr>
-</tbody>
-</table>
-<p>​ 本工作的分类方法聚焦于<strong><em>Functions</em></strong>节。</p>
-<h2 id="贡献">贡献</h2>
-<ol type="1">
-<li>我们提出了一个中间表示法（IR）来抽象WebAssembly应用程序的底层语义，以实现语法弹性分析；</li>
-<li>构建了从真实网站、火狐插件、Chrome拓展和Github仓库中爬取的WASM样本数据集；</li>
-<li>对WASM样本综合分析，将行为目的分为12类；</li>
-<li>开发自动分类工具WASPur，以实现WASM函数的自动打标签，准确率达到88.07%。</li>
-</ol>
-<h2 id="模型方法">模型方法</h2>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230528195748.png" style="zoom: 67%;" /></p>
-<h3 id="生成中间表示ir">1. 生成中间表示IR</h3>
-<p>​ 对虚拟栈操作的抽象：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230528202454.png" style="zoom:67%;" /></p>
-<h3 id="抽象处理">2. 抽象处理</h3>
-<p>​
-首先构建每个函数的内部cfg（iCFG）,再通过call调用连接各个iCFG构建程序间ICFG。为每个函数建立一个单独的ICFG，所需的函数被用作图形遍历的起始点。call的深度被限制为2，其防止了递归函数无限调用。</p>
-<h3 id="分类器">3. 分类器</h3>
-<ul>
-<li><strong>模型：</strong>全连接层神经网络；</li>
-<li><strong>输入：</strong>抽象序列（每个函数的）；</li>
-<li><strong>输出：</strong>189个unit（对应人工分析的189个不同function类）</li>
-</ul>
-<h3 id="数据集">4. 数据集</h3>
-<ul>
-<li><p><strong>来源：</strong>Alexa、Chrome extensions、Firefox
-add-ons、GitHub repositories。</p></li>
-<li><p><strong>构建的数据集：</strong></p>
-<ul>
-<li><p><strong><em>Dataset for WebAssembly Binaries</em></strong></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230529111145.png" style="zoom:50%;" /></p>
-<p>上表显示了从四个source爬取的：<u>样本总数</u>、<u>使用WASM的样本数</u>、<u>WASM程序数</u>。故这里共有6769个WASM样本，由于一个程序可能有多个WASM模块，这里共有1829个独立模块。</p></li>
-<li><p><strong><em>Dataset for WebAssembly GitHub
-Repositories</em></strong></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230529111746.png" style="zoom:50%;" /></p>
-<p>从112M的Github仓库中定位了435个与WASM有关的仓库，上表表明了这些仓库的功能目的。</p></li>
-</ul></li>
-<li><p><strong>Module-level 分类</strong>：</p>
-<p>首先将样本分为12类：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230529112849.png" style="zoom:50%;" /></p>
-<p>对于每一类，下表给出其位置、文件大小信息：</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230529113357.png" /></p>
-<p>下表给出了每个类的特征数和特征例子：</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230529114040.png" /></p></li>
-<li><p><strong>Function-level 分类</strong>：</p>
-<p>由于WASM在编译时会采用最小化函数名称的机制，会损失很多函数名称信息。这里从至少两个独立模块中出现的函数中创建标签，将类似malloc,
-_malloc,
-和memory.allocate的函数名称压缩为一个单独的标签组malloc。这里得到了189个不同功能的函数类别。</p></li>
-</ul>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>WASM</tag>
       </tags>
   </entry>
   <entry>
@@ -2657,8 +2381,284 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901152049.png" /></p>
         <category>Paper</category>
       </categories>
       <tags>
-        <tag>Malware Classifiers</tag>
         <tag>Android</tag>
+        <tag>Malware Classifiers</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>A Benchmark API Call Dataset For Windows PE Malware Classification</title>
+    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91A%20Benchmark%20API%20Call%20Dataset%20For%20Windows%20PE%20Malware%20Classification/</url>
+    <content><![CDATA[<h1
+id="论文阅读a-benchmark-api-call-dataset-for-windows-pe-malware-classification">【论文阅读】A
+Benchmark API Call Dataset For Windows PE Malware Classification</h1>
+<blockquote>
+<p><strong>作者：Ferhat Ozgur Catak（土耳其）</strong></p>
+<p>​ <strong>Ahmet Faruk Yazi（土耳其）</strong></p>
+<p><strong>时间：2021.2.23</strong></p>
+<p><strong>关键词：恶意软件分析，网络空间安全，数据集，沙箱环境，恶意软件分类</strong></p>
+</blockquote>
+<h3 id="abstract">1. Abstract</h3>
+<p>​
+在Windows操作系统中，系统API调用的使用在监控恶意PE程序中是一个很有前途的方法。这个方法被定义为在安全隔离的沙箱环境中运行恶意软件，记录其调用的Windows系统API，再顺序分析这些调用。
+​
+在这里，我们在隔离沙箱中分析了7107个属于不同家族（病毒，后门，木马等）的恶意软件，并把这些分析结果转化为了不同分类算法和方法可以使用的形式。
+​
+<strong>首先</strong>，我们会解释如何得到这些恶意软件；<strong>其次</strong>，我们会解释如何将这些软件捆绑至家族中；<strong>最后，</strong>我们会描述如何使用这些数据集来通过不同的方法实现恶意软件的分类。</p>
+<table style="width:10%;">
+<colgroup>
+<col style="width: 9%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><span id="more"></span></td>
+</tr>
+<tr class="even">
+<td>### 2. Introduction</td>
+</tr>
+<tr class="odd">
+<td>#### 2.1 简单介绍了恶意软件</td>
+</tr>
+<tr class="even">
+<td>#### 2.2 恶意软件与恶意软件识别之间的竞争</td>
+</tr>
+<tr class="odd">
+<td>​ 相互促进</td>
+</tr>
+<tr class="even">
+<td>#### 2.3 变形恶意软件（Metamorphic malware）</td>
+</tr>
+<tr class="odd">
+<td>​
+恶意软件家族里很先进的一种，这种软件可以持续不断的改变自身源代码以此改变自身结构，通过这种方式来改变自身代码特征。还有，这种软件可能还可以通过强度反算（counter-analysis）来识别自身运行的环境，以此来隐藏自身的恶意功能。</td>
+</tr>
+<tr class="even">
+<td>​ 变形恶意软件很难识别。</td>
+</tr>
+<tr class="odd">
+<td>#### 2.4 恶意软件的识别：</td>
+</tr>
+<tr class="even">
+<td>​
+所有恶意软件都会有恶意行为以达成其目的，如果可以很好的分析恶意行为，就可以做成恶意软件的识别与分类。
+​
+恶意软件的识别包括了很多需要解决的问题，例如在汇编中不正确的跳转操作码，PE文本段代码隐藏，代码加密。本研究收集了现有的恶意软件及其变式，例如WannaCry，Zeus，特别是在Github上。</td>
+</tr>
+<tr class="odd">
+<td>​
+我们通过在VirusTotal网站上寻找每个恶意软件的哈希值，从而获得了得到了其家族类。</td>
+</tr>
+<tr class="even">
+<td>​ 最后，所有我们记录的行为都是在Cuckoo沙盒环境中运行的。</td>
+</tr>
+<tr class="odd">
+<td>​
+我们发现几乎所有恶意软件都会使用很多方法改变其行为，但即使这样，恶意软件还是有一个目标，有一个确定的模式来达到此目标。还有，恶意软件会做出一些不必要的API调用，但其还是可以被一个训练好的分析器识别，因为其行为模式是相同的。</td>
+</tr>
+<tr class="even">
+<td>​ 恶意软件分析被视为网络空间安全的一个分支，其由两方面组成：</td>
+</tr>
+<tr class="odd">
+<td>##### <strong>1. 静态分析 </strong>：</td>
+</tr>
+<tr class="even">
+<td>​
+静态分析可以可以定义为通过执行一个孤立的环境检查可执行文件而不查看实际指令。例如MD5校验和，其通过反病毒检测攻击识别，查找字符串。</td>
+</tr>
+<tr class="odd">
+<td>##### 2. 动态分析</td>
+</tr>
+<tr class="even">
+<td>​
+动态分析指运行恶意程序来理解其功能，观察其表现，识别其技术指标。几乎所有的重要行为都包含API调用序列。</td>
+</tr>
+<tr class="odd">
+<td>​
+<strong>大多数动态分析领域的研究都只关注分类算法，有个基本问题是没有标准的数据集来检查所提出模型的效率。</strong></td>
+</tr>
+<tr class="even">
+<td>​
+<strong>我们在Github上分享了我们的数据集：https://github.com/ocatak/malware_api_class
+，该数据集包含了基于Cuckoo沙箱的已知恶意软件执行和基于VirusTotal的文件MD5特征分类的原始数据。</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="methods">3. Methods</h3>
+<h4 id="windows-api-calls">3.1 Windows API Calls：</h4>
+<p>​ 软件安全知识，略</p>
+<h4 id="cuckoo-sandbox">3.2 Cuckoo SandBox</h4>
+<p>​ 免费软件，高度集成，开源，可以自动分析Winodws,OS
+X,Linux,Android系统下的恶意文件。</p>
+<h4 id="virustotal">3.3 VirusTotal</h4>
+<p>​
+可以在线免费分析文件或者URL。其提供了一个API，可以不通过浏览器来提供分析结果，可以自动分析。其以JSON文件的形式提供分析结果，不同反病毒应用引擎和浏览器的分析结果会分开存放。</p>
+<h4 id="数据集生成">3.4 数据集生成</h4>
+<p>​
+本文的数据集有着简单明了的结构。数据集以CVS格式文件提供来提高互操作性，而且并不需要特定的软件或者库来读取他们。数据由来自不同Github页面的Git命令实施收集，数据集中的每一行都是在沙箱中分析的Windows操作系统的API调用序列。</p>
+<p>​ 数据集的生成过程如下：</p>
+<p>​ <strong>1. 沙箱环境准备：</strong></p>
+<p>​
+分析机器使用Ubuntu系统，将Cuckoo沙箱安装在其中，分析机运行虚拟服务，Windows操作系统就运行在虚拟服务上，同时关掉防火墙，系统升级。</p>
+<p>​ <strong>2. 分析恶意软件:</strong></p>
+<p>​
+虚拟机中同时运行超过20000个恶意软件，应用程序会将每个恶意软件的分析结果写入MongoDB数据库，分析结果中包含恶意软件的行为数据，这些数据都是恶意软件在Win7上的API调用请求。</p>
+<p>​ <strong>3. 处理API调用：</strong></p>
+<p>​
+我们在数据集中收集到了342种API调用，这些调用会被以0-341来标记，以此生成一个新数据集。我们使用了该数据集中至少有10个不同API调用的恶意软件的分析结果。</p>
+<p>​ <strong>4. 使用Virus Total公用API分析恶意软件：</strong></p>
+<p>​ 作为分析的补充，所有在数据集中的恶意软件也会被Virus
+Total所分析，通过这种方式，每个恶意软件都会被不同的反病毒引擎所分析，结果会被记录。</p>
+<p>​ <strong>5. 处理分析结果：</strong></p>
+<p>​ Virus
+Total服务使用大约66个不同的防病毒应用程序进行文件分析。利用我们利用这个服务得到的每个研究结果，我们识别了每个恶意软件的家族。通过观察，我们发现对于同一恶意软件，不同的防病毒应用程序给出了不同的结果。此外，观察到并非每一个防病毒应用程序都能检测到一些恶意软件。因此，在检测每一个恶意软件类时，认为它属于所有分析中的大多数类。</p>
+<p><img
+src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210716172418.png" /></p>
+<p><img
+src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210716172518.png" /></p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>AD</tag>
+        <tag>Malware Classifiers</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>(论文阅读)Automated WebAssembly Function Purpose Identification With Semantics-Aware Analysis</title>
+    <url>/2023/05/29/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Automated-WebAssembly-Function-Purpose-Identification-With-Semantics-Aware-Analysis/</url>
+    <content><![CDATA[<h1
+id="automated-webassembly-function-purpose-identification-with-semantics-aware-analysis">Automated
+WebAssembly Function Purpose Identification With Semantics-Aware
+Analysis</h1>
+<blockquote>
+<p><strong>会议：</strong>WWW'23（International World Wide Web
+Conference，CCF-A）</p>
+<p><strong>作者：</strong>Alan Romano、Weihang Wang（USC）</p>
+<p><strong>时间：</strong>2023.4</p>
+</blockquote>
+<h1 id="abstract">ABSTRACT</h1>
+<p>​
+WebAssembly是最近建立的一个网络标准，用于提高网络应用的性能。该标准定义了一种二进制代码格式，作为各种语言的编译目标，如C、C++和Rust。该标准还定义了一种可读性的文本表示法，不过，WebAssembly模块很难被人类读者解释，无论他们的经验水平如何。这使得理解和维护任何现有的WebAssembly代码变得困难。因此，第三方WebAssembly模块需要被开发者隐含地信任，因为验证功能本身可能是不可行的。</p>
+<p>​
+为此，我们构建了<strong>WASPur</strong>，一个自动识别WebAssembly函数功能的工具。为了构建这个工具，我们首先构建了一个广泛的WebAssembly样本集，代表了WebAssembly的状态。其次，我们分析数据集，并确定所收集的WebAssembly模块的不同使用情况。我们利用WebAssembly模块的数据集来构建模块中功能的语义感知的中间表示（IR）。我们对函数IR进行编码，用于机器学习分类器，我们发现这个分类器可以预测一个给定函数与已知命名函数的相似性，其准确率为88.07%。我们希望我们的工具能够检查优化和减化的WebAssembly模块，这些模块去除了函数名称和大多数其他语义标识符。</p>
+<span id="more"></span>
+<h1 id="知识背景">知识背景</h1>
+<p>​ <strong>WebAssembly阅读困难的原因：</strong></p>
+<ol type="1">
+<li>WebAssembly只有四种数字数据类型，i32、i64、f32和f64，这使得例如字符串操作和加密散列等操作的指令序列变得十分相似，难以阅读;</li>
+<li>其次，它的堆栈机设计使得在某个位置推导出一个变量的值很困难。必须从一个给定的位置追踪堆栈，以确定特定代码位置的计算值。</li>
+</ol>
+<p>​
+由于许多第三方模块交付时并没有源码，故确定该WASM模块的功能就需要手工验证。有以前的工作研究了WASM样本本身的目的，但是没有工作帮助开发者理解WASM模块的函数功能。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230526213539080.png" style="zoom: 67%;" /></p>
+<p>​
+WebAssembly模块有一个明确的结构定义。每个模块由10个部分组成，分别描述模块的不同组成部分：</p>
+<table>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Types</td>
+<td>所有函数参数和返回值类型</td>
+</tr>
+<tr class="even">
+<td>Functions</td>
+<td>所有WASM函数的类型、使用的局部变量和WASM指令组成的函数体</td>
+</tr>
+<tr class="odd">
+<td>Tables</td>
+<td>间接调用目标函数表</td>
+</tr>
+<tr class="even">
+<td>Memory</td>
+<td>本模块线性内存部分属性</td>
+</tr>
+<tr class="odd">
+<td>Globals</td>
+<td>该模块使用的全局变量</td>
+</tr>
+<tr class="even">
+<td>Elements</td>
+<td>用于初始化指定函数表的函数索引</td>
+</tr>
+<tr class="odd">
+<td>Data</td>
+<td>用于初始化指定的线性内存部分的字节序列</td>
+</tr>
+<tr class="even">
+<td>Start</td>
+<td>模块初始化函数</td>
+</tr>
+<tr class="odd">
+<td>Import</td>
+<td>从JS导入，并在WASM调用的函数</td>
+</tr>
+<tr class="even">
+<td>Exports</td>
+<td>导出到JS中被调用的函数</td>
+</tr>
+</tbody>
+</table>
+<p>​ 本工作的分类方法聚焦于<strong><em>Functions</em></strong>节。</p>
+<h2 id="贡献">贡献</h2>
+<ol type="1">
+<li>我们提出了一个中间表示法（IR）来抽象WebAssembly应用程序的底层语义，以实现语法弹性分析；</li>
+<li>构建了从真实网站、火狐插件、Chrome拓展和Github仓库中爬取的WASM样本数据集；</li>
+<li>对WASM样本综合分析，将行为目的分为12类；</li>
+<li>开发自动分类工具WASPur，以实现WASM函数的自动打标签，准确率达到88.07%。</li>
+</ol>
+<h2 id="模型方法">模型方法</h2>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230528195748.png" style="zoom: 67%;" /></p>
+<h3 id="生成中间表示ir">1. 生成中间表示IR</h3>
+<p>​ 对虚拟栈操作的抽象：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230528202454.png" style="zoom:67%;" /></p>
+<h3 id="抽象处理">2. 抽象处理</h3>
+<p>​
+首先构建每个函数的内部cfg（iCFG）,再通过call调用连接各个iCFG构建程序间ICFG。为每个函数建立一个单独的ICFG，所需的函数被用作图形遍历的起始点。call的深度被限制为2，其防止了递归函数无限调用。</p>
+<h3 id="分类器">3. 分类器</h3>
+<ul>
+<li><strong>模型：</strong>全连接层神经网络；</li>
+<li><strong>输入：</strong>抽象序列（每个函数的）；</li>
+<li><strong>输出：</strong>189个unit（对应人工分析的189个不同function类）</li>
+</ul>
+<h3 id="数据集">4. 数据集</h3>
+<ul>
+<li><p><strong>来源：</strong>Alexa、Chrome extensions、Firefox
+add-ons、GitHub repositories。</p></li>
+<li><p><strong>构建的数据集：</strong></p>
+<ul>
+<li><p><strong><em>Dataset for WebAssembly Binaries</em></strong></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230529111145.png" style="zoom:50%;" /></p>
+<p>上表显示了从四个source爬取的：<u>样本总数</u>、<u>使用WASM的样本数</u>、<u>WASM程序数</u>。故这里共有6769个WASM样本，由于一个程序可能有多个WASM模块，这里共有1829个独立模块。</p></li>
+<li><p><strong><em>Dataset for WebAssembly GitHub
+Repositories</em></strong></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230529111746.png" style="zoom:50%;" /></p>
+<p>从112M的Github仓库中定位了435个与WASM有关的仓库，上表表明了这些仓库的功能目的。</p></li>
+</ul></li>
+<li><p><strong>Module-level 分类</strong>：</p>
+<p>首先将样本分为12类：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230529112849.png" style="zoom:50%;" /></p>
+<p>对于每一类，下表给出其位置、文件大小信息：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230529113357.png" /></p>
+<p>下表给出了每个类的特征数和特征例子：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230529114040.png" /></p></li>
+<li><p><strong>Function-level 分类</strong>：</p>
+<p>由于WASM在编译时会采用最小化函数名称的机制，会损失很多函数名称信息。这里从至少两个独立模块中出现的函数中创建标签，将类似malloc,
+_malloc,
+和memory.allocate的函数名称压缩为一个单独的标签组malloc。这里得到了189个不同功能的函数类别。</p></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>WASM</tag>
       </tags>
   </entry>
   <entry>
@@ -2925,6 +2925,236 @@ triager只需要检测包含这些事件的种子即可。</p>
       </tags>
   </entry>
   <entry>
+    <title>(论文阅读) Concolic Execution for WebAssembly</title>
+    <url>/2023/06/20/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Concolic-Execution-for-WebAssembly/</url>
+    <content><![CDATA[<h1 id="concolic-execution-for-webassembly">Concolic Execution for
+WebAssembly</h1>
+<blockquote>
+<p>时间：2022</p>
+<p>作者：Filipe Marques、José Fragoso Santos、Nuno
+Santos（里斯本大学）</p>
+<p>会议：ECOOP’2022（软工CCF-B）</p>
+</blockquote>
+<h2 id="abstract">Abstract</h2>
+<p>​
+WebAssembly（Wasm）是一种新的二进制指令格式，允许用高级语言编写的目标编译代码以接近原生的速度被浏览器的JavaScript引擎执行。<u>尽管Wasm有明显的性能优势，但它为网络程序引入错误或安全漏洞提供了机会，因为用不安全语言编写的程序中已有的问题可以转移到交叉编译的二进制文件中。</u>这种二进制文件的源代码经常无法用于静态分析，这就需要有能够直接处理Wasm代码的工具。尽管这种潜在的安全关键情况，仍然明显缺乏分析Wasm二进制文件的工具支持。</p>
+<p>​
+我们提出了WASP，一个用于测试Wasm模块的符号执行引擎，它直接在Wasm代码上工作，并建立在一个符合标准的Wasm参考实现之上。我们对WASP进行了全面的评估：它被用来符号执行测试C语言的通用数据结构库和C语言的亚马逊加密SDK，证明它可以为真实世界的C语言应用找到错误并产生高覆盖率的测试输入；并进一步针对Test-Comp基准进行测试，获得了与成熟的C语言符号执行和测试工具相当的结果。</p>
+<span id="more"></span>
+<h2 id="问题背景">问题背景</h2>
+<h3 id="concolic-execution">1. Concolic execution</h3>
+<p>​ Concolic
+execution是符号执行的一种特殊变体，在这种情况下，人们将具体的执行与纯粹的符号执行配对，通过一次探索一个执行路径来避免与底层SMT求解器的交互。<u>Concolic执行引擎为符号输入分配具体数值，并同时以具体和符号方式执行给定的程序，只遵循具体路径，但像纯符号执行那样构建与该路径对应的路径条件。</u></p>
+<p>​
+更具体地说，它可以用来为符号变量生成新的具体输入，从而强制探索不同的路径。为此，人们需要否定上一次执行获得的路径条件，并查询底层求解器，以获得公式的模型。<u>通过跟踪所有通过Concolic执行产生的路径条件，引擎可以列举出所有的程序执行路径，直到一个边界，其优点是每个探索的路径只需要与底层求解器交互一次。<strong>请注意，在纯粹的符号执行中，引擎必须在每次遇到分支点时查询求解器，以确定其then-和else-分支是否可行。</strong></u></p>
+<p>​ 以如下代码为例(<em>参考《Robust Symbolic Execution for
+WebAssembly》</em>)：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620193746.png" style="zoom:50%;" /></p>
+<p>​ <strong>目标：测试assert语句成立的条件。</strong></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620210915.png" style="zoom:50%;" /></p>
+<p>​ 如上图所示，程序有三条可能的执行路径，对于每一个执行路径（execution
+path），我们称其为一个<strong><em>concolic iteration</em></strong>。</p>
+<p>​ 在Concolic execution中：</p>
+<ol type="1">
+<li><p>第一个concolic
+iteration开始前，变量x与y被赋予具值0与2，这些输入导致Concolic
+execution引擎探索上图最右边的路径，产生最后的路径条件：<strong>X≤0</strong>；</p></li>
+<li><p>第二个concolic iteration开始前，Concolic
+execution引擎查询底层SMT求解器，为符号输入寻找一个满足公式<strong>x&gt;0</strong>的输入值，即对应于第一个路径条件的否定。让我们假设求解器返回x=1和y=0。这些输入导致引擎探索中间的执行路径，产生路径条件：<strong>（x&gt;0）∧（x≥y）</strong>；</p></li>
+<li><p>第三个concolic
+iteration开始前，同2，引擎继续利用SMT求解器查找对2生成条件的否定，得到：(x
+&gt; 0) ∧ ((x ≤ 0) ∨ (x &lt; y))，也就是等价于：<strong>(x &gt; 0) ∧ (x
+&lt;
+y)</strong>。假设这里得到了具体输入x=1和y=2，程序探索了最左边的执行路径，<strong><u>但此时这个输入并没有触发断言，其导致a=4，b=6</u></strong>。当这条路径执行到断言语句时，条件为：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620195227.png" style="zoom:50%;" /></p>
+<p>符号执行引擎会继续对这个条件做分析，即在满足PC条件（x&gt;0 and
+x&lt;y）下，是否可以推出：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620195505.png" style="zoom:50%;" /></p>
+<p>即是否存在反例：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620195611.png" style="zoom:50%;" /></p>
+<p>SMT求解这个式子很容易得出，x=1,y=4，故这条路径上存在导致断言失败的输入。</p></li>
+</ol>
+<h3 id="现有wasm符号执行工具">2. 现有WASM符号执行工具</h3>
+<p>​ 据我们所知，目前只有两个工具用于象征性地执行Wasm代码：
+WANA[73]和Manticore[51]。然而，这两个工具主要是针对智能合约的分析，并有重要的限制，限制了它们对独立的Wasm模块的应用。<u>WANA[73]处于初步开发阶段，只能应用于EOSIO和Ethereum智能合约，因为它不包括可以独立运行的Wasm的符号执行引擎。</u><u>Manticore[51]最近获得了对Wasm[33]的支持，但尚未对Wasm代码进行系统的评估。此外，它对Wasm模块的应用需要为每个可能的输入内存手动设置一个复杂的Python脚本，这使得它很麻烦，难以实现自动化。</u></p>
+<p>​</p>
+<h2 id="贡献">贡献</h2>
+<p>​
+我们提出了WebAssembly符号处理器，WASP，一个用于测试Wasm（1.0版）模块的新型Concolic
+execution引擎。WASP遵循所谓的Concolic discipline[28,
+64]，将具体执行与符号执行相结合，一次探索一条执行路径。<strong><u>然而，与大多数通过对程序插桩的Concolic
+execution引擎[65, 79, 64,
+63]不同，我们通过对Haas等人[30]开发的Wasm解释器的插桩实现WASP。</u></strong>为此，我们将作者的参考解释器从具体数值提升到具体数值和符号数值对。通过将插桩转移到解释器层面，我们为Concolic
+execution中的一系列优化提供了可能性。</p>
+<pre><code>1. WASP能够分析独立的Wasm模块（不同于WANA），它能够被用作一个通用的平台，为编译成Wasm的高级编程语言建立符号分析；
+2. WASP能够分析大多数C语言库；</code></pre>
+<h2 id="模型">模型</h2>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620210942.png" /></p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>Symbolic Execution</tag>
+        <tag>WASM</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Deep Text Classifification Can be Fooled</title>
+    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/</url>
+    <content><![CDATA[<h1
+id="论文阅读deep-text-classifification-can-be-fooled">【论文阅读】<strong>Deep
+Text Classifification Can be Fooled</strong></h1>
+<blockquote>
+<p><strong>时间：</strong>2017</p>
+<p><strong>作者：</strong>Bin Liang, Hongcheng Li, Miaoqiang Su, Pan
+Bian, Xirong Li and Wenchang Shi 中国人民大学</p>
+</blockquote>
+<h3 id="abstract">Abstract:</h3>
+<p>​
+在这篇文章，我们提出了一种有效的生成文本对抗样本的方法，并且揭示了一个很重要但被低估的事实：基于DNN的文本分类器很容易被对抗样本攻击。</p>
+<p>​
+具体来说，面对不同的对抗场景，通过计算输入的代价梯度(白盒攻击)或生成一系列被遮挡的测试样本(黑盒攻击)来识别对分类重要的文本项。（<u>这句不是很懂，什么叫’
+the text items that are important for classifification‘？</u>）</p>
+<p>​
+基于这些项目，我们设计了三种扰动策略，insertion，modification，removal，用于生成对抗样本。实验结果表明基于我们的方法生成的对抗样本可以成功地欺骗主流的在字符等级和单词等级的DNN文本分类器。</p>
+<p>​
+对抗样本可以被扰动到任意理想的类中而不降低其效率。（？）同时，被引入的扰动很难被察觉。</p>
+<p>​ <span id="more"></span></p>
+<h3 id="introduction">1. Introduction:</h3>
+<p>​
+在文本中，即使很小的扰动也会使一个字母或者单词完全变化，这会导致句子不能被辨识。故如果直接将应用于多媒体（图片，音频）的算法应用到文本上，得到的对抗样本的原意就会改变，而且很大程度上变成人类无法理解的句子。</p>
+<p>​
+在这片论文里，我们提出了一种生成对抗样本的有效方法。与直接简单插入扰动相比，我们设计了三种扰动策略：<em>insertion</em>,
+<em>modifification</em>, and
+<em>removal</em>，并且引入了自然语言文本水印（<em>natural language
+watermarking</em>）技术用于生成对抗样本。</p>
+<p>​
+理论上，生成一个好的对抗样本很大程度上依赖于对目标分类模型的信息。在这里我们根据不同情形，使用了白盒攻击和黑盒攻击。</p>
+<p>​
+为了普遍性，我们使用了字符等级的模型和单词等级的模型作为受害者。我们的实验结果证明基于DNN的文本分类器在面对对抗样本攻击时是脆弱的。</p>
+<h3 id="target-models-and-datasets">2. Target Models and Datasets:</h3>
+<p>​ 这里使用的文本分类器是Zhang et al. 2015《Character-level
+Convolutional Networks foe Text Classification》，数据集是Lehmann et
+al.2014的DBpedia ontology
+dataset（一个多语言知识库），里面包括560000个训练样本和70000个测试样本，涵盖14个high-level
+类，比如公司类、建筑类、电影类等。</p>
+<p>​ 在把样本送进网络前，需要用独热编码法（one-hot
+representation）对每个字母编码成一个向量。通过网络的六个卷积层、三个全连接层，最终会被分到14个类中。</p>
+<h3 id="white-box-attacks"><u>3. White-Box-Attacks:</u></h3>
+<h4 id="fgsm算法">3.1 FGSM算法：</h4>
+<p>​
+FGSM是Goodfellow在2015年提出的对图片生成对抗样本的经典算法。使用类似的思路来在文本领域生成对抗样本结果并不好：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830214227.png" /></p>
+<h4 id="idenfitying-classification-important-items">3.2 Idenfitying
+Classification-important Items:</h4>
+<p>​
+在白盒攻击中，我们需要定位文本中对于分类器的分类结果起到很大作用的文本段（通过计算代价梯度）。在这里，我们使用<strong><em>Hot
+Training Phrases</em> (HTPs)</strong>代表最常使用的短语：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831150703.png" /></p>
+<p>​
+HTPS表明了用什么短语/词去做扰动，但是没有说在哪里做。在这里使用<strong><em>Hot
+Sample Phrases</em> (HSPs)</strong>来表明在哪里做扰动。</p>
+<h4 id="attacking-character-level-dnn">3.3 Attacking Character-level
+DNN:</h4>
+<p>​ 我们的方法是一种targeted攻击，可以指定对抗样本的误导类型。</p>
+<h5 id="insertion-strategy插入策略">3.3.1 Insertion
+Strategy（插入策略）:</h5>
+<p>​ 在某个HSP前插入一个HTP，就可以达到效果：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831151929.png" /></p>
+<p>​
+由上图可以看到，将某个<strong>HTP</strong>（<em>historic</em>）插入到<strong>HSP</strong>（<em>principal
+stock exchange of Uganda. It was
+founded</em>）之前，就可以使一个公司的分类文本变为对建筑的分类。</p>
+<p>​
+实际上，我们通常需要进行多次插入，但插入次数过多会影响样本的效用和可读性，为了解决这个问题，这里引入NL水印技术（<em>Natural
+Language watermarking
+technique</em>）。该技术可以通过语义或句法操作将所有权水印隐形地嵌入到普通文本中,虽然我们的攻击目标与NL水印有本质的不同，但我们可以借用它的思想来构造对抗样本。实际上，扰动可以看作是一种水印，并以类似的方式嵌入到样本中。</p>
+<p>​
+在这里，我们拓展这个思路，在样本中插入<strong>Presupposition</strong>(读者熟知的模糊短语)和
+<strong>semantically empty
+phrases</strong>（可有可无的短语），有没有他们，在读者看来，原文的意思不会改变。</p>
+<p>​
+总的来说，我们考虑将各种HTPS组合成一个语法单元后再嵌入到文本中，新的单元可以是生成的可有可无的资料，或者甚至是不会改变文本原意的伪造的资料。</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831154859.png" /></p>
+<p>​
+<strong>特别的，通过互联网搜索或者查找一些数据集，我们可以找到与插入点很相关的资料，包括一些期望的目标分类的HTPs。</strong></p>
+<p>​
+由于我们不能总是找到合适的HTPs，所以提出一个新概念——伪造的事实（forged
+fact），也就是插入很难证伪的HTPs。例如：</p>
+<p><img
+src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/20210831154910.png" /></p>
+<p>​
+此外，我们排除了伪造的事实，这些事实可以通过检索他们在网上的相反证据而被否认。</p>
+<h5 id="modification-strategy修改策略">3.3.2 Modification
+Strategy（修改策略）：</h5>
+<p>​ Moidfication就是轻微修改一些HSP。</p>
+<p>​ 为了让修改不被人类观察者发现，我们采用了typo-based watermarking
+技术。具体的说，一个HSP可以通过两种方式来被修改：</p>
+<p>​ 1. 从相关的语料库中选择常见的拼写错误来替换它；</p>
+<p>​ 2.
+把它的一些字符修改成类似的外观（例如小写字母'l'与阿拉伯数字‘1’很像）。</p>
+<p>​ <img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831160407.png" /></p>
+<p>​ 由上图可以看出，这种方式对分类结果的扰动是巨大的。</p>
+<h5 id="removal-strategy移除策略">3.3.3 Removal
+Strategy（移除策略）:</h5>
+<p>​
+移除策略单独使用也许并不能足够有效地影响预测结果，但是可以很大程度上降低原始预测类型的置信度。</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831161007.png" /></p>
+<p>​
+由上图可以看出，移除'<strong><em>British</em></strong>'可以导致原始预测类型的置信度下降了35%。</p>
+<h5 id="combination-of-three-strategies">3.3.4 Combination of Three
+Strategies:</h5>
+<p>​
+如图6所示，单靠去除策略改变输出分类往往是困难的。但是，通过与其他策略相结合，可以避免对原文进行过多的修改或插入。在实践中，我们常常结合以上三种策略来制作微妙的对抗样本。</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831161638.png" /></p>
+<p>​
+以图7为例，通过去除一个HSP、插入一个伪造事实和修改一个HSP，可以成功地改变输出分类，但单独应用上述任何扰动都失败。具体来说，删除、插入和修改仅使置信度分别下降27.3
+%、17.5 %和10.1 %，保持预测类不变。</p>
+<h3 id="black-box-attack">4. Black-Box-Attack:</h3>
+<p>暂略</p>
+<h3 id="evaluation">5. Evaluation：</h3>
+<h4 id="我们的方法能否执行有效的源目标误分类攻击">5.1
+我们的方法能否执行有效的源/目标误分类攻击?</h4>
+<p>​ <strong><em>答：</em></strong>在众多测试集中，只有DBpedia
+ontology数据集是一个多分类数据集，故我们在其中随机选取了一些样本：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831165135.png" /></p>
+<h4
+id="所生成的对抗样本能否避免被人类观察者认出来并同时保持其功能性">5.2
+所生成的对抗样本能否避免被人类观察者认出来，并同时保持其功能性？</h4>
+<p><strong><em>答：</em></strong>我们找了23个学生。他们对项目不了解，然后每个人给20个文本，其中一半是加扰的。让他们分到14个类中，如果他们觉得哪个文本不对劲，让他们指出来。</p>
+<p>​
+他们总的分类正确率是94.2%，10个对抗样本的正确率是94.8%。所以实用性还是有的。</p>
+<p>​
+他们标注出了240项修改处，其中12项符合真实的修改。但实际上我们做了594处修改。</p>
+<h4 id="我们的方法足够有效吗">5.3 我们的方法足够有效吗？</h4>
+<p><strong><em>答：</em></strong>实验中计算梯度和找HTPs花了116小时。14个类的HTPs每个类花了8.29小时。对所有的adversarial示例只执行一次计算。制作一个对抗性的样品大约需要10到20分钟。对于对手来说，获得理想的对抗样本是可以接受的。实际上，她或他愿意花更多的时间来做这件事。</p>
+<h3 id="realted-works">6. Realted Works:</h3>
+<p>​
+<strong>可以做的方向：</strong>1.自动生成对抗样本；（然而，Papernot等人(Papernot
+et al.
+2016a)提出了一种基于雅可比矩阵的数据集增强技术，该技术可以在不访问其模型、参数或训练数据的情况下，在有限对输入输出的基础上，为目标dnn提供替代模型。作者还表明，使用替代模型也可以有效地制作对抗样本，以攻击目标DNN。）2.迁移、黑盒攻击；</p>
+<p>​</p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>AD</tag>
+        <tag>NLP</tag>
+        <tag>DNN</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Black-Box Attacks against RNN based Malware Detection Algorithms</title>
     <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Black-Box%20Attacks%20against%20RNN%20based%20Malware%20Detection%20Algorithms/</url>
     <content><![CDATA[<h1
@@ -3029,6 +3259,142 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830140545.png" /></p>
         <tag>AD</tag>
         <tag>Malware Classifiers</tag>
         <tag>RNN</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Def-IDS An Ensemble Defense Mechanism Against Adversarial Attacks for Deep Learning-based Network Intrusion Detection</title>
+    <url>/2021/11/01/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Def-IDS%20An%20Ensemble%20Defense%20Mechanism%20Against%20Adversarial%20Attacks%20for%20Deep%20Learning-based%20Network%20Intrusion%20Detection/</url>
+    <content><![CDATA[<h1
+id="def-ids-an-ensemble-defense-mechanism-against-adversarial-attacks-for-deep-learning-based-network-intrusion-detection">Def-IDS:
+An Ensemble Defense Mechanism Against Adversarial Attacks for Deep
+Learning-based Network Intrusion Detection</h1>
+<blockquote>
+<p><strong>作者：Jianyu Wang，Jianli Pan，Ismail
+AlQerm，（密苏里大学圣路易斯分校，重庆大学）</strong></p>
+<p><strong>时间：2021</strong></p>
+<p>ICCCN，ccf--C类</p>
+</blockquote>
+<h3 id="abstract">ABSTRACT</h3>
+<p>​
+提出了<strong>Def-IDS</strong>，一个为NIDS准备的组合防御机制。它是一个由两个模块组成的训练框架，组合了multi-class
+generative adversarial networks<strong>（MGANs）</strong>和multi-soutce
+adversarial retraining（<strong>MAT</strong>）。</p>
+<p>​
+在CSE-CIC-IDS2018数据集上测试了该机制，并与3个其它方法进行了比较。结果表明Def-IDS可以以更高的<strong>precision,
+recall, F1 score, and accuracy</strong>来识别对抗样本。</p>
+<table style="width:10%;">
+<colgroup>
+<col style="width: 9%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><span id="more"></span> ### INTRODUCTION</td>
+</tr>
+<tr class="even">
+<td>​ <strong>Internet of Things(IoT):</strong>物联网</td>
+</tr>
+<tr class="odd">
+<td>​ <strong>intrusion detection systems (NIDS)</strong></td>
+</tr>
+<tr class="even">
+<td>​ 提出了一个整合基于对抗训练的防御机制，用于提升DL-based的intrusion
+detectors的鲁棒性。</td>
+</tr>
+<tr class="odd">
+<td>​ 4个贡献：</td>
+</tr>
+<tr class="even">
+<td>1. 模型由两个模块组成，组合了multi-class generative adversarial
+networks<strong>（MGANs）</strong>和multi-soutce adversarial
+retraining（<strong>MAT</strong>），可以在保证准确率的前提下对抗攻击；
+2.
+<strong>MGANs</strong>可以通过同时过采样多类入侵来增强原始训练数据集，以减少训练与真实数据分布之间的差距。通过使用提升过的数据进行训练，detector的对已知和未知攻击的鲁棒性更强；
+3.
+<strong>MAT</strong>通过投喂多种不同的对抗样本来retraining，MAT不仅对抗某种特定的攻击，并且可以一定程度抵御对样样本的转移性；
+4.
+我们进行了一些state-of-the-art攻击并且在CSE-CIC-IDS2018数据集上测试了该机制，结果很好。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="related-work">RELATED WORK</h3>
+<hr />
+<h3 id="adversarial-attack-threat-models">ADVERSARIAL ATTACK THREAT
+MODELS</h3>
+<ul>
+<li>采用的攻击方法：FGSM，BIM，DeepFool，JSMA</li>
+</ul>
+<hr />
+<h3 id="proposed-def-ids-defense-mechanism">PROPOSED DEF-IDS DEFENSE
+MECHANISM</h3>
+<h4 id="mechanism-overview">1. <em>Mechanism Overview</em></h4>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102215521.png" /></p>
+<h4 id="module-1-multi-class-gan-based-retraining">2. <em>Module 1:
+Multi-class GAN-based Retraining</em></h4>
+<h4 id="module-2-multi-source-adversarial-retraining">3. <em>Module 2:
+Multi-source Adversarial Retraining</em></h4>
+<h4 id="ensemble-adversarial-retraining">4. <em>Ensemble Adversarial
+Retraining</em></h4>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102220240.png" /></p>
+<hr />
+<h3 id="evaluation">EVALUATION</h3>
+<h4 id="dataset-and-metrics">1. <em>Dataset and Metrics</em></h4>
+<p>​ <strong>数据集</strong>：CSE-CIC-IDS2018（CIC出版）（通用）</p>
+<p>​ 与其他过时的数据集相比，其含有综合性的攻击方法和更平衡的数据。</p>
+<p>​ 其含有Brute-force, Heartbleed,Botnet, DoS, DDoS, Web attacks 和
+infifiltration of the network共7种恶意流量。</p>
+<p>​ <strong>数据处理：</strong></p>
+<ol type="1">
+<li><p>使用Min-Max standardization将所有特征的值映射入[0,1]；</p></li>
+<li><p>有四个特征有太多空值或者无限值（dstport, protocol, flflow byts/s,
+flflow
+pkts/s），有一个特征（timestamp）与流量无关，将这5个特征剔除；还剩下76个特征。</p></li>
+<li><p>training,validation,test = 8:1:1，随机划分。</p></li>
+</ol>
+<p>​ <strong>Detector的评价方法：</strong></p>
+<p>​ 混淆矩阵。</p>
+<h4 id="baseline-detector-implementation">2. <em>Baseline Detector
+Implementation</em></h4>
+<h5 id="detector-implementation">2.1 <em>Detector
+Implementation</em></h5>
+<p>​ 选取baseline detector
+C<sub>base</sub>。其由一个输入层，两个隐藏层和一个输出层组成（76-128-64-8）。</p>
+<p>​ 隐藏层都是全连接层+ReLU。</p>
+<p>​ 输出层使用Softmax。</p>
+<p>​ 代码用keras写的，系统Ubuntu 18.04,3.6GHz CPU和16GB内存。</p>
+<p>​ 优化器用Adam，学习率0.001,20个epoch。</p>
+<p>​ 在训练过程中，进行十次交叉验证并计算平均度量值。</p>
+<p>​ 训练结束后，利用测试数据集对Cbase进行评估。</p>
+<h5 id="adversarial-attacks-against-baseline-classififier">2.2
+<em>Adversarial Attacks against Baseline Classififier</em></h5>
+<p>​ 使用python库<strong>foolbox</strong>来生成对抗样本；</p>
+<p>​
+FGSM，BIM，DeepFool，JSMA四种攻击方法都使用，具体效果如下图所示：</p>
+<p>​ <img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102213923.png" /></p>
+<h4 id="def-ids-defense-evaluation">3. <em>Def-IDS Defense
+Evaluation</em></h4>
+<p>C<sub>gan</sub>是使用GAN生成的样本再训练的detector;</p>
+<p>C<sub>at</sub>是使用9:1的纯净数据：恶意数据再训练出的detector;</p>
+<p>C<sub>ensem</sub>是二者的结合.</p>
+<h5 id="section"><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102214213.png" /></h5>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102215325.png" /></p>
+<h4 id="comparison-with-other-works">4. <em>Comparison with Other
+Works</em></h4>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102215346.png" /></p>
+<h4 id="cost-estimation">5. <em>Cost Estimation</em></h4>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102215401.png" /></p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>AD</tag>
       </tags>
   </entry>
   <entry>
@@ -3244,160 +3610,6 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211101155358.png" /></p>
       </tags>
   </entry>
   <entry>
-    <title>Deep Text Classifification Can be Fooled</title>
-    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/</url>
-    <content><![CDATA[<h1
-id="论文阅读deep-text-classifification-can-be-fooled">【论文阅读】<strong>Deep
-Text Classifification Can be Fooled</strong></h1>
-<blockquote>
-<p><strong>时间：</strong>2017</p>
-<p><strong>作者：</strong>Bin Liang, Hongcheng Li, Miaoqiang Su, Pan
-Bian, Xirong Li and Wenchang Shi 中国人民大学</p>
-</blockquote>
-<h3 id="abstract">Abstract:</h3>
-<p>​
-在这篇文章，我们提出了一种有效的生成文本对抗样本的方法，并且揭示了一个很重要但被低估的事实：基于DNN的文本分类器很容易被对抗样本攻击。</p>
-<p>​
-具体来说，面对不同的对抗场景，通过计算输入的代价梯度(白盒攻击)或生成一系列被遮挡的测试样本(黑盒攻击)来识别对分类重要的文本项。（<u>这句不是很懂，什么叫’
-the text items that are important for classifification‘？</u>）</p>
-<p>​
-基于这些项目，我们设计了三种扰动策略，insertion，modification，removal，用于生成对抗样本。实验结果表明基于我们的方法生成的对抗样本可以成功地欺骗主流的在字符等级和单词等级的DNN文本分类器。</p>
-<p>​
-对抗样本可以被扰动到任意理想的类中而不降低其效率。（？）同时，被引入的扰动很难被察觉。</p>
-<p>​ <span id="more"></span></p>
-<h3 id="introduction">1. Introduction:</h3>
-<p>​
-在文本中，即使很小的扰动也会使一个字母或者单词完全变化，这会导致句子不能被辨识。故如果直接将应用于多媒体（图片，音频）的算法应用到文本上，得到的对抗样本的原意就会改变，而且很大程度上变成人类无法理解的句子。</p>
-<p>​
-在这片论文里，我们提出了一种生成对抗样本的有效方法。与直接简单插入扰动相比，我们设计了三种扰动策略：<em>insertion</em>,
-<em>modifification</em>, and
-<em>removal</em>，并且引入了自然语言文本水印（<em>natural language
-watermarking</em>）技术用于生成对抗样本。</p>
-<p>​
-理论上，生成一个好的对抗样本很大程度上依赖于对目标分类模型的信息。在这里我们根据不同情形，使用了白盒攻击和黑盒攻击。</p>
-<p>​
-为了普遍性，我们使用了字符等级的模型和单词等级的模型作为受害者。我们的实验结果证明基于DNN的文本分类器在面对对抗样本攻击时是脆弱的。</p>
-<h3 id="target-models-and-datasets">2. Target Models and Datasets:</h3>
-<p>​ 这里使用的文本分类器是Zhang et al. 2015《Character-level
-Convolutional Networks foe Text Classification》，数据集是Lehmann et
-al.2014的DBpedia ontology
-dataset（一个多语言知识库），里面包括560000个训练样本和70000个测试样本，涵盖14个high-level
-类，比如公司类、建筑类、电影类等。</p>
-<p>​ 在把样本送进网络前，需要用独热编码法（one-hot
-representation）对每个字母编码成一个向量。通过网络的六个卷积层、三个全连接层，最终会被分到14个类中。</p>
-<h3 id="white-box-attacks"><u>3. White-Box-Attacks:</u></h3>
-<h4 id="fgsm算法">3.1 FGSM算法：</h4>
-<p>​
-FGSM是Goodfellow在2015年提出的对图片生成对抗样本的经典算法。使用类似的思路来在文本领域生成对抗样本结果并不好：</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830214227.png" /></p>
-<h4 id="idenfitying-classification-important-items">3.2 Idenfitying
-Classification-important Items:</h4>
-<p>​
-在白盒攻击中，我们需要定位文本中对于分类器的分类结果起到很大作用的文本段（通过计算代价梯度）。在这里，我们使用<strong><em>Hot
-Training Phrases</em> (HTPs)</strong>代表最常使用的短语：</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831150703.png" /></p>
-<p>​
-HTPS表明了用什么短语/词去做扰动，但是没有说在哪里做。在这里使用<strong><em>Hot
-Sample Phrases</em> (HSPs)</strong>来表明在哪里做扰动。</p>
-<h4 id="attacking-character-level-dnn">3.3 Attacking Character-level
-DNN:</h4>
-<p>​ 我们的方法是一种targeted攻击，可以指定对抗样本的误导类型。</p>
-<h5 id="insertion-strategy插入策略">3.3.1 Insertion
-Strategy（插入策略）:</h5>
-<p>​ 在某个HSP前插入一个HTP，就可以达到效果：</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831151929.png" /></p>
-<p>​
-由上图可以看到，将某个<strong>HTP</strong>（<em>historic</em>）插入到<strong>HSP</strong>（<em>principal
-stock exchange of Uganda. It was
-founded</em>）之前，就可以使一个公司的分类文本变为对建筑的分类。</p>
-<p>​
-实际上，我们通常需要进行多次插入，但插入次数过多会影响样本的效用和可读性，为了解决这个问题，这里引入NL水印技术（<em>Natural
-Language watermarking
-technique</em>）。该技术可以通过语义或句法操作将所有权水印隐形地嵌入到普通文本中,虽然我们的攻击目标与NL水印有本质的不同，但我们可以借用它的思想来构造对抗样本。实际上，扰动可以看作是一种水印，并以类似的方式嵌入到样本中。</p>
-<p>​
-在这里，我们拓展这个思路，在样本中插入<strong>Presupposition</strong>(读者熟知的模糊短语)和
-<strong>semantically empty
-phrases</strong>（可有可无的短语），有没有他们，在读者看来，原文的意思不会改变。</p>
-<p>​
-总的来说，我们考虑将各种HTPS组合成一个语法单元后再嵌入到文本中，新的单元可以是生成的可有可无的资料，或者甚至是不会改变文本原意的伪造的资料。</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831154859.png" /></p>
-<p>​
-<strong>特别的，通过互联网搜索或者查找一些数据集，我们可以找到与插入点很相关的资料，包括一些期望的目标分类的HTPs。</strong></p>
-<p>​
-由于我们不能总是找到合适的HTPs，所以提出一个新概念——伪造的事实（forged
-fact），也就是插入很难证伪的HTPs。例如：</p>
-<p><img
-src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/20210831154910.png" /></p>
-<p>​
-此外，我们排除了伪造的事实，这些事实可以通过检索他们在网上的相反证据而被否认。</p>
-<h5 id="modification-strategy修改策略">3.3.2 Modification
-Strategy（修改策略）：</h5>
-<p>​ Moidfication就是轻微修改一些HSP。</p>
-<p>​ 为了让修改不被人类观察者发现，我们采用了typo-based watermarking
-技术。具体的说，一个HSP可以通过两种方式来被修改：</p>
-<p>​ 1. 从相关的语料库中选择常见的拼写错误来替换它；</p>
-<p>​ 2.
-把它的一些字符修改成类似的外观（例如小写字母'l'与阿拉伯数字‘1’很像）。</p>
-<p>​ <img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831160407.png" /></p>
-<p>​ 由上图可以看出，这种方式对分类结果的扰动是巨大的。</p>
-<h5 id="removal-strategy移除策略">3.3.3 Removal
-Strategy（移除策略）:</h5>
-<p>​
-移除策略单独使用也许并不能足够有效地影响预测结果，但是可以很大程度上降低原始预测类型的置信度。</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831161007.png" /></p>
-<p>​
-由上图可以看出，移除'<strong><em>British</em></strong>'可以导致原始预测类型的置信度下降了35%。</p>
-<h5 id="combination-of-three-strategies">3.3.4 Combination of Three
-Strategies:</h5>
-<p>​
-如图6所示，单靠去除策略改变输出分类往往是困难的。但是，通过与其他策略相结合，可以避免对原文进行过多的修改或插入。在实践中，我们常常结合以上三种策略来制作微妙的对抗样本。</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831161638.png" /></p>
-<p>​
-以图7为例，通过去除一个HSP、插入一个伪造事实和修改一个HSP，可以成功地改变输出分类，但单独应用上述任何扰动都失败。具体来说，删除、插入和修改仅使置信度分别下降27.3
-%、17.5 %和10.1 %，保持预测类不变。</p>
-<h3 id="black-box-attack">4. Black-Box-Attack:</h3>
-<p>暂略</p>
-<h3 id="evaluation">5. Evaluation：</h3>
-<h4 id="我们的方法能否执行有效的源目标误分类攻击">5.1
-我们的方法能否执行有效的源/目标误分类攻击?</h4>
-<p>​ <strong><em>答：</em></strong>在众多测试集中，只有DBpedia
-ontology数据集是一个多分类数据集，故我们在其中随机选取了一些样本：</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831165135.png" /></p>
-<h4
-id="所生成的对抗样本能否避免被人类观察者认出来并同时保持其功能性">5.2
-所生成的对抗样本能否避免被人类观察者认出来，并同时保持其功能性？</h4>
-<p><strong><em>答：</em></strong>我们找了23个学生。他们对项目不了解，然后每个人给20个文本，其中一半是加扰的。让他们分到14个类中，如果他们觉得哪个文本不对劲，让他们指出来。</p>
-<p>​
-他们总的分类正确率是94.2%，10个对抗样本的正确率是94.8%。所以实用性还是有的。</p>
-<p>​
-他们标注出了240项修改处，其中12项符合真实的修改。但实际上我们做了594处修改。</p>
-<h4 id="我们的方法足够有效吗">5.3 我们的方法足够有效吗？</h4>
-<p><strong><em>答：</em></strong>实验中计算梯度和找HTPs花了116小时。14个类的HTPs每个类花了8.29小时。对所有的adversarial示例只执行一次计算。制作一个对抗性的样品大约需要10到20分钟。对于对手来说，获得理想的对抗样本是可以接受的。实际上，她或他愿意花更多的时间来做这件事。</p>
-<h3 id="realted-works">6. Realted Works:</h3>
-<p>​
-<strong>可以做的方向：</strong>1.自动生成对抗样本；（然而，Papernot等人(Papernot
-et al.
-2016a)提出了一种基于雅可比矩阵的数据集增强技术，该技术可以在不访问其模型、参数或训练数据的情况下，在有限对输入输出的基础上，为目标dnn提供替代模型。作者还表明，使用替代模型也可以有效地制作对抗样本，以攻击目标DNN。）2.迁移、黑盒攻击；</p>
-<p>​</p>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>AD</tag>
-        <tag>NLP</tag>
-        <tag>DNN</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Demons in the Shared Kernel--Abstract Resource Attacks Against OS-level Virtualization</title>
     <url>/2023/03/15/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Demons-in-the-Shared-Kernel-Abstract-Resource-Attacks-Against-OS-level-Virtualization/</url>
     <content><![CDATA[<h1
@@ -3507,218 +3719,6 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230315152653.png" /></p>
         <tag>Vulnerability</tag>
         <tag>AEG</tag>
         <tag>Cloud</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>(论文阅读) Concolic Execution for WebAssembly</title>
-    <url>/2023/06/20/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Concolic-Execution-for-WebAssembly/</url>
-    <content><![CDATA[<h1 id="concolic-execution-for-webassembly">Concolic Execution for
-WebAssembly</h1>
-<blockquote>
-<p>时间：2022</p>
-<p>作者：Filipe Marques、José Fragoso Santos、Nuno
-Santos（里斯本大学）</p>
-<p>会议：ECOOP’2022（软工CCF-B）</p>
-</blockquote>
-<h2 id="abstract">Abstract</h2>
-<p>​
-WebAssembly（Wasm）是一种新的二进制指令格式，允许用高级语言编写的目标编译代码以接近原生的速度被浏览器的JavaScript引擎执行。<u>尽管Wasm有明显的性能优势，但它为网络程序引入错误或安全漏洞提供了机会，因为用不安全语言编写的程序中已有的问题可以转移到交叉编译的二进制文件中。</u>这种二进制文件的源代码经常无法用于静态分析，这就需要有能够直接处理Wasm代码的工具。尽管这种潜在的安全关键情况，仍然明显缺乏分析Wasm二进制文件的工具支持。</p>
-<p>​
-我们提出了WASP，一个用于测试Wasm模块的符号执行引擎，它直接在Wasm代码上工作，并建立在一个符合标准的Wasm参考实现之上。我们对WASP进行了全面的评估：它被用来符号执行测试C语言的通用数据结构库和C语言的亚马逊加密SDK，证明它可以为真实世界的C语言应用找到错误并产生高覆盖率的测试输入；并进一步针对Test-Comp基准进行测试，获得了与成熟的C语言符号执行和测试工具相当的结果。</p>
-<span id="more"></span>
-<h2 id="问题背景">问题背景</h2>
-<h3 id="concolic-execution">1. Concolic execution</h3>
-<p>​ Concolic
-execution是符号执行的一种特殊变体，在这种情况下，人们将具体的执行与纯粹的符号执行配对，通过一次探索一个执行路径来避免与底层SMT求解器的交互。<u>Concolic执行引擎为符号输入分配具体数值，并同时以具体和符号方式执行给定的程序，只遵循具体路径，但像纯符号执行那样构建与该路径对应的路径条件。</u></p>
-<p>​
-更具体地说，它可以用来为符号变量生成新的具体输入，从而强制探索不同的路径。为此，人们需要否定上一次执行获得的路径条件，并查询底层求解器，以获得公式的模型。<u>通过跟踪所有通过Concolic执行产生的路径条件，引擎可以列举出所有的程序执行路径，直到一个边界，其优点是每个探索的路径只需要与底层求解器交互一次。<strong>请注意，在纯粹的符号执行中，引擎必须在每次遇到分支点时查询求解器，以确定其then-和else-分支是否可行。</strong></u></p>
-<p>​ 以如下代码为例(<em>参考《Robust Symbolic Execution for
-WebAssembly》</em>)：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620193746.png" style="zoom:50%;" /></p>
-<p>​ <strong>目标：测试assert语句成立的条件。</strong></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620210915.png" style="zoom:50%;" /></p>
-<p>​ 如上图所示，程序有三条可能的执行路径，对于每一个执行路径（execution
-path），我们称其为一个<strong><em>concolic iteration</em></strong>。</p>
-<p>​ 在Concolic execution中：</p>
-<ol type="1">
-<li><p>第一个concolic
-iteration开始前，变量x与y被赋予具值0与2，这些输入导致Concolic
-execution引擎探索上图最右边的路径，产生最后的路径条件：<strong>X≤0</strong>；</p></li>
-<li><p>第二个concolic iteration开始前，Concolic
-execution引擎查询底层SMT求解器，为符号输入寻找一个满足公式<strong>x&gt;0</strong>的输入值，即对应于第一个路径条件的否定。让我们假设求解器返回x=1和y=0。这些输入导致引擎探索中间的执行路径，产生路径条件：<strong>（x&gt;0）∧（x≥y）</strong>；</p></li>
-<li><p>第三个concolic
-iteration开始前，同2，引擎继续利用SMT求解器查找对2生成条件的否定，得到：(x
-&gt; 0) ∧ ((x ≤ 0) ∨ (x &lt; y))，也就是等价于：<strong>(x &gt; 0) ∧ (x
-&lt;
-y)</strong>。假设这里得到了具体输入x=1和y=2，程序探索了最左边的执行路径，<strong><u>但此时这个输入并没有触发断言，其导致a=4，b=6</u></strong>。当这条路径执行到断言语句时，条件为：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620195227.png" style="zoom:50%;" /></p>
-<p>符号执行引擎会继续对这个条件做分析，即在满足PC条件（x&gt;0 and
-x&lt;y）下，是否可以推出：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620195505.png" style="zoom:50%;" /></p>
-<p>即是否存在反例：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620195611.png" style="zoom:50%;" /></p>
-<p>SMT求解这个式子很容易得出，x=1,y=4，故这条路径上存在导致断言失败的输入。</p></li>
-</ol>
-<h3 id="现有wasm符号执行工具">2. 现有WASM符号执行工具</h3>
-<p>​ 据我们所知，目前只有两个工具用于象征性地执行Wasm代码：
-WANA[73]和Manticore[51]。然而，这两个工具主要是针对智能合约的分析，并有重要的限制，限制了它们对独立的Wasm模块的应用。<u>WANA[73]处于初步开发阶段，只能应用于EOSIO和Ethereum智能合约，因为它不包括可以独立运行的Wasm的符号执行引擎。</u><u>Manticore[51]最近获得了对Wasm[33]的支持，但尚未对Wasm代码进行系统的评估。此外，它对Wasm模块的应用需要为每个可能的输入内存手动设置一个复杂的Python脚本，这使得它很麻烦，难以实现自动化。</u></p>
-<p>​</p>
-<h2 id="贡献">贡献</h2>
-<p>​
-我们提出了WebAssembly符号处理器，WASP，一个用于测试Wasm（1.0版）模块的新型Concolic
-execution引擎。WASP遵循所谓的Concolic discipline[28,
-64]，将具体执行与符号执行相结合，一次探索一条执行路径。<strong><u>然而，与大多数通过对程序插桩的Concolic
-execution引擎[65, 79, 64,
-63]不同，我们通过对Haas等人[30]开发的Wasm解释器的插桩实现WASP。</u></strong>为此，我们将作者的参考解释器从具体数值提升到具体数值和符号数值对。通过将插桩转移到解释器层面，我们为Concolic
-execution中的一系列优化提供了可能性。</p>
-<pre><code>1. WASP能够分析独立的Wasm模块（不同于WANA），它能够被用作一个通用的平台，为编译成Wasm的高级编程语言建立符号分析；
-2. WASP能够分析大多数C语言库；</code></pre>
-<h2 id="模型">模型</h2>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230620210942.png" /></p>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>Symbolic Execution</tag>
-        <tag>WASM</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Def-IDS An Ensemble Defense Mechanism Against Adversarial Attacks for Deep Learning-based Network Intrusion Detection</title>
-    <url>/2021/11/01/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Def-IDS%20An%20Ensemble%20Defense%20Mechanism%20Against%20Adversarial%20Attacks%20for%20Deep%20Learning-based%20Network%20Intrusion%20Detection/</url>
-    <content><![CDATA[<h1
-id="def-ids-an-ensemble-defense-mechanism-against-adversarial-attacks-for-deep-learning-based-network-intrusion-detection">Def-IDS:
-An Ensemble Defense Mechanism Against Adversarial Attacks for Deep
-Learning-based Network Intrusion Detection</h1>
-<blockquote>
-<p><strong>作者：Jianyu Wang，Jianli Pan，Ismail
-AlQerm，（密苏里大学圣路易斯分校，重庆大学）</strong></p>
-<p><strong>时间：2021</strong></p>
-<p>ICCCN，ccf--C类</p>
-</blockquote>
-<h3 id="abstract">ABSTRACT</h3>
-<p>​
-提出了<strong>Def-IDS</strong>，一个为NIDS准备的组合防御机制。它是一个由两个模块组成的训练框架，组合了multi-class
-generative adversarial networks<strong>（MGANs）</strong>和multi-soutce
-adversarial retraining（<strong>MAT</strong>）。</p>
-<p>​
-在CSE-CIC-IDS2018数据集上测试了该机制，并与3个其它方法进行了比较。结果表明Def-IDS可以以更高的<strong>precision,
-recall, F1 score, and accuracy</strong>来识别对抗样本。</p>
-<table style="width:10%;">
-<colgroup>
-<col style="width: 9%" />
-</colgroup>
-<tbody>
-<tr class="odd">
-<td><span id="more"></span> ### INTRODUCTION</td>
-</tr>
-<tr class="even">
-<td>​ <strong>Internet of Things(IoT):</strong>物联网</td>
-</tr>
-<tr class="odd">
-<td>​ <strong>intrusion detection systems (NIDS)</strong></td>
-</tr>
-<tr class="even">
-<td>​ 提出了一个整合基于对抗训练的防御机制，用于提升DL-based的intrusion
-detectors的鲁棒性。</td>
-</tr>
-<tr class="odd">
-<td>​ 4个贡献：</td>
-</tr>
-<tr class="even">
-<td>1. 模型由两个模块组成，组合了multi-class generative adversarial
-networks<strong>（MGANs）</strong>和multi-soutce adversarial
-retraining（<strong>MAT</strong>），可以在保证准确率的前提下对抗攻击；
-2.
-<strong>MGANs</strong>可以通过同时过采样多类入侵来增强原始训练数据集，以减少训练与真实数据分布之间的差距。通过使用提升过的数据进行训练，detector的对已知和未知攻击的鲁棒性更强；
-3.
-<strong>MAT</strong>通过投喂多种不同的对抗样本来retraining，MAT不仅对抗某种特定的攻击，并且可以一定程度抵御对样样本的转移性；
-4.
-我们进行了一些state-of-the-art攻击并且在CSE-CIC-IDS2018数据集上测试了该机制，结果很好。</td>
-</tr>
-</tbody>
-</table>
-<h3 id="related-work">RELATED WORK</h3>
-<hr />
-<h3 id="adversarial-attack-threat-models">ADVERSARIAL ATTACK THREAT
-MODELS</h3>
-<ul>
-<li>采用的攻击方法：FGSM，BIM，DeepFool，JSMA</li>
-</ul>
-<hr />
-<h3 id="proposed-def-ids-defense-mechanism">PROPOSED DEF-IDS DEFENSE
-MECHANISM</h3>
-<h4 id="mechanism-overview">1. <em>Mechanism Overview</em></h4>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102215521.png" /></p>
-<h4 id="module-1-multi-class-gan-based-retraining">2. <em>Module 1:
-Multi-class GAN-based Retraining</em></h4>
-<h4 id="module-2-multi-source-adversarial-retraining">3. <em>Module 2:
-Multi-source Adversarial Retraining</em></h4>
-<h4 id="ensemble-adversarial-retraining">4. <em>Ensemble Adversarial
-Retraining</em></h4>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102220240.png" /></p>
-<hr />
-<h3 id="evaluation">EVALUATION</h3>
-<h4 id="dataset-and-metrics">1. <em>Dataset and Metrics</em></h4>
-<p>​ <strong>数据集</strong>：CSE-CIC-IDS2018（CIC出版）（通用）</p>
-<p>​ 与其他过时的数据集相比，其含有综合性的攻击方法和更平衡的数据。</p>
-<p>​ 其含有Brute-force, Heartbleed,Botnet, DoS, DDoS, Web attacks 和
-infifiltration of the network共7种恶意流量。</p>
-<p>​ <strong>数据处理：</strong></p>
-<ol type="1">
-<li><p>使用Min-Max standardization将所有特征的值映射入[0,1]；</p></li>
-<li><p>有四个特征有太多空值或者无限值（dstport, protocol, flflow byts/s,
-flflow
-pkts/s），有一个特征（timestamp）与流量无关，将这5个特征剔除；还剩下76个特征。</p></li>
-<li><p>training,validation,test = 8:1:1，随机划分。</p></li>
-</ol>
-<p>​ <strong>Detector的评价方法：</strong></p>
-<p>​ 混淆矩阵。</p>
-<h4 id="baseline-detector-implementation">2. <em>Baseline Detector
-Implementation</em></h4>
-<h5 id="detector-implementation">2.1 <em>Detector
-Implementation</em></h5>
-<p>​ 选取baseline detector
-C<sub>base</sub>。其由一个输入层，两个隐藏层和一个输出层组成（76-128-64-8）。</p>
-<p>​ 隐藏层都是全连接层+ReLU。</p>
-<p>​ 输出层使用Softmax。</p>
-<p>​ 代码用keras写的，系统Ubuntu 18.04,3.6GHz CPU和16GB内存。</p>
-<p>​ 优化器用Adam，学习率0.001,20个epoch。</p>
-<p>​ 在训练过程中，进行十次交叉验证并计算平均度量值。</p>
-<p>​ 训练结束后，利用测试数据集对Cbase进行评估。</p>
-<h5 id="adversarial-attacks-against-baseline-classififier">2.2
-<em>Adversarial Attacks against Baseline Classififier</em></h5>
-<p>​ 使用python库<strong>foolbox</strong>来生成对抗样本；</p>
-<p>​
-FGSM，BIM，DeepFool，JSMA四种攻击方法都使用，具体效果如下图所示：</p>
-<p>​ <img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102213923.png" /></p>
-<h4 id="def-ids-defense-evaluation">3. <em>Def-IDS Defense
-Evaluation</em></h4>
-<p>C<sub>gan</sub>是使用GAN生成的样本再训练的detector;</p>
-<p>C<sub>at</sub>是使用9:1的纯净数据：恶意数据再训练出的detector;</p>
-<p>C<sub>ensem</sub>是二者的结合.</p>
-<h5 id="section"><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102214213.png" /></h5>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102215325.png" /></p>
-<h4 id="comparison-with-other-works">4. <em>Comparison with Other
-Works</em></h4>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102215346.png" /></p>
-<h4 id="cost-estimation">5. <em>Cost Estimation</em></h4>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102215401.png" /></p>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>AD</tag>
       </tags>
   </entry>
   <entry>
@@ -3844,119 +3844,6 @@ Emulating</h3>
       </tags>
   </entry>
   <entry>
-    <title>Function-level obfuscation detection method based on Graph Convolutional Networks</title>
-    <url>/2022/10/01/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Function-level%20obfuscation%20detection%20method%20based%20on%20Graph%20Convolutional%20Networks/</url>
-    <content><![CDATA[<h1
-id="论文阅读function-level-obfuscation-detection-method-based-on-graph-convolutional-networks">【论文阅读】Function-level
-obfuscation detection method based on Graph Convolutional Networks</h1>
-<blockquote>
-<p>时间：2021</p>
-<p>作者：Shuai Jiang , Yao Hong, Cai Fu（华科）</p>
-<p>期刊：Journal of Information Security and
-Applications（中科院三区）</p>
-</blockquote>
-<h2 id="abstract">1.ABSTRACT</h2>
-<p>​
-在恶意样本检测中<strong>代码混淆检测技术</strong>是一个重要的辅助手段，对于安全从业者来说，其可以在人工逆向分析前来实施自动化混淆检测，这有助于逆向工程师更具体地进行逆向分析。</p>
-<p>​
-目前存在的混淆检测方法主要作用于Android应用，并基于传统的机器学习方法。其检测颗粒度很差，总体效果不佳。为了解决这些问题，<u>在本篇文章，我们提出了一个应用于X86汇编和Android应用的、function
-level的、基于GCN的混淆检测方法。</u></p>
-<pre><code>1. 首先，我们的方法是function-level的。我们提取每个函数的CFG作为其特征（包括邻接矩阵和基本代码块的特征矩阵）；
-2. 我们构建一个GCN-LSTM神经网络作为混淆检测模型；
-3. 最后，对于function-level的检测我们的方法准确率是94.7575%（X86汇编）和98.9457%（安卓应用），比baseline方法好。实验证明我们的方法不论是在function-levle还是APK-level上的检测准确率都好于baseline。</code></pre>
-<span id="more"></span>
-<h2 id="introduction">2. INTRODUCTION</h2>
-<h3 id="obfuscation代码混淆">2.1 Obfuscation–代码混淆</h3>
-<p>​
-代码保护技术，用于增加逆向难度，防止代码篡改，最开始用于版权保护，后被用于恶意代码的躲避检测。</p>
-<p>​
-由于动态检测恶意代码的高昂成本，主流的恶意样本检测技术仍在提取代码的静态特征。然而由于混淆技术的发展，恶意样本的编写者经常在保留其恶意功能的同时通过使用混淆技术来修改其静态特征。经过混淆的恶意代码可以规避相关工具的检测。</p>
-<p>​ 最近混淆检测技术开始出现，在此领域有一些工作：</p>
-<pre><code>1. [2018]Alessandro等人：使用静态分析和机器学习分类算法来分析Android应用是否被混淆的技术（ http://dx.doi.org/10.1145/3230833.3232823）；
-2. [2020]Crincoli等人：利用weak bisimulation来检测代码是否被code reordering(http://dx.doi.org/10.1007/978-3-030-44041-1_116)；
-3. [2020]Caijun Sun等人：一个Android打包检测框架DroidPDF( http://dx.doi.org/10.1109/ACCESS.2020.3010588);
-4. [2019]Omid等人：AndrODet，一个检测三种Android混淆技术的检测机制（重命名、字符串加密和控制流混淆）（ http://dx.doi.org/10.1016/j.future.2018.07.066）；
-5. [2019]Alireza等人：Android字符串混淆检测技术（ http://dx.doi.org/10.1145/3338501.3357373）;</code></pre>
-<h3 id="目前方法的缺点">2.2 <strong>目前方法的缺点</strong>：</h3>
-<pre><code>1. 检测颗粒度不够，检测对象往往是一个APK包，缺乏可行性；
-2. 检测效果不佳，从样本中提取的特征相对简单，只有统计学特征和opcode语句被提取。大多数使用简单的机器学习方法，表现一般；
-3. 缺乏可用性和适应性，传统方法往往会为不同的混淆方法提取不同的特征，或者为每个混淆方法训练一个二分类器，枯燥且不便。同时若需要添加新数据，模型经常需要重头训练。</code></pre>
-<h3 id="我们的方法">2.3 我们的方法：</h3>
-<ol type="1">
-<li>从开源平台获取一些未经混淆的代码（X86汇编和Android），通过混淆器生成混淆后程序；</li>
-<li>逆向这些程序，用邻接矩阵和基本代码块特征矩阵的形式提取每个函数的CFG；</li>
-<li>根据我们提取到的特征，构建GCN-LSTM。这个模型同时服务于X86汇编和Android，但他们分别训练和测试；</li>
-</ol>
-<h2 id="method-overview">3. METHOD OVERVIEW</h2>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221001213243.png" /></p>
-<pre><code>1. X86的混淆器：OLLVM；Android的混淆器：Obfuscapk；
-2. 逆向工具：IDA PRO；由于X86与Android指令集与混淆技术不同，二者被分别提取CFG；
-3. 多分类问题，检测出混淆技术种类，故使用传统多分类评估方法来评估检测效果。</code></pre>
-<h2 id="obfuscation-dection-method">4. OBFUSCATION DECTION METHOD</h2>
-<h3 id="ollvm">4.1 OLLVM</h3>
-<p>​ OLLVM包括以下三种混淆技术：</p>
-<ol type="1">
-<li><strong>Instructions Substitution
-(SUB)，指令替换</strong>。将简单指令替换为同语义的复杂指令，特别是二进制加减乘除。这项技术会增加算术指令但很少影响CFG；</li>
-<li><strong>Bogus Control Flow
-(BCF)，虚假控制流</strong>。在CFG中添加大量无关的随机代码块和分支，并分割、融合、重排原始代码块，在其中插入随机选择的无用指令。这项技术破坏了CFG和代码块的完整性，增加控制流复杂性；</li>
-<li><strong>Control Flow
-Flattening（FLA）</strong>，<strong>控制流平坦化</strong>。简单来讲就是将代码块之间的关系打断，由一个分发器来控制代码块的跳转：</li>
-</ol>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002134210.png" /></p>
-<h3 id="obfuscapk">4.2 Obfuscapk</h3>
-<p>​ Obfuscapk包括以下三种混淆技术：</p>
-<ol type="1">
-<li>Identifier Renaming，标识符重命名；</li>
-<li>String
-Encryption，字符串加密。字符串常量可以揭示很多代码敏感信息；</li>
-<li>Control Flow
-Obfuscation，控制流混淆。通过扩展或平坦化CFG来混淆，同样还有注入垃圾代码，扩展循环，添加无关操作等；</li>
-</ol>
-<h3 id="feature-extraction">4.3 Feature extraction</h3>
-<p>​ 提取的特征包括代码的结构化CFG信息和基本代码块特征：</p>
-<ul>
-<li>对于邻接矩阵：</li>
-</ul>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002135214.png" />
-如图，邻接矩阵代码了不同代码块之间的转移关系。</p>
-<ul>
-<li><p>​ 对于基本代码块特征：</p>
-<p>将X86汇编代码分为27类，对于一个代码块的特征向量就是27维。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002140822.png" style="zoom:80%;" /></p>
-<p>将Dalvik指令分为15类，对于一个代码块的特征向量就是15维。</p></li>
-</ul>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002142628.png" alt="image-20221002140952651" style="zoom:80%;" /></p>
-<h3 id="obfuscation-detection-model">4.4 Obfuscation detection
-model</h3>
-<p>​ 在得到CFG邻接矩阵和基本代码块特征矩阵后，构建GCN-LSTM。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002141244.png" alt="image-20221002141239002" style="zoom:80%;" /></p>
-<h2 id="experimental-evaluation">5.EXPERIMENTAL EVALUATION</h2>
-<h3 id="datasets">5.1 Datasets</h3>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002141504.png" style="zoom:80%;" /></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002141517.png" style="zoom:80%;" /></p>
-<h3 id="baseline-methods">5.2 Baseline methods</h3>
-<p>​ function-level的baseline方法如下：</p>
-<p>​ AdaBoost, GaussianNaiveBayes, GradientBoosting, KNeighbors, MLP,
-SGDClass, SVM, Xgboost and LSTM</p>
-<h3 id="evaluation-metrics">5.3 Evaluation metrics</h3>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002142217.png" /></p>
-<p>​ <img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002142325.png" /></p>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>Malware Classifiers</tag>
-        <tag>obfuscation</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>(论文阅读)Fuzzm-Finding Memory Bugs through Binary-Only Instrumentation and Fuzzing of WebAssembly</title>
     <url>/2023/07/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Fuzzm-Finding-Memory-Bugs-through-Binary-Only-Instrumentation-and-Fuzzing-of-WebAssembly/</url>
     <content><![CDATA[<h1
@@ -3990,78 +3877,6 @@ fuzzer的输入生成算法。除了作为fuzzer的oracle，我们的canary还�
       <tags>
         <tag>WASM</tag>
         <tag>Fuzzing</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>HydraText-Multi-objective Optimization for Adversarial Textual Attack</title>
-    <url>/2021/11/14/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/</url>
-    <content><![CDATA[<h1
-id="hydratext-multi-objective-optimization-for-adversarial-textual-attack">HydraText:
-Multi-objective Optimization for Adversarial Textual Attack</h1>
-<blockquote>
-<p><strong>作者：Shengcai Liu，Ning Lu，Cheng Chen，Chao Qian，Ke
-Tang</strong></p>
-<p><strong>时间：2021</strong></p>
-</blockquote>
-<h3 id="abstract">ABSTRACT</h3>
-<p>​
-<strong><u>文字(text)（word-level）对抗样本黑盒攻击。</u></strong>在这项工作中，同时考虑<strong>攻击效率+可辨认性</strong>，并提出一种新的具有可证明性能保证的多优化方法(称为HydraText
-)，以实现具有高隐蔽性的成功攻击。</p>
-<p>​ 为了测试HydraText的功效，我们在<strong>score-based</strong>
-和<strong>decision-based</strong>的黑盒攻击下，使用5个NLP模型+5个数据集。</p>
-<p>（PS：[<a href="https://zhuanlan.zhihu.com/p/377633699">论文总结]
-Boundary Attack - 知乎 (zhihu.com)</a>）</p>
-<p>​ 一项人类观察评价研究表明，Hydra
-Text制作的对抗样本很好地保持了有效性和自然性。最后，这些实例还表现出良好的可迁移性，可以通过对抗训练给目标模型带来显著的鲁棒性提升。</p>
-<hr />
-<span id="more"></span>
-<h3 id="introduction">INTRODUCTION</h3>
-<p>​
-我们仔细地设计了目标函数，并进一步构建了一个多目标优化问题（<strong><em>multi-objective
-optimization
-problem</em></strong>，MOP），该问题一旦被解决，将产生与原始文本相似度高的单个成功对抗样本。</p>
-<p>​ 然后我们原创了一个多目标优化方法（ <strong><em>multi-objective
-optimization
-approach</em></strong>），叫做<strong>HydraText</strong>。这个名字的灵感来自于海蛇许德拉，这是一种神话动物，它使用多个头部攻击对手。它可以同时用在<strong>score-based</strong>
-和<strong>decision-based</strong>的黑盒攻击下。</p>
-<p><img
-src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/u=968937333,2137978646&amp;fm=26&amp;fmt=auto" /></p>
-<p>​</p>
-<hr />
-<h3 id="methods">METHODS</h3>
-<p>​ 基于word-level
-的替换操作。每个单词有一个自己的候选表，然后将每个单词与候选表中被选中的词替换（也可以不选，原单词不变）。</p>
-<p>​ 但这样的方法有个问题，如下图：</p>
-<p>​ <img
-src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/image-20211114162251176.png" /></p>
-<p>​
-如图所示，句子的语义与替换的单词数量是成反比的，上文需要考虑的准确率+可辨认性二者其实是互相矛盾的。为了解决这个问题，我们在生成的过程中也考虑X<sub>adv</sub>的修改率，使用MOP来解决它。</p>
-<p>​</p>
-<h4 id="the-hydratext-approach">1.<em>The HydraText Approach</em></h4>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211114162738.png" style="zoom:80%;" /></p>
-<hr />
-<h3 id="experiments">EXPERIMENTS</h3>
-<h4 id="datasets-and-target-models">1. <em>Datasets and Target
-Models</em></h4>
-<p>​ <strong>模型种类：</strong>文本分类和文本推理</p>
-<p>​ 三个数据集：AG News，IMDB ， Movie Reviews，Stanford Natural
-Language Inference，multi-genre NLI
-corpus（前三个文本分类，后三个文本推理）</p>
-<p>​ 两个模型：WordCNN，WordLSTM，BERT base-uncased，ESIM ，Infersent
-，BERT base-uncased(前三个文本分类，后三个文本推理)</p>
-<h4 id="baselines-and-algorithm">2.<em>Baselines and Algorithm</em></h4>
-<p>​ <strong>攻击方法：</strong>PSO,GA,TextFooler,PWWS,GADe(baseline)</p>
-<h4 id="evaluation">3.<em>Evaluation</em></h4>
-<p>​ 以攻击成功的百分率来判定攻击能力。</p>
-<p>​ 以修改百分率和语义相似性来判定攻击的可辨识性。</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211114165103.png" /></p>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>AD</tag>
       </tags>
   </entry>
   <entry>
@@ -4216,6 +4031,238 @@ Rate，TNR），也称为specificity,计算公式为TNR= <em>TN</em>/ (
       <tags>
         <tag>AD</tag>
         <tag>Malware Classifiers</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>(论文阅读)GraphFuzz-Library API Fuzzing with Lifetime-aware Dataflow Graphs</title>
+    <url>/2023/07/22/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91GraphFuzz-Library-API-Fuzzing-with-Lifetime-aware-Dataflow-Graphs/</url>
+    <content><![CDATA[<h1
+id="graphfuzz-library-api-fuzzing-with-lifetime-aware-dataflow-graphs">GraphFuzz:
+Library API Fuzzing with Lifetime-aware Dataflow Graphs</h1>
+<blockquote>
+<p><strong>时间：</strong>2022</p>
+<p><strong>作者：</strong>Harrison Green、Thanassis Avgerinos</p>
+<p><strong>会议：</strong>ICSE</p>
+<p><strong>开源：</strong>https://github.com/ForAllSecure/GraphFuzz</p>
+</blockquote>
+<h2 id="abstract">Abstract</h2>
+<p>​ 提出了一种新fuzzer：GraphFuzz，能够自动测试<strong>low-level Library
+APIs</strong>。与其他fuzzer不同的是，GraphFuzz
+将已执行函数的序列建模为数据流图，因此能够在data和execution跟踪级别执行graph-based
+mutations。GraphFuzz
+自带自动规范生成器，可最大限度地减少开发人员的集成工作。</p>
+<p>​ 我们使用 GraphFuzz 对 Skia（经过严格测试的 Google Chrome
+浏览器图形库）进行分析，并将 GraphFuzz 生成的fuzzing
+harnesses与手工优化、精心编写的 libFuzzer
+harnesses进行比较。我们发现，GraphFuzz生成的测试用例平均代码覆盖率提高了2-3倍，而开发工作量却很小，而且在此过程中还发现了以前未知的缺陷。我们通过分析另外四个开源库，发现了数十个以前未知的缺陷，从而证明了
+GraphFuzz 在<strong>low-level Library
+APIs</strong>上的适用性。开发人员已经报告并修复了所有与安全相关的发现。</p>
+<span id="more"></span>
+<blockquote>
+<p>A fuzzing harness is a test case or a particular test target.</p>
+</blockquote>
+<h2 id="background">Background</h2>
+<p>​ <u>尽管近来fuzzing研究方兴未艾，但能够对 C/C++
+库进行模糊测试的系统却明显不足</u>。</p>
+<ul>
+<li>现有的greybox-fuzzing（如 libFuzzer
+[3]）特别适合一次fuzz一个或两个端点，但要同时fuzz多个端点，则需要人工操作（如使用
+FDP）；</li>
+<li>CSmith [6] 可以合成逼真的 C 代码，但当目标是 C 库而不是 C
+编译器时，每次迭代时重新编译的代价都很高；</li>
+<li>FUDGE [7]
+是一种很有前途的meta-fuzzing技术，它通过分析和切分客户端代码的种子语料库来自动生成harnesses，但是，它依赖于谷歌的内部基础设施，并不是开源的。</li>
+</ul>
+<h2 id="api-fuzzing-methods">API Fuzzing Methods</h2>
+<h3 id="method-1harness">Method 1:Harness</h3>
+<p>​ Standard grey-box harness可通过手动配置充当 API
+fuzzer，例如，开发人员可以通过在for-loop和/或switch语句中程序化地调用函数，对C++库进行fuzzing。通常情况下，来自非结构化模糊器的原始字节序列被用来初始化这些伪随机值。</p>
+<p>​ 同样，可以将 libProtobuf-mutator (LPM) [5] 与 libFuzzer [3]
+等coveraged-based fuzzer结合使用，构建tree-based API fuzzer。例如，在
+Chromium 的 AppCache fuzzer[12]中，Protocol Buffer实例代表了 IPC
+的调用序列。</p>
+<h3 id="method-2code-gen">Method 2:Code-gen</h3>
+<p>​ 一些API fuzzer合成并运行程序源代码来测试API，这种方法最适用于
+JavaScript 和 Ruby
+等基于脚本的语言，因为它们在执行前不需要昂贵的编译步骤[6]。</p>
+<p>​ 虽然这些fuzzer可以通过使用context-free
+grammars或类似模型生成逼真的语法模式，但它们往往无法生成高级的、语义上有意义的代码。例如，Han
+等人[13]指出，jsfunfuzz [9]（一种流行的 JavaScript fuzzer）99%
+的测试用例仅在 3 条语句后就会引发运行时错误。</p>
+<h3 id="method-3harness-gen">Method 3:Harness-gen</h3>
+<p>​ 相较于手工生成测试用例，也可以自动生成测试用例。</p>
+<ul>
+<li>IMF[14]跟踪系统调用日志以识别依赖关系，并合成可对这些系统调用进行fuzzing的
+C语言测试用例；</li>
+<li>FUDGE[7]和FuzzGen[15]分析了大量客户端C/C++代码库，并提取代码片段来创建测试用例；</li>
+</ul>
+<p>​
+虽然上述这些系统可以生成不同的harnesses，但单个测试用例中的应用程序API调用结构在fuzzing时是静态的，只有值会发生变化。</p>
+<h3 id="method-3dynamic">Method 3:Dynamic</h3>
+<p>​ 在 API fuzzing的动态方法中，每个测试用例代表一个完整的 API
+交互序列。Fuzzer动态处理每个测试用例，逐个调用端点。</p>
+<p>​
+动态fuzzer与code-gen的主要区别在于，在动态fuzzer中，API交互的结构是在fuzzing时指定的（作为测试用例的一部分），这使得fuzzer可以控制API调用的值和结构。Code-gen
+fuzzer也可以在fuzzing时通过重新编译（如 CSmith [6]）改变 API
+调用的结构，而 <strong>Syzkaller</strong> [16] 和
+GraphFuzz（本作品）等动态fuzzer则绕过了这一高成本的重新编译步骤。</p>
+<h2 id="contribution">Contribution</h2>
+<p>​ 为了弥补这一不足，我们引入了<strong><u>dataflow graphbased
+fuzzing</u></strong>，即用数据流图来表示库应用程序API的交互。我们介绍了
+C/C++
+库中数据流图突变、生成和执行的算法，在许可协议下开源了基于数据流图的模糊测试实现（名为
+GraphFuzz），并通过查找真实世界目标中的错误来证明其有效性，同时将其性能与
+Skia 图形库中最先进的工具进行量化比较。</p>
+<ul>
+<li><strong>Model-based API Fuzzer Survey:</strong>
+对迄今为的model-based fuzzers进行了分类，并展示了 GraphFuzz
+在设计领域的优势；</li>
+<li><strong>Dataflow graph-based fuzzing:</strong>
+我们正式定义了dataflow graphbased
+fuzzing，并介绍了在基于coverage的fuzzing中执行图突变和生成的算法；</li>
+<li><strong>GraphFuzz for C/C++:</strong> 介绍了名为 GraphFuzz
+的dataflow graphbased fuzzing开源实现，它能够对 C 和 C++
+库进行半自动模糊测试。我们通过发现现实世界中的错误来验证这项技术，并将其性能与当前最先进的harnesses进行量化比较。</li>
+</ul>
+<h2 id="model">Model</h2>
+<h3 id="一些问题">1. 一些问题：</h3>
+<ul>
+<li><p><strong>low-level library APIs
+中的“low-level”代表什么？</strong></p>
+<p>“A low-level API, also known as a system-level or hardware-level API,
+refers to an interface provided by an operating system or software
+library that allows direct interaction with the underlying system or
+hardware components. It provides a way for developers to access and
+control the lower-level functionalities of a system, such as hardware
+devices, system calls, and system resources.”</p></li>
+<li><p><strong>dataflow graphbased
+fuzzing中的“graphbaesd”代表什么？</strong></p>
+<p>一个test
+case中有多个个API调用，这些调用组成一个API序列，以数据流图的方式表示。</p></li>
+</ul>
+<h3 id="dataflow-graph">2. Dataflow graph</h3>
+<p>​ 下图是一个触发UAF漏洞的C++代码片段：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230722154718.png" style="zoom: 50%;" /></p>
+<p>​ 下图将这个Bug表示为了dataflow
+graph，数据流图，函数是顶点，对象是边：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230722154733.png" style="zoom: 67%;" /></p>
+<p>​ <strong>GraphFuzz
+的关键是这两种表示法是等价的，我们可以通过编译和运行图 1 中的 C++
+代码或动态执行图 2 中的数据流图来调用此测试用例。</strong></p>
+<h4 id="graph-mutations">2.1 Graph Mutations</h4>
+<p>​ 如何对数据流图做mutate；</p>
+<h4 id="graph-completion">2.2 Graph Completion</h4>
+<p>​
+如何补全图，以防止因为生成图本身的问题而在fuzzing中导致的假阳性。</p>
+<h4 id="graph-minimization">2.3 Graph Minimization</h4>
+<p>​
+只保留那些表现出相同崩溃且较小的graph，我们就能获得接近手工最小化示例大小的数据流图。</p>
+<h3 id="graphfuzz-for-cc">3. Graphfuzz for C/C++</h3>
+<p>​
+GraphFuzz分为两个部分：libgraphfuzz（一个用C++写的对数据流图做突变的工具）和gfuzz（Python
+命令行工具，用于生成harness文件并执行图最小化和自动模式提取等其他任务。）</p>
+<p>​ Graphfuzz
+harness的核心是<code>schema</code>，<code>schema</code>是一个用YAML写的可读文件，其中包含了API
+endpoints，object
+types等信息，GraphFuzz通过使用<code>schema</code>来自动生成exec和write
+fuzzer harnesses。</p>
+<p>​ <code>schema</code>样例：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230722204159.png" style="zoom: 50%;" /></p>
+<p>​ 生成harness的过程：</p>
+<ol type="1">
+<li><strong>Instrumentation：</strong>使用现有的fuzzer coverage
+sanitizer对目标library做插桩，例如在使用Clang是使用<code>-fsanitize=fuzzer</code>；</li>
+<li><strong>Schema Inference(可选)：</strong>可以使用使用 gfuzz
+运行shcema提取工具，从library源代码中自动提取类、结构体、枚举、类型定义和方法到shcema中，生成的schema可以作为人工修改的基础；</li>
+<li><strong>Manual
+Revision：</strong>根据对API的理解，通过添加/删除类、添加函数或重新定义函数的输入和输出类型，手动修复schema；</li>
+<li><strong>Harness
+Generation：</strong>运行gfuzz工具来自动化生成两种harness：fuzzExec（运行数据流图）和fuzzWrite（将数据流图转换为普通C/C++代码，使测试样例可以被外部继续编译）；</li>
+<li><strong>Compilation/Linking：</strong> 将生成的两种hanesses
+link到目标库中来生成libFuzzer可执行文件。</li>
+</ol>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230722204723.png" style="zoom: 50%;" /></p>
+<p>​ GraphFuzz 是在 libFuzzer
+基础上作为自定义突变引擎实现的（好巧妙的写法hhh），fuzzing的过程就如普通fuzzer一样，只是Mutation的过程变成了作者自定义的graph-level
+mutaitons。</p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>Fuzzing</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>HydraText-Multi-objective Optimization for Adversarial Textual Attack</title>
+    <url>/2021/11/14/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/</url>
+    <content><![CDATA[<h1
+id="hydratext-multi-objective-optimization-for-adversarial-textual-attack">HydraText:
+Multi-objective Optimization for Adversarial Textual Attack</h1>
+<blockquote>
+<p><strong>作者：Shengcai Liu，Ning Lu，Cheng Chen，Chao Qian，Ke
+Tang</strong></p>
+<p><strong>时间：2021</strong></p>
+</blockquote>
+<h3 id="abstract">ABSTRACT</h3>
+<p>​
+<strong><u>文字(text)（word-level）对抗样本黑盒攻击。</u></strong>在这项工作中，同时考虑<strong>攻击效率+可辨认性</strong>，并提出一种新的具有可证明性能保证的多优化方法(称为HydraText
+)，以实现具有高隐蔽性的成功攻击。</p>
+<p>​ 为了测试HydraText的功效，我们在<strong>score-based</strong>
+和<strong>decision-based</strong>的黑盒攻击下，使用5个NLP模型+5个数据集。</p>
+<p>（PS：[<a href="https://zhuanlan.zhihu.com/p/377633699">论文总结]
+Boundary Attack - 知乎 (zhihu.com)</a>）</p>
+<p>​ 一项人类观察评价研究表明，Hydra
+Text制作的对抗样本很好地保持了有效性和自然性。最后，这些实例还表现出良好的可迁移性，可以通过对抗训练给目标模型带来显著的鲁棒性提升。</p>
+<hr />
+<span id="more"></span>
+<h3 id="introduction">INTRODUCTION</h3>
+<p>​
+我们仔细地设计了目标函数，并进一步构建了一个多目标优化问题（<strong><em>multi-objective
+optimization
+problem</em></strong>，MOP），该问题一旦被解决，将产生与原始文本相似度高的单个成功对抗样本。</p>
+<p>​ 然后我们原创了一个多目标优化方法（ <strong><em>multi-objective
+optimization
+approach</em></strong>），叫做<strong>HydraText</strong>。这个名字的灵感来自于海蛇许德拉，这是一种神话动物，它使用多个头部攻击对手。它可以同时用在<strong>score-based</strong>
+和<strong>decision-based</strong>的黑盒攻击下。</p>
+<p><img
+src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/u=968937333,2137978646&amp;fm=26&amp;fmt=auto" /></p>
+<p>​</p>
+<hr />
+<h3 id="methods">METHODS</h3>
+<p>​ 基于word-level
+的替换操作。每个单词有一个自己的候选表，然后将每个单词与候选表中被选中的词替换（也可以不选，原单词不变）。</p>
+<p>​ 但这样的方法有个问题，如下图：</p>
+<p>​ <img
+src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/image-20211114162251176.png" /></p>
+<p>​
+如图所示，句子的语义与替换的单词数量是成反比的，上文需要考虑的准确率+可辨认性二者其实是互相矛盾的。为了解决这个问题，我们在生成的过程中也考虑X<sub>adv</sub>的修改率，使用MOP来解决它。</p>
+<p>​</p>
+<h4 id="the-hydratext-approach">1.<em>The HydraText Approach</em></h4>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211114162738.png" style="zoom:80%;" /></p>
+<hr />
+<h3 id="experiments">EXPERIMENTS</h3>
+<h4 id="datasets-and-target-models">1. <em>Datasets and Target
+Models</em></h4>
+<p>​ <strong>模型种类：</strong>文本分类和文本推理</p>
+<p>​ 三个数据集：AG News，IMDB ， Movie Reviews，Stanford Natural
+Language Inference，multi-genre NLI
+corpus（前三个文本分类，后三个文本推理）</p>
+<p>​ 两个模型：WordCNN，WordLSTM，BERT base-uncased，ESIM ，Infersent
+，BERT base-uncased(前三个文本分类，后三个文本推理)</p>
+<h4 id="baselines-and-algorithm">2.<em>Baselines and Algorithm</em></h4>
+<p>​ <strong>攻击方法：</strong>PSO,GA,TextFooler,PWWS,GADe(baseline)</p>
+<h4 id="evaluation">3.<em>Evaluation</em></h4>
+<p>​ 以攻击成功的百分率来判定攻击能力。</p>
+<p>​ 以修改百分率和语义相似性来判定攻击的可辨识性。</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211114165103.png" /></p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>AD</tag>
       </tags>
   </entry>
   <entry>
@@ -5094,6 +5141,149 @@ starred），WAMR，是一个小型WASM虚拟机，经常用在嵌入式系统�
       </tags>
   </entry>
   <entry>
+    <title>Function-level obfuscation detection method based on Graph Convolutional Networks</title>
+    <url>/2022/10/01/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Function-level%20obfuscation%20detection%20method%20based%20on%20Graph%20Convolutional%20Networks/</url>
+    <content><![CDATA[<h1
+id="论文阅读function-level-obfuscation-detection-method-based-on-graph-convolutional-networks">【论文阅读】Function-level
+obfuscation detection method based on Graph Convolutional Networks</h1>
+<blockquote>
+<p>时间：2021</p>
+<p>作者：Shuai Jiang , Yao Hong, Cai Fu（华科）</p>
+<p>期刊：Journal of Information Security and
+Applications（中科院三区）</p>
+</blockquote>
+<h2 id="abstract">1.ABSTRACT</h2>
+<p>​
+在恶意样本检测中<strong>代码混淆检测技术</strong>是一个重要的辅助手段，对于安全从业者来说，其可以在人工逆向分析前来实施自动化混淆检测，这有助于逆向工程师更具体地进行逆向分析。</p>
+<p>​
+目前存在的混淆检测方法主要作用于Android应用，并基于传统的机器学习方法。其检测颗粒度很差，总体效果不佳。为了解决这些问题，<u>在本篇文章，我们提出了一个应用于X86汇编和Android应用的、function
+level的、基于GCN的混淆检测方法。</u></p>
+<pre><code>1. 首先，我们的方法是function-level的。我们提取每个函数的CFG作为其特征（包括邻接矩阵和基本代码块的特征矩阵）；
+2. 我们构建一个GCN-LSTM神经网络作为混淆检测模型；
+3. 最后，对于function-level的检测我们的方法准确率是94.7575%（X86汇编）和98.9457%（安卓应用），比baseline方法好。实验证明我们的方法不论是在function-levle还是APK-level上的检测准确率都好于baseline。</code></pre>
+<span id="more"></span>
+<h2 id="introduction">2. INTRODUCTION</h2>
+<h3 id="obfuscation代码混淆">2.1 Obfuscation–代码混淆</h3>
+<p>​
+代码保护技术，用于增加逆向难度，防止代码篡改，最开始用于版权保护，后被用于恶意代码的躲避检测。</p>
+<p>​
+由于动态检测恶意代码的高昂成本，主流的恶意样本检测技术仍在提取代码的静态特征。然而由于混淆技术的发展，恶意样本的编写者经常在保留其恶意功能的同时通过使用混淆技术来修改其静态特征。经过混淆的恶意代码可以规避相关工具的检测。</p>
+<p>​ 最近混淆检测技术开始出现，在此领域有一些工作：</p>
+<pre><code>1. [2018]Alessandro等人：使用静态分析和机器学习分类算法来分析Android应用是否被混淆的技术（ http://dx.doi.org/10.1145/3230833.3232823）；
+2. [2020]Crincoli等人：利用weak bisimulation来检测代码是否被code reordering(http://dx.doi.org/10.1007/978-3-030-44041-1_116)；
+3. [2020]Caijun Sun等人：一个Android打包检测框架DroidPDF( http://dx.doi.org/10.1109/ACCESS.2020.3010588);
+4. [2019]Omid等人：AndrODet，一个检测三种Android混淆技术的检测机制（重命名、字符串加密和控制流混淆）（ http://dx.doi.org/10.1016/j.future.2018.07.066）；
+5. [2019]Alireza等人：Android字符串混淆检测技术（ http://dx.doi.org/10.1145/3338501.3357373）;</code></pre>
+<h3 id="目前方法的缺点">2.2 <strong>目前方法的缺点</strong>：</h3>
+<pre><code>1. 检测颗粒度不够，检测对象往往是一个APK包，缺乏可行性；
+2. 检测效果不佳，从样本中提取的特征相对简单，只有统计学特征和opcode语句被提取。大多数使用简单的机器学习方法，表现一般；
+3. 缺乏可用性和适应性，传统方法往往会为不同的混淆方法提取不同的特征，或者为每个混淆方法训练一个二分类器，枯燥且不便。同时若需要添加新数据，模型经常需要重头训练。</code></pre>
+<h3 id="我们的方法">2.3 我们的方法：</h3>
+<ol type="1">
+<li>从开源平台获取一些未经混淆的代码（X86汇编和Android），通过混淆器生成混淆后程序；</li>
+<li>逆向这些程序，用邻接矩阵和基本代码块特征矩阵的形式提取每个函数的CFG；</li>
+<li>根据我们提取到的特征，构建GCN-LSTM。这个模型同时服务于X86汇编和Android，但他们分别训练和测试；</li>
+</ol>
+<h2 id="method-overview">3. METHOD OVERVIEW</h2>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221001213243.png" /></p>
+<pre><code>1. X86的混淆器：OLLVM；Android的混淆器：Obfuscapk；
+2. 逆向工具：IDA PRO；由于X86与Android指令集与混淆技术不同，二者被分别提取CFG；
+3. 多分类问题，检测出混淆技术种类，故使用传统多分类评估方法来评估检测效果。</code></pre>
+<h2 id="obfuscation-dection-method">4. OBFUSCATION DECTION METHOD</h2>
+<h3 id="ollvm">4.1 OLLVM</h3>
+<p>​ OLLVM包括以下三种混淆技术：</p>
+<ol type="1">
+<li><strong>Instructions Substitution
+(SUB)，指令替换</strong>。将简单指令替换为同语义的复杂指令，特别是二进制加减乘除。这项技术会增加算术指令但很少影响CFG；</li>
+<li><strong>Bogus Control Flow
+(BCF)，虚假控制流</strong>。在CFG中添加大量无关的随机代码块和分支，并分割、融合、重排原始代码块，在其中插入随机选择的无用指令。这项技术破坏了CFG和代码块的完整性，增加控制流复杂性；</li>
+<li><strong>Control Flow
+Flattening（FLA）</strong>，<strong>控制流平坦化</strong>。简单来讲就是将代码块之间的关系打断，由一个分发器来控制代码块的跳转：</li>
+</ol>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002134210.png" /></p>
+<h3 id="obfuscapk">4.2 Obfuscapk</h3>
+<p>​ Obfuscapk包括以下三种混淆技术：</p>
+<ol type="1">
+<li>Identifier Renaming，标识符重命名；</li>
+<li>String
+Encryption，字符串加密。字符串常量可以揭示很多代码敏感信息；</li>
+<li>Control Flow
+Obfuscation，控制流混淆。通过扩展或平坦化CFG来混淆，同样还有注入垃圾代码，扩展循环，添加无关操作等；</li>
+</ol>
+<h3 id="feature-extraction">4.3 Feature extraction</h3>
+<p>​ 提取的特征包括代码的结构化CFG信息和基本代码块特征：</p>
+<ul>
+<li>对于邻接矩阵：</li>
+</ul>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002135214.png" />
+如图，邻接矩阵代码了不同代码块之间的转移关系。</p>
+<ul>
+<li><p>​ 对于基本代码块特征：</p>
+<p>将X86汇编代码分为27类，对于一个代码块的特征向量就是27维。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002140822.png" style="zoom:80%;" /></p>
+<p>将Dalvik指令分为15类，对于一个代码块的特征向量就是15维。</p></li>
+</ul>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002142628.png" alt="image-20221002140952651" style="zoom:80%;" /></p>
+<h3 id="obfuscation-detection-model">4.4 Obfuscation detection
+model</h3>
+<p>​ 在得到CFG邻接矩阵和基本代码块特征矩阵后，构建GCN-LSTM。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002141244.png" alt="image-20221002141239002" style="zoom:80%;" /></p>
+<h2 id="experimental-evaluation">5.EXPERIMENTAL EVALUATION</h2>
+<h3 id="datasets">5.1 Datasets</h3>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002141504.png" style="zoom:80%;" /></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002141517.png" style="zoom:80%;" /></p>
+<h3 id="baseline-methods">5.2 Baseline methods</h3>
+<p>​ function-level的baseline方法如下：</p>
+<p>​ AdaBoost, GaussianNaiveBayes, GradientBoosting, KNeighbors, MLP,
+SGDClass, SVM, Xgboost and LSTM</p>
+<h3 id="evaluation-metrics">5.3 Evaluation metrics</h3>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002142217.png" /></p>
+<p>​ <img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221002142325.png" /></p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>Malware Classifiers</tag>
+        <tag>obfuscation</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>极大似然估计</title>
+    <url>/2021/09/04/%E3%80%90%E9%9A%8F%E5%86%99%E3%80%91%E6%9E%81%E5%A4%A7%E4%BC%BC%E7%84%B6%E4%BC%B0%E8%AE%A1/</url>
+    <content><![CDATA[<h1
+id="随写极大似然估计maximum-likelihood-estimatemle">【随写】极大似然估计（<em>Maximum
+Likelihood Estimate，MLE</em>）</h1>
+<p>​ “模型已定，参数未知。”</p>
+<p>​
+极大似然估计，<strong>就是利用已知的样本结果信息，反推最具有可能（<u>最大概率</u>）导致这些样本结果出现的模型参数值。</strong></p>
+<p>​</p>
+<p>​ 对于这个函数：<span class="math inline">\(P(x|θ)\)</span>，</p>
+<p>​ 输入有两个：x表示某一个具体的数据；θ表示模型的参数。</p>
+<p>​ 如果θ是已知确定的，x是变量，这个函数叫做<strong>概率函数(probability
+function)</strong>，它描述对于不同的样本点x，其出现概率是多少。</p>
+<p>​ 如果x是已知确定的，θ 是变量，这个函数叫做<strong>似然函数(likelihood
+function)</strong>,
+它描述对于不同的模型参数，出现x这个样本点的概率是多少。</p>
+<p>​</p>
+<p>​
+一般说来，事件A发生的概率与某一未知参数θ有关，θ取值不同，则事件A发生的概率<span
+class="math inline">\(P(A|θ)\)</span>也不同，当我们在一次试验中事件A发生了，则认为此时的θ值应是t的一切可能取值中使<span
+class="math inline">\(P(A|θ)\)</span>达到最大的那一个，极大似然估计法就是要选取这样的t值作为参数t的估计值，使所选取的样本在被选的总体中出现的可能性为最大。</p>
+]]></content>
+      <categories>
+        <category>Something</category>
+      </categories>
+      <tags>
+        <tag>Math</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Windows of Vulnerability--A Case Study Analysis</title>
     <url>/2023/02/27/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Windows%20of%20Vulnerability%20A%20Case%20Study%20Analysis/</url>
     <content><![CDATA[<h1
@@ -5162,36 +5352,6 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230228182023.png" /></p>
       <tags>
         <tag>Vulnerability</tag>
         <tag>Windows</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>极大似然估计</title>
-    <url>/2021/09/04/%E3%80%90%E9%9A%8F%E5%86%99%E3%80%91%E6%9E%81%E5%A4%A7%E4%BC%BC%E7%84%B6%E4%BC%B0%E8%AE%A1/</url>
-    <content><![CDATA[<h1
-id="随写极大似然估计maximum-likelihood-estimatemle">【随写】极大似然估计（<em>Maximum
-Likelihood Estimate，MLE</em>）</h1>
-<p>​ “模型已定，参数未知。”</p>
-<p>​
-极大似然估计，<strong>就是利用已知的样本结果信息，反推最具有可能（<u>最大概率</u>）导致这些样本结果出现的模型参数值。</strong></p>
-<p>​</p>
-<p>​ 对于这个函数：<span class="math inline">\(P(x|θ)\)</span>，</p>
-<p>​ 输入有两个：x表示某一个具体的数据；θ表示模型的参数。</p>
-<p>​ 如果θ是已知确定的，x是变量，这个函数叫做<strong>概率函数(probability
-function)</strong>，它描述对于不同的样本点x，其出现概率是多少。</p>
-<p>​ 如果x是已知确定的，θ 是变量，这个函数叫做<strong>似然函数(likelihood
-function)</strong>,
-它描述对于不同的模型参数，出现x这个样本点的概率是多少。</p>
-<p>​</p>
-<p>​
-一般说来，事件A发生的概率与某一未知参数θ有关，θ取值不同，则事件A发生的概率<span
-class="math inline">\(P(A|θ)\)</span>也不同，当我们在一次试验中事件A发生了，则认为此时的θ值应是t的一切可能取值中使<span
-class="math inline">\(P(A|θ)\)</span>达到最大的那一个，极大似然估计法就是要选取这样的t值作为参数t的估计值，使所选取的样本在被选的总体中出现的可能性为最大。</p>
-]]></content>
-      <categories>
-        <category>Something</category>
-      </categories>
-      <tags>
-        <tag>Math</tag>
       </tags>
   </entry>
   <entry>
@@ -5375,267 +5535,6 @@ sample models 比获取 distribution models 容易得多。dozen dice
       </categories>
       <tags>
         <tag>RL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Comparing One with Many — Solving Binary2source Function Matching Under  Function Inlining</title>
-    <url>/2023/01/10/Comparing-One-with-Many-%E2%80%94-Solving-Binary2source-Function-Matching-Under-Function-Inlining/</url>
-    <content><![CDATA[<h1
-id="论文阅读comparing-one-with-many-solving-binary2source-function-matching-under-function-inlining">【论文阅读】Comparing
-One with Many — Solving Binary2source Function Matching Under Function
-Inlining</h1>
-<h2 id="一abstract">一、ABSTRACT</h2>
-<p><strong><u>为了在函数内联下施行b2s函数匹配，我们提出了一个叫O2NMatcher的方法，通过其生成的Source
-function Sets (SFSs)作为匹配结果。</u></strong></p>
-<p>我们首先提出了一个模型<strong>EOOCJ48</strong>来预测内联的位置，
-为了训练这个模型，我们利用可编译的开源软件（Open Source
-Software）生成一个带有标记的调用点（内联或不内联）的数据集，从调用点中提取几个特征，并通过检查不同编译之间的内联相关性来设计一个基于编译器-选项的多标签分类器。</p>
-<p>然后，我们使用这个模型来预测不可编译的开源项目，得到带标记的函数调用图。接下来，我们将SFSs的构建视为一个子树生成问题，并设计根节点选择和边缘扩展规则来自动构建SFSs。最后，这些SFSs将被添加到源函数的语料库中，并与有内联的二进制函数进行比较。</p>
-<p>我们对OSNMatcher进行了一些实验测试，结果表明我们的方法超过所有state-of-the-art，将结果提升了6%。</p>
-<span id="more"></span>
-<h2 id="二背景知识">二、背景知识</h2>
-<ol type="1">
-<li><p><strong>Function
-inlining：</strong>函数内联。使用inline关键字，<strong>编译器将函数调用语句替换为函数代码本身</strong>（称为扩展的过程），然后编译整个代码。因此，<strong>使用内联函数，编译器不必跳转到另一个位置来执行该函数，然后跳回。</strong>因为被调用函数的代码已经可用于调用程序。</p>
-<p><a
-href="https://devblogs.microsoft.com/cppblog/inlining-decisions-in-visual-studio/#:~:text=Inlining%20is%20perhaps%20the%20most%20important%20optimization%20a,in%20either%20the%20caller%20or%20callee%20by%20themselves.">Inlining
-Decisions in Visual Studio - C++ Team Blog (microsoft.com)</a></p></li>
-<li><p><strong>Binary2source function
-matching</strong>，二进制到源码函数匹配：</p></li>
-</ol>
-<ul>
-<li><strong>1-to-1</strong>匹配：一个二进制函数与一个源码函数匹配；</li>
-<li><strong>1-to-n</strong>匹配：由于内联函数的存在，一个二进制函数匹配多个源码函数。</li>
-</ul>
-<ol start="3" type="1">
-<li><p><strong>Stripped
-binary：</strong>不含调试符号信息的二进制可执行文件。</p></li>
-<li><p><strong>Multi-Label Classification (MLC)
-problem：</strong>多标签分类，一个样本有多个标签。</p></li>
-<li><p><strong>FCG</strong> ：Function Call
-Graph，函数调用图。在FCG图中，点是函数，边是调用关系。</p></li>
-<li><p><strong>Jaccard similaritie：</strong>又称为Jaccard
-index，用于比较有限样本集合之间的相似性和差异性。其值越大说明相似性越高。</p></li>
-<li><p><strong>Binary
-Relevance：</strong>核心思想是将多标签分类问题进行分解，将其转换为q个二元分类问题，其中每个二元分类器对应一个待预测的标签。</p></li>
-<li><p><strong>Classifier
-Chains：</strong>核心思想是将多标签分类问题进行分解，将其转换成为一个二元分类器链的形式，其中链后的二元分类器的构建式在前面分类器预测结果的基础上的。在模型构建的时候，首先将标签顺序进行shuffle打乱排序操作，然后按照从头到尾分别构建每个标签对应的模型。</p></li>
-<li><p><strong>Ensemble Method：</strong>集成学习算法。</p></li>
-</ol>
-<h2 id="三提出问题">三、提出问题</h2>
-<ol type="1">
-<li><h4 id="b2s匹配的作用"><strong>B2S匹配的作用：</strong></h4>
-<p>当前软件开发基本都会使用公共开源库中的代码，这就造成一个问题，若公共开源项目OSS中存在漏洞会传播非常快（例如一个OpenSSL中的漏洞就可以造成互联网上17%web服务存在漏洞）。</p>
-<p>由于以上问题的存在，检测软件中对OSS的依赖就很重要，<strong>Software
-Component Analysis
-(SCA)</strong>就是用来检测软件对OSS的依赖问题的。当商业软件公司发布了自己的二进制可执行程序时，SCA服务商就会将此二进制文件与OSS文件相比较，检测其包含使用了哪些OSS文件。</p>
-<p>binary2source function matching就是其应用场景。</p></li>
-<li><h4
-id="内联函数带来的问题"><strong>内联函数带来的问题：</strong></h4>
-<p>举例如下图所示，当将二进制函数中的<strong><em>dtls1_get_record</em></strong>函数与源码中的<strong><em>dtls1_get_record</em></strong>函数比较时，使用CodeCMR给出的相似性还不足60%，这显然是匹配失败的。</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230110172929.png" /></p>
-<p>如果深入去看二进制函数<strong><em>dtls1_get_record</em></strong>的汇编代码就可以发现，这个函数在编译的时候内联了<strong><em>dtls1_process_buffered_records</em></strong>,<strong><em>dtls1_get_bitmap</em></strong>
-和
-<strong><em>dtls1_record_replay_check</em></strong>的函数代码，极大的改变了其函数的内部代码内容，故影响了函数的匹配结果。</p>
-<p><strong><u>有上述例子可以看出，由于内联函数的存在会改变函数的代码内容，故直接对其进行匹配的结果是不尽如人意的。</u></strong></p></li>
-<li><h4
-id="解决这个问题面临的挑战"><strong>解决这个问题面临的挑战：</strong></h4>
-<p>想要解决在内联函数下的B2S问题，还需面对以下挑战：</p>
-<p>1）
-<strong>OOD问题：</strong>Out-of-domain，待检测二进制函数可能是由多个函数生成的，故OSS源码资料库中可能没有对应的二进制匹配；</p>
-<p>2）
-<strong>有些二进制文件不含调试信息：</strong>对于许多不含调试信息的二进制文件，由于其没有标注内联点，故检测哪些函数是通过内联函数生成的和哪些源码函数被内联进了二进制函数中就更加困难；</p>
-<p>3）
-<strong>不同文件内联选择的不同：</strong>对于不同的编译设置导致的不同内联函数的选择（对某个函数，是否选择内联），很难覆盖所有情况。</p></li>
-</ol>
-<h2 id="四模型方法">四、模型方法</h2>
-<p>​
-我们的方法<strong>O2NMatcher</strong>就是为了解决上述挑战而生的。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230110205834.png" style="zoom:80%;" /></p>
-<p>​ 为了解决第一个挑战，我们生成了<strong><em>Source Function Sets
-(SFSs)</em></strong>来完善资料库，以此应对有内联函数的二进制函数查询匹配。</p>
-<p>​
-为了解决第二个挑战，我们使用可以编译的OSS项目训练了一个预测分类器来预测不可编译的OSS项目的内联位置。同时，我们提出了一个数据集自动化打标签的方法来生成数据。</p>
-<p>​
-为了解决第三个挑战，分类器被在多种不同的编译设置环境下训练，我们将其建模为多标签分类（MLC）问题，并根据不同编译设置下内联决策的相关性提出了基于编译器-选择的分类器。</p>
-<p>​
-通过给定的OSS生成SFSs，然后使用已有的“1-to-1”方法将这些SFSs与二进制函数相比较即可。</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230111162237.png" /></p>
-<h3 id="模型训练">模型训练</h3>
-<h4 id="生成数据集">1. 生成数据集</h4>
-<p>​
-在生成数据集过程中，我们充分利用了编译过程生成的调试信息（用的都是可编译的OSS项目）。其会生成b2s行级别和函数级别的映射，并附带函数调用处的内联信息（是否内联）。</p>
-<p>​
-在开源项目编译时使用"-g"选项，可以使编译出的二进制文件附带从二进制地址到源文件某一行的映射信息（<u>行级别映射</u>），再利用<strong>Understand</strong>或者<strong>IDA
-Pro，tree-sitter，Chidra</strong>等工具，我们可以生成从二进制地址到源文件某一函数的映射信息（<u>函数级别映射</u>）。</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230111165709.png" /></p>
-<p>​
-如上图所示，圆圈是源码函数，方框是编译后的二进制函数。在（a）中，由于A只调用了C一次，故在编译后的二进制函数中C就被内联进了A中；但在（b）中，A调用了两次B，A和B都调用了C，无法很清楚的判断到底哪次调用需要被内联，故编译出的二进制函数也与编译选项有关，并不绝对。</p>
-<p>​
-<strong>上述例子可以看出，即使我们得到的源码函数之间的相互调用关系我们也无法确定哪些函数会被内联。</strong></p>
-<p>​
-但如果我们知道其二进制调用关系图，反过来看，若二进制图中某个调用在源码调用图中也存在（如上图a中的A–&gt;B），则这个函数就不是内联函数，反之就是内联函数。这样，通过对调试信息的使用，可以成功的将可编译OSS项目的内联位置标注出来。</p>
-<h4 id="特征提取">2. 特征提取</h4>
-<p>​
-考虑到编译器一般通过评估内联的利弊来决定是否内联，我们总结了几个可以评估内联操作利弊的特征：</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230111235130.png" /></p>
-<p>​
-如上表所示，特征共分为两大类<strong>Caller/Callee</strong>和<strong>Call
-Instruciton</strong>：</p>
-<ul>
-<li><p><strong>Caller/Callee</strong>：</p>
-<p>caller这里指调用其他公共开源函数的函数，callee指被许多其他函数调用的函数。这部分特征分为函数内部语句，函数定义语句和函数调用次数。</p></li>
-<li><p><strong>Call Instruciton：</strong></p>
-<p>调用函数指令，这里关注其调用的位置和参数声明，例如在内联循环中的函数调用就可以显著减少调用次数。同理，如果调用含有常量参数，可以帮助减少内联函数的大小。</p></li>
-</ul>
-<h4 id="模型训练-1">3. 模型训练</h4>
-<h5 id="训练数据分析">3.1 训练数据分析</h5>
-<p>​ 我们这里提出了一个名为<strong>ECOCCJ48(<em>Ensemble of Compiler
-Optimization based Classifier Chains built with
-J48</em>)</strong>的MLC模型来预测内联函数位置。在多标签任务中，标签之间通常存在联系，下表展示了两个编译器（gcc-8.2.0和clang-7.0）在O<sub>x</sub>优化下的内联措施的差异和联系：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230112145603.png" style="zoom:80%;" /></p>
-<p><em>PS：opt1-opt2意味着使用优化措施opt1时内联，使用优化措施opt2时不内联的数量；opt1&amp;opt2意味着使用两个都内联的数量。</em></p>
-<p>​
-<strong>在同一编译器不同优化设置的条件下</strong>，由上图可以看出，94.78%的内联操作如果出现在低级优化措施的条件下，也会出现在更高级的优化措施条件下。所以在同一行内opt1&amp;opt2的数量都大于opt1-opt2。</p>
-<p>​
-<strong>在不同编译器的条件下</strong>，如下图所示，展示了不同优化措施下所做决策的Jaccard系数：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230112150531.png" style="zoom: 67%;" /></p>
-<p>​
-<strong>在同一编译器家族（例如GCC的不同版本）比较时，其内联决策的相似性很高。</strong>当使用O<sub>0</sub>-O<sub>3</sub>优化措施测试gcc-6.4.0
-和
-gcc-7.2.0，87%的函数调用采用了相同的内联决策。<strong>在不同编译器的条件下，</strong>其内联决策没有明显的联系。</p>
-<h5 id="ecoccj48模型">3.2 ECOCCJ48模型</h5>
-<p>​ ECOOCJ48分为两个部分，使用binary
-relevance来预测不同编译器下的标签，使用整合分类器链来预测同一编译器下不同优化措施的标签。</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230112152928.png" /></p>
-<h5 id="不平衡的数据集">3.3 不平衡的数据集</h5>
-<p>​ 目前存在的数据集有以下问题：</p>
-<p>​
-1.大多数的函数调用在被编译的过程中是不会被内联的，在使用O<sub>X</sub>优化时，大约只有20%的函数调用会被内联；</p>
-<p>​ 2.不同优化措施编译时内联点的比例也不同。</p>
-<p>​
-这些差异导致了训练数据集的不平衡，训练会更偏向于正常的调用。我们使用了集成学习方法来处理这些不平衡，其使用随机选择的数据集来训练，通过整合不同基础分类器的结果来预测标签。因为不同基础分类器在不同的资料库中被训练，故他们可以抓住内联模式。</p>
-<h3 id="sfs生成">SFS生成</h3>
-<h4 id="fcg构建与ics预测">1. FCG构建与ICS预测</h4>
-<p>​
-对于不可编译的OSS项目，首先使用一个解析器（parser）来提取代码中的函数调用点，构建FCG图。两个节点之间可以有多个有向边，<strong>边上附带函数调用的位置信息。</strong></p>
-<p>​
-对于FCG中的每个调用点，我们从其调用者，被调用者和调用指令中提取特征，将其作为ECOCCJ48的输入，得到所有编译设置（不同编译器+优化措施）的标签。</p>
-<h4 id="sfs生成-1">2. SFS生成</h4>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230113001842.png" style="zoom:80%;" /></p>
-<p>​
-如上图所示，（a）就是已经构建好的FCG图，其中红圈代表有内联函数的函数，黑圈则没有；红边代表内联操作，蓝边代表正常调用。<strong>假设FCG是一个有向无环图，SFS的生成就可以抽象成从FCG图中选择内联子树。</strong>这里将SFS的生成分为两个部分：根节点的选择（b）和边扩展。</p>
-<p>​ <strong>根节点的选择上</strong>，有以下原则：</p>
-<p>​ 1） 内联子树的根节点，如A,D；</p>
-<p>​
-2）非内联子树的根节点，但是既内联调用了其他函数，也被其他函数普通调用，如C。</p>
-<p>​
-除去这两种情况，要么一个节点没有指向其他节点的红色边，要么在内联子树上仅仅被其它红边所指。第一种情况显然不能进入SFS，第二种情况会被内联进其调用者之中。</p>
-<p>​ <strong>边扩展上</strong>，遵循以下规则：</p>
-<p>​ 1）
-对每个根节点，若其指向的节点仅有一条红边，则向下遍历其能遇到的所有节点（如对A，有A-&gt;C，A-&gt;C-&gt;E两条）；</p>
-<p>​
-2）对每个根节点，若其指向的节点有两条相异颜色的边，则红色的边继续向下搜索生成，蓝色的边仅在下个点处停止。（如对C-&gt;E）。</p>
-<p>​
-若FCG成环，我们仅需注意，如果一个被调用节点已经在SFS中了，就不必再次遍历即可避免重复。</p>
-<h4 id="sfs汇总">3. SFS汇总</h4>
-<p>​ 得到函数的SFS后，我们将被调用函数的代码直接放进调用函数中。</p>
-<h3 id="测试评估">测试评估</h3>
-<p>​ 测试部分回答了以下问题：</p>
-<blockquote>
-<ol type="1">
-<li>O2NMatcher可以提高现有1-to-1工作的表现吗？</li>
-<li>与<em>Bingo</em> 和
-<em>ASM2Vec</em>比较，O2NMatcher生成的SFS有多准确？</li>
-<li>与现有的多标签分类工作相比，<em>ECOCCJ48</em>的表现如何？</li>
-<li>O2NMatcher在训练，预测和生成SFS的时间花费如何？</li>
-<li>我们选取的特征集在ICS预测上有什么贡献？</li>
-</ol>
-</blockquote>
-<h4 id="研究背景">1. 研究背景</h4>
-<h5 id="测试数据集">1.1 测试数据集</h5>
-<p>​
-我们从GNU项目选择了51个包，使用9种编译器、4种优化措施编译成x86-64，得到8460个二进制文件和4294478个二进制函数。这些数据包含了诸如Coreutils、OpenSSL等在二进制相似性检测工作中广泛被使用的包。如下表所示：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116181546.png" style="zoom:80%;" /></p>
-<h5 id="benchmark">1.2 Benchmark</h5>
-<p>​
-因为O2NMatcher是一个对其它b2s方法的补充，我们需要选择一个baseline。这里我们选择<strong>CodeCMR</strong>，一个现有工作表现最好的b2s方法。CodeCMR有一个开放工具BinaryAI，可以方便后续测试。</p>
-<p>（Zeping Yu, Wenxin Zheng, Jiaqi Wang, Qiyi Tang, Sen Nie, and Shi
-Wu. 2020. Codecmr: Cross-modal retrieval for function-level binary
-source code matching. <em>Advances in Neural Information Processing
-Systems</em> 33 (2020), 3872–3883.）</p>
-<h5 id="实验设置">1.3 实验设置</h5>
-<p>​
-<strong>90%随机选择的训练集以及10%测试集。</strong>由于相同编译器的内联选择比较相似，这里测试集仅用两个编译器生成：gcc-2.2.0和clang-7.0。测试集包含1.1中所有的编译器生成的数据。<u>分类器在训练集上训练，然后对测试集生成SFSs</u>。为了避免误差我们重复实验10次。</p>
-<p>​ 测试时，使用不带调试信息的stripped
-binary，并且OSS文件不能被编译。</p>
-<h5 id="评估标准">1.4 评估标准</h5>
-<p>​
-<strong>使用标准召回率recall@K来评估O2NMatcher准确率</strong>。（Recall@K召回率是指前topK结果中检索出的相关结果数和库中所有的相关结果数的比率，衡量的是检索系统的查全率。）在这里，recall@K代表前k个模型返回的源码函数中真正的源码函数占比。对于1-to-1匹配，真正的源码函数就是该待检测二进制函数的源码；对于我们的1-to-n匹配，在SFSs中，某个函数的根函数是真正的源码函数也可以算作阳性样本。在接下来的实验中我们会使用K
-= 1、10和50来测试。</p>
-<p>​ <strong>使用SFS大小（SFS size）来评估O2NMatcher成本</strong>。SFS
-size是已生成的SFSs数量比上原函数集的数量。因为新增的SFSs增加了资料库的大小，故可能影响查询匹配的时间。</p>
-<p>​
-<strong>使用precision、recall和F1-score来评估ECOCCJ48准确率。</strong></p>
-<h5 id="o2nmatcher的实现">1.5 O2NMatcher的实现</h5>
-<p>​
-在数据集标注工作上，我们使用<strong>Understand</strong>对源码做语法分析，使用<strong>IDA
-Pro</strong>来反汇编二进制文件。在FCG构建上，我们使用<strong>Understand</strong>来提取所有函数调用点，对源码生成FCG图，使用<strong>IDA
-Pro</strong>对二进制文件生成FCG图。在函数调用特征提取上，我们使用<strong>tree-sitter</strong>来提取函数体、函数定义和函数调用指令的特征，使用<strong>Understand</strong>提取函数调用次数特征。</p>
-<p>​
-在模型训练工作上，我们使用Python工具<strong><em>scikit-multilearn</em></strong>来实现ECOCCJ48模型和其他MCL方法。整个程序在Ubuntu
-18.04、Intel Xeon Gold 6266C、1024GB DDR4 RAM、Nvidia RTX3090
-GPU环境上运行。</p>
-<h4 id="对问题一的回答o2nmatcher的效果">2.
-对问题一的回答：O2NMatcher的效果</h4>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116190905.png" style="zoom:80%;" /></p>
-<h4 id="对问题二的回答sfss的效果">3. 对问题二的回答：SFSs的效果</h4>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116191213.png" style="zoom:80%;" /></p>
-<p>​ 上表比较了O2NMatcher、Bingo和ASM2Vec生成的SFSs与标准答案的结果。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116191540.png" style="zoom:80%;" /></p>
-<h4 id="对问题三的回答ecoccj48的效果">4.
-对问题三的回答：ECOCCJ48的效果</h4>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116205243.png" /></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116205306.png" style="zoom:80%;" /></p>
-<h4 id="对问题四的回答o2nmatcher的成本">5.
-对问题四的回答：O2NMatcher的成本</h4>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116205338.png" /></p>
-<h4 id="对问题五的回答特征选择的作用">6.
-对问题五的回答：特征选择的作用</h4>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116205512.png" style="zoom:80%;" /></p>
-<h2 id="五问题">五、问题</h2>
-<ol type="1">
-<li><p>该方法模型怎么结合已有的方法？</p>
-<p>原来怎么比现在就怎么比，只是从源码库变成了SFS。</p></li>
-<li><p>SFSs怎么起作用？</p>
-<p>将可能内联的函数体放进原函数的新代码库。</p></li>
-<li><p>不平衡的数据集怎么处理的？</p>
-<p>“We use ensemble methods to handle the imbalanced dataset. The
-ensemble method trains the base classifiers on the randomly selected
-dataset and predicts the labels by ggregating the predictions from the
-base classifiers. As different base lassifiers are trained in different
-corpora, they can capture the inlining patterns of some rare
-labels”这部分没看懂什么意思</p></li>
-<li><p>在汇总SFS时：</p>
-<p>“Directly, there are two ways to aggregate the SFS: conduct inlining
-for the source functions in the SFSs such as the inlining during
-compilation or directly aggregate the content of all the functions in
-the SFS”，这两种方式具体什么区别？</p></li>
-</ol>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>Binary</tag>
-        <tag>ML</tag>
       </tags>
   </entry>
   <entry>
@@ -5976,6 +5875,267 @@ class="math display">\[
       <tags>
         <tag>IDS</tag>
         <tag>DDoS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Comparing One with Many — Solving Binary2source Function Matching Under  Function Inlining</title>
+    <url>/2023/01/10/Comparing-One-with-Many-%E2%80%94-Solving-Binary2source-Function-Matching-Under-Function-Inlining/</url>
+    <content><![CDATA[<h1
+id="论文阅读comparing-one-with-many-solving-binary2source-function-matching-under-function-inlining">【论文阅读】Comparing
+One with Many — Solving Binary2source Function Matching Under Function
+Inlining</h1>
+<h2 id="一abstract">一、ABSTRACT</h2>
+<p><strong><u>为了在函数内联下施行b2s函数匹配，我们提出了一个叫O2NMatcher的方法，通过其生成的Source
+function Sets (SFSs)作为匹配结果。</u></strong></p>
+<p>我们首先提出了一个模型<strong>EOOCJ48</strong>来预测内联的位置，
+为了训练这个模型，我们利用可编译的开源软件（Open Source
+Software）生成一个带有标记的调用点（内联或不内联）的数据集，从调用点中提取几个特征，并通过检查不同编译之间的内联相关性来设计一个基于编译器-选项的多标签分类器。</p>
+<p>然后，我们使用这个模型来预测不可编译的开源项目，得到带标记的函数调用图。接下来，我们将SFSs的构建视为一个子树生成问题，并设计根节点选择和边缘扩展规则来自动构建SFSs。最后，这些SFSs将被添加到源函数的语料库中，并与有内联的二进制函数进行比较。</p>
+<p>我们对OSNMatcher进行了一些实验测试，结果表明我们的方法超过所有state-of-the-art，将结果提升了6%。</p>
+<span id="more"></span>
+<h2 id="二背景知识">二、背景知识</h2>
+<ol type="1">
+<li><p><strong>Function
+inlining：</strong>函数内联。使用inline关键字，<strong>编译器将函数调用语句替换为函数代码本身</strong>（称为扩展的过程），然后编译整个代码。因此，<strong>使用内联函数，编译器不必跳转到另一个位置来执行该函数，然后跳回。</strong>因为被调用函数的代码已经可用于调用程序。</p>
+<p><a
+href="https://devblogs.microsoft.com/cppblog/inlining-decisions-in-visual-studio/#:~:text=Inlining%20is%20perhaps%20the%20most%20important%20optimization%20a,in%20either%20the%20caller%20or%20callee%20by%20themselves.">Inlining
+Decisions in Visual Studio - C++ Team Blog (microsoft.com)</a></p></li>
+<li><p><strong>Binary2source function
+matching</strong>，二进制到源码函数匹配：</p></li>
+</ol>
+<ul>
+<li><strong>1-to-1</strong>匹配：一个二进制函数与一个源码函数匹配；</li>
+<li><strong>1-to-n</strong>匹配：由于内联函数的存在，一个二进制函数匹配多个源码函数。</li>
+</ul>
+<ol start="3" type="1">
+<li><p><strong>Stripped
+binary：</strong>不含调试符号信息的二进制可执行文件。</p></li>
+<li><p><strong>Multi-Label Classification (MLC)
+problem：</strong>多标签分类，一个样本有多个标签。</p></li>
+<li><p><strong>FCG</strong> ：Function Call
+Graph，函数调用图。在FCG图中，点是函数，边是调用关系。</p></li>
+<li><p><strong>Jaccard similaritie：</strong>又称为Jaccard
+index，用于比较有限样本集合之间的相似性和差异性。其值越大说明相似性越高。</p></li>
+<li><p><strong>Binary
+Relevance：</strong>核心思想是将多标签分类问题进行分解，将其转换为q个二元分类问题，其中每个二元分类器对应一个待预测的标签。</p></li>
+<li><p><strong>Classifier
+Chains：</strong>核心思想是将多标签分类问题进行分解，将其转换成为一个二元分类器链的形式，其中链后的二元分类器的构建式在前面分类器预测结果的基础上的。在模型构建的时候，首先将标签顺序进行shuffle打乱排序操作，然后按照从头到尾分别构建每个标签对应的模型。</p></li>
+<li><p><strong>Ensemble Method：</strong>集成学习算法。</p></li>
+</ol>
+<h2 id="三提出问题">三、提出问题</h2>
+<ol type="1">
+<li><h4 id="b2s匹配的作用"><strong>B2S匹配的作用：</strong></h4>
+<p>当前软件开发基本都会使用公共开源库中的代码，这就造成一个问题，若公共开源项目OSS中存在漏洞会传播非常快（例如一个OpenSSL中的漏洞就可以造成互联网上17%web服务存在漏洞）。</p>
+<p>由于以上问题的存在，检测软件中对OSS的依赖就很重要，<strong>Software
+Component Analysis
+(SCA)</strong>就是用来检测软件对OSS的依赖问题的。当商业软件公司发布了自己的二进制可执行程序时，SCA服务商就会将此二进制文件与OSS文件相比较，检测其包含使用了哪些OSS文件。</p>
+<p>binary2source function matching就是其应用场景。</p></li>
+<li><h4
+id="内联函数带来的问题"><strong>内联函数带来的问题：</strong></h4>
+<p>举例如下图所示，当将二进制函数中的<strong><em>dtls1_get_record</em></strong>函数与源码中的<strong><em>dtls1_get_record</em></strong>函数比较时，使用CodeCMR给出的相似性还不足60%，这显然是匹配失败的。</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230110172929.png" /></p>
+<p>如果深入去看二进制函数<strong><em>dtls1_get_record</em></strong>的汇编代码就可以发现，这个函数在编译的时候内联了<strong><em>dtls1_process_buffered_records</em></strong>,<strong><em>dtls1_get_bitmap</em></strong>
+和
+<strong><em>dtls1_record_replay_check</em></strong>的函数代码，极大的改变了其函数的内部代码内容，故影响了函数的匹配结果。</p>
+<p><strong><u>有上述例子可以看出，由于内联函数的存在会改变函数的代码内容，故直接对其进行匹配的结果是不尽如人意的。</u></strong></p></li>
+<li><h4
+id="解决这个问题面临的挑战"><strong>解决这个问题面临的挑战：</strong></h4>
+<p>想要解决在内联函数下的B2S问题，还需面对以下挑战：</p>
+<p>1）
+<strong>OOD问题：</strong>Out-of-domain，待检测二进制函数可能是由多个函数生成的，故OSS源码资料库中可能没有对应的二进制匹配；</p>
+<p>2）
+<strong>有些二进制文件不含调试信息：</strong>对于许多不含调试信息的二进制文件，由于其没有标注内联点，故检测哪些函数是通过内联函数生成的和哪些源码函数被内联进了二进制函数中就更加困难；</p>
+<p>3）
+<strong>不同文件内联选择的不同：</strong>对于不同的编译设置导致的不同内联函数的选择（对某个函数，是否选择内联），很难覆盖所有情况。</p></li>
+</ol>
+<h2 id="四模型方法">四、模型方法</h2>
+<p>​
+我们的方法<strong>O2NMatcher</strong>就是为了解决上述挑战而生的。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230110205834.png" style="zoom:80%;" /></p>
+<p>​ 为了解决第一个挑战，我们生成了<strong><em>Source Function Sets
+(SFSs)</em></strong>来完善资料库，以此应对有内联函数的二进制函数查询匹配。</p>
+<p>​
+为了解决第二个挑战，我们使用可以编译的OSS项目训练了一个预测分类器来预测不可编译的OSS项目的内联位置。同时，我们提出了一个数据集自动化打标签的方法来生成数据。</p>
+<p>​
+为了解决第三个挑战，分类器被在多种不同的编译设置环境下训练，我们将其建模为多标签分类（MLC）问题，并根据不同编译设置下内联决策的相关性提出了基于编译器-选择的分类器。</p>
+<p>​
+通过给定的OSS生成SFSs，然后使用已有的“1-to-1”方法将这些SFSs与二进制函数相比较即可。</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230111162237.png" /></p>
+<h3 id="模型训练">模型训练</h3>
+<h4 id="生成数据集">1. 生成数据集</h4>
+<p>​
+在生成数据集过程中，我们充分利用了编译过程生成的调试信息（用的都是可编译的OSS项目）。其会生成b2s行级别和函数级别的映射，并附带函数调用处的内联信息（是否内联）。</p>
+<p>​
+在开源项目编译时使用"-g"选项，可以使编译出的二进制文件附带从二进制地址到源文件某一行的映射信息（<u>行级别映射</u>），再利用<strong>Understand</strong>或者<strong>IDA
+Pro，tree-sitter，Chidra</strong>等工具，我们可以生成从二进制地址到源文件某一函数的映射信息（<u>函数级别映射</u>）。</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230111165709.png" /></p>
+<p>​
+如上图所示，圆圈是源码函数，方框是编译后的二进制函数。在（a）中，由于A只调用了C一次，故在编译后的二进制函数中C就被内联进了A中；但在（b）中，A调用了两次B，A和B都调用了C，无法很清楚的判断到底哪次调用需要被内联，故编译出的二进制函数也与编译选项有关，并不绝对。</p>
+<p>​
+<strong>上述例子可以看出，即使我们得到的源码函数之间的相互调用关系我们也无法确定哪些函数会被内联。</strong></p>
+<p>​
+但如果我们知道其二进制调用关系图，反过来看，若二进制图中某个调用在源码调用图中也存在（如上图a中的A–&gt;B），则这个函数就不是内联函数，反之就是内联函数。这样，通过对调试信息的使用，可以成功的将可编译OSS项目的内联位置标注出来。</p>
+<h4 id="特征提取">2. 特征提取</h4>
+<p>​
+考虑到编译器一般通过评估内联的利弊来决定是否内联，我们总结了几个可以评估内联操作利弊的特征：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230111235130.png" /></p>
+<p>​
+如上表所示，特征共分为两大类<strong>Caller/Callee</strong>和<strong>Call
+Instruciton</strong>：</p>
+<ul>
+<li><p><strong>Caller/Callee</strong>：</p>
+<p>caller这里指调用其他公共开源函数的函数，callee指被许多其他函数调用的函数。这部分特征分为函数内部语句，函数定义语句和函数调用次数。</p></li>
+<li><p><strong>Call Instruciton：</strong></p>
+<p>调用函数指令，这里关注其调用的位置和参数声明，例如在内联循环中的函数调用就可以显著减少调用次数。同理，如果调用含有常量参数，可以帮助减少内联函数的大小。</p></li>
+</ul>
+<h4 id="模型训练-1">3. 模型训练</h4>
+<h5 id="训练数据分析">3.1 训练数据分析</h5>
+<p>​ 我们这里提出了一个名为<strong>ECOCCJ48(<em>Ensemble of Compiler
+Optimization based Classifier Chains built with
+J48</em>)</strong>的MLC模型来预测内联函数位置。在多标签任务中，标签之间通常存在联系，下表展示了两个编译器（gcc-8.2.0和clang-7.0）在O<sub>x</sub>优化下的内联措施的差异和联系：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230112145603.png" style="zoom:80%;" /></p>
+<p><em>PS：opt1-opt2意味着使用优化措施opt1时内联，使用优化措施opt2时不内联的数量；opt1&amp;opt2意味着使用两个都内联的数量。</em></p>
+<p>​
+<strong>在同一编译器不同优化设置的条件下</strong>，由上图可以看出，94.78%的内联操作如果出现在低级优化措施的条件下，也会出现在更高级的优化措施条件下。所以在同一行内opt1&amp;opt2的数量都大于opt1-opt2。</p>
+<p>​
+<strong>在不同编译器的条件下</strong>，如下图所示，展示了不同优化措施下所做决策的Jaccard系数：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230112150531.png" style="zoom: 67%;" /></p>
+<p>​
+<strong>在同一编译器家族（例如GCC的不同版本）比较时，其内联决策的相似性很高。</strong>当使用O<sub>0</sub>-O<sub>3</sub>优化措施测试gcc-6.4.0
+和
+gcc-7.2.0，87%的函数调用采用了相同的内联决策。<strong>在不同编译器的条件下，</strong>其内联决策没有明显的联系。</p>
+<h5 id="ecoccj48模型">3.2 ECOCCJ48模型</h5>
+<p>​ ECOOCJ48分为两个部分，使用binary
+relevance来预测不同编译器下的标签，使用整合分类器链来预测同一编译器下不同优化措施的标签。</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230112152928.png" /></p>
+<h5 id="不平衡的数据集">3.3 不平衡的数据集</h5>
+<p>​ 目前存在的数据集有以下问题：</p>
+<p>​
+1.大多数的函数调用在被编译的过程中是不会被内联的，在使用O<sub>X</sub>优化时，大约只有20%的函数调用会被内联；</p>
+<p>​ 2.不同优化措施编译时内联点的比例也不同。</p>
+<p>​
+这些差异导致了训练数据集的不平衡，训练会更偏向于正常的调用。我们使用了集成学习方法来处理这些不平衡，其使用随机选择的数据集来训练，通过整合不同基础分类器的结果来预测标签。因为不同基础分类器在不同的资料库中被训练，故他们可以抓住内联模式。</p>
+<h3 id="sfs生成">SFS生成</h3>
+<h4 id="fcg构建与ics预测">1. FCG构建与ICS预测</h4>
+<p>​
+对于不可编译的OSS项目，首先使用一个解析器（parser）来提取代码中的函数调用点，构建FCG图。两个节点之间可以有多个有向边，<strong>边上附带函数调用的位置信息。</strong></p>
+<p>​
+对于FCG中的每个调用点，我们从其调用者，被调用者和调用指令中提取特征，将其作为ECOCCJ48的输入，得到所有编译设置（不同编译器+优化措施）的标签。</p>
+<h4 id="sfs生成-1">2. SFS生成</h4>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230113001842.png" style="zoom:80%;" /></p>
+<p>​
+如上图所示，（a）就是已经构建好的FCG图，其中红圈代表有内联函数的函数，黑圈则没有；红边代表内联操作，蓝边代表正常调用。<strong>假设FCG是一个有向无环图，SFS的生成就可以抽象成从FCG图中选择内联子树。</strong>这里将SFS的生成分为两个部分：根节点的选择（b）和边扩展。</p>
+<p>​ <strong>根节点的选择上</strong>，有以下原则：</p>
+<p>​ 1） 内联子树的根节点，如A,D；</p>
+<p>​
+2）非内联子树的根节点，但是既内联调用了其他函数，也被其他函数普通调用，如C。</p>
+<p>​
+除去这两种情况，要么一个节点没有指向其他节点的红色边，要么在内联子树上仅仅被其它红边所指。第一种情况显然不能进入SFS，第二种情况会被内联进其调用者之中。</p>
+<p>​ <strong>边扩展上</strong>，遵循以下规则：</p>
+<p>​ 1）
+对每个根节点，若其指向的节点仅有一条红边，则向下遍历其能遇到的所有节点（如对A，有A-&gt;C，A-&gt;C-&gt;E两条）；</p>
+<p>​
+2）对每个根节点，若其指向的节点有两条相异颜色的边，则红色的边继续向下搜索生成，蓝色的边仅在下个点处停止。（如对C-&gt;E）。</p>
+<p>​
+若FCG成环，我们仅需注意，如果一个被调用节点已经在SFS中了，就不必再次遍历即可避免重复。</p>
+<h4 id="sfs汇总">3. SFS汇总</h4>
+<p>​ 得到函数的SFS后，我们将被调用函数的代码直接放进调用函数中。</p>
+<h3 id="测试评估">测试评估</h3>
+<p>​ 测试部分回答了以下问题：</p>
+<blockquote>
+<ol type="1">
+<li>O2NMatcher可以提高现有1-to-1工作的表现吗？</li>
+<li>与<em>Bingo</em> 和
+<em>ASM2Vec</em>比较，O2NMatcher生成的SFS有多准确？</li>
+<li>与现有的多标签分类工作相比，<em>ECOCCJ48</em>的表现如何？</li>
+<li>O2NMatcher在训练，预测和生成SFS的时间花费如何？</li>
+<li>我们选取的特征集在ICS预测上有什么贡献？</li>
+</ol>
+</blockquote>
+<h4 id="研究背景">1. 研究背景</h4>
+<h5 id="测试数据集">1.1 测试数据集</h5>
+<p>​
+我们从GNU项目选择了51个包，使用9种编译器、4种优化措施编译成x86-64，得到8460个二进制文件和4294478个二进制函数。这些数据包含了诸如Coreutils、OpenSSL等在二进制相似性检测工作中广泛被使用的包。如下表所示：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116181546.png" style="zoom:80%;" /></p>
+<h5 id="benchmark">1.2 Benchmark</h5>
+<p>​
+因为O2NMatcher是一个对其它b2s方法的补充，我们需要选择一个baseline。这里我们选择<strong>CodeCMR</strong>，一个现有工作表现最好的b2s方法。CodeCMR有一个开放工具BinaryAI，可以方便后续测试。</p>
+<p>（Zeping Yu, Wenxin Zheng, Jiaqi Wang, Qiyi Tang, Sen Nie, and Shi
+Wu. 2020. Codecmr: Cross-modal retrieval for function-level binary
+source code matching. <em>Advances in Neural Information Processing
+Systems</em> 33 (2020), 3872–3883.）</p>
+<h5 id="实验设置">1.3 实验设置</h5>
+<p>​
+<strong>90%随机选择的训练集以及10%测试集。</strong>由于相同编译器的内联选择比较相似，这里测试集仅用两个编译器生成：gcc-2.2.0和clang-7.0。测试集包含1.1中所有的编译器生成的数据。<u>分类器在训练集上训练，然后对测试集生成SFSs</u>。为了避免误差我们重复实验10次。</p>
+<p>​ 测试时，使用不带调试信息的stripped
+binary，并且OSS文件不能被编译。</p>
+<h5 id="评估标准">1.4 评估标准</h5>
+<p>​
+<strong>使用标准召回率recall@K来评估O2NMatcher准确率</strong>。（Recall@K召回率是指前topK结果中检索出的相关结果数和库中所有的相关结果数的比率，衡量的是检索系统的查全率。）在这里，recall@K代表前k个模型返回的源码函数中真正的源码函数占比。对于1-to-1匹配，真正的源码函数就是该待检测二进制函数的源码；对于我们的1-to-n匹配，在SFSs中，某个函数的根函数是真正的源码函数也可以算作阳性样本。在接下来的实验中我们会使用K
+= 1、10和50来测试。</p>
+<p>​ <strong>使用SFS大小（SFS size）来评估O2NMatcher成本</strong>。SFS
+size是已生成的SFSs数量比上原函数集的数量。因为新增的SFSs增加了资料库的大小，故可能影响查询匹配的时间。</p>
+<p>​
+<strong>使用precision、recall和F1-score来评估ECOCCJ48准确率。</strong></p>
+<h5 id="o2nmatcher的实现">1.5 O2NMatcher的实现</h5>
+<p>​
+在数据集标注工作上，我们使用<strong>Understand</strong>对源码做语法分析，使用<strong>IDA
+Pro</strong>来反汇编二进制文件。在FCG构建上，我们使用<strong>Understand</strong>来提取所有函数调用点，对源码生成FCG图，使用<strong>IDA
+Pro</strong>对二进制文件生成FCG图。在函数调用特征提取上，我们使用<strong>tree-sitter</strong>来提取函数体、函数定义和函数调用指令的特征，使用<strong>Understand</strong>提取函数调用次数特征。</p>
+<p>​
+在模型训练工作上，我们使用Python工具<strong><em>scikit-multilearn</em></strong>来实现ECOCCJ48模型和其他MCL方法。整个程序在Ubuntu
+18.04、Intel Xeon Gold 6266C、1024GB DDR4 RAM、Nvidia RTX3090
+GPU环境上运行。</p>
+<h4 id="对问题一的回答o2nmatcher的效果">2.
+对问题一的回答：O2NMatcher的效果</h4>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116190905.png" style="zoom:80%;" /></p>
+<h4 id="对问题二的回答sfss的效果">3. 对问题二的回答：SFSs的效果</h4>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116191213.png" style="zoom:80%;" /></p>
+<p>​ 上表比较了O2NMatcher、Bingo和ASM2Vec生成的SFSs与标准答案的结果。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116191540.png" style="zoom:80%;" /></p>
+<h4 id="对问题三的回答ecoccj48的效果">4.
+对问题三的回答：ECOCCJ48的效果</h4>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116205243.png" /></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116205306.png" style="zoom:80%;" /></p>
+<h4 id="对问题四的回答o2nmatcher的成本">5.
+对问题四的回答：O2NMatcher的成本</h4>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116205338.png" /></p>
+<h4 id="对问题五的回答特征选择的作用">6.
+对问题五的回答：特征选择的作用</h4>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230116205512.png" style="zoom:80%;" /></p>
+<h2 id="五问题">五、问题</h2>
+<ol type="1">
+<li><p>该方法模型怎么结合已有的方法？</p>
+<p>原来怎么比现在就怎么比，只是从源码库变成了SFS。</p></li>
+<li><p>SFSs怎么起作用？</p>
+<p>将可能内联的函数体放进原函数的新代码库。</p></li>
+<li><p>不平衡的数据集怎么处理的？</p>
+<p>“We use ensemble methods to handle the imbalanced dataset. The
+ensemble method trains the base classifiers on the randomly selected
+dataset and predicts the labels by ggregating the predictions from the
+base classifiers. As different base lassifiers are trained in different
+corpora, they can capture the inlining patterns of some rare
+labels”这部分没看懂什么意思</p></li>
+<li><p>在汇总SFS时：</p>
+<p>“Directly, there are two ways to aggregate the SFS: conduct inlining
+for the source functions in the SFSs such as the inlining during
+compilation or directly aggregate the content of all the functions in
+the SFS”，这两种方式具体什么区别？</p></li>
+</ol>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>Binary</tag>
+        <tag>ML</tag>
       </tags>
   </entry>
   <entry>
@@ -7533,6 +7693,8 @@ href="https://shawdox.github.io/2023/06/11/%5B技术积累%5DSyzkaller环境配�
 href="https://davejingtian.org/2017/06/01/understanding-kcov-play-with-fsanitize-coveragetrace-pc-from-the-user-space/#:~:text=kcov%20is%20a%20kernel%20feature%20used%20to%20support,patched%20to%20enable%20this%20feature%20where%20is%20propriate.">Understanding
 kcov – play with -fsanitize-coverage=trace-pc from the user space |
 davejingtian.org</a></li>
+<li><a
+href="https://blog.csdn.net/sinat_38816924/article/details/122048886">kcov-用于内核模糊测试的代码覆盖-CSDN博客</a></li>
 </ul></li>
 </ul>
 ]]></content>
