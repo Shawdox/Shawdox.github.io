@@ -7,6 +7,61 @@
 ]]></content>
   </entry>
   <entry>
+    <title>(论文阅读)FuzzBuilder- Automated building greybox fuzzing environment for C/C++ library</title>
+    <url>/2023/07/23/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91FuzzBuilder--Automated-building-greybox-fuzzing-environment-for-CC++-library/</url>
+    <content><![CDATA[<h1
+id="fuzzbuilder-automated-building-greybox-fuzzing-environment-for-cc-library">FuzzBuilder:
+Automated building greybox fuzzing environment for C/C++ library</h1>
+<blockquote>
+<p><strong>时间：</strong>2019</p>
+<p><strong>作者：</strong>Joonun Jang、Huy Kang
+Kim（三星研究院、首尔大学）</p>
+<p><strong>会议：</strong>ACSAC</p>
+<p><strong>开源：</strong>https://github.com/hksecurity/FuzzBuilder</p>
+</blockquote>
+<h2 id="abstract">Abstract</h2>
+<p>​
+Fuzzing是发现软件漏洞的一种有效方法，由于fuzzing发现的大多数错误都与安全漏洞有关，因此许多安全社区都对模糊测试这种验证软件安全性的自动化方法很感兴趣。然而，并非所有软件都能通过模糊测试进行测试，因为模糊测试需要运行环境，特别是可执行文件，值得注意的是，就库而言，大多数库实际上都没有相关的可执行文件。</p>
+<p>​
+因此，最先进的fuzzer在测试任意库方面存在局限性，为了克服这个问题，我们提出了
+FuzzBuilder，为库提供自动fuzzing
+environment。FuzzBuilder生成的可执行文件会调用库的 API
+函数，从而实现库模糊测试，此外，FuzzBuilder 生成的任何可执行文件都与 AFL
+等现有模糊器兼容。</p>
+<p>​ 我们通过测试开源库来评估 FuzzBuilder
+的整体性能。因此，我们在实现高代码覆盖率的同时发现了库中的未知错误。我们相信，FuzzBuilder
+可以帮助安全研究人员节省库模糊测试的设置成本和学习成本。</p>
+<span id="more"></span>
+<h2 id="background">Background</h2>
+<p>​
+编写库fuzzing代码时，首先要选择一个基本函数。此外，还需要调用与基础函数相关的其他函数，以实现足够的代码覆盖率。例如，库中特定功能的实现可分为一个或多个函数。此外，如果函数需要其他函数的返回值，则不能单独测试库中的特定函数，在这种情况下，应联合测试所有相关函数。因此，<strong>在编写库fuzzing代码时，应考虑调用函数序列而不是单个函数</strong>。Han
+等人[18]在他们的内核模糊器中引入了类似的 API
+模型概念，其中包括两类依赖关系：排序依赖关系和值依赖关系。</p>
+<p>​ 本文将函数序列定义为一组需要联合测试的函数。图 2
+显示了编写库模糊测试代码需要函数序列的原因:</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230723143028.png" style="zoom:50%;" /></p>
+<p>​ 依次调用init - insert - parse_A, and init - insert -
+parse_B可以获得最高的覆盖率。、</p>
+<p>​
+因此，我们提出了一种<u>通过使用单元测试中准备好的函数序列和测试输入来生成可执行文件和种子的方法</u>。虽然这种方法要求项目必须有单元测试，但如表
+2 所示，这种方法非常实用，因为大多数项目已经有了单元测试。</p>
+<h2 id="contribution">Contribution</h2>
+<ul>
+<li>我们提出了一种自动生成可执行文件以对library做fuzzing的新方法；</li>
+<li>为实用起见，生成的可执行文件与 AFL 等各种灰盒fuzzer兼容；</li>
+<li>我们将这种方法作为基于 LLVM 框架的工具 FuzzBuilder 来实现。</li>
+</ul>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230723143409.png" /></p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>Fuzzing</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>(论文阅读)RULF-Rust Library Fuzzing via API Dependency Graph Traversal</title>
     <url>/2023/07/22/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91RULF-Rust-Library-Fuzzing-via-API-Dependency-Graph-Traversal/</url>
     <content><![CDATA[<h1
@@ -10871,8 +10926,8 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901152049.png" /></p>
         <category>Paper</category>
       </categories>
       <tags>
-        <tag>Android</tag>
         <tag>Malware Classifiers</tag>
+        <tag>Android</tag>
       </tags>
   </entry>
   <entry>
