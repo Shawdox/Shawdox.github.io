@@ -200,6 +200,433 @@ B）。例如，在 Mat 类的构造函数中（图 1 中的第 18 行），UTOP
       </tags>
   </entry>
   <entry>
+    <title>(技术积累)How does AFL++ run a program?</title>
+    <url>/2023/07/23/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91How%20does%20AFL++%20run%20a%20program/</url>
+    <content><![CDATA[<h2 id="技术积累how-does-afl-run-a-program">(技术积累)How does AFL++ run
+a program?</h2>
+<blockquote>
+<p>前提：使用AFL++对开源程序fuzzing。</p>
+</blockquote>
+<p>​ 当对目标程序插桩完毕后，在一次运行中AFL++：</p>
+<blockquote>
+<ul>
+<li>如何准备运行的环境？</li>
+<li>如何获得程序的输入？</li>
+<li>如何判断程序是否崩溃/对应sanitizer是否触发？</li>
+<li>如何获取这一次的代码覆盖率并记录结果？</li>
+</ul>
+</blockquote>
+<span id="more"></span>
+<h2 id="using-child-process">Using child process</h2>
+<p>​
+使用Fuzzing最简单的思想就是调用execve()函数，其会加载新的子进程来运行指定的程序，设置好对应的运行环境。但这么做的问题是每次运行大部分的时间都在等待execve()加载环境、载入目标文件和库、解析符号地址等重复性工作上，这种重复的操作并不会为fuzzing带来好处，反而严重增加了成本。</p>
+<p>​
+AFL中使用了一种巧妙的手段来避免引入execve()导致的时间成本增加，其通过代码插桩与fork结合的方式，让程序停留在合适的位置以将算力聚焦于非重复操作上。</p>
+<h3 id="some-functions">1. Some functions</h3>
+<ul>
+<li><p><strong>exec</strong></p>
+<p>在Linux中，并不存在一个exec()的函数形式，exec指的是一组函数，一共有6个，分别是：<u>execl、execlp、execle、execv、execvp、execve</u>。<strong>execve()</strong>（执行文件）在父进程中fork一个子进程，在子进程中调用exec函数启动新的程序。</p></li>
+<li><p><strong>fork()</strong></p>
+<p>fork系统调用用于创建一个新进程，称为<strong>子进程</strong>，它与进程（称为系统调用fork的进程）同时运行，此进程称为<strong>父进程</strong>。创建新的子进程后，两个进程将执行fork（）系统调用之后的下一条指令。子进程使用相同的pc，相同的CPU寄存器，在父进程中使用的相同打开文件。</p>
+<p><strong>二者区别如下：</strong></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230723155221.png" style="zoom: 50%;" /></p></li>
+<li><p><strong>struct sigaction</strong></p>
+<ul>
+<li><p><strong>signal</strong>()</p>
+<blockquote>
+<pre class="line-numbers language-C" data-language="C"><code class="language-C">&gt;void (*signal(int sig, void (*func)(int)))(int)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>参数：</strong></p>
+<ul>
+<li><strong>sig：</strong>信号码，有以下几种：</li>
+</ul>
+<table>
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 89%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">宏</th>
+<th style="text-align: center;">信号</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">SIGABRT</td>
+<td style="text-align: center;">(Signal Abort) 程序异常终止。</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">SIGFPE</td>
+<td style="text-align: center;">(Signal Floating-Point Exception)
+算术运算出错，如除数为 0 或溢出（不一定是浮点运算）。</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">SIGILL</td>
+<td style="text-align: center;">(Signal Illegal Instruction)
+非法函数映象，如非法指令，通常是由于代码中的某个变体或者尝试执行数据导致的。</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">SIGINT</td>
+<td style="text-align: center;">(Signal Interrupt) 中断信号，如
+ctrl-C，通常由用户生成。</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">SIGSEGV</td>
+<td style="text-align: center;">(Signal Segmentation Violation)
+非法访问存储器，如访问不存在的内存单元。</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">SIGTERM</td>
+<td style="text-align: center;">(Signal Terminate)
+发送给本程序的终止请求信号。</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>func：信号处理函数指针，可以用预定义的SIG_IGN（忽略）、SIG_DFL（系统默认）、SIG_ERR（返回错误）</li>
+</ul>
+</blockquote></li>
+<li><p><strong>sigaction</strong>()</p>
+<blockquote>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token operator">></span><span class="token keyword">int</span> <span class="token function">sigaction</span><span class="token punctuation">(</span><span class="token keyword">int</span> signum<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">struct</span> <span class="token class-name">sigaction</span> <span class="token operator">*</span>act<span class="token punctuation">,</span><span class="token keyword">struct</span> <span class="token class-name">sigaction</span> <span class="token operator">*</span>oldact<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>参数：</strong></p>
+<ul>
+<li><strong>signum：</strong>要捕获的信号</li>
+<li><strong>act：</strong>接收到信号之后对信号进行处理的结构体</li>
+<li><strong>oldact：</strong>接收到信号之后，保存原来对此信号处理的各种方式与信号（可用来做备份）。如果不需要备份，此处可以填NULL</li>
+</ul>
+<p><strong>返回值：</strong></p>
+<ul>
+<li><strong>成功时：</strong>返回0</li>
+<li><strong>出错时：</strong>返回-1，并将errno设置为指示错误</li>
+</ul>
+</blockquote></li>
+<li><p>struct sigaction</p>
+<blockquote>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token operator">></span><span class="token keyword">struct</span> <span class="token class-name">sigaction</span><span class="token punctuation">&#123;</span>
+<span class="token operator">></span><span class="token keyword">void</span><span class="token punctuation">(</span><span class="token operator">*</span>sa_handler<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">// 旧的信号处理函数</span>
+<span class="token operator">></span><span class="token keyword">void</span><span class="token punctuation">(</span><span class="token operator">*</span>sa_sigaction<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">,</span><span class="token class-name">siginfo_t</span> <span class="token operator">*</span><span class="token punctuation">,</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">// 新的信号处理函数</span>
+<span class="token operator">></span><span class="token class-name">sigset_t</span>  sa_mask<span class="token punctuation">;</span><span class="token comment">// 信号阻塞集</span>
+<span class="token operator">></span><span class="token keyword">int</span>       sa_flags<span class="token punctuation">;</span><span class="token comment">// 信号的处理方式</span>
+<span class="token operator">></span><span class="token keyword">void</span><span class="token punctuation">(</span><span class="token operator">*</span>sa_restorer<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">// 己弃用</span>
+<span class="token operator">></span><span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li><strong>sa_handler,sa_sigaction：</strong>
+信号处量函数指针，和signal()里的函数指针用法一样，应根据sa_sigaction,
+sa_handler 两者之一赋值，其取值如：SIG_IGN 忽略该信号、SIG_DEL
+执行系统默认动作；</li>
+<li><strong>sa_mask：</strong>
+信号阻塞集，在信号处理函数执行过程中，临时屏蔽指定信号；</li>
+<li><strong>sa_flags：</strong>
+用于指定信号处理的行为，通常设为0，表默认属性，它可以是以下值的按位与组合</li>
+</ul>
+</blockquote></li>
+</ul></li>
+</ul>
+<h3 id="fuzzing-without-execve">2. Fuzzing without execve()</h3>
+<p>​ AFL的思路是：</p>
+<ul>
+<li><p><strong>通过对程序插桩，让程序在合适的位置停下等待fuzzer的指令</strong></p>
+<ul>
+<li>这时程序所需的运行环境已经加载完毕，但没有开始获取输入；</li>
+<li>指定环境变量<code>LD_BIND_NOW</code>=1，当LD_BIND_NOW被设置为非空值时，动态链接器会在程序启动时立即解析所有的符号。<u>这意味着符号解析工作不会延迟到实际用到该符号的时候，而是在程序加载时就会完成</u>：</li>
+</ul>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// from afl-forkserver.c</span>
+
+<span class="token comment">/* This should improve performance a bit, since it stops the linker from
+       doing extra work post-fork(). */</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">getenv</span><span class="token punctuation">(</span><span class="token string">"LD_BIND_LAZY"</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token function">setenv</span><span class="token punctuation">(</span><span class="token string">"LD_BIND_NOW"</span><span class="token punctuation">,</span> <span class="token string">"1"</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li>相反，如果没有设置<code>LD_BIND_NOW</code>环境变量，动态链接器会使用lazy
+binding的方式进行符号解析。lazy
+binding是一种延迟符号解析的机制，在实际使用到某个符号时再进行解析和绑定，这样可以节省程序启动时的时间和资源开销；</li>
+<li>这个合适的位置通常是待测程序的main函数。</li>
+</ul></li>
+<li><p><strong>当收到fuzzer的相关执行指令后，使用fork()创建子进程</strong></p>
+<ul>
+<li>fork()会对已经加载完成的程序创建完全相同的子进程副本，由子进程运行程序；</li>
+<li>得益于“copy-on-write”写时复制机制，对进程的复制是很快并且隔离性很好；</li>
+</ul></li>
+<li><p><strong>在父进程中，会将新加入进程的 PID
+转发给fuzzer，然后返回命令等待循环</strong></p></li>
+</ul>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230723164724.png" style="zoom:67%;" /></p>
+<p>​ 当开启<code>persistent mode</code>后，AFL++
+会在单个fork进程中对目标进行多次fuzzing测试，而不是为每次执行都分叉一个新进程。这是最有效的模糊方法，因为速度可以轻松快
+10 倍或 20 倍，而没有任何缺点，所有专业的fuzzing都会使用这种模式。</p>
+<h3 id="deep-into-the-code">3. Deep into the code</h3>
+<h5 id="afl的主体是afl-fuzz.c关于forkserver其负责的功能有">3.1
+AFL++的主体是<code>afl-fuzz.c</code>，关于forkserver，其负责的功能有：</h5>
+<ol type="1">
+<li>在main函数的开头初始化forkserver：</li>
+</ol>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token function">afl_fsrv_init</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>afl<span class="token operator">-></span>fsrv<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​ 该函数对fsrv数据结构中的相关值进行了初始化。</p>
+<ol start="2" type="1">
+<li><p>启动一个forkserver：</p>
+<p>首先，运行fuzz时会使用如下命令行参数：</p></li>
+</ol>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">alf-fuzz -i input_dir -o output_dir -- ./to_be_test @@<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​
+在while循环中使用getopt()函数读取命令行参数后，(argv+optind)指针会指向<code>./to_be_test</code>。后续的代码会将afl-&gt;fsrv.target_path设置为<code>argv[optind]</code>，然后从input_dir读取完test
+case后运行：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">//from afl.fuzz.c</span>
+<span class="token comment">// afl_fsrv_get_mapsize()函数会start一个forkserver</span>
+<span class="token comment">// 然后返回这个forkserver的fsrv->map_size属性</span>
+u32 new_map_size <span class="token operator">=</span> <span class="token function">afl_fsrv_get_mapsize</span><span class="token punctuation">(</span>
+     <span class="token operator">&amp;</span>afl<span class="token operator">-></span>fsrv<span class="token punctuation">,</span> afl<span class="token operator">-></span>argv<span class="token punctuation">,</span> <span class="token operator">&amp;</span>afl<span class="token operator">-></span>stop_soon<span class="token punctuation">,</span> afl<span class="token operator">-></span>afl_env<span class="token punctuation">.</span>afl_debug_child<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+afl_fsrv_get_mapsize()函数会首先调用afl_fsrv_start()，启动一个forkserver：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">//from afl.fuzz.c</span>
+<span class="token function">afl_fsrv_start</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>afl<span class="token operator">-></span>fsrv<span class="token punctuation">,</span> afl<span class="token operator">-></span>argv<span class="token punctuation">,</span> <span class="token operator">&amp;</span>afl<span class="token operator">-></span>stop_soon<span class="token punctuation">,</span> afl<span class="token operator">-></span>afl_env<span class="token punctuation">.</span>afl_debug_child<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>​
+该函数会检查相关管道设置，重定向进程的0、1、2号文件描述符，然后fork一个进程，然后这个进程execv
+targetBinary
+，targetBinary中也启动的了fork（），相当于fuzzer程序是实际被fork程序的祖祖父进程。</p>
+<figure>
+<img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230725142813.png"
+alt="forkserver设计" />
+<figcaption aria-hidden="true">forkserver设计</figcaption>
+</figure>
+<h5
+id="在forkserver.h与forkserver.c文件中其定义了相关数据结构afl_forkserver">3.2
+在<code>forkserver.h</code>与<code>forkserver.c</code>文件中，其定义了相关数据结构<code>afl_forkserver</code>：</h5>
+<p>​ forkserver的关键函数是afl_fsrv_start()：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// 设置状态管道st_pipe和控制管道ctl_pipe</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">pipe</span><span class="token punctuation">(</span>st_pipe<span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token function">pipe</span><span class="token punctuation">(</span>ctl_pipe<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token function">PFATAL</span><span class="token punctuation">(</span><span class="token string">"pipe() failed"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
+<span class="token comment">//last_run_timed_out 为 u32，以 4 字节数组的形式发送给子进程</span>
+fsrv<span class="token operator">-></span>last_run_timed_out <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token comment">// fork出一个子进程</span>
+fsrv<span class="token operator">-></span>fsrv_pid <span class="token operator">=</span> <span class="token function">fork</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// 若fork成功，则父进程即为fuzzer</span>
+<span class="token comment">// 子进程即为目标程序进程，也就是fork server</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>fsrv<span class="token operator">-></span>fsrv_pid <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token function">PFATAL</span><span class="token punctuation">(</span><span class="token string">"fork() failed"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>fsrv<span class="token operator">-></span>fsrv_pid<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+     <span class="token comment">// 子进程</span>
+     <span class="token comment">// ......</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">// 父进程</span>
+<span class="token comment">// 若fuzzer从server中读取了四个字节的hello ，</span>
+<span class="token comment">// 那么forkserver程序就设置成功了，如果没有，</span>
+<span class="token comment">// 接下来的代码就是检查错误。</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>rlen <span class="token operator">==</span> <span class="token number">4</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token comment">//判断读取是否成功</span>
+    <span class="token function">OKF</span><span class="token punctuation">(</span><span class="token string">"All right - fork server is up."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h6 id="子进程forkserver">3.2.1 子进程—&gt;forkserver</h6>
+<p>​
+可以看到，这里fork了一个进程，在子进程中，首先设置该进程对SIGPIPE的处理方式：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// enable terminating on sigpipe in the childs</span>
+<span class="token comment">// 当一个进程试图向已关闭的管道写入数据时，操作系统会发送SIGPIPE信号给该进程。</span>
+<span class="token keyword">struct</span> <span class="token class-name">sigaction</span> sa<span class="token punctuation">;</span>
+<span class="token function">memset</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token operator">&amp;</span>sa<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>sa<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+sa<span class="token punctuation">.</span>sa_handler <span class="token operator">=</span> SIG_DFL<span class="token punctuation">;</span>
+<span class="token function">sigaction</span><span class="token punctuation">(</span>SIGPIPE<span class="token punctuation">,</span> <span class="token operator">&amp;</span>sa<span class="token punctuation">,</span> <span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+然后进行一些诸如内存、文件描述符之类的资源设置后（这里略）。<u><strong>在完成相关管道、文件描述符的配置后，afl_fsrv_start()函数会在子进程内使用setsid()函数使子进程独立，然后在子进程内直接运行待测试程序</strong></u>:</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">/* Isolate the process and configure standard descriptors. If out_file is
+   specified, stdin is /dev/null; otherwise, out_fd is cloned instead. */</span>
+<span class="token comment">// 创建一个守护进程</span>
+<span class="token function">setsid</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token punctuation">(</span>debug_child_output<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+     <span class="token comment">// 如果没有指定debug_child_output，则</span>
+     <span class="token comment">// 重定向文件描述符1和2到dev_null_fd</span>
+     <span class="token comment">// 因为dev_null_fd=-1，子进程将不输出</span>
+     <span class="token function">dup2</span><span class="token punctuation">(</span>fsrv<span class="token operator">-></span>dev_null_fd<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+     <span class="token function">dup2</span><span class="token punctuation">(</span>fsrv<span class="token operator">-></span>dev_null_fd<span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// 如果指定了out_file，则文件描述符0重定向到dev_null_fd，否则重定向到out_fd</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>fsrv<span class="token operator">-></span>use_stdin<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+     <span class="token function">dup2</span><span class="token punctuation">(</span>fsrv<span class="token operator">-></span>dev_null_fd<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+     <span class="token function">dup2</span><span class="token punctuation">(</span>fsrv<span class="token operator">-></span>out_fd<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+     <span class="token function">close</span><span class="token punctuation">(</span>fsrv<span class="token operator">-></span>out_fd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 设置管道，并关闭一些不必要的管道和文件描述符：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// 设置控制和状态管道，关闭一些不需要的文件描述符</span>
+<span class="token comment">// FORKSRV_FD = 198</span>
+<span class="token comment">// 198号fd用于ctl管道读操作</span>
+<span class="token comment">// 199号fd用于st管道写操作</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">dup2</span><span class="token punctuation">(</span>ctl_pipe<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> FORKSRV_FD<span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token function">PFATAL</span><span class="token punctuation">(</span><span class="token string">"dup2() failed"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">dup2</span><span class="token punctuation">(</span>st_pipe<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span> FORKSRV_FD <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token function">PFATAL</span><span class="token punctuation">(</span><span class="token string">"dup2() failed"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
+
+<span class="token function">close</span><span class="token punctuation">(</span>ctl_pipe<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">close</span><span class="token punctuation">(</span>ctl_pipe<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
+<span class="token function">close</span><span class="token punctuation">(</span>st_pipe<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">close</span><span class="token punctuation">(</span>st_pipe<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">close</span><span class="token punctuation">(</span>fsrv<span class="token operator">-></span>out_dir_fd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">close</span><span class="token punctuation">(</span>fsrv<span class="token operator">-></span>dev_null_fd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">close</span><span class="token punctuation">(</span>fsrv<span class="token operator">-></span>dev_urandom_fd<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 如果<code>LD_BIND_LAZY</code>不为1则设置为1（原因参考上文）：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">getenv</span><span class="token punctuation">(</span><span class="token string">"LD_BIND_LAZY"</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token function">setenv</span><span class="token punctuation">(</span><span class="token string">"LD_BIND_NOW"</span><span class="token punctuation">,</span> <span class="token string">"1"</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​ 然后使用execv运行程序：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// init_child_func == fsrv_exec_child</span>
+fsrv<span class="token operator">-></span><span class="token function">init_child_func</span><span class="token punctuation">(</span>fsrv<span class="token punctuation">,</span> argv<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">/* Use a distinctive bitmap signature to tell the parent about execv()
+       falling through. */</span>
+<span class="token comment">// 运行失败这段代码就会执行</span>
+<span class="token comment">// 运行成功则不会</span>
+<span class="token operator">*</span><span class="token punctuation">(</span>u32 <span class="token operator">*</span><span class="token punctuation">)</span>fsrv<span class="token operator">-></span>trace_bits <span class="token operator">=</span> EXEC_FAIL_SIG<span class="token punctuation">;</span>
+<span class="token function">FATAL</span><span class="token punctuation">(</span><span class="token string">"Error: execv to target failed\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ <code>init_child_func</code>定义如下：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">fsrv_exec_child</span><span class="token punctuation">(</span><span class="token class-name">afl_forkserver_t</span> <span class="token operator">*</span>fsrv<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>argv<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>fsrv<span class="token operator">-></span>qemu_mode <span class="token operator">||</span> fsrv<span class="token operator">-></span>cs_mode<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">setenv</span><span class="token punctuation">(</span><span class="token string">"AFL_DISABLE_LLVM_INSTRUMENTATION"</span><span class="token punctuation">,</span> <span class="token string">"1"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// 运行target_path处的程序</span>
+  <span class="token function">execv</span><span class="token punctuation">(</span>fsrv<span class="token operator">-></span>target_path<span class="token punctuation">,</span> argv<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">WARNF</span><span class="token punctuation">(</span><span class="token string">"Execv failed in forkserver."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+<code>fsrv.target_path</code>就是要fuzz的程序的地址，其经过check_binary()函数初始化。</p>
+<h6 id="父进程fuzzer">3.2.2 父进程—&gt;fuzzer</h6>
+<p>​
+父进程会设置相关管道，并使用read_s32_timed()函数从子进程中读取信息，同时进行相关超时处理：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">/* Wrapper for select() and read(), reading a 32 bit var.
+  Returns the time passed to read.
+  If the wait times out, returns timeout_ms + 1;
+  Returns 0 if an error occurred (fd closed, signal, ...); */</span>
+<span class="token keyword">static</span> u32 <span class="token keyword">__attribute__</span><span class="token punctuation">(</span><span class="token punctuation">(</span>hot<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token function">read_s32_timed</span><span class="token punctuation">(</span>s32 fd<span class="token punctuation">,</span> s32 <span class="token operator">*</span>buf<span class="token punctuation">,</span> u32 timeout_ms<span class="token punctuation">,</span> <span class="token keyword">volatile</span> u8 <span class="token operator">*</span>stop_soon_p<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>	
+  <span class="token comment">// 配置相关变量</span>
+  <span class="token comment">// ......</span>
+  <span class="token comment">// set exceptfds as well to return when a child exited/closed the pipe. </span>
+restart_select<span class="token operator">:</span>
+  <span class="token comment">// 使用select函数阻塞进程，从readfds中读取信息</span>
+  sret <span class="token operator">=</span> <span class="token function">select</span><span class="token punctuation">(</span>fd <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>readfds<span class="token punctuation">,</span> <span class="token constant">NULL</span><span class="token punctuation">,</span> <span class="token constant">NULL</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>timeout<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">likely</span><span class="token punctuation">(</span>sret <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  restart_read<span class="token operator">:</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">*</span>stop_soon_p<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token comment">// Early return - the user wants to quit.</span>
+      <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    len_read <span class="token operator">=</span> <span class="token function">read</span><span class="token punctuation">(</span>fd<span class="token punctuation">,</span> <span class="token punctuation">(</span>u8 <span class="token operator">*</span><span class="token punctuation">)</span>buf<span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    
+    <span class="token comment">// ......</span>
+       
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">likely</span><span class="token punctuation">(</span>len_read <span class="token operator">==</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>  <span class="token comment">// for speed we put this first</span>
+      <span class="token comment">// ensure to report 1 ms has passed (0 is an error)</span>
+      <span class="token keyword">return</span> exec_ms <span class="token operator">></span> <span class="token number">0</span> <span class="token operator">?</span> exec_ms <span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">unlikely</span><span class="token punctuation">(</span>len_read <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span> <span class="token operator">&amp;&amp;</span> errno <span class="token operator">==</span> EINTR<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">goto</span> restart_read<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">unlikely</span><span class="token punctuation">(</span>len_read <span class="token operator">&lt;</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">unlikely</span><span class="token punctuation">(</span><span class="token operator">!</span>sret<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token operator">*</span>buf <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> timeout_ms <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">unlikely</span><span class="token punctuation">(</span>sret <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">likely</span><span class="token punctuation">(</span>errno <span class="token operator">==</span> EINTR<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">goto</span> restart_select<span class="token punctuation">;</span>
+    <span class="token operator">*</span>buf <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>  <span class="token comment">// not reached</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 可以看到，如果返回0代表出错，返回timeout_ms + 1代表超时。</p>
+<p>​
+接着判断从子进程读取到的信息的长度，如果读取到4字节的hello信息则代表forkserver初始化成功，<u><strong>父进程函数直接返回，继续执行fuzzer</strong></u>，子进程保留运行等待fuzzer指令：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">if</span> <span class="token punctuation">(</span>rlen <span class="token operator">==</span> <span class="token number">4</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token comment">// 错误/超时处理</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>status <span class="token operator">&amp;</span> FS_OPT_ERROR<span class="token punctuation">)</span> <span class="token operator">==</span> FS_OPT_ERROR<span class="token punctuation">)</span>
+      <span class="token function">report_error_and_exit</span><span class="token punctuation">(</span><span class="token function">FS_OPT_GET_ERROR</span><span class="token punctuation">(</span>status<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+           <span class="token comment">//......</span>
+      <span class="token punctuation">&#125;</span>
+	<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>status <span class="token operator">&amp;</span> FS_OPT_ENABLED<span class="token punctuation">)</span> <span class="token operator">==</span> FS_OPT_ENABLED<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+          <span class="token comment">//......</span>
+     <span class="token punctuation">&#125;</span>
+     <span class="token comment">// 如果forkserver初始化成功，直接退出父函数</span>
+     <span class="token comment">// 因为子进程里设置了setsid，故其仍然继续运行</span>
+     <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>fsrv<span class="token operator">-</span>last_run_time_out<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+     <span class="token comment">// 读取超时处理</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">// 相关错误处理</span>
+<span class="token comment">// ......</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+注意到，forkserver与待测试程序之间的关系并不是两个独立的程序，<strong><u>forkserver是经过代码插桩以后的待测试程序</u></strong>，其可以在相关符号加载完成后等待fuzzer的指令，然后在循环中不断fork执行程序。</p>
+<h5 id="代码插桩">3.3 代码插桩</h5>
+<p>​
+当forkserver初始化后，由于使用execv直接运行待测试程序，按理来说其应该直接执行，并不会有forkserver的功能。但在程序编译时进行了代码插桩，execv后的子进程其会在main函数停止，等待fuzzer的命令，具体的插桩分析见Reference:star:。</p>
+<h2 id="get-the-inputoutput">Get the input/output</h2>
+<h2 id="reference">Reference</h2>
+<ul>
+<li>Forkserver of AFL:
+<ul>
+<li><a
+href="https://afl-1.readthedocs.io/en/latest/about_afl.html?highlight=fork#the-fork-server">More
+about AFL — AFL 2.53b documentation (afl-1.readthedocs.io)</a></li>
+<li><a
+href="https://lcamtuf.blogspot.com/2014/10/fuzzing-binaries-without-execve.html">lcamtuf's
+old blog: Fuzzing random programs without execve()</a></li>
+<li><a
+href="https://blog.csdn.net/Little_Bro/article/details/122694054">AFL-Unicorn中的fork
+server机制详解 CSDN博客</a></li>
+<li><a
+href="https://github.com/AFLplusplus/AFLplusplus/blob/7f17a94349830a54d2c899f56b149c0d7f9ffb9c/docs/env_variables.md">AFLplusplus/docs/env_variables.md
+at 7f17a94349830a54d2c899f56b149c0d7f9ffb9c · AFLplusplus/AFLplusplus
+(github.com)</a></li>
+<li>:star:[<a href="https://bbs.kanxue.com/thread-254705.htm">原创]AFL
+afl_fuzz.c
+详细分析-二进制漏洞-看雪-安全社区|安全招聘|kanxue.com</a></li>
+<li>:star:<a
+href="https://rk700.github.io/2017/12/28/afl-internals/">AFL内部实现细节小记
+- 记事本 (rk700.github.io)</a></li>
+</ul></li>
+<li>System process：
+<ul>
+<li><a
+href="https://blog.csdn.net/lqy971966/article/details/110818165">wait 和
+waitpid 详解及代码示例_-CSDN博客</a></li>
+<li><a
+href="https://baike.baidu.com/item/fork/7143171?fromModule=lemma_inlink">fork（函数）_百度百科
+(baidu.com)</a></li>
+<li><a
+href="https://zhuanlan.zhihu.com/p/148127537">fork和execve和Linux内核的一般执行过程
+- 知乎 (zhihu.com)</a></li>
+<li><a
+href="https://blog.csdn.net/qq_20853741/article/details/113547906">LINUX信号处理（sigaction信号捕获函数：struct
+sigaction）CSDN博客</a></li>
+<li><a
+href="https://www.cnblogs.com/wuyepeng/p/9745573.html">select函数及fd_set介绍
+- 博客园</a></li>
+<li><a
+href="https://blog.csdn.net/qq_44198589/article/details/110206494">Linux
+signal()和kill()_CSDN博客</a></li>
+</ul></li>
+<li>C/C++:
+<ul>
+<li><a
+href="https://blog.csdn.net/afei__/article/details/81261879">C/C++
+命令解析：getopt 方法详解和使用示例_CSDN博客</a></li>
+<li><a href="http://www.daileinote.com/computer/c_base/14">linux
+c解析命令行选项getopt、optarg、optind、opterr、optopt - 戴磊笔记
+(daileinote.com)</a></li>
+<li><a
+href="https://blog.csdn.net/jinmie0193/article/details/79875662">Linux
+access函数讲解_CSDN博客</a></li>
+<li><a
+href="https://blog.csdn.net/asjbfjsb/article/details/80295375">linux系统调用函数
+lstat--获取文件属性 CSDN博客</a></li>
+<li><a
+href="https://blog.csdn.net/luoliwansui/article/details/87348705">明晰argc
+-= optind, argv += optind为什么是跳过已读取的参数_CSDN博客</a></li>
+</ul></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>Fuzzing</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>(论文阅读)FuzzBuilder- Automated building greybox fuzzing environment for C/C++ library</title>
     <url>/2023/07/23/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91FuzzBuilder--Automated-building-greybox-fuzzing-environment-for-CC++-library/</url>
     <content><![CDATA[<h1
