@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>(论文阅读)★Finding Unstable Code via Compiler-Driven Differential Testing | Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Fuzzing" />
+  
+  
+  
+    <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
+  
+  
+  <meta name="description" content="Finding Unstable Code via Compiler-Driven Differential Testing  时间：2023 作者：Shaohua Li、Zhendong Su（苏黎世联邦理工） 会议：ASPLOS（CCF-A） 开源：shao-hua-li&#x2F;compdiff (github.com)  Abstract ​ 不稳定的代码是指由于程序中存在未">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(论文阅读)★Finding Unstable Code via Compiler-Driven Differential Testing">
+<meta property="og:url" content="http://example.com/2023/07/27/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Finding-Unstable-Code-via-Compiler-Driven-Differential-Testing/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="Finding Unstable Code via Compiler-Driven Differential Testing  时间：2023 作者：Shaohua Li、Zhendong Su（苏黎世联邦理工） 会议：ASPLOS（CCF-A） 开源：shao-hua-li&#x2F;compdiff (github.com)  Abstract ​ 不稳定的代码是指由于程序中存在未">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230727163600.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230727165335.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230727165850.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230727170655.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230727172424.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230727210431.png">
+<meta property="article:published_time" content="2023-07-27T07:43:41.893Z">
+<meta property="article:modified_time" content="2023-07-27T13:24:04.540Z">
+<meta property="article:author" content="Shaw">
+<meta property="article:tag" content="Fuzzing">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230727163600.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-【论文阅读】Finding-Unstable-Code-via-Compiler-Driven-Differential-Testing" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      (论文阅读)★Finding Unstable Code via Compiler-Driven Differential Testing
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/07/27/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Finding-Unstable-Code-via-Compiler-Driven-Differential-Testing/" class="article-date">
+	  <time datetime="2023-07-27T07:43:41.893Z" itemprop="datePublished">七月 27, 2023</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1
+id="finding-unstable-code-via-compiler-driven-differential-testing">Finding
+Unstable Code via Compiler-Driven Differential Testing</h1>
+<blockquote>
+<p><strong>时间：</strong>2023</p>
+<p><strong>作者：</strong>Shaohua Li、Zhendong Su（苏黎世联邦理工）</p>
+<p><strong>会议：</strong>ASPLOS（CCF-A）</p>
+<p><strong>开源：</strong><a
+target="_blank" rel="noopener" href="https://github.com/shao-hua-li/compdiff/">shao-hua-li/compdiff
+(github.com)</a></p>
+</blockquote>
+<h2 id="abstract">Abstract</h2>
+<p>​
+不稳定的代码是指由于程序中存在未定义行为（UB），导致运行时语义不一致或不稳定的代码。编译器通过假设未定义行为永远不会发生来利用UB，从而生成高效但潜在语义不一致的二进制文件。实践者们在设计动态工具（例如sanitizers）来处理常见的UB问题时已付出了大量研究和工程努力。然而，目前的技术仍面临一个重大挑战，即如何检测那些超出当前技术范围的UB问题。</p>
+<p>​ 在本文中，我们介绍了一种名为Compiler-driven differential
+testing（CompDiff）的简单而有效的方法，用于发现C/C++程序中的不稳定代码。CompDiff利用了一个事实，即当编译不稳定代码时，不同的编译器实现可能会生成语义上不一致的二进制文件。<strong>我们的主要方法是检查相同输入上不同二进制文件的输出。输出的差异可能表明存在不稳定的代码。为了在实际程序中检测不稳定代码，我们还将CompDiff集成到<u>AFL++</u>中，这是最常用且积极维护的通用模糊测试工具。</strong></p>
+<p>​
+尽管CompDiff的方法简单，但实践中非常有效：在Juliet基准程序上，相比于sanitizers，CompDiff独特地检测到1,409个错误；在23个流行的开源C/C++项目中，CompDiff-AFL++发现了78个新错误，其中52个已经被开发人员修复，而36个无法通过sanitizers检测出来。我们的评估还揭示了一个事实，即CompDiff的设计并不是为了取代当前的UB检测工具，而是为它们提供补充。</p>
+<span id="more"></span>
+<h2 id="background">Background</h2>
+<p>​
+<u>对于包含未定义行为的代码，不同的编译器实现可能会生成语义不同的二进制文件。</u><strong>之前的研究
+[47, 48]
+表明，未定义行为可能会导致优化不稳定代码，即编译器优化可能会意外丢弃的代码。</strong></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230727163600.png" style="zoom:50%;" /></p>
+<p>​ 如上图Line9的if语句尝试处理可能出现的整数溢出，该语句（offset+len
+&lt;
+offset）只有在整数溢出时才可能成立。但是，编译器可以在假设未定义行为从未发生的情况下进行任意优化操作，结果就是在clang
+-O2参数下移除了9-11行代码，在-O0下则不会。</p>
+<p>​
+一方面，这个问题会导致优化后的二进制文件出现安全漏洞，因为大量非法内存数据可能会被转储。另一方面，它破坏了代码的功能正确性，因为由不同编译器编译的二进制文件可能会产生不同的输出结果。</p>
+<h2 id="contribution">Contribution</h2>
+<ul>
+<li>我们提出的 <strong>CompDiff</strong>
+是一种简单、直接但有效的查找不稳定代码的方法;</li>
+<li>我们将 CompDiff 集成到AFL++中;</li>
+<li>我们在基准程序和实际程序上对 CompDiff 进行了评估，结果表明，CompDiff
+对sanitizer有明显的补充作用。</li>
+</ul>
+<h2 id="examples">Examples</h2>
+<h4 id="example-1-invalid-pointer-comparison">Example 1: Invalid pointer
+comparison</h4>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230727165335.png" style="zoom:50%;" /></p>
+<p>​
+上图是CompDiff在Binutils中找到的不稳定代码样例，指针<code>look_for</code>和<code>saved_start</code>分别指向不同的对象。使用关系运算符对指向不同的对象进行比较是一个未定义行为，并且已有的sanitizer并不能对其进行检测，因为没办法设计一个合理的监测机制。</p>
+<p>​ 但CompDiff
+可以轻松检测到这一问题，因为不同编译器实现对if语句的评估方式不同，因此会观察到不同的输出结果。</p>
+<h4
+id="example-2-evaluation-order-of-subexpressions-with-conflict-side-effects">Example
+2: Evaluation order of subexpressions with conflict side effects</h4>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230727165850.png" style="zoom:50%;" /></p>
+<p>​
+上图是从Tcpdump中找到的不稳定代码样例，第九行通过调用DP_PRINT函数来dump信息，并且该函数的两个参数是函数GET_LINKADDR_STRING的返回值。</p>
+<p>​
+首先，函数GET_LINKADDR_STRING使用<strong><u><em>静态</em></u></strong>字符数组缓冲区来存储生成的字符串，缓冲区指向的内存区域将在函数调用中共享。<u>由于该函数有两次调用，第一次调用存储在缓冲区中的结果将被第二次调用覆盖。因此，在转储的字符串中，who-is
+和 tell 这两个字段总是相同的</u>。</p>
+<p>​
+其次，由于语言规范对函数参数的评估顺序没有限制，不同的编译器可能会以不同的顺序评估这两次
+GET_LINKADDR_STRING 调用。如果我们分别用 gcc 和 clang 编译
+Tcpdump，得到的两个二进制文件会以相反的顺序评估 ND_PRINT
+的参数，从而导致转储字符串不一致。具体来说，clang
+会从第一个到最后一个评估参数，即 p2 会同时转储到 who-is 和 tell；而 gcc
+会从最后一个到第一个评估参数，即 p1 会同时转储到两个属性。</p>
+<p>​
+目前已有的sanitizer没法发现这个问题，要扩展sanitizer以支持此类检测，需要设计一个新的检查器，检查多个子表达式是否会对冲突内存区域产生副作用，但如何实现这样的检查器仍是未知数。</p>
+<h4 id="example-3-uninitialized-memory-usage">Example 3: Uninitialized
+memory usage</h4>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230727170655.png" style="zoom:50%;" /></p>
+<p>​
+上图给出了一个由于使用了未初始化变量而导致不稳定的代码片段。开发人员可能会认为，虽然变量<code>l</code>未初始化，但其初始随机值应在第
+6 行被 <code>is</code>中的内容覆盖。<u>然而，在
+<code>is</code>为空字符串的情况下，变量
+<code>l</code>将保持不变</u>，然后，未初始化的值将用于剩余的执行过程，在本例中将打印输出到
+ostream。</p>
+<p>​
+虽然MemorySanitizer支持检测未初始化内存的使用，其中未初始化值必须用于确定代码分支，例如，if语句依赖于未初始化值。<u>为避免误报，它不支持示例中所示的情况</u>。但CompDiff-AFL++
+可以检测到这一问题，因为：</p>
+<p>​ 1）后端
+AFL++可以生成导致变量为空的测试样例，从而使不同二进制文件中的
+<code>l</code>不同；</p>
+<p>​ 2）CompDiff 可以捕获不同的输出。</p>
+<h2 id="model">Model</h2>
+<h3 id="workflow-of-compdiff">Workflow of CompDiff</h3>
+<blockquote>
+<ol type="1">
+<li>找到一些自身完善的编译器C<sub>i</sub>；</li>
+<li>用这些编译器编译程序P得到多个二进制文件B<sub>i</sub>；</li>
+<li>找到一个输入集L；</li>
+<li>在每个B<sub>i</sub>上运行L，得到输出O<sub>i</sub>，比较其异同。</li>
+</ol>
+</blockquote>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230727172424.png" style="zoom:50%;" /></p>
+<h3 id="starcompdiff-afl">:star:CompDiff-AFL++</h3>
+<p>​
+在CompDiff结合AFL++的过程中，从一份待测试源码编译了若干个二进制程序，其中一个<span
+class="math inline">\(B_{fuzz}\)</span>是用AFL自带的编译器插桩编译完成的，其就是正常使用AFL++时的工作流程，编译器（如afl-clang-fast）会在二进制程序中插入forkserver、覆盖率反馈以及可选的sanitizer功能。其余的二进制程序都是从待测试编译器中编译而来的普通二进制程序，为了快速运行，我们在其中插入了AFL的forkserver功能。</p>
+<h4 id="instrumentation-on-ℬ𝑖">Instrumentation on ℬ𝑖</h4>
+<p>​
+每个Bi由不同的（编译器+优化参数）配置编译而成，并对其进行代码插桩以实现forkserver，forkserver的具体机制见：<a
+target="_blank" rel="noopener" href="https://shawdox.github.io/2023/07/23/%5B技术积累%5DHow%20does%20AFL++%20run%20a%20program/">(技术积累)How
+does AFL++ run a program? | Shaw (shawdox.github.io)</a></p>
+<h4 id="output-examination">Output examination</h4>
+<p>​
+默认情况下AFL++会丢弃待测试程序的输出，这里可以使用dup2()函数将其重定向到指定的文件，然后通过检查输出文件的checksum来判断是否有discrepancy。这里我们使用了AFL++支持的MurmurHash3哈希函数来计算checksum。</p>
+<h4 id="bug-triggering-inputs">Bug-triggering inputs</h4>
+<p>​ 我们会将引发输出discrepancy的所有输入保存到一个单独的目录
+"diffs/"中，以便将来进行诊断。与普通fuzzing中的崩溃触发输入类似，有许多输入会触发相同的错误，自动识别独特的差异并非易事，尤其是在differential
+testing的情况下。目前，<u>我们依靠人工分析报告的差异来分流错误报告</u>。</p>
+<h2 id="evaluation">Evaluation</h2>
+<h3 id="测试环境">1. 测试环境</h3>
+<ul>
+<li><p><strong>版本信息：</strong></p>
+<p>​
+在我们的测试中，使用了<code>gcc 11.1.0</code>和<code>clang 13.0.1</code>（当时最新的版本）作为测试的后端编译器，在每个编译器中都会测试<code>-O0</code>,
+<code>-O1</code>,<code>-O2</code>,<code>-O3</code>,
+和<code>-Os</code>优化选项，故一共有10中不同的编译配置选项。AFL++的版本是3.15a。</p></li>
+<li><p><strong>数据集：</strong></p>
+<ol type="1">
+<li><p>Juliet test suite</p></li>
+<li><p>23 个维护良好的开源 C/C++ 项目</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230727210431.png" style="zoom:50%;" /></p></li>
+</ol></li>
+<li><p><strong>对比：</strong></p>
+<ol type="1">
+<li>3种广泛使用的静态分析工具：Coverity [40]、Cppcheck [12] 和 Infer
+[31]；</li>
+<li>Sanitizers：ASan、UBSan、MSan；</li>
+</ol></li>
+</ul>
+<h3 id="测试结果">2. 测试结果</h3>
+<p>​ 测试分为两个部分：在Juliet test
+suite上测试用于测试CompDiff的effectiveness；在真实的项目上测试其检测bug的能力。</p>
+<h4 id="effectiveness-of-compdiff-in-benchmark-programs">2.1
+Effectiveness of CompDiff in Benchmark Programs</h4>
+<ol type="1">
+<li>与 CompDiff 相比，静态工具的false
+positive不可忽略，并且错误检测率相对较低。</li>
+<li>CompDiff 可以发现许多额外的错误，是对sanitizer的补充；</li>
+<li>与每种sanitizer相比，CompDiff 的bug覆盖率最高;</li>
+<li>CompDiff 会遗漏某些类型的错误;</li>
+<li>CompDiff 没有false postive。</li>
+</ol>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230727205349.png" /></p>
+<h4
+id="the-bug-detection-capability-of-compdiffafl-in-real-world-software">2.2
+The bug detection capability of CompDiffAFL++ in real-world
+software</h4>
+<pre><code>在真实的C/C++项目上使用CompDiff，其直接利用其Unit test作为初始种子进行fuzzing：</code></pre>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230727211612.png" /></p>
+<h2 id="小记">小记</h2>
+<p><strong>CompDiff文章的优点：</strong></p>
+<ol type="1">
+<li><strong>数据分析十分详尽</strong>，利用Juliet test
+suite测试其effectiveness，利用开源项目测试其发现bug的真实能力，并对其发现bug的能力、误报率、与其它工具的对比、不同编译选项的影响都分析的十分到位，图表清晰明了，分析数据详实，很有说服力；</li>
+<li>idea立意很好，通过examples很好的说明了为什么已有的工具没法解决一些未定义行为，而CompDiff可以，突出了其优点；</li>
+<li>[待更新]</li>
+</ol>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2023/07/24/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91UTOPIA-Automatic-Generation-of-Fuzz-Driver-using-Unit-Tests/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">(论文阅读)UTOPIA-Automatic Generation of Fuzz Driver using Unit Tests</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#finding-unstable-code-via-compiler-driven-differential-testing"><span class="nav-number">1.</span> <span class="nav-text">Finding
+Unstable Code via Compiler-Driven Differential Testing</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#abstract"><span class="nav-number">1.1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#background"><span class="nav-number">1.2.</span> <span class="nav-text">Background</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#contribution"><span class="nav-number">1.3.</span> <span class="nav-text">Contribution</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#examples"><span class="nav-number">1.4.</span> <span class="nav-text">Examples</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#example-1-invalid-pointer-comparison"><span class="nav-number">1.4.0.1.</span> <span class="nav-text">Example 1: Invalid pointer
+comparison</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#example-2-evaluation-order-of-subexpressions-with-conflict-side-effects"><span class="nav-number">1.4.0.2.</span> <span class="nav-text">Example
+2: Evaluation order of subexpressions with conflict side effects</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#example-3-uninitialized-memory-usage"><span class="nav-number">1.4.0.3.</span> <span class="nav-text">Example 3: Uninitialized
+memory usage</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#model"><span class="nav-number">1.5.</span> <span class="nav-text">Model</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#workflow-of-compdiff"><span class="nav-number">1.5.1.</span> <span class="nav-text">Workflow of CompDiff</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#starcompdiff-afl"><span class="nav-number">1.5.2.</span> <span class="nav-text">:star:CompDiff-AFL++</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#instrumentation-on-%E2%84%AC%F0%9D%91%96"><span class="nav-number">1.5.2.1.</span> <span class="nav-text">Instrumentation on ℬ𝑖</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#output-examination"><span class="nav-number">1.5.2.2.</span> <span class="nav-text">Output examination</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#bug-triggering-inputs"><span class="nav-number">1.5.2.3.</span> <span class="nav-text">Bug-triggering inputs</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#evaluation"><span class="nav-number">1.6.</span> <span class="nav-text">Evaluation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83"><span class="nav-number">1.6.1.</span> <span class="nav-text">1. 测试环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="nav-number">1.6.2.</span> <span class="nav-text">2. 测试结果</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#effectiveness-of-compdiff-in-benchmark-programs"><span class="nav-number">1.6.2.1.</span> <span class="nav-text">2.1
+Effectiveness of CompDiff in Benchmark Programs</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#the-bug-detection-capability-of-compdiffafl-in-real-world-software"><span class="nav-number">1.6.2.2.</span> <span class="nav-text">2.2
+The bug detection capability of CompDiffAFL++ in real-world
+software</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E8%AE%B0"><span class="nav-number">1.7.</span> <span class="nav-text">小记</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+<footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2023 Shaw All Rights Reserved.
+        
+          <span id="busuanzi_container_site_pv">
+            本站总访问量<span id="busuanzi_value_site_pv"></span>次
+          </span>
+          <span class="post-meta-divider">|</span>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            本站访客数<span id="busuanzi_value_site_uv"></span>人
+          </span>
+          <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+
+  
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'true', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+<!-- Gaug.es Analytics -->
+<script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', 'true');
+    t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+    t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+<!-- End Gaug.es Analytics -->
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+	<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2439014eb270056ee1808a49956fe114";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<!-- Tencent Analytics -->
+	<script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId={{ theme.tencent_analytics }}";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+<!-- End Tencent Analytics -->
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>
