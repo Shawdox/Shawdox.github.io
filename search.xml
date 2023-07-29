@@ -7,6 +7,116 @@
 ]]></content>
   </entry>
   <entry>
+    <title>(论文复现)CompDiff</title>
+    <url>/2023/07/28/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91Finding-Unstable-Code-via-Compiler-Driven-Differential-Testing/</url>
+    <content><![CDATA[<h1
+id="论文复现finding-unstable-code-via-compiler-driven-differential-testing">(论文复现)Finding
+Unstable Code via Compiler-Driven Differential Testing</h1>
+<p>​ 对论文《Finding Unstable Code via Compiler-Driven Differential
+Testing》的过程复现+代码分析。</p>
+<span id="more"></span>
+<h2 id="代码结构">代码结构</h2>
+<p>​ CompDiff的代码结构如下：</p>
+<blockquote>
+<p><strong>.</strong> <strong>├── aflpp</strong> (AFL++
+3.1.5a版本魔改-&gt;引入多forkserver) │ ├── custom_mutators │ ├──
+dictionaries │ ├── docs │ ├── frida_mode │ ├── include │ ├──
+instrumentation │ ├── qemu_mode │ ├── src │ ├── test │ ├── testcases │
+├── unicorn_mode │ └── utils <strong>├── compilers</strong>
+（用AFL官方的warpper对c,cxx,clang三种编译器进行包装，用于后续编译） │
+└── compiler-base <strong>└── examples</strong> ├── libtiff └── xpdf</p>
+</blockquote>
+<p>​ 其中：</p>
+<h2 id="实验复现">实验复现</h2>
+<h3 id="生成包装编译器">1. 生成包装编译器</h3>
+<p>​ 从仓库下载代码，运行<code>./diff-build.sh</code>脚本：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+<span class="token builtin class-name">set</span> -e
+
+<span class="token comment">#run ./diff-build.sh clean</span>
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token string">"<span class="token variable">$1</span>"</span> <span class="token operator">=</span> <span class="token string">"clean"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token builtin class-name">cd</span> <span class="token string">"./aflpp"</span>
+    <span class="token assign-left variable">CC</span><span class="token operator">=</span>clang <span class="token function">make</span> clean
+    <span class="token builtin class-name">cd</span> <span class="token punctuation">..</span>/compilers
+    <span class="token function">make</span> clean
+    <span class="token builtin class-name">exit</span> <span class="token number">0</span>
+<span class="token keyword">fi</span>
+<span class="token comment">#build modified AFL++ 3.15a</span>
+<span class="token builtin class-name">cd</span> <span class="token string">"./aflpp"</span>
+<span class="token assign-left variable">CC</span><span class="token operator">=</span>clang <span class="token function">make</span> source-only
+<span class="token assign-left variable">CC</span><span class="token operator">=</span>clang <span class="token function">make</span> -C utils/aflpp_driver
+<span class="token builtin class-name">cd</span> <span class="token punctuation">..</span>
+<span class="token comment">#build different compilers(10 by default)</span>
+<span class="token builtin class-name">cd</span> <span class="token string">"./compilers"</span>
+<span class="token builtin class-name">source</span> build.sh
+<span class="token builtin class-name">cd</span> <span class="token punctuation">..</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+该脚本会编译魔改版的AFL和<code>compilers</code>，<code>compilers</code>利用了AFL++提供的编译器包装器（warpper）生成不同配置的包装后的编译器：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230728215257.png" style="zoom: 67%;" /></p>
+<p>​
+对于CC和CXX，各有10个生成，其分别对应用gcc和clang使用<code>-O0</code>,
+<code>-O1</code>,<code>-O2</code>,<code>-O3</code>,
+和<code>-Os</code>5种优化选项，2×5 =
+10。具体逻辑可见/compdiff/compilers/<code>build.sh</code>：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+<span class="token comment"># This is the building script for different compiler configurations.</span>
+
+<span class="token function">make</span> clean
+
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token string">"<span class="token variable">$1</span>"</span> <span class="token operator">=</span> <span class="token string">"clean"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token builtin class-name">exit</span> <span class="token number">0</span>
+<span class="token keyword">fi</span>
+
+<span class="token assign-left variable">forksrv</span><span class="token operator">=</span><span class="token number">202</span>
+<span class="token assign-left variable">id</span><span class="token operator">=</span><span class="token number">0</span>
+
+<span class="token assign-left variable">compiler_id</span><span class="token operator">=</span><span class="token number">0</span>
+<span class="token keyword">for</span> <span class="token for-or-select variable">_</span> <span class="token keyword">in</span> <span class="token variable"><span class="token variable">$(</span><span class="token function">seq</span> <span class="token number">1</span> `jq <span class="token string">"[.][0] | length"</span> config`<span class="token variable">)</span></span><span class="token punctuation">;</span> <span class="token keyword">do</span>
+    <span class="token keyword">for</span> <span class="token for-or-select variable">config</span> <span class="token keyword">in</span> <span class="token variable"><span class="token variable">`</span>jq <span class="token string">"[[.][0][<span class="token variable">$&#123;compiler_id&#125;</span>].configs][0][]"</span> config<span class="token variable">`</span></span><span class="token punctuation">;</span> <span class="token keyword">do</span>
+        <span class="token builtin class-name">export</span> <span class="token assign-left variable">DIFF_CC</span><span class="token operator">=</span><span class="token variable"><span class="token variable">`</span>jq <span class="token string">"[.][0][<span class="token variable">$&#123;compiler_id&#125;</span>].CC"</span> config<span class="token variable">`</span></span>
+        <span class="token builtin class-name">export</span> <span class="token assign-left variable">DIFF_CXX</span><span class="token operator">=</span><span class="token variable"><span class="token variable">`</span>jq <span class="token string">"[.][0][<span class="token variable">$&#123;compiler_id&#125;</span>].CXX"</span> config<span class="token variable">`</span></span>
+        <span class="token builtin class-name">export</span> <span class="token assign-left variable">DIFF_ID</span><span class="token operator">=</span><span class="token variable">$&#123;id&#125;</span>
+        <span class="token builtin class-name">printf</span> <span class="token string">"#define FORKSRV_FD <span class="token variable">$&#123;forksrv&#125;</span> <span class="token entity" title="\n">\n</span> #define DIFF_ID <span class="token variable">$&#123;DIFF_ID&#125;</span> <span class="token entity" title="\n">\n</span> #define DIFF_CC <span class="token variable">$&#123;DIFF_CC&#125;</span> <span class="token entity" title="\n">\n</span> #define DIFF_CXX <span class="token variable">$&#123;DIFF_CXX&#125;</span> <span class="token entity" title="\n">\n</span> #define DIFF_CONFIG <span class="token variable">$&#123;config&#125;</span> "</span> <span class="token operator">></span> ./compiler-base/diff-config.h
+        <span class="token function">make</span>
+        <span class="token assign-left variable">id</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$((</span>id<span class="token operator">+</span><span class="token number">1</span><span class="token variable">))</span></span>
+        <span class="token assign-left variable">forksrv</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$((</span>forksrv<span class="token operator">+</span><span class="token number">4</span><span class="token variable">))</span></span>
+    <span class="token keyword">done</span>
+    <span class="token assign-left variable">compiler_id</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$((</span>compiler_id<span class="token operator">+</span><span class="token number">1</span><span class="token variable">))</span></span>
+<span class="token keyword">done</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+其中，<code>FORKSRV_FD</code>是对应在AFL中打开的forkserver中使用的文件描述符；<code>DIFF_CONFIG</code>就是对应的优化选项，例如-O1、-O2等；<code>DIFF_ID</code>用于区分不同的编译配置（编译器+优化选项），其序号在/compdiff/compilers/config中对应如下：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230728221003.png" style="zoom:50%;" /></p>
+<p>​
+在for循环中从config获取这些编译选项参数后，通过printf函数将对应设置写入到./compiler-base/diff-config.h文件中，该文件会被同文件夹下的config.h文件包含，并最终被diff-cc.c包装器引用，最终生成我们所需的10种编译器。</p>
+<p>​ 在后续的过程中，这10中不同的编译器将会用来编译待测试项目/文件。</p>
+<h3 id="编译项目">2. 编译项目</h3>
+<p>​
+这里以libtiff为例，用作者已经给出的编译脚本编译（后续可以写自己的）：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">./diff-instrument.sh ./examples/libtiff/build.sh<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​
+可以看到脚本自动下载了libtiff并编译，然后用上一步生成的编译器编译了10个不同的版本和一个原生版本：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230729143953.png" style="zoom: 67%;" /></p>
+<blockquote>
+<p>PS:由于作者给出的shell脚本都是直接从github仓库下载最新版的软件，最新版本的xpdf样例(2023.7.29)在我的虚拟机上存在QTso库不兼容问题，但这个bug不重要，故避免浪费时间见这里使用libtiff做演示。</p>
+</blockquote>
+<h3 id="fuzzing">3. Fuzzing</h3>
+<p>​ 直接运行魔改后的AFL即可：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ ./aflpp/afl-fuzz -y <span class="token number">10</span> -i examples/libtiff/seeds -o examples/libtiff/findings -Y <span class="token string">"out.file"</span> -- ./examples/libtiff/bin/tiffcp -M -i @@ out.file<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​
+但其由于需要将程序结果输出到文件中，大量的I/O操作以及每轮需要运行10+1个forkserver，导致其速度还不如正常的1/10：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230729145245.png" style="zoom:50%;" /></p>
+<p>​
+当然，这是在虚拟机内跑的结果，实际物理机会略快一些，但不会快太多。</p>
+<p>​</p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>Fuzzing</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>(论文阅读)★Finding Unstable Code via Compiler-Driven Differential Testing</title>
     <url>/2023/07/27/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Finding-Unstable-Code-via-Compiler-Driven-Differential-Testing/</url>
     <content><![CDATA[<h1
@@ -724,6 +834,73 @@ restart_select<span class="token operator">:</span>
 <p>​
 当forkserver初始化后，由于使用execv直接运行待测试程序，按理来说其应该直接执行，并不会有forkserver的功能。但在程序编译时进行了代码插桩，execv后的子进程其会在main函数停止，等待fuzzer的命令，具体的插桩分析见Reference:star:。</p>
 <h2 id="get-the-inputoutput">Get the input/output</h2>
+<h2 id="dry-run">Dry run</h2>
+<p>​ 在将test case从input
+dir读取到afl-&gt;queue中后，进行正式的fuzzing之前，AFL通会对所有的test
+cases进行一次执行，以确保排除一些古怪的、有问题的test
+case，AFL源码中管这个过程叫<code>Calibrate</code>。<strong>对input_dir进行Calibrate的过程就是dry
+run。</strong></p>
+<p>​
+PS：可以通过设置环境变量<code>AFL_NO_STARTUP_CALIBRATION</code>来决定是否进行dry
+run。</p>
+<h3 id="perform_dry_run">1. perform_dry_run()</h3>
+<blockquote>
+<p><strong>函数原型：</strong> void*
+perform_dry_run(<em>afl_state_t</em> **afl*)</p>
+<p><strong>来源：</strong>afl-fuzz-init.c</p>
+<p><strong>被引用：</strong>afl-fuzz.c</p>
+<p><strong>功能简介：</strong>对所有的测试用例进行模拟运行，以确保应用程序按预期执行。</p>
+</blockquote>
+<p>​
+首先，perform_dry_run()函数会遍历afl-&gt;queue_buf，每个queue_buf中存储着input相关信息。函数打开input文件，将其读取到一块内存use_mem中，然后调用calibrate_case()函数运行单个测试用例：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// 获取文件名</span>
+u8 <span class="token operator">*</span>fn <span class="token operator">=</span> <span class="token function">strrchr</span><span class="token punctuation">(</span>q<span class="token operator">-></span>fname<span class="token punctuation">,</span> <span class="token string">'/'</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 打印文件名</span>
+<span class="token function">ACTF</span><span class="token punctuation">(</span><span class="token string">"Attempting dry run with '%s'..."</span><span class="token punctuation">,</span> fn<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 只读打开文件</span>
+fd <span class="token operator">=</span> <span class="token function">open</span><span class="token punctuation">(</span>q<span class="token operator">-></span>fname<span class="token punctuation">,</span> O_RDONLY<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>fd <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token function">PFATAL</span><span class="token punctuation">(</span><span class="token string">"Unable to open '%s'"</span><span class="token punctuation">,</span> q<span class="token operator">-></span>fname<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
+
+<span class="token comment">// 将文件读取到use_mem中</span>
+u32 read_len <span class="token operator">=</span> <span class="token function">MIN</span><span class="token punctuation">(</span>q<span class="token operator">-></span>len<span class="token punctuation">,</span> <span class="token punctuation">(</span>u32<span class="token punctuation">)</span>MAX_FILE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+use_mem <span class="token operator">=</span> <span class="token function">afl_realloc</span><span class="token punctuation">(</span><span class="token function">AFL_BUF_PARAM</span><span class="token punctuation">(</span>in<span class="token punctuation">)</span><span class="token punctuation">,</span> read_len<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">ck_read</span><span class="token punctuation">(</span>fd<span class="token punctuation">,</span> use_mem<span class="token punctuation">,</span> read_len<span class="token punctuation">,</span> q<span class="token operator">-></span>fname<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 关闭文件</span>
+<span class="token function">close</span><span class="token punctuation">(</span>fd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 运行case</span>
+res <span class="token operator">=</span> <span class="token function">calibrate_case</span><span class="token punctuation">(</span>afl<span class="token punctuation">,</span> q<span class="token punctuation">,</span> use_mem<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="calibrate_case">2. calibrate_case()</h3>
+<blockquote>
+<p><strong>函数原型：</strong> u8 calibrate_case(<em>afl_state_t</em>
+<em>afl, </em>struct* queue_entry <em>q, u8 </em>use_mem, u32 handicap,
+u8 from_queue)</p>
+<p><strong>来源：</strong>afl-fuzz-run.c</p>
+<p><strong>被引用：</strong>afl-fuzz-init.c</p>
+<p><strong>功能简介：</strong>运行单个测试用例，排除有问题的样例。</p>
+</blockquote>
+<h3 id="write_to_testcase">3.write_to_testcase()</h3>
+<blockquote>
+<p><strong>函数原型：</strong>u32 __ attribute __((hot))
+write_to_testcase(<em>afl_state_t</em> *afl , void **mem, u32 len, u32
+fix)</p>
+<p><strong>来源：</strong>afl-fuzz-run.c</p>
+<p><strong>被引用：</strong>afl-fuzz-run.c</p>
+<p><strong>功能简介：</strong>将testcase写入到文件中去</p>
+</blockquote>
+<h3 id="starfuzz_run_target">4. :star:fuzz_run_target()</h3>
+<blockquote>
+<p><strong>函数原型：</strong>fsrv_run_result_t __ attribute __((hot))
+fuzz_run_target(afl_state_t <em>afl, afl_forkserver_t </em>fsrv, u32
+timeout)</p>
+<p><strong>来源：</strong>afl-fuzz-run.c</p>
+<p><strong>被引用：</strong>afl-fuzz-run.c</p>
+<p><strong>功能简介：</strong> 运行目标待测试程序</p>
+</blockquote>
+<h2 id="main-loop">Main loop</h2>
 <h2 id="reference">Reference</h2>
 <ul>
 <li>Forkserver of AFL:
@@ -786,6 +963,8 @@ lstat--获取文件属性 CSDN博客</a></li>
 <li><a
 href="https://blog.csdn.net/luoliwansui/article/details/87348705">明晰argc
 -= optind, argv += optind为什么是跳过已读取的参数_CSDN博客</a></li>
+<li><a
+href="https://blog.csdn.net/baidu_35085676/article/details/52002579">getcwd()函数的用法_CSDN博客</a></li>
 </ul></li>
 </ul>
 ]]></content>
@@ -1650,8 +1829,8 @@ fuzzer的输入生成算法。除了作为fuzzer的oracle，我们的canary还�
         <category>Paper</category>
       </categories>
       <tags>
-        <tag>WASM</tag>
         <tag>Fuzzing</tag>
+        <tag>WASM</tag>
       </tags>
   </entry>
   <entry>
@@ -1714,19 +1893,22 @@ fuzzer；</li>
 <h2 id="模型">模型</h2>
 <p><img
 src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230703215924.png" /></p>
+<h3 id="执行">1. 执行</h3>
 <p>​ 在AFL++术语中，persistent
-mode[2]意味着在多次迭代中重复使用一个子进程。它允许通过在子进程中的相关代码区域进行循环来取代时间密集的fork()系统调用。Persistent
-mode很适合我们的应用，其中有趣的代码是预编译的目标。然而，目标在执行过程中可能会积累状态，甚至泄露内存，从而使持久性的fuzzing变得不稳定。因此，如果我们想在没有fork()的情况下进行fuzzing，我们必须在每次执行后重置目标状态。理想情况下，<u>我们希望在不对WebAssembly二进制文件打补丁的情况下完成这一工作，或者进一步对其进行检测，特别是在仅有二进制文件的情况下。</u></p>
+mode[2]意味着在多次迭代中重复使用一个子进程。它允许通过在子进程中的相关代码区域进行循环来取代时间密集的fork()系统调用。<strong>Persistent
+mode很适合我们的应用</strong>，其中有趣的代码是预编译的目标。然而，如果一直不fork，目标在执行过程中可能会积累状态，甚至泄露内存，从而使持久性的fuzzing变得不稳定。因此，如果我们想在没有fork()的情况下进行fuzzing，我们必须在每次执行后重置目标状态。理想情况下，<u>我们希望在不对WebAssembly二进制文件打补丁的情况下完成这一工作，或者进一步对其进行检测，特别是在仅有二进制文件的情况下。</u></p>
 <p>​
 WebAssembly定义了三种可能被目标程序改变的状态对象：globals、tables和memories[3]。目前，编译器只使用一种内存，即字节数组，在其中，他们创建了一个熟悉的布局，由Stack、Heap和Data部分组成[9]。基于这一观察，我们可以实现<u>虚拟机快照和恢复</u>：我们在第一次调用目标代码前不久拦截runtime，这时，线性内存已经被运行时初始化了。我们对其内容和大小创建一个快照，当控制流在每个循环迭代后返回到运行时，我们将内存缩小到其初始大小并写回快照。</p>
-<p>​</p>
+<h3 id="覆盖率">2. 覆盖率</h3>
+<p>​
+WAVM使用LLVM-JIT来将Wasm二进制文件翻译到平台原生代码，并在其上面执行一些优化pass。</p>
 ]]></content>
       <categories>
         <category>Paper</category>
       </categories>
       <tags>
-        <tag>WASM</tag>
         <tag>Fuzzing</tag>
+        <tag>WASM</tag>
       </tags>
   </entry>
   <entry>
@@ -1822,8 +2004,8 @@ starred），WAMR，是一个小型WASM虚拟机，经常用在嵌入式系统�
         <category>Paper</category>
       </categories>
       <tags>
-        <tag>WASM</tag>
         <tag>Fuzzing</tag>
+        <tag>WASM</tag>
       </tags>
   </entry>
   <entry>

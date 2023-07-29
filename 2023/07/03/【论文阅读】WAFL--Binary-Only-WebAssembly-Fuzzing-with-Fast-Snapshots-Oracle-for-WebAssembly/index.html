@@ -6,7 +6,7 @@
   <title>(论文阅读)WAFL- Binary-Only WebAssembly Fuzzing with Fast Snapshots Oracle for WebAssembly | Shaw</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="WASMFuzzing" />
+  <meta name="keywords" content="FuzzingWASM" />
   
   
   
@@ -21,10 +21,10 @@
 <meta property="og:description" content="WAFL: Binary-Only WebAssembly Fuzzing with Fast Snapshots  时间：2021 作者：Keno Haßler，Dominik Maier（柏林工业大学） 期刊：ROOTS’21  Abstract ​ WebAssembly 是一种用于二进制代码的开放标准，正在迅速在网络和其他领域得到应用。由于这些二进制文件通常是用低级语言（">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-07-03T13:29:58.410Z">
-<meta property="article:modified_time" content="2023-07-04T03:04:20.448Z">
+<meta property="article:modified_time" content="2023-07-28T07:24:13.044Z">
 <meta property="article:author" content="Shaw">
-<meta property="article:tag" content="WASM">
 <meta property="article:tag" content="Fuzzing">
+<meta property="article:tag" content="WASM">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
@@ -209,12 +209,15 @@ fuzzer；</li>
 <h2 id="模型">模型</h2>
 <p><img
 src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230703215924.png" /></p>
+<h3 id="执行">1. 执行</h3>
 <p>​ 在AFL++术语中，persistent
-mode[2]意味着在多次迭代中重复使用一个子进程。它允许通过在子进程中的相关代码区域进行循环来取代时间密集的fork()系统调用。Persistent
-mode很适合我们的应用，其中有趣的代码是预编译的目标。然而，目标在执行过程中可能会积累状态，甚至泄露内存，从而使持久性的fuzzing变得不稳定。因此，如果我们想在没有fork()的情况下进行fuzzing，我们必须在每次执行后重置目标状态。理想情况下，<u>我们希望在不对WebAssembly二进制文件打补丁的情况下完成这一工作，或者进一步对其进行检测，特别是在仅有二进制文件的情况下。</u></p>
+mode[2]意味着在多次迭代中重复使用一个子进程。它允许通过在子进程中的相关代码区域进行循环来取代时间密集的fork()系统调用。<strong>Persistent
+mode很适合我们的应用</strong>，其中有趣的代码是预编译的目标。然而，如果一直不fork，目标在执行过程中可能会积累状态，甚至泄露内存，从而使持久性的fuzzing变得不稳定。因此，如果我们想在没有fork()的情况下进行fuzzing，我们必须在每次执行后重置目标状态。理想情况下，<u>我们希望在不对WebAssembly二进制文件打补丁的情况下完成这一工作，或者进一步对其进行检测，特别是在仅有二进制文件的情况下。</u></p>
 <p>​
 WebAssembly定义了三种可能被目标程序改变的状态对象：globals、tables和memories[3]。目前，编译器只使用一种内存，即字节数组，在其中，他们创建了一个熟悉的布局，由Stack、Heap和Data部分组成[9]。基于这一观察，我们可以实现<u>虚拟机快照和恢复</u>：我们在第一次调用目标代码前不久拦截runtime，这时，线性内存已经被运行时初始化了。我们对其内容和大小创建一个快照，当控制流在每个循环迭代后返回到运行时，我们将内存缩小到其初始大小并写回快照。</p>
-<p>​</p>
+<h3 id="覆盖率">2. 覆盖率</h3>
+<p>​
+WAVM使用LLVM-JIT来将Wasm二进制文件翻译到平台原生代码，并在其上面执行一些优化pass。</p>
 
       
     </div>
@@ -262,7 +265,7 @@ WebAssembly定义了三种可能被目标程序改变的状态对象：globals�
     <strong class="toc-title">文章目录</strong>
     
       <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#wafl-binary-only-webassembly-fuzzing-with-fast-snapshots"><span class="nav-number">1.</span> <span class="nav-text">WAFL:
-Binary-Only WebAssembly Fuzzing with Fast Snapshots</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#abstract"><span class="nav-number">1.1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E8%83%8C%E6%99%AF"><span class="nav-number">1.2.</span> <span class="nav-text">问题背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%A1%E7%8C%AE"><span class="nav-number">1.3.</span> <span class="nav-text">贡献</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.4.</span> <span class="nav-text">模型</span></a></li></ol></li></ol>
+Binary-Only WebAssembly Fuzzing with Fast Snapshots</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#abstract"><span class="nav-number">1.1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E8%83%8C%E6%99%AF"><span class="nav-number">1.2.</span> <span class="nav-text">问题背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%A1%E7%8C%AE"><span class="nav-number">1.3.</span> <span class="nav-text">贡献</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.4.</span> <span class="nav-text">模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. 执行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A6%86%E7%9B%96%E7%8E%87"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. 覆盖率</span></a></li></ol></li></ol></li></ol>
     
     </div>
   </aside>
@@ -456,20 +459,5 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>

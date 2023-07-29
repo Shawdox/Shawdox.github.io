@@ -23,7 +23,7 @@
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230723155221.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230723164724.png">
 <meta property="article:published_time" content="2023-07-23T07:14:56.830Z">
-<meta property="article:modified_time" content="2023-07-26T08:32:14.981Z">
+<meta property="article:modified_time" content="2023-07-28T06:55:00.277Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="Fuzzing">
 <meta name="twitter:card" content="summary">
@@ -506,6 +506,73 @@ restart_select<span class="token operator">:</span>
 <p>​
 当forkserver初始化后，由于使用execv直接运行待测试程序，按理来说其应该直接执行，并不会有forkserver的功能。但在程序编译时进行了代码插桩，execv后的子进程其会在main函数停止，等待fuzzer的命令，具体的插桩分析见Reference:star:。</p>
 <h2 id="get-the-inputoutput">Get the input/output</h2>
+<h2 id="dry-run">Dry run</h2>
+<p>​ 在将test case从input
+dir读取到afl-&gt;queue中后，进行正式的fuzzing之前，AFL通会对所有的test
+cases进行一次执行，以确保排除一些古怪的、有问题的test
+case，AFL源码中管这个过程叫<code>Calibrate</code>。<strong>对input_dir进行Calibrate的过程就是dry
+run。</strong></p>
+<p>​
+PS：可以通过设置环境变量<code>AFL_NO_STARTUP_CALIBRATION</code>来决定是否进行dry
+run。</p>
+<h3 id="perform_dry_run">1. perform_dry_run()</h3>
+<blockquote>
+<p><strong>函数原型：</strong> void*
+perform_dry_run(<em>afl_state_t</em> **afl*)</p>
+<p><strong>来源：</strong>afl-fuzz-init.c</p>
+<p><strong>被引用：</strong>afl-fuzz.c</p>
+<p><strong>功能简介：</strong>对所有的测试用例进行模拟运行，以确保应用程序按预期执行。</p>
+</blockquote>
+<p>​
+首先，perform_dry_run()函数会遍历afl-&gt;queue_buf，每个queue_buf中存储着input相关信息。函数打开input文件，将其读取到一块内存use_mem中，然后调用calibrate_case()函数运行单个测试用例：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// 获取文件名</span>
+u8 <span class="token operator">*</span>fn <span class="token operator">=</span> <span class="token function">strrchr</span><span class="token punctuation">(</span>q<span class="token operator">-></span>fname<span class="token punctuation">,</span> <span class="token string">'/'</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 打印文件名</span>
+<span class="token function">ACTF</span><span class="token punctuation">(</span><span class="token string">"Attempting dry run with '%s'..."</span><span class="token punctuation">,</span> fn<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 只读打开文件</span>
+fd <span class="token operator">=</span> <span class="token function">open</span><span class="token punctuation">(</span>q<span class="token operator">-></span>fname<span class="token punctuation">,</span> O_RDONLY<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>fd <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token function">PFATAL</span><span class="token punctuation">(</span><span class="token string">"Unable to open '%s'"</span><span class="token punctuation">,</span> q<span class="token operator">-></span>fname<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
+
+<span class="token comment">// 将文件读取到use_mem中</span>
+u32 read_len <span class="token operator">=</span> <span class="token function">MIN</span><span class="token punctuation">(</span>q<span class="token operator">-></span>len<span class="token punctuation">,</span> <span class="token punctuation">(</span>u32<span class="token punctuation">)</span>MAX_FILE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+use_mem <span class="token operator">=</span> <span class="token function">afl_realloc</span><span class="token punctuation">(</span><span class="token function">AFL_BUF_PARAM</span><span class="token punctuation">(</span>in<span class="token punctuation">)</span><span class="token punctuation">,</span> read_len<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">ck_read</span><span class="token punctuation">(</span>fd<span class="token punctuation">,</span> use_mem<span class="token punctuation">,</span> read_len<span class="token punctuation">,</span> q<span class="token operator">-></span>fname<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 关闭文件</span>
+<span class="token function">close</span><span class="token punctuation">(</span>fd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 运行case</span>
+res <span class="token operator">=</span> <span class="token function">calibrate_case</span><span class="token punctuation">(</span>afl<span class="token punctuation">,</span> q<span class="token punctuation">,</span> use_mem<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="calibrate_case">2. calibrate_case()</h3>
+<blockquote>
+<p><strong>函数原型：</strong> u8 calibrate_case(<em>afl_state_t</em>
+<em>afl, </em>struct* queue_entry <em>q, u8 </em>use_mem, u32 handicap,
+u8 from_queue)</p>
+<p><strong>来源：</strong>afl-fuzz-run.c</p>
+<p><strong>被引用：</strong>afl-fuzz-init.c</p>
+<p><strong>功能简介：</strong>运行单个测试用例，排除有问题的样例。</p>
+</blockquote>
+<h3 id="write_to_testcase">3.write_to_testcase()</h3>
+<blockquote>
+<p><strong>函数原型：</strong>u32 __ attribute __((hot))
+write_to_testcase(<em>afl_state_t</em> *afl , void **mem, u32 len, u32
+fix)</p>
+<p><strong>来源：</strong>afl-fuzz-run.c</p>
+<p><strong>被引用：</strong>afl-fuzz-run.c</p>
+<p><strong>功能简介：</strong>将testcase写入到文件中去</p>
+</blockquote>
+<h3 id="starfuzz_run_target">4. :star:fuzz_run_target()</h3>
+<blockquote>
+<p><strong>函数原型：</strong>fsrv_run_result_t __ attribute __((hot))
+fuzz_run_target(afl_state_t <em>afl, afl_forkserver_t </em>fsrv, u32
+timeout)</p>
+<p><strong>来源：</strong>afl-fuzz-run.c</p>
+<p><strong>被引用：</strong>afl-fuzz-run.c</p>
+<p><strong>功能简介：</strong> 运行目标待测试程序</p>
+</blockquote>
+<h2 id="main-loop">Main loop</h2>
 <h2 id="reference">Reference</h2>
 <ul>
 <li>Forkserver of AFL:
@@ -568,6 +635,8 @@ lstat--获取文件属性 CSDN博客</a></li>
 <li><a
 target="_blank" rel="noopener" href="https://blog.csdn.net/luoliwansui/article/details/87348705">明晰argc
 -= optind, argv += optind为什么是跳过已读取的参数_CSDN博客</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/baidu_35085676/article/details/52002579">getcwd()函数的用法_CSDN博客</a></li>
 </ul></li>
 </ul>
 
@@ -619,7 +688,7 @@ target="_blank" rel="noopener" href="https://blog.csdn.net/luoliwansui/article/d
       <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AFhow-does-afl-run-a-program"><span class="nav-number">1.</span> <span class="nav-text">(技术积累)How does AFL++ run
 a program?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#using-child-process"><span class="nav-number">2.</span> <span class="nav-text">Using child process</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#some-functions"><span class="nav-number">2.1.</span> <span class="nav-text">1. Some functions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fuzzing-without-execve"><span class="nav-number">2.2.</span> <span class="nav-text">2. Fuzzing without execve()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#deep-into-the-code"><span class="nav-number">2.3.</span> <span class="nav-text">3. Deep into the code</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#afl%E7%9A%84%E4%B8%BB%E4%BD%93%E6%98%AFafl-fuzz.c%E5%85%B3%E4%BA%8Eforkserver%E5%85%B6%E8%B4%9F%E8%B4%A3%E7%9A%84%E5%8A%9F%E8%83%BD%E6%9C%89"><span class="nav-number">2.3.0.1.</span> <span class="nav-text">3.1
 AFL++的主体是afl-fuzz.c，关于forkserver，其负责的功能有：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%9C%A8forkserver.h%E4%B8%8Eforkserver.c%E6%96%87%E4%BB%B6%E4%B8%AD%E5%85%B6%E5%AE%9A%E4%B9%89%E4%BA%86%E7%9B%B8%E5%85%B3%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84afl_forkserver"><span class="nav-number">2.3.0.2.</span> <span class="nav-text">3.2
-在forkserver.h与forkserver.c文件中，其定义了相关数据结构afl_forkserver：</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E5%AD%90%E8%BF%9B%E7%A8%8Bforkserver"><span class="nav-number">2.3.0.2.1.</span> <span class="nav-text">3.2.1 子进程—&gt;forkserver</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E7%88%B6%E8%BF%9B%E7%A8%8Bfuzzer"><span class="nav-number">2.3.0.2.2.</span> <span class="nav-text">3.2.2 父进程—&gt;fuzzer</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E6%8F%92%E6%A1%A9"><span class="nav-number">2.3.0.3.</span> <span class="nav-text">3.3 代码插桩</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#get-the-inputoutput"><span class="nav-number">3.</span> <span class="nav-text">Get the input&#x2F;output</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">4.</span> <span class="nav-text">Reference</span></a></li></ol>
+在forkserver.h与forkserver.c文件中，其定义了相关数据结构afl_forkserver：</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E5%AD%90%E8%BF%9B%E7%A8%8Bforkserver"><span class="nav-number">2.3.0.2.1.</span> <span class="nav-text">3.2.1 子进程—&gt;forkserver</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E7%88%B6%E8%BF%9B%E7%A8%8Bfuzzer"><span class="nav-number">2.3.0.2.2.</span> <span class="nav-text">3.2.2 父进程—&gt;fuzzer</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E6%8F%92%E6%A1%A9"><span class="nav-number">2.3.0.3.</span> <span class="nav-text">3.3 代码插桩</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#get-the-inputoutput"><span class="nav-number">3.</span> <span class="nav-text">Get the input&#x2F;output</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dry-run"><span class="nav-number">4.</span> <span class="nav-text">Dry run</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#perform_dry_run"><span class="nav-number">4.1.</span> <span class="nav-text">1. perform_dry_run()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#calibrate_case"><span class="nav-number">4.2.</span> <span class="nav-text">2. calibrate_case()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#write_to_testcase"><span class="nav-number">4.3.</span> <span class="nav-text">3.write_to_testcase()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#starfuzz_run_target"><span class="nav-number">4.4.</span> <span class="nav-text">4. :star:fuzz_run_target()</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#main-loop"><span class="nav-number">5.</span> <span class="nav-text">Main loop</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">6.</span> <span class="nav-text">Reference</span></a></li></ol>
     
     </div>
   </aside>
@@ -813,20 +882,5 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>

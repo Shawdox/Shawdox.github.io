@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>(论文复现)CompDiff | Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Fuzzing" />
+  
+  
+  
+    <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
+  
+  
+  <meta name="description" content="(论文复现)Finding Unstable Code via Compiler-Driven Differential Testing ​ 对论文《Finding Unstable Code via Compiler-Driven Differential Testing》的过程复现+代码分析。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(论文复现)CompDiff">
+<meta property="og:url" content="http://example.com/2023/07/28/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91Finding-Unstable-Code-via-Compiler-Driven-Differential-Testing/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="(论文复现)Finding Unstable Code via Compiler-Driven Differential Testing ​ 对论文《Finding Unstable Code via Compiler-Driven Differential Testing》的过程复现+代码分析。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230728215257.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230728221003.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230729143953.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230729145245.png">
+<meta property="article:published_time" content="2023-07-28T13:25:50.845Z">
+<meta property="article:modified_time" content="2023-07-29T06:57:01.335Z">
+<meta property="article:author" content="Shaw">
+<meta property="article:tag" content="Fuzzing">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230728215257.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-【论文复现】Finding-Unstable-Code-via-Compiler-Driven-Differential-Testing" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      (论文复现)CompDiff
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/07/28/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91Finding-Unstable-Code-via-Compiler-Driven-Differential-Testing/" class="article-date">
+	  <time datetime="2023-07-28T13:25:50.845Z" itemprop="datePublished">七月 28, 2023</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1
+id="论文复现finding-unstable-code-via-compiler-driven-differential-testing">(论文复现)Finding
+Unstable Code via Compiler-Driven Differential Testing</h1>
+<p>​ 对论文《Finding Unstable Code via Compiler-Driven Differential
+Testing》的过程复现+代码分析。</p>
+<span id="more"></span>
+<h2 id="代码结构">代码结构</h2>
+<p>​ CompDiff的代码结构如下：</p>
+<blockquote>
+<p><strong>.</strong> <strong>├── aflpp</strong> (AFL++
+3.1.5a版本魔改-&gt;引入多forkserver) │ ├── custom_mutators │ ├──
+dictionaries │ ├── docs │ ├── frida_mode │ ├── include │ ├──
+instrumentation │ ├── qemu_mode │ ├── src │ ├── test │ ├── testcases │
+├── unicorn_mode │ └── utils <strong>├── compilers</strong>
+（用AFL官方的warpper对c,cxx,clang三种编译器进行包装，用于后续编译） │
+└── compiler-base <strong>└── examples</strong> ├── libtiff └── xpdf</p>
+</blockquote>
+<p>​ 其中：</p>
+<h2 id="实验复现">实验复现</h2>
+<h3 id="生成包装编译器">1. 生成包装编译器</h3>
+<p>​ 从仓库下载代码，运行<code>./diff-build.sh</code>脚本：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+<span class="token builtin class-name">set</span> -e
+
+<span class="token comment">#run ./diff-build.sh clean</span>
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token string">"<span class="token variable">$1</span>"</span> <span class="token operator">=</span> <span class="token string">"clean"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token builtin class-name">cd</span> <span class="token string">"./aflpp"</span>
+    <span class="token assign-left variable">CC</span><span class="token operator">=</span>clang <span class="token function">make</span> clean
+    <span class="token builtin class-name">cd</span> <span class="token punctuation">..</span>/compilers
+    <span class="token function">make</span> clean
+    <span class="token builtin class-name">exit</span> <span class="token number">0</span>
+<span class="token keyword">fi</span>
+<span class="token comment">#build modified AFL++ 3.15a</span>
+<span class="token builtin class-name">cd</span> <span class="token string">"./aflpp"</span>
+<span class="token assign-left variable">CC</span><span class="token operator">=</span>clang <span class="token function">make</span> source-only
+<span class="token assign-left variable">CC</span><span class="token operator">=</span>clang <span class="token function">make</span> -C utils/aflpp_driver
+<span class="token builtin class-name">cd</span> <span class="token punctuation">..</span>
+<span class="token comment">#build different compilers(10 by default)</span>
+<span class="token builtin class-name">cd</span> <span class="token string">"./compilers"</span>
+<span class="token builtin class-name">source</span> build.sh
+<span class="token builtin class-name">cd</span> <span class="token punctuation">..</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+该脚本会编译魔改版的AFL和<code>compilers</code>，<code>compilers</code>利用了AFL++提供的编译器包装器（warpper）生成不同配置的包装后的编译器：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230728215257.png" style="zoom: 67%;" /></p>
+<p>​
+对于CC和CXX，各有10个生成，其分别对应用gcc和clang使用<code>-O0</code>,
+<code>-O1</code>,<code>-O2</code>,<code>-O3</code>,
+和<code>-Os</code>5种优化选项，2×5 =
+10。具体逻辑可见/compdiff/compilers/<code>build.sh</code>：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+<span class="token comment"># This is the building script for different compiler configurations.</span>
+
+<span class="token function">make</span> clean
+
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token string">"<span class="token variable">$1</span>"</span> <span class="token operator">=</span> <span class="token string">"clean"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token builtin class-name">exit</span> <span class="token number">0</span>
+<span class="token keyword">fi</span>
+
+<span class="token assign-left variable">forksrv</span><span class="token operator">=</span><span class="token number">202</span>
+<span class="token assign-left variable">id</span><span class="token operator">=</span><span class="token number">0</span>
+
+<span class="token assign-left variable">compiler_id</span><span class="token operator">=</span><span class="token number">0</span>
+<span class="token keyword">for</span> <span class="token for-or-select variable">_</span> <span class="token keyword">in</span> <span class="token variable"><span class="token variable">$(</span><span class="token function">seq</span> <span class="token number">1</span> `jq <span class="token string">"[.][0] | length"</span> config`<span class="token variable">)</span></span><span class="token punctuation">;</span> <span class="token keyword">do</span>
+    <span class="token keyword">for</span> <span class="token for-or-select variable">config</span> <span class="token keyword">in</span> <span class="token variable"><span class="token variable">`</span>jq <span class="token string">"[[.][0][<span class="token variable">$&#123;compiler_id&#125;</span>].configs][0][]"</span> config<span class="token variable">`</span></span><span class="token punctuation">;</span> <span class="token keyword">do</span>
+        <span class="token builtin class-name">export</span> <span class="token assign-left variable">DIFF_CC</span><span class="token operator">=</span><span class="token variable"><span class="token variable">`</span>jq <span class="token string">"[.][0][<span class="token variable">$&#123;compiler_id&#125;</span>].CC"</span> config<span class="token variable">`</span></span>
+        <span class="token builtin class-name">export</span> <span class="token assign-left variable">DIFF_CXX</span><span class="token operator">=</span><span class="token variable"><span class="token variable">`</span>jq <span class="token string">"[.][0][<span class="token variable">$&#123;compiler_id&#125;</span>].CXX"</span> config<span class="token variable">`</span></span>
+        <span class="token builtin class-name">export</span> <span class="token assign-left variable">DIFF_ID</span><span class="token operator">=</span><span class="token variable">$&#123;id&#125;</span>
+        <span class="token builtin class-name">printf</span> <span class="token string">"#define FORKSRV_FD <span class="token variable">$&#123;forksrv&#125;</span> <span class="token entity" title="\n">\n</span> #define DIFF_ID <span class="token variable">$&#123;DIFF_ID&#125;</span> <span class="token entity" title="\n">\n</span> #define DIFF_CC <span class="token variable">$&#123;DIFF_CC&#125;</span> <span class="token entity" title="\n">\n</span> #define DIFF_CXX <span class="token variable">$&#123;DIFF_CXX&#125;</span> <span class="token entity" title="\n">\n</span> #define DIFF_CONFIG <span class="token variable">$&#123;config&#125;</span> "</span> <span class="token operator">></span> ./compiler-base/diff-config.h
+        <span class="token function">make</span>
+        <span class="token assign-left variable">id</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$((</span>id<span class="token operator">+</span><span class="token number">1</span><span class="token variable">))</span></span>
+        <span class="token assign-left variable">forksrv</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$((</span>forksrv<span class="token operator">+</span><span class="token number">4</span><span class="token variable">))</span></span>
+    <span class="token keyword">done</span>
+    <span class="token assign-left variable">compiler_id</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$((</span>compiler_id<span class="token operator">+</span><span class="token number">1</span><span class="token variable">))</span></span>
+<span class="token keyword">done</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+其中，<code>FORKSRV_FD</code>是对应在AFL中打开的forkserver中使用的文件描述符；<code>DIFF_CONFIG</code>就是对应的优化选项，例如-O1、-O2等；<code>DIFF_ID</code>用于区分不同的编译配置（编译器+优化选项），其序号在/compdiff/compilers/config中对应如下：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230728221003.png" style="zoom:50%;" /></p>
+<p>​
+在for循环中从config获取这些编译选项参数后，通过printf函数将对应设置写入到./compiler-base/diff-config.h文件中，该文件会被同文件夹下的config.h文件包含，并最终被diff-cc.c包装器引用，最终生成我们所需的10种编译器。</p>
+<p>​ 在后续的过程中，这10中不同的编译器将会用来编译待测试项目/文件。</p>
+<h3 id="编译项目">2. 编译项目</h3>
+<p>​
+这里以libtiff为例，用作者已经给出的编译脚本编译（后续可以写自己的）：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">./diff-instrument.sh ./examples/libtiff/build.sh<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​
+可以看到脚本自动下载了libtiff并编译，然后用上一步生成的编译器编译了10个不同的版本和一个原生版本：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230729143953.png" style="zoom: 67%;" /></p>
+<blockquote>
+<p>PS:由于作者给出的shell脚本都是直接从github仓库下载最新版的软件，最新版本的xpdf样例(2023.7.29)在我的虚拟机上存在QTso库不兼容问题，但这个bug不重要，故避免浪费时间见这里使用libtiff做演示。</p>
+</blockquote>
+<h3 id="fuzzing">3. Fuzzing</h3>
+<p>​ 直接运行魔改后的AFL即可：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ ./aflpp/afl-fuzz -y <span class="token number">10</span> -i examples/libtiff/seeds -o examples/libtiff/findings -Y <span class="token string">"out.file"</span> -- ./examples/libtiff/bin/tiffcp -M -i @@ out.file<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​
+但其由于需要将程序结果输出到文件中，大量的I/O操作以及每轮需要运行10+1个forkserver，导致其速度还不如正常的1/10：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230729145245.png" style="zoom:50%;" /></p>
+<p>​
+当然，这是在虚拟机内跑的结果，实际物理机会略快一些，但不会快太多。</p>
+<p>​</p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2023/07/27/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Finding-Unstable-Code-via-Compiler-Driven-Differential-Testing/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">(论文阅读)★Finding Unstable Code via Compiler-Driven Differential Testing</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0finding-unstable-code-via-compiler-driven-differential-testing"><span class="nav-number">1.</span> <span class="nav-text">(论文复现)Finding
+Unstable Code via Compiler-Driven Differential Testing</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84"><span class="nav-number">1.1.</span> <span class="nav-text">代码结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E5%A4%8D%E7%8E%B0"><span class="nav-number">1.2.</span> <span class="nav-text">实验复现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E5%8C%85%E8%A3%85%E7%BC%96%E8%AF%91%E5%99%A8"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. 生成包装编译器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E9%A1%B9%E7%9B%AE"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 编译项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fuzzing"><span class="nav-number">1.2.3.</span> <span class="nav-text">3. Fuzzing</span></a></li></ol></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+<footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2023 Shaw All Rights Reserved.
+        
+          <span id="busuanzi_container_site_pv">
+            本站总访问量<span id="busuanzi_value_site_pv"></span>次
+          </span>
+          <span class="post-meta-divider">|</span>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            本站访客数<span id="busuanzi_value_site_uv"></span>人
+          </span>
+          <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+
+  
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'true', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+<!-- Gaug.es Analytics -->
+<script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', 'true');
+    t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+    t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+<!-- End Gaug.es Analytics -->
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+	<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2439014eb270056ee1808a49956fe114";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<!-- Tencent Analytics -->
+	<script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId={{ theme.tencent_analytics }}";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+<!-- End Tencent Analytics -->
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+</body>
+</html>
