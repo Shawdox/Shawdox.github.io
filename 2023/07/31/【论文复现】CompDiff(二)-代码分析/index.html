@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>(论文复现)CompDiff(二) 代码分析 | Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Fuzzing" />
+  
+  
+  
+    <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
+  
+  
+  <meta name="description" content="​ CompDiff与AFL++源码对比分析。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(论文复现)CompDiff(二) 代码分析">
+<meta property="og:url" content="http://example.com/2023/07/31/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91CompDiff(%E4%BA%8C)-%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="​ CompDiff与AFL++源码对比分析。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-07-31T07:29:55.805Z">
+<meta property="article:modified_time" content="2023-07-31T10:59:53.625Z">
+<meta property="article:author" content="Shaw">
+<meta property="article:tag" content="Fuzzing">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-【论文复现】CompDiff(二)-代码分析" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      (论文复现)CompDiff(二) 代码分析
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/07/31/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91CompDiff(%E4%BA%8C)-%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/" class="article-date">
+	  <time datetime="2023-07-31T07:29:55.805Z" itemprop="datePublished">七月 31, 2023</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>​ CompDiff与AFL++源码对比分析。</p>
+<span id="more"></span>
+<h2 id="code-analysis">Code analysis</h2>
+<p>​ CompDiff与AFL++源码对比分析。</p>
+<h3 id="相关数据结构变化">1. 相关数据结构变化</h3>
+<h4 id="struct-afl_state">1.1 struct afl_state</h4>
+<p>​ 在afl_state中，
+相较于原本AFL++的数据结构，这里增加了一些变量用于处理多forserver。首先是增加了多forkserver数组<code>diff_srv</code>以及diff
+forkserver数量<code>diff_num</code>：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731102213.png" /></p>
+<p>​ 增加了用于保存输出文件的指针<code>output_file</code>：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731102356.png" /></p>
+<p>​ 增加了用于确定输出文件的<code>flag_use_output</code>：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731102540.png" /></p>
+<p>​ 增加了用于对比输出文件差异的bitmap <code>virgin_diff</code>：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731102633.png" /></p>
+<p>​
+增加了用于保存差异数量的<code>total_diffs</code>和<code>total_diffs</code>：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731102732.png" /></p>
+<p>​</p>
+<h3 id="主函数afl-fuzz.c">2. 主函数——afl-fuzz.c</h3>
+<blockquote>
+<p>简要分析CompDiff与AFL++中alf-fucc.c文件异同。</p>
+</blockquote>
+<h4 id="afl_fsrv_init">2.1 afl_fsrv_init()</h4>
+<p>​
+在main函数开头，原生forkserver完成初始化后，接着调用afl_fsrv_init()完成对另外10个待测试forkserver的初始化：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731094948.png" /></p>
+<p>​
+在这之前，afl_state_init()函数会将<code>afl-&gt;diff_num</code>设置为10，然后CompDiff就会初始化diff_num个forkserver，该由于该部分forkserver用于后续的比较，故我们称这部分forkserver为<u>diff
+forkserver</u>。afl_fsrv_init()函数与AFL++无异。</p>
+<h4 id="参数处理">2.2 参数处理</h4>
+<p>​
+在参数处理方面，CompDiff增加了<code>-y</code>与<code>-Y</code>选项:</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731110619.png" /></p>
+<ul>
+<li><p><strong>-y选项：</strong></p>
+<p>-y选项用于指定diff
+forkserver的数量（如果不指定则默认为10），并将指定的参数存储于afl-&gt;diff_num中。</p></li>
+<li><p><strong>-Y选项：</strong></p>
+<p>-Y选项用于指定输出文件的存储位置，该位用于将待测试文件的输出到用户指定的文件中（AFL++默认丢弃fuzz
+target 的输出）。</p>
+<p>其设置了两个参数：<code>afl-&gt;output_file</code> =
+optarg、<code>afl-&gt;flag_use_output</code> = 1;</p></li>
+</ul>
+<h4 id="设置kill-signal">2.3 设置kill-signal</h4>
+<p>​ 在设置了主forkserver的kill signal后，将diff forkservers的kill
+signal设置为相同值：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731112112.png" /></p>
+<h4 id="设置fsrv.out_file">2.4 设置fsrv.out_file</h4>
+<p>​ fsrv.out_file是需要传入fuzz
+target的参数，在设置完主forkserver的参数后，将diff
+forkserver的参数设置为相同的值：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731112328.png" /></p>
+<p>​
+同时，增加了处理函数<code>setup_stdout_file_diff()</code>，其定义在diff-afl-fuzz-init.c中：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">setup_stdout_file_diff</span><span class="token punctuation">(</span><span class="token class-name">afl_state_t</span> <span class="token operator">*</span>afl<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+     
+  <span class="token comment">// 如果指定了fuzz target输出文件</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>afl<span class="token operator">-></span>flag_use_output<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+       
+    <span class="token comment">// 打印相关信息</span>
+    <span class="token function">OKF</span><span class="token punctuation">(</span><span class="token string">"Using output...%s"</span><span class="token punctuation">,</span> afl<span class="token operator">-></span>output_file<span class="token punctuation">)</span><span class="token punctuation">;</span>
+       
+    <span class="token comment">// 分配字符串空间</span>
+    u8<span class="token operator">*</span> fn <span class="token operator">=</span> <span class="token function">alloc_printf</span><span class="token punctuation">(</span><span class="token string">"%s"</span><span class="token punctuation">,</span> afl<span class="token operator">-></span>output_file<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">unlink</span><span class="token punctuation">(</span>fn<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">/* Ignore errors */</span>
+       
+    <span class="token comment">// 设置文件描述符</span>
+    afl<span class="token operator">-></span>fsrv<span class="token punctuation">.</span>dev_stdout_fd <span class="token operator">=</span> <span class="token function">open</span><span class="token punctuation">(</span>fn<span class="token punctuation">,</span> O_RDWR <span class="token operator">|</span> O_CREAT <span class="token operator">|</span> O_EXCL<span class="token punctuation">,</span> <span class="token number">0600</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>afl<span class="token operator">-></span>fsrv<span class="token punctuation">.</span>dev_stdout_fd <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token function">PFATAL</span><span class="token punctuation">(</span><span class="token string">"Unable to create '%s'"</span><span class="token punctuation">,</span> fn<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">ck_free</span><span class="token punctuation">(</span>fn<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    
+    <span class="token comment">// 分配错误文件信息</span>
+    fn <span class="token operator">=</span> <span class="token function">alloc_printf</span><span class="token punctuation">(</span><span class="token string">"%s/.error"</span><span class="token punctuation">,</span> afl<span class="token operator">-></span>tmp_dir<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">unlink</span><span class="token punctuation">(</span>fn<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">/* Ignore errors */</span>
+       
+    <span class="token comment">// 设置文件描述符</span>
+    afl<span class="token operator">-></span>fsrv<span class="token punctuation">.</span>dev_stderr_fd <span class="token operator">=</span> <span class="token function">open</span><span class="token punctuation">(</span>fn<span class="token punctuation">,</span> O_RDWR <span class="token operator">|</span> O_CREAT <span class="token operator">|</span> O_EXCL<span class="token punctuation">,</span> <span class="token number">0600</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>afl<span class="token operator">-></span>fsrv<span class="token punctuation">.</span>dev_stderr_fd <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token function">PFATAL</span><span class="token punctuation">(</span><span class="token string">"Unable to create '%s'"</span><span class="token punctuation">,</span> fn<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">ck_free</span><span class="token punctuation">(</span>fn<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// 设置每个forkserver的dev_stdout_fd</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> idx_com<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> idx_com <span class="token operator">&lt;</span> afl<span class="token operator">-></span>diff_num<span class="token punctuation">;</span> idx_com<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    u8<span class="token operator">*</span> fn <span class="token operator">=</span> <span class="token function">alloc_printf</span><span class="token punctuation">(</span><span class="token string">"%s/.cur_output_%d"</span><span class="token punctuation">,</span> afl<span class="token operator">-></span>tmp_dir<span class="token punctuation">,</span> idx_com<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">unlink</span><span class="token punctuation">(</span>fn<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">/* Ignore errors */</span>
+    afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span>idx_com<span class="token punctuation">]</span><span class="token punctuation">.</span>dev_stdout_fd <span class="token operator">=</span> <span class="token function">open</span><span class="token punctuation">(</span>fn<span class="token punctuation">,</span> O_RDWR <span class="token operator">|</span> O_CREAT <span class="token operator">|</span> O_EXCL<span class="token punctuation">,</span> <span class="token number">0600</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span>idx_com<span class="token punctuation">]</span><span class="token punctuation">.</span>dev_stdout_fd <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token function">PFATAL</span><span class="token punctuation">(</span><span class="token string">"Unable to create '%s'"</span><span class="token punctuation">,</span> fn<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">ck_free</span><span class="token punctuation">(</span>fn<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// 设置每个forkserver的dev_stderr_fd</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> idx_com<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> idx_com <span class="token operator">&lt;</span> afl<span class="token operator">-></span>diff_num<span class="token punctuation">;</span> idx_com<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    u8<span class="token operator">*</span> fn <span class="token operator">=</span> <span class="token function">alloc_printf</span><span class="token punctuation">(</span><span class="token string">"%s/.cur_error_%d"</span><span class="token punctuation">,</span> afl<span class="token operator">-></span>tmp_dir<span class="token punctuation">,</span> idx_com<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">unlink</span><span class="token punctuation">(</span>fn<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">/* Ignore errors */</span>
+    afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span>idx_com<span class="token punctuation">]</span><span class="token punctuation">.</span>dev_stderr_fd <span class="token operator">=</span> <span class="token function">open</span><span class="token punctuation">(</span>fn<span class="token punctuation">,</span> O_RDWR <span class="token operator">|</span> O_CREAT <span class="token operator">|</span> O_EXCL<span class="token punctuation">,</span> <span class="token number">0600</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span>idx_com<span class="token punctuation">]</span><span class="token punctuation">.</span>dev_stderr_fd <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token function">PFATAL</span><span class="token punctuation">(</span><span class="token string">"Unable to create '%s'"</span><span class="token punctuation">,</span> fn<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">ck_free</span><span class="token punctuation">(</span>fn<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="shmem">2.5 shmem</h4>
+<p>​
+在AFL中，<code>afl-&gt;shmem_testcase_mode</code>默认被置为1，setup_testcase_shmem()函数会为afl-&gt;shm_fuzz分配空间，并设置：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">afl<span class="token operator">-></span>fsrv<span class="token punctuation">.</span>support_shmem_fuzz <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+afl<span class="token operator">-></span>fsrv<span class="token punctuation">.</span>shmem_fuzz_len <span class="token operator">=</span> <span class="token punctuation">(</span>u32 <span class="token operator">*</span><span class="token punctuation">)</span>map<span class="token punctuation">;</span>
+afl<span class="token operator">-></span>fsrv<span class="token punctuation">.</span>shmem_fuzz <span class="token operator">=</span> map <span class="token operator">+</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>u32<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>​ CompDiff在这之后会将diff
+forkserver的这三个参数设置为主forkserver相同的值：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731113845.png" /></p>
+<p>​ 然后对所有forkserver进行共享内存的初始化，配置相关环境变量：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731114400.png" /></p>
+<h4 id="forkserver">2.6 forkserver</h4>
+<p>​
+在AFL中，其会调用afl_fsrv_get_mapsize()函数来启动一个forkserver，这里会接着将剩下的diff
+forkserver也启动：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731114819.png" /></p>
+<p>​ 最后，将afl-&gt;virgin_diff通过memset函数置为0即可：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731144910.png" /></p>
+<p>​ 以上就是afl-fuzz.c主文件中的大部分改动（还有部分细节见源码）。</p>
+<h3 id="初始化">3. 初始化</h3>
+<blockquote>
+<p>afl-fuzz-init.c文件是AFL的初始化相关函数定义，这里描述了CompDiff与AFL++初始化方面的区别</p>
+</blockquote>
+<h4 id="in-afl-fuzz-init.c">3.1 In afl-fuzz-init.c</h4>
+<h5 id="setup_dirs_fds">3.1.1 setup_dirs_fds()</h5>
+<p>​
+setup_dirs_fds()函数用于创建输出目录以及其相关子目录（例如queue、crashes、hang等），并将<code>afl-&gt;fsrv.out_dir_fd</code>，<code>afl-&gt;fsrv.dev_null_fd</code>，<code>afl-&gt;fsrv.dev_urandom_fd</code>
+设置为对应的描述符。</p>
+<p>​
+这里CompDiff在创建文件夹时，增加了对<code>diffs</code>文件夹的创建，其用于存储找到的discrepancy：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731153108.png" /></p>
+<p>​
+接下来在往afl-&gt;fsrv.plot_file中写入字符串时加入unique_diffs信息：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731153230.png" /></p>
+<h5 id="check_binary">3.1.2 check_binary()</h5>
+<p>​
+check_binary()函数的主要作用是将fsrv.target_path设置为argv[optind]，也就是fuzz
+target的路径。这里增加了设置diff forkserver的相关代码：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731153815.png" /></p>
+<p>​
+可以看到，这里需要对比运行的二进制文件的名称必须是<code>filename</code>+<code>-</code>+<code>diff_num</code>格式，故在实验复现阶段生成的文件名称是不能随意改变的。</p>
+<h4 id="in-afl-fuzz-state.c">3.2 In afl-fuzz-state.c</h4>
+<h5 id="afl_state_init">3.2.1 afl_state_init()</h5>
+<p>​
+afl_state_init()函数的定义存储于afl-fuzz-state.c，相较于AFL++，CompDiff新增了：对virgin_diff图的空间分配、对diff
+forkserver的相关数据结构的初始赋值：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731185057.png" /></p>
+<h5 id="afl_state_deinit">3.2.2 afl_state_deinit()</h5>
+<p>​
+afl_state_deinit()函数用于移除并释放afl_state结构，这里增加了对diff相关数据结构的释放操作：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731185557.png" /></p>
+<h3 id="stardiffcomp比较-核心逻辑">4. :star:DiffComp比较-核心逻辑</h3>
+<p>​
+DiffComp的核心逻辑存储在diff-afl-fuzz-init.c中，其关键比较函数存储在differential_compilers()函数中：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// from diff-afl-fuzz-init.c</span>
+<span class="token comment">// 比较不同输出</span>
+u8 <span class="token function">differential_compilers</span><span class="token punctuation">(</span><span class="token class-name">afl_state_t</span> <span class="token operator">*</span>afl<span class="token punctuation">,</span> <span class="token keyword">void</span> <span class="token operator">*</span>mem<span class="token punctuation">,</span> u32 len<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">unsigned</span> <span class="token keyword">char</span> first_cksum_out<span class="token punctuation">[</span>MD5_DIGEST_LENGTH<span class="token punctuation">]</span><span class="token punctuation">,</span> cksum_out<span class="token punctuation">[</span>MD5_DIGEST_LENGTH<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">int</span> bytes<span class="token punctuation">;</span>
+  <span class="token keyword">unsigned</span> <span class="token keyword">char</span> data<span class="token punctuation">[</span><span class="token number">1024</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+  u8 keep_as_diff <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+  <span class="token class-name">fsrv_run_result_t</span> ret<span class="token punctuation">;</span>
+
+  <span class="token comment">// 如果使用了-Y选项，指定输出文件</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>afl<span class="token operator">-></span>flag_use_output<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// 设置diff forkserver的相关描述符</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> idx <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> idx <span class="token operator">&lt;</span> afl<span class="token operator">-></span>diff_num<span class="token punctuation">;</span> idx<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>dev_stdout_fd <span class="token operator">=</span> afl<span class="token operator">-></span>fsrv<span class="token punctuation">.</span>dev_stdout_fd<span class="token punctuation">;</span>
+      afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>dev_stderr_fd <span class="token operator">=</span> afl<span class="token operator">-></span>fsrv<span class="token punctuation">.</span>dev_stderr_fd<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> idx <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> idx <span class="token operator">&lt;</span> afl<span class="token operator">-></span>diff_num<span class="token punctuation">;</span> idx<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// 将这两个描述符置于文件开头</span>
+    <span class="token function">lseek</span><span class="token punctuation">(</span>afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>dev_stdout_fd<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token constant">SEEK_SET</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">lseek</span><span class="token punctuation">(</span>afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>dev_stderr_fd<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token constant">SEEK_SET</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 清空文件内容</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">ftruncate</span><span class="token punctuation">(</span>afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>dev_stdout_fd<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token function">PFATAL</span><span class="token punctuation">(</span><span class="token string">"ftruncate() failed"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">ftruncate</span><span class="token punctuation">(</span>afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>dev_stderr_fd<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token function">PFATAL</span><span class="token punctuation">(</span><span class="token string">"ftruncate() failed"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 将这两个描述符置于文件开头</span>
+    <span class="token function">lseek</span><span class="token punctuation">(</span>afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>dev_stdout_fd<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token constant">SEEK_SET</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">lseek</span><span class="token punctuation">(</span>afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>dev_stderr_fd<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token constant">SEEK_SET</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token comment">// 将第一个diff forkserver的out_fd置于开头</span>
+  <span class="token comment">// out_fd用于指向fsrv->out_file</span>
+  <span class="token comment">// 也就是传给fuzz target的参数</span>
+  <span class="token function">lseek</span><span class="token punctuation">(</span>afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>out_fd<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token constant">SEEK_SET</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// 运行第一个diff forkserver</span>
+  ret <span class="token operator">=</span> <span class="token function">afl_fsrv_run_target</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> afl<span class="token operator">-></span>fsrv<span class="token punctuation">.</span>exec_tmout<span class="token punctuation">,</span> <span class="token operator">&amp;</span>afl<span class="token operator">-></span>stop_soon<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// 如果超时则退出</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>ret <span class="token operator">==</span> FSRV_RUN_TMOUT<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> ret<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token comment">// 将这两个描述符置于文件开头</span>
+  <span class="token function">lseek</span><span class="token punctuation">(</span>afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>dev_stdout_fd<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token constant">SEEK_SET</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">lseek</span><span class="token punctuation">(</span>afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>dev_stderr_fd<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token constant">SEEK_SET</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// md5 of first output</span>
+  MD5_CTX first_mdContext<span class="token punctuation">;</span>
+  <span class="token function">MD5_Init</span> <span class="token punctuation">(</span><span class="token operator">&amp;</span>first_mdContext<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// 从第一个diff forkserver中读取1024个标准输出</span>
+  <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>bytes <span class="token operator">=</span> <span class="token function">read</span><span class="token punctuation">(</span>afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>dev_stdout_fd<span class="token punctuation">,</span> data<span class="token punctuation">,</span> <span class="token number">1024</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">MD5_Update</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>first_mdContext<span class="token punctuation">,</span> data<span class="token punctuation">,</span> bytes<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// 第一个diff forkserver中读取1024个错误输出</span>
+  <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>bytes <span class="token operator">=</span> <span class="token function">read</span><span class="token punctuation">(</span>afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>dev_stderr_fd<span class="token punctuation">,</span> data<span class="token punctuation">,</span> <span class="token number">1024</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">MD5_Update</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>first_mdContext<span class="token punctuation">,</span> data<span class="token punctuation">,</span> bytes<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token comment">// 计算输出的哈希值</span>
+  <span class="token function">MD5_Final</span><span class="token punctuation">(</span>first_cksum_out<span class="token punctuation">,</span> <span class="token operator">&amp;</span>first_mdContext<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  
+  <span class="token comment">// md5 of following outputs</span>
+  <span class="token comment">// 运行剩下的diff forkservers</span>
+  <span class="token comment">// 从dev_stdout_fd读取其输出并计算哈希</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> idx <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> idx <span class="token operator">&lt;</span> afl<span class="token operator">-></span>diff_num<span class="token punctuation">;</span> idx<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">lseek</span><span class="token punctuation">(</span>afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>out_fd<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token constant">SEEK_SET</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    ret <span class="token operator">=</span> <span class="token function">afl_fsrv_run_target</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">,</span> afl<span class="token operator">-></span>fsrv<span class="token punctuation">.</span>exec_tmout<span class="token punctuation">,</span> <span class="token operator">&amp;</span>afl<span class="token operator">-></span>stop_soon<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>ret <span class="token operator">==</span> FSRV_RUN_TMOUT<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> ret<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span> 
+    <span class="token function">lseek</span><span class="token punctuation">(</span>afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>dev_stdout_fd<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token constant">SEEK_SET</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">lseek</span><span class="token punctuation">(</span>afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>dev_stderr_fd<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token constant">SEEK_SET</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    MD5_CTX mdContext<span class="token punctuation">;</span>
+    <span class="token function">MD5_Init</span> <span class="token punctuation">(</span><span class="token operator">&amp;</span>mdContext<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>bytes <span class="token operator">=</span> <span class="token function">read</span><span class="token punctuation">(</span>afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>dev_stdout_fd<span class="token punctuation">,</span> data<span class="token punctuation">,</span> <span class="token number">1024</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+      <span class="token function">MD5_Update</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>mdContext<span class="token punctuation">,</span> data<span class="token punctuation">,</span> bytes<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>bytes <span class="token operator">=</span> <span class="token function">read</span><span class="token punctuation">(</span>afl<span class="token operator">-></span>diff_fsrv<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>dev_stderr_fd<span class="token punctuation">,</span> data<span class="token punctuation">,</span> <span class="token number">1024</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+      <span class="token function">MD5_Update</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>mdContext<span class="token punctuation">,</span> data<span class="token punctuation">,</span> bytes<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token function">MD5_Final</span><span class="token punctuation">(</span>cksum_out<span class="token punctuation">,</span> <span class="token operator">&amp;</span>mdContext<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 与第一次计算的哈希比较</span>
+    <span class="token comment">// 如果不同则退出/继续比较</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">strncmp</span><span class="token punctuation">(</span>cksum_out<span class="token punctuation">,</span> first_cksum_out<span class="token punctuation">,</span> MD5_DIGEST_LENGTH<span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      keep_as_diff <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> 
+      <span class="token comment">//break;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token comment">// 如果发现discrepancy</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>keep_as_diff<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token operator">++</span>afl<span class="token operator">-></span>total_diffs<span class="token punctuation">;</span>
+    <span class="token function">classify_counts</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>afl<span class="token operator">-></span>fsrv<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">simplify_trace</span><span class="token punctuation">(</span>afl<span class="token punctuation">,</span> afl<span class="token operator">-></span>fsrv<span class="token punctuation">.</span>trace_bits<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// 检查virgin_diff 图是否有变化</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">has_new_bits</span><span class="token punctuation">(</span>afl<span class="token punctuation">,</span> afl<span class="token operator">-></span>virgin_diff<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
+
+    u8 fn<span class="token punctuation">[</span>PATH_MAX<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    s32 fd<span class="token punctuation">;</span>
+
+<span class="token comment">// 存储相关样例</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifndef</span> <span class="token expression">SIMPLE_FILES</span></span>
+      <span class="token function">snprintf</span><span class="token punctuation">(</span>fn<span class="token punctuation">,</span> PATH_MAX<span class="token punctuation">,</span> <span class="token string">"%s/diffs/id:%06llu,sig:%02u,%s"</span><span class="token punctuation">,</span> afl<span class="token operator">-></span>out_dir<span class="token punctuation">,</span>
+               afl<span class="token operator">-></span>unique_diffs<span class="token punctuation">,</span> afl<span class="token operator">-></span>fsrv<span class="token punctuation">.</span>last_kill_signal<span class="token punctuation">,</span>
+               <span class="token function">describe_op</span><span class="token punctuation">(</span>afl<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> NAME_MAX <span class="token operator">-</span> <span class="token function">strlen</span><span class="token punctuation">(</span><span class="token string">"id:000000,sig:00,"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">else</span></span>
+      <span class="token function">snprintf</span><span class="token punctuation">(</span>fn<span class="token punctuation">,</span> PATH_MAX<span class="token punctuation">,</span> <span class="token string">"%s/diffs/id_%06llu_%02u"</span><span class="token punctuation">,</span> afl<span class="token operator">-></span>out_dir<span class="token punctuation">,</span>
+               afl<span class="token operator">-></span>unique_diffs<span class="token punctuation">,</span> afl<span class="token operator">-></span>last_kill_signal<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span>                                                    <span class="token comment">/* ^!SIMPLE_FILES */</span></span>
+    fd <span class="token operator">=</span> <span class="token function">open</span><span class="token punctuation">(</span>fn<span class="token punctuation">,</span> O_WRONLY <span class="token operator">|</span> O_CREAT <span class="token operator">|</span> O_EXCL<span class="token punctuation">,</span> DEFAULT_PERMISSION<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">unlikely</span><span class="token punctuation">(</span>fd <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token function">PFATAL</span><span class="token punctuation">(</span><span class="token string">"Unable to create '%s'"</span><span class="token punctuation">,</span> fn<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
+    <span class="token function">ck_write</span><span class="token punctuation">(</span>fd<span class="token punctuation">,</span> mem<span class="token punctuation">,</span> len<span class="token punctuation">,</span> fn<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">close</span><span class="token punctuation">(</span>fd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">++</span>afl<span class="token operator">-></span>unique_diffs<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+differential_compilers()会在afl-fuzz-run.c中的common_fuzz_stuff()函数中被调用。</p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2023/07/28/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91Finding-Unstable-Code-via-Compiler-Driven-Differential-Testing/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">(论文复现)CompDiff(一) 实验复现</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#code-analysis"><span class="nav-number">1.</span> <span class="nav-text">Code analysis</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%8F%98%E5%8C%96"><span class="nav-number">1.1.</span> <span class="nav-text">1. 相关数据结构变化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#struct-afl_state"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1 struct afl_state</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E5%87%BD%E6%95%B0afl-fuzz.c"><span class="nav-number">1.2.</span> <span class="nav-text">2. 主函数——afl-fuzz.c</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#afl_fsrv_init"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 afl_fsrv_init()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E5%A4%84%E7%90%86"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 参数处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AEkill-signal"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 设置kill-signal</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AEfsrv.out_file"><span class="nav-number">1.2.4.</span> <span class="nav-text">2.4 设置fsrv.out_file</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#shmem"><span class="nav-number">1.2.5.</span> <span class="nav-text">2.5 shmem</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#forkserver"><span class="nav-number">1.2.6.</span> <span class="nav-text">2.6 forkserver</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">1.3.</span> <span class="nav-text">3. 初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#in-afl-fuzz-init.c"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 In afl-fuzz-init.c</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#setup_dirs_fds"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">3.1.1 setup_dirs_fds()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#check_binary"><span class="nav-number">1.3.1.2.</span> <span class="nav-text">3.1.2 check_binary()</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#in-afl-fuzz-state.c"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2 In afl-fuzz-state.c</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#afl_state_init"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">3.2.1 afl_state_init()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#afl_state_deinit"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">3.2.2 afl_state_deinit()</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#stardiffcomp%E6%AF%94%E8%BE%83-%E6%A0%B8%E5%BF%83%E9%80%BB%E8%BE%91"><span class="nav-number">1.4.</span> <span class="nav-text">4. :star:DiffComp比较-核心逻辑</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+<footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2023 Shaw All Rights Reserved.
+        
+          <span id="busuanzi_container_site_pv">
+            本站总访问量<span id="busuanzi_value_site_pv"></span>次
+          </span>
+          <span class="post-meta-divider">|</span>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            本站访客数<span id="busuanzi_value_site_uv"></span>人
+          </span>
+          <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+
+  
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'true', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+<!-- Gaug.es Analytics -->
+<script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', 'true');
+    t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+    t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+<!-- End Gaug.es Analytics -->
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+	<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2439014eb270056ee1808a49956fe114";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<!-- Tencent Analytics -->
+	<script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId={{ theme.tencent_analytics }}";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+<!-- End Tencent Analytics -->
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>
