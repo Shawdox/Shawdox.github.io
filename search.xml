@@ -7,6 +7,144 @@
 ]]></content>
   </entry>
   <entry>
+    <title></title>
+    <url>/2023/08/03/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91AFL++-Instrumention-for-WAVM/</url>
+    <content><![CDATA[<table>
+<tbody>
+<tr class="odd">
+<td>title:[技术积累]AFL++ Instrumention for WAVM</td>
+</tr>
+<tr class="even">
+<td>author:Shaw</td>
+</tr>
+<tr class="odd">
+<td>categories:Paper</td>
+</tr>
+<tr class="even">
+<td>tags:["Fuzzing"]</td>
+</tr>
+</tbody>
+</table>
+<p>​ 利用AFL++自带的compiler warpper对WAVM插桩，一些Bug的记录分析。</p>
+<span id="more"></span>
+<h2 id="instrumention">Instrumention</h2>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">cmake <span class="token punctuation">..</span>/ -G <span class="token string">"Unix Makefiles"</span> -DCMAKE_C_COMPILER<span class="token operator">=</span>/home/wx/Shaw/discrepancy_cases_study/compdiff/compilers/diff-cc-1  -DCMAKE_CXX_COMPILER<span class="token operator">=</span>/home/wx/Shaw/discrepancy_cases_study/compdiff/compilers/diff-cxx-1 -DLLVM_DIR<span class="token operator">=</span>/home/wx/Shaw/discrepancy_cases_study/compdiff/llvm-project/install/lib/cmake/llvm
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="bugs">Bugs</h2>
+<h3 id="afl崩溃">1. AFL++崩溃</h3>
+<p>​
+使用afl-gcc-fast编译WAVM，然后放到修改后的AFL中运行。程序每次都在total
+exec=14时退出并报错：“segmentation fault”，使用GDB调试发现如下信息：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230803155017.png" /></p>
+<p>​ 问题定位到differential_compilers()函数第一次运行diff
+forkserver时，其afl_fsrv_run_target()函数中使用的memset()函数：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230803155748.png" alt="in afl_fsrv_run_target()" style="zoom:67%;" /></p>
+<p>​
+但这里的问题就是，如果本次测试运行指定了参数<code>-y 0</code>，也就是不使用diff
+forkserver，而在differential_compilers()函数中：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230803163027.png" style="zoom: 67%;" /></p>
+<p>​ <strong>错误原因：</strong><u>即使没有设置diff
+forkserver，这里还是会尝试运行afl-&gt;diff_fsrv[0]，所以后续对一块没有分配过的内存进行memset操作就会出错。</u>这里属于是对代码边界条件的判断错误。</p>
+<p>​ 在differential_compilers()函数内加上条件判断，重新编译即可解决：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230803163223.png" style="zoom: 67%;" /></p>
+<h3 id="afl卡死">2. AFL++卡死</h3>
+<p>​ 修复完上面的Bug后，使用如下命令测试CompDiff在新版AFL上的功能：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">./afl-fuzz -y <span class="token number">1</span> -i /home/wx/Shaw/idea_test/libtiff/seed -o /home/wx/Shaw/idea_test/out1 -J <span class="token string">"out.file"</span> -- /home/wx/Shaw/idea_test/libtiff/tools/tiffcp -M -i @@ out.file<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​ 发现其每次都在total execs达到200左右时卡住，然后显示如下错误：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230803180929.png" style="zoom:67%;" /></p>
+<p>​
+GDB调试发现程序在第一次进入differential_compilers()函数就会出错，也就是trim阶段刚结束，正式开始运行时。继续调试，发现在主函数afl-fuzz.c中，afl_fsrv_start_diff()相关代码根本就没有运行：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230804100457.png" style="zoom: 67%;" /></p>
+<p>​
+当程序运行到afl-fuzz.c的2189行时，查看其条件判断，发现环境变量<code>AFL_SKIP_BIN_CHECK</code>被设置为1，导致这里直接跳过了diff
+forkserver的初始化过程：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230804100250.png" style="zoom: 67%;" /></p>
+<p>​
+这是由于之前复现WAFL时使用的环境变量<code>AFL_SKIP_BIN_CHECK</code>还留存在了同一个bash中，导致了程序直接跳过了部分代码。</p>
+<p>​
+并且，由于在diff-afl-forkserver.c中的read_s32_timed()函数中，从子进程读取时读出的长度是0：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230804111716.png" style="zoom:67%;" /></p>
+<p>​
+这是由于这里使用的是原生的afl-gcc-fast编译的程序，其插桩时还是按照198,199的文件描述符与forkserver通信，而在diff
+forkserver的定义中，其是从202开始的，diff
+0应该从202开始与forkserver通信才对：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230804145807.png" style="zoom:67%;" /></p>
+<p>​ <strong>错误原因：</strong></p>
+<blockquote>
+<pre><code>  1. 错误使用环境变量`AFL_SKIP_BIN_CHECK`导致diff forkserver根本没有初始化；
+  2. 没有使用diff as对target插桩，导致fuzz target使用了错误的管道。</code></pre>
+</blockquote>
+<p>​
+故这里不要用原生AFL编译器编译的target，直接使用CompDiff提供的编译器编译的二进制文件即可：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">./afl-fuzz -y <span class="token number">1</span> -i /home/wx/Shaw/discrepancy_cases_study/compdiff/examples/libtiff/seeds -o /home/wx/Shaw/idea_test/out -J <span class="token string">"out.file"</span> -- /home/wx/Shaw/idea_test/tiffcp -M -i @@ out.file<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="按ctrlc后程序结束但不返回bash">3.
+按Ctrl+C后程序结束，但不返回bash</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">./afl-fuzz -y <span class="token number">1</span> -i /home/wx/Shaw/discrepancy_cases_study/compdiff/examples/libtiff/seeds -o /home/wx/Shaw/idea_test/out -J <span class="token string">"out.file"</span> -- /home/wx/Shaw/idea_test/tiffcp -M -i @@ out.file
+
+
+./afl-fuzz -y <span class="token number">1</span> -i /home/wx/Shaw/idea_test/in -o /home/wx/Shaw/idea_test/out  -- /home/wx/Shaw/idea_test/wavm run /home/wx/Shaw/idea_c_test.wasm 
+
+./afl-fuzz -y <span class="token number">2</span> -i /home/wx/Shaw/idea_test/in -o /home/wx/Shaw/idea_test/out  -- /home/wx/Shaw/idea_test/test-instr -i @@ -b<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="without-wasm检测不到discrepancy">4. Without
+wasm:检测不到discrepancy</h3>
+<p>​ 使用如下测试程序来测试CompDiff：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdlib.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;unistd.h></span></span>
+
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span><span class="token operator">*</span><span class="token operator">*</span> argv<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">char</span> buf<span class="token punctuation">[</span><span class="token number">8</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">read</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> buf<span class="token punctuation">,</span> <span class="token number">8</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"Hum?\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>buf<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token string">'0'</span><span class="token punctuation">)</span>
+    <span class="token comment">// printf("I'm native one!\n");</span>
+    <span class="token comment">// printf("I'm wasm one!\n");</span>
+  <span class="token keyword">else</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"A non-zero value? How quaint!\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+当buf[0]='0'时，原始程序和待测试程序分别会打印不同的内容，但测试过程中diff目录没有任何记录。</p>
+<p>​
+<strong>错误原因1：</strong><u>原生的binary不参与discrenpancy的比较，只负责引导fuzzing。</u></p>
+<p>​ 查看differential_compilers()代码（<a
+href="https://shawdox.github.io/2023/07/31/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91CompDiff(%E4%BA%8C)-%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/#stardiffcomp%E6%AF%94%E8%BE%83-%E6%A0%B8%E5%BF%83%E9%80%BB%E8%BE%91">DiffComp比较-核心逻辑</a>）可知，CompDiff先运行一次diff_forkserver
+0,然后依次运行后续的diff
+forkserver，每运行一个就与最开始运行的diff_forkserver
+0的结果比较，如果有不同就记录discrepancy。</p>
+<p>​ 故这里不能指定<code>-y</code>为1，不然只有一个diff
+forkserver没有办法比较，正确做法是指定2个，然后用上述的compiler
+warpper包装它。</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">./afl-fuzz -y <span class="token number">2</span> -i /home/wx/Shaw/idea_test/in -o /home/wx/Shaw/idea_test/out  -- /home/wx/Shaw/idea_test/test-instr<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​ 这样就可以成功检测到discrepancy:</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230805094454.png" style="zoom:67%;" /></p>
+<h3 id="with-wasm检测不到discrepancy">5. With
+wasm:检测不到discrepancy</h3>
+<p>​ 在修正上述问题后，将diff forkserver 0设置为native binary，将diff
+forkserver 1设置为wasm
+binary，并修改forkserver的out_file参数和target（将target变为wavm），程序可以成功运行，但是检测不到discrepancy。</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">./afl-fuzz -i /home/wx/Shaw/idea_test/in -o /home/wx/Shaw/idea_test/out  -- /home/wx/Shaw/idea_test/test-instr<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​ 而且注意到在测试的过程中 ，<code>.cur_output0</code>文件（native
+binary输出文件）一直有输出，但<code>.cur_output1</code>（wasm
+binary输出文件）一直是空的：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230805153613.png" style="zoom:67%;" /></p>
+<p>​ <strong>问题原因：</strong><u>wavm运行时间太长，导致程序运行diff
+forkserver 1时直接退出了。</u></p>
+<p>​ 这里将diff forkserver
+1的运行时间延长10倍（也就是跟forkserver初始化的时间相同），即可解决：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230805160555.png" alt="From differential_compilers()" style="zoom:67%;" /></p>
+<h3 id="last-new-find总是等于run-time">6.
+<code>last new find</code>总是等于<code>run time</code></h3>
+<p>​
+在测试过程中，发现输出的<code>last new find</code>总是等于<code>run time</code>，这就意味着每时每刻都在发现新cov：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230805092002.png" style="zoom:67%;" /></p>
+]]></content>
+  </entry>
+  <entry>
     <title>(论文复现)CompDiff(二) 代码分析</title>
     <url>/2023/07/31/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91CompDiff(%E4%BA%8C)-%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/</url>
     <content><![CDATA[<p>​ CompDiff与AFL++源码对比分析。</p>

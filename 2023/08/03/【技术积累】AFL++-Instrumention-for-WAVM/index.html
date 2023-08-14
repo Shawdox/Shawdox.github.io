@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  
+  
+    <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
+  
+  
+  <meta name="description" content="title:[技术积累]AFL++ Instrumention for WAVM   author:Shaw   categories:Paper   tags:[&quot;Fuzzing&quot;]    ​ 利用AFL++自带的compiler warpper对WAVM插桩，一些Bug的记录分析。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Shaw">
+<meta property="og:url" content="http://example.com/2023/08/03/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91AFL++-Instrumention-for-WAVM/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="title:[技术积累]AFL++ Instrumention for WAVM   author:Shaw   categories:Paper   tags:[&quot;Fuzzing&quot;]    ​ 利用AFL++自带的compiler warpper对WAVM插桩，一些Bug的记录分析。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230803155748.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230803163027.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230803163223.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230803180929.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230804100457.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230804100250.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230804111716.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230804145807.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230805094454.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230805153613.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230805160555.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230805092002.png">
+<meta property="article:published_time" content="2023-08-03T02:47:05.272Z">
+<meta property="article:modified_time" content="2023-08-14T12:07:40.379Z">
+<meta property="article:author" content="Shaw">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230803155748.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-【技术积累】AFL++-Instrumention-for-WAVM" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+    <div class="article-meta">
+      
+	<a href="/2023/08/03/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91AFL++-Instrumention-for-WAVM/" class="article-date">
+	  <time datetime="2023-08-03T02:47:05.272Z" itemprop="datePublished">八月 3, 2023</time>
+	</a>
+
+       
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <table>
+<tbody>
+<tr class="odd">
+<td>title:[技术积累]AFL++ Instrumention for WAVM</td>
+</tr>
+<tr class="even">
+<td>author:Shaw</td>
+</tr>
+<tr class="odd">
+<td>categories:Paper</td>
+</tr>
+<tr class="even">
+<td>tags:["Fuzzing"]</td>
+</tr>
+</tbody>
+</table>
+<p>​ 利用AFL++自带的compiler warpper对WAVM插桩，一些Bug的记录分析。</p>
+<span id="more"></span>
+<h2 id="instrumention">Instrumention</h2>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">cmake <span class="token punctuation">..</span>/ -G <span class="token string">"Unix Makefiles"</span> -DCMAKE_C_COMPILER<span class="token operator">=</span>/home/wx/Shaw/discrepancy_cases_study/compdiff/compilers/diff-cc-1  -DCMAKE_CXX_COMPILER<span class="token operator">=</span>/home/wx/Shaw/discrepancy_cases_study/compdiff/compilers/diff-cxx-1 -DLLVM_DIR<span class="token operator">=</span>/home/wx/Shaw/discrepancy_cases_study/compdiff/llvm-project/install/lib/cmake/llvm
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="bugs">Bugs</h2>
+<h3 id="afl崩溃">1. AFL++崩溃</h3>
+<p>​
+使用afl-gcc-fast编译WAVM，然后放到修改后的AFL中运行。程序每次都在total
+exec=14时退出并报错：“segmentation fault”，使用GDB调试发现如下信息：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230803155017.png" /></p>
+<p>​ 问题定位到differential_compilers()函数第一次运行diff
+forkserver时，其afl_fsrv_run_target()函数中使用的memset()函数：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230803155748.png" alt="in afl_fsrv_run_target()" style="zoom:67%;" /></p>
+<p>​
+但这里的问题就是，如果本次测试运行指定了参数<code>-y 0</code>，也就是不使用diff
+forkserver，而在differential_compilers()函数中：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230803163027.png" style="zoom: 67%;" /></p>
+<p>​ <strong>错误原因：</strong><u>即使没有设置diff
+forkserver，这里还是会尝试运行afl-&gt;diff_fsrv[0]，所以后续对一块没有分配过的内存进行memset操作就会出错。</u>这里属于是对代码边界条件的判断错误。</p>
+<p>​ 在differential_compilers()函数内加上条件判断，重新编译即可解决：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230803163223.png" style="zoom: 67%;" /></p>
+<h3 id="afl卡死">2. AFL++卡死</h3>
+<p>​ 修复完上面的Bug后，使用如下命令测试CompDiff在新版AFL上的功能：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">./afl-fuzz -y <span class="token number">1</span> -i /home/wx/Shaw/idea_test/libtiff/seed -o /home/wx/Shaw/idea_test/out1 -J <span class="token string">"out.file"</span> -- /home/wx/Shaw/idea_test/libtiff/tools/tiffcp -M -i @@ out.file<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​ 发现其每次都在total execs达到200左右时卡住，然后显示如下错误：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230803180929.png" style="zoom:67%;" /></p>
+<p>​
+GDB调试发现程序在第一次进入differential_compilers()函数就会出错，也就是trim阶段刚结束，正式开始运行时。继续调试，发现在主函数afl-fuzz.c中，afl_fsrv_start_diff()相关代码根本就没有运行：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230804100457.png" style="zoom: 67%;" /></p>
+<p>​
+当程序运行到afl-fuzz.c的2189行时，查看其条件判断，发现环境变量<code>AFL_SKIP_BIN_CHECK</code>被设置为1，导致这里直接跳过了diff
+forkserver的初始化过程：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230804100250.png" style="zoom: 67%;" /></p>
+<p>​
+这是由于之前复现WAFL时使用的环境变量<code>AFL_SKIP_BIN_CHECK</code>还留存在了同一个bash中，导致了程序直接跳过了部分代码。</p>
+<p>​
+并且，由于在diff-afl-forkserver.c中的read_s32_timed()函数中，从子进程读取时读出的长度是0：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230804111716.png" style="zoom:67%;" /></p>
+<p>​
+这是由于这里使用的是原生的afl-gcc-fast编译的程序，其插桩时还是按照198,199的文件描述符与forkserver通信，而在diff
+forkserver的定义中，其是从202开始的，diff
+0应该从202开始与forkserver通信才对：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230804145807.png" style="zoom:67%;" /></p>
+<p>​ <strong>错误原因：</strong></p>
+<blockquote>
+<pre><code>  1. 错误使用环境变量`AFL_SKIP_BIN_CHECK`导致diff forkserver根本没有初始化；
+  2. 没有使用diff as对target插桩，导致fuzz target使用了错误的管道。</code></pre>
+</blockquote>
+<p>​
+故这里不要用原生AFL编译器编译的target，直接使用CompDiff提供的编译器编译的二进制文件即可：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">./afl-fuzz -y <span class="token number">1</span> -i /home/wx/Shaw/discrepancy_cases_study/compdiff/examples/libtiff/seeds -o /home/wx/Shaw/idea_test/out -J <span class="token string">"out.file"</span> -- /home/wx/Shaw/idea_test/tiffcp -M -i @@ out.file<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="按ctrlc后程序结束但不返回bash">3.
+按Ctrl+C后程序结束，但不返回bash</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">./afl-fuzz -y <span class="token number">1</span> -i /home/wx/Shaw/discrepancy_cases_study/compdiff/examples/libtiff/seeds -o /home/wx/Shaw/idea_test/out -J <span class="token string">"out.file"</span> -- /home/wx/Shaw/idea_test/tiffcp -M -i @@ out.file
+
+
+./afl-fuzz -y <span class="token number">1</span> -i /home/wx/Shaw/idea_test/in -o /home/wx/Shaw/idea_test/out  -- /home/wx/Shaw/idea_test/wavm run /home/wx/Shaw/idea_c_test.wasm 
+
+./afl-fuzz -y <span class="token number">2</span> -i /home/wx/Shaw/idea_test/in -o /home/wx/Shaw/idea_test/out  -- /home/wx/Shaw/idea_test/test-instr -i @@ -b<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="without-wasm检测不到discrepancy">4. Without
+wasm:检测不到discrepancy</h3>
+<p>​ 使用如下测试程序来测试CompDiff：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdlib.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;unistd.h></span></span>
+
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span><span class="token operator">*</span><span class="token operator">*</span> argv<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">char</span> buf<span class="token punctuation">[</span><span class="token number">8</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">read</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> buf<span class="token punctuation">,</span> <span class="token number">8</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"Hum?\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>buf<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token string">'0'</span><span class="token punctuation">)</span>
+    <span class="token comment">// printf("I'm native one!\n");</span>
+    <span class="token comment">// printf("I'm wasm one!\n");</span>
+  <span class="token keyword">else</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"A non-zero value? How quaint!\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+当buf[0]='0'时，原始程序和待测试程序分别会打印不同的内容，但测试过程中diff目录没有任何记录。</p>
+<p>​
+<strong>错误原因1：</strong><u>原生的binary不参与discrenpancy的比较，只负责引导fuzzing。</u></p>
+<p>​ 查看differential_compilers()代码（<a
+target="_blank" rel="noopener" href="https://shawdox.github.io/2023/07/31/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91CompDiff(%E4%BA%8C)-%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/#stardiffcomp%E6%AF%94%E8%BE%83-%E6%A0%B8%E5%BF%83%E9%80%BB%E8%BE%91">DiffComp比较-核心逻辑</a>）可知，CompDiff先运行一次diff_forkserver
+0,然后依次运行后续的diff
+forkserver，每运行一个就与最开始运行的diff_forkserver
+0的结果比较，如果有不同就记录discrepancy。</p>
+<p>​ 故这里不能指定<code>-y</code>为1，不然只有一个diff
+forkserver没有办法比较，正确做法是指定2个，然后用上述的compiler
+warpper包装它。</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">./afl-fuzz -y <span class="token number">2</span> -i /home/wx/Shaw/idea_test/in -o /home/wx/Shaw/idea_test/out  -- /home/wx/Shaw/idea_test/test-instr<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​ 这样就可以成功检测到discrepancy:</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230805094454.png" style="zoom:67%;" /></p>
+<h3 id="with-wasm检测不到discrepancy">5. With
+wasm:检测不到discrepancy</h3>
+<p>​ 在修正上述问题后，将diff forkserver 0设置为native binary，将diff
+forkserver 1设置为wasm
+binary，并修改forkserver的out_file参数和target（将target变为wavm），程序可以成功运行，但是检测不到discrepancy。</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">./afl-fuzz -i /home/wx/Shaw/idea_test/in -o /home/wx/Shaw/idea_test/out  -- /home/wx/Shaw/idea_test/test-instr<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​ 而且注意到在测试的过程中 ，<code>.cur_output0</code>文件（native
+binary输出文件）一直有输出，但<code>.cur_output1</code>（wasm
+binary输出文件）一直是空的：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230805153613.png" style="zoom:67%;" /></p>
+<p>​ <strong>问题原因：</strong><u>wavm运行时间太长，导致程序运行diff
+forkserver 1时直接退出了。</u></p>
+<p>​ 这里将diff forkserver
+1的运行时间延长10倍（也就是跟forkserver初始化的时间相同），即可解决：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230805160555.png" alt="From differential_compilers()" style="zoom:67%;" /></p>
+<h3 id="last-new-find总是等于run-time">6.
+<code>last new find</code>总是等于<code>run time</code></h3>
+<p>​
+在测试过程中，发现输出的<code>last new find</code>总是等于<code>run time</code>，这就意味着每时每刻都在发现新cov：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230805092002.png" style="zoom:67%;" /></p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+      
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2023/07/31/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91CompDiff(%E4%BA%8C)-%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">(论文复现)CompDiff(二) 代码分析</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#instrumention"><span class="nav-number">1.</span> <span class="nav-text">Instrumention</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bugs"><span class="nav-number">2.</span> <span class="nav-text">Bugs</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#afl%E5%B4%A9%E6%BA%83"><span class="nav-number">2.1.</span> <span class="nav-text">1. AFL++崩溃</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#afl%E5%8D%A1%E6%AD%BB"><span class="nav-number">2.2.</span> <span class="nav-text">2. AFL++卡死</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%89ctrlc%E5%90%8E%E7%A8%8B%E5%BA%8F%E7%BB%93%E6%9D%9F%E4%BD%86%E4%B8%8D%E8%BF%94%E5%9B%9Ebash"><span class="nav-number">2.3.</span> <span class="nav-text">3.
+按Ctrl+C后程序结束，但不返回bash</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#without-wasm%E6%A3%80%E6%B5%8B%E4%B8%8D%E5%88%B0discrepancy"><span class="nav-number">2.4.</span> <span class="nav-text">4. Without
+wasm:检测不到discrepancy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#with-wasm%E6%A3%80%E6%B5%8B%E4%B8%8D%E5%88%B0discrepancy"><span class="nav-number">2.5.</span> <span class="nav-text">5. With
+wasm:检测不到discrepancy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#last-new-find%E6%80%BB%E6%98%AF%E7%AD%89%E4%BA%8Erun-time"><span class="nav-number">2.6.</span> <span class="nav-text">6.
+last new find总是等于run time</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+<footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2023 Shaw All Rights Reserved.
+        
+          <span id="busuanzi_container_site_pv">
+            本站总访问量<span id="busuanzi_value_site_pv"></span>次
+          </span>
+          <span class="post-meta-divider">|</span>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            本站访客数<span id="busuanzi_value_site_uv"></span>人
+          </span>
+          <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+
+  
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'true', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+<!-- Gaug.es Analytics -->
+<script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', 'true');
+    t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+    t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+<!-- End Gaug.es Analytics -->
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+	<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2439014eb270056ee1808a49956fe114";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<!-- Tencent Analytics -->
+	<script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId={{ theme.tencent_analytics }}";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+<!-- End Tencent Analytics -->
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>
