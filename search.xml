@@ -12,7 +12,7 @@
     <content><![CDATA[<table>
 <tbody>
 <tr class="odd">
-<td>title:[技术积累]AFL++ Instrumention for WAVM</td>
+<td>title:(技术积累)AFL++ Instrumention for WAVM</td>
 </tr>
 <tr class="even">
 <td>author:Shaw</td>
@@ -25,6 +25,8 @@
 </tr>
 </tbody>
 </table>
+<h1 id="技术积累afl-instrumention-for-wavm">(技术积累)AFL++
+Instrumention for WAVM</h1>
 <p>​ 利用AFL++自带的compiler warpper对WAVM插桩，一些Bug的记录分析。</p>
 <span id="more"></span>
 <h2 id="instrumention">Instrumention</h2>
