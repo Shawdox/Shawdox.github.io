@@ -7,25 +7,9 @@
 ]]></content>
   </entry>
   <entry>
-    <title></title>
+    <title>(技术积累)AFL++ Instrumention for WAVM</title>
     <url>/2023/08/03/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91AFL++-Instrumention-for-WAVM/</url>
-    <content><![CDATA[<table>
-<tbody>
-<tr class="odd">
-<td>title:(技术积累)AFL++ Instrumention for WAVM</td>
-</tr>
-<tr class="even">
-<td>author:Shaw</td>
-</tr>
-<tr class="odd">
-<td>categories:Paper</td>
-</tr>
-<tr class="even">
-<td>tags:["Fuzzing"]</td>
-</tr>
-</tbody>
-</table>
-<h1 id="技术积累afl-instrumention-for-wavm">(技术积累)AFL++
+    <content><![CDATA[<h1 id="技术积累afl-instrumention-for-wavm">(技术积累)AFL++
 Instrumention for WAVM</h1>
 <p>​ 利用AFL++自带的compiler warpper对WAVM插桩，一些Bug的记录分析。</p>
 <span id="more"></span>
@@ -145,6 +129,12 @@ forkserver 1时直接退出了。</u></p>
 在测试过程中，发现输出的<code>last new find</code>总是等于<code>run time</code>，这就意味着每时每刻都在发现新cov：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230805092002.png" style="zoom:67%;" /></p>
 ]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>Fuzzing</tag>
+      </tags>
   </entry>
   <entry>
     <title>(论文复现)CompDiff(二) 代码分析</title>
