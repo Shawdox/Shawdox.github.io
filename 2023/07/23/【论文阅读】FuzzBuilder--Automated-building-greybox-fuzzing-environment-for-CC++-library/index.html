@@ -21,8 +21,14 @@
 <meta property="og:description" content="FuzzBuilder: Automated building greybox fuzzing environment for C&#x2F;C++ library  时间：2019 作者：Joonun Jang、Huy Kang Kim（三星研究院、首尔大学） 会议：ACSAC 开源：https:&#x2F;&#x2F;github.com&#x2F;hksecurity&#x2F;FuzzBuilder  Abstract">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230723143028.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230818113420.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230818114611.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230818170327.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230818171513.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230818171753.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230818172017.png">
 <meta property="article:published_time" content="2023-07-23T06:07:38.504Z">
-<meta property="article:modified_time" content="2023-07-23T06:35:27.454Z">
+<meta property="article:modified_time" content="2023-08-18T09:21:13.837Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="Fuzzing">
 <meta name="twitter:card" content="summary">
@@ -195,8 +201,131 @@ parse_B可以获得最高的覆盖率。、</p>
 <li>为实用起见，生成的可执行文件与 AFL 等各种灰盒fuzzer兼容；</li>
 <li>我们将这种方法作为基于 LLVM 框架的工具 FuzzBuilder 来实现。</li>
 </ul>
+<h2 id="model">Model</h2>
+<h3 id="user-configuration">1. User Configuration</h3>
+<p>​ 要使用FuzzBuilder，用户首先需要提供一个LLVM IR形式的unit
+test文件和FA（Fuzzable API，用于向目标库传递Input和分析API序列）。</p>
+<h4 id="fa">1.1 FA</h4>
+<p>​ 用户需要提供关于FA的信息，包括用于input的参数信息，例如：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230818113420.png" style="zoom:50%;" /></p>
+<p>​
+其中，（1）指明了FA是<code>CBS_init</code>，其第2和第3个参数用于指定输入的值和大小；（2）指明了FA是<code>yr_compiler_add_string</code>，第2个参数用于指定输入的值，不需要额外的参数来指定大小。</p>
+<h4 id="test-functions">1.2 Test functions</h4>
+<p>​ Test function进行单元测试的函数，在源代码提供的unit
+test中有许多函数，但只有部分是test
+function，故FuzzBuilder需要识别其中哪些是test
+function。如果单元测试是基于流行的单元测试框架（如 google test
+[3]），test
+function名称就会有特定的模式。因此，识别它们并不难。但是，如果单元测试是在没有任何约定的情况下编写的，那么就需要手动指定它们的名称，因为没有明确的方法来识别test
+function。</p>
+<p>​ 因此，FuzzBuilder支持可配置选项，通过逐一指定test
+function的名称来识别这些函数。然而，由于单元测试中有大量测试函数，这种配置非常耗时。幸运的是，大多数项目都使用带有特定前缀或后缀的测试函数名称，如
+test_A、test_B、A_test 和 B_test。因此，为了缓解这一问题，FuzzBuilder
+支持星号 (*)。</p>
+<h4 id="functions-to-be-skipped">1.3 Functions to be skipped</h4>
+<p>​
+用户可以选择需要跳过的功能。遗憾的是，某些测试函数的执行可能会耗费大量时间。例如，test
+function中过多的循环就会导致这一问题。如果执行速度慢，灰盒模糊测试的效率就会降低。这是因为灰盒模糊测试需要执行大量程序，用程序生成的各种输入值进行测试。因此，这种配置有助于跳过此类函数，从而提高模糊测试的效率。</p>
+<h3 id="automated-generation-of-an-executable">2. Automated generation
+of an executable</h3>
+<p>​ 为了生成可执行文件，假设unit test中的以下两个条件都已经被满足：</p>
+<blockquote>
+<ol type="1">
+<li>每个test都以函数的形式存在；</li>
+<li>每个test互相独立。</li>
+</ol>
+</blockquote>
+<p>​ JUnit [6]是一种流行的 Java
+单元测试框架，其最佳实践指南中提到了这些条件。此外，大多数基于 google
+test的单元测试都满足这些条件。因此，这些条件不会对拟议方法的实用性产生不利影响。</p>
+<p>​ 生成可执行文件的算法如下：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230818114611.png" style="zoom:50%;" /></p>
+<ul>
+<li><strong>preprocess</strong></li>
+</ul>
+<p>​ 该过程从 LLVM bitcode 文件中的每个函数中提取入口函数和test
+function。如果单元测试基于流行的测试框架，则会使用特定模式提取test
+function，否则，它们将根据用户配置提取。入口函数即main函数。</p>
+<ul>
+<li><strong>insert_interface</strong></li>
+</ul>
+<p>​
+这个过程插入了一个接口，用于将fuzzer生成的输入值加载到内存中。首先，添加两个新的全局变量，用于存储输入值及其大小。然后，在提取的入口函数中插入一组指令，以实现以下目标:</p>
+<ol type="1">
+<li>从fuzzer中获取输入值；</li>
+<li>分配足够的空间以加入一个全局变量；</li>
+<li>将输入值复制到全局变量中；</li>
+<li>将变量大小存储到另外一个全局变量中。</li>
+</ol>
+<ul>
+<li><strong>is_necessary</strong></li>
+</ul>
+<p>​ 该过程可识别包含调用特定FA的指令的test
+function，这可以通过遍历测试函数中的指令来实现。然后，如果test
+function调用了特定的FA，则执行insert_operands，否则执行
+remove_test。如果test function是用户配置中跳过的函数，则始终执行
+remove_test。</p>
+<ul>
+<li><strong>insert_operands</strong></li>
+</ul>
+<p>​ 该过程将test
+function中的FA的参数更改为<strong>insert_interface</strong>过程中添加的全局变量，User
+Configuration用于确定哪些参数需要更改。通过这一过程，可以使用fuzzer生成的输入值执行库中的指令。</p>
+<ul>
+<li><strong>remove_test</strong></li>
+</ul>
+<p>​ 此过程会删除不必要的test
+functions，删除这些函数很有必要，因为它们会降低生成的可执行文件的执行速度。执行速度对fuzzing的性能有重大影响，因为fuzzing需要尽可能多的输入值。删除test
+function是安全的，因为我们假设了单元测试之间相互独立。</p>
+<ul>
+<li><strong>modify</strong></li>
+</ul>
+<p>​
+这个过程将插桩过的函数存储在bitcode文件中。根据项目的构建流程，这些插桩文件将被构建为可执行文件。因此，生成的可执行文件带有从fuzzer获取输入值的接口，这些输入值被用作
+FA 的参数。最后，fuzzer的输入值可用于探索库代码以发现漏洞。</p>
+<p>​
+请注意，<u>上述过程是在单元测试可执行文件的编译过程中进行的。因此，如果一个项目有多个单元测试可执行文件，则可生成多个可执行文件</u>。</p>
+<p>​</p>
+<h3 id="automated-generation-of-seed-files">3. Automated generation of
+seed files</h3>
+<p>​ 大多数项目用以下的方式存储unit
+test的输入：源码、执行单元测试的脚本文件、额外的文件。</p>
+<p>​
+要从单元测试中静态提取测试输入，需要使用各种分析工具。例如，如果测试输入是C源代码，那么就需要
+C
+源代码静态分析器，然而，准备所有类型的静态分析器并不现实。因此，我们采用动态方法，在单元测试工作期间收集测试输入。</p>
+<p>​
+为此，FuzzBuilder对FA插桩，将其参数值存储到特定文件中。如下图所示，在这段代码中，输入参数表示特定的缓冲区地址，大小参数表示缓冲区的大小，插桩指令用于将输入缓冲区中的值存储到
+"file.txt
+"中。通过这种插桩，在单元测试工作时，每个测试输入都会被收集到一个特定的文件中。最后，将每个种子文件分割成不同的文件，生成种子文件。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230818170327.png" style="zoom:50%;" /></p>
+<p>​ 生成种子的整体工作流程如图所示：</p>
 <p><img
 src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230723143409.png" /></p>
+<h2 id="evaluation">EVALUATION</h2>
+<p>​
+在实验中，我们从OSS-Fuzz中选择了几个库项目，每个项目都有用于fuzzing的可执行文件和种子。大多数可执行文件和种子都是由对库有深入了解的开发人员准备的，通过与这些可执行文件和种子文件进行比较，可以对
+FuzzBuilder进行评估。</p>
+<ul>
+<li><strong>被选择的待测试项目满足以下条件：</strong></li>
+</ul>
+<p>​ (1) 32位；</p>
+<p>​ (2) 至少支持一个包含FA的单元测试；</p>
+<p>​ (3) 其单元测试满足上述假设条件。</p>
+<ul>
+<li><p><strong>AFL版本：</strong>AFL 2.5.b</p></li>
+<li><p><strong>选择的项目：</strong><code>c-ares</code>、<code>expat</code>、<code>boringssl</code>、<code>yara</code></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230818171513.png" style="zoom:50%;" /></p></li>
+<li><p><strong>实验配置：</strong></p></li>
+</ul>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230818171753.png" style="zoom:50%;" /></p>
+<ul>
+<li>​<strong>实验结果：</strong></li>
+</ul>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230818171918.png" /></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230818172017.png" style="zoom:50%;" /></p>
+<p>[后续……]</p>
 
       
     </div>
@@ -244,7 +373,9 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230723143409.png" /></p>
     <strong class="toc-title">文章目录</strong>
     
       <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#fuzzbuilder-automated-building-greybox-fuzzing-environment-for-cc-library"><span class="nav-number">1.</span> <span class="nav-text">FuzzBuilder:
-Automated building greybox fuzzing environment for C&#x2F;C++ library</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#abstract"><span class="nav-number">1.1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#background"><span class="nav-number">1.2.</span> <span class="nav-text">Background</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#contribution"><span class="nav-number">1.3.</span> <span class="nav-text">Contribution</span></a></li></ol></li></ol>
+Automated building greybox fuzzing environment for C&#x2F;C++ library</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#abstract"><span class="nav-number">1.1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#background"><span class="nav-number">1.2.</span> <span class="nav-text">Background</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#contribution"><span class="nav-number">1.3.</span> <span class="nav-text">Contribution</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#model"><span class="nav-number">1.4.</span> <span class="nav-text">Model</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#user-configuration"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. User Configuration</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#fa"><span class="nav-number">1.4.1.1.</span> <span class="nav-text">1.1 FA</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#test-functions"><span class="nav-number">1.4.1.2.</span> <span class="nav-text">1.2 Test functions</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#functions-to-be-skipped"><span class="nav-number">1.4.1.3.</span> <span class="nav-text">1.3 Functions to be skipped</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#automated-generation-of-an-executable"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. Automated generation
+of an executable</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#automated-generation-of-seed-files"><span class="nav-number">1.4.3.</span> <span class="nav-text">3. Automated generation of
+seed files</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#evaluation"><span class="nav-number">1.5.</span> <span class="nav-text">EVALUATION</span></a></li></ol></li></ol>
     
     </div>
   </aside>
@@ -438,20 +569,5 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>
