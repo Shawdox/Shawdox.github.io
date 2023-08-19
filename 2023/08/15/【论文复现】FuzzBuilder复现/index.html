@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>(技术积累)FuzzBuilder复现 | Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Fuzzing" />
+  
+  
+  
+    <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
+  
+  
+  <meta name="description" content="FuzzBuilder复现 对FuzzBuilder使用以及部分技术分析。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(技术积累)FuzzBuilder复现">
+<meta property="og:url" content="http://example.com/2023/08/15/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91FuzzBuilder%E5%A4%8D%E7%8E%B0/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="FuzzBuilder复现 对FuzzBuilder使用以及部分技术分析。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230818190723.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230819095110.png">
+<meta property="article:published_time" content="2023-08-15T08:11:35.412Z">
+<meta property="article:modified_time" content="2023-08-19T03:53:05.283Z">
+<meta property="article:author" content="Shaw">
+<meta property="article:tag" content="Fuzzing">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230818190723.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-【论文复现】FuzzBuilder复现" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      (技术积累)FuzzBuilder复现
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/08/15/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91FuzzBuilder%E5%A4%8D%E7%8E%B0/" class="article-date">
+	  <time datetime="2023-08-15T08:11:35.412Z" itemprop="datePublished">八月 15, 2023</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="fuzzbuilder复现">FuzzBuilder复现</h1>
+<p>对FuzzBuilder使用以及部分技术分析。</p>
+<span id="more"></span>
+<h2 id="tutorial">1. Tutorial</h2>
+<p>​ 由于国内科学上网等原因（可能），<a
+target="_blank" rel="noopener" href="https://github.com/hksecurity/FuzzBuilder">hksecurity/FuzzBuilder
+(github.com)</a>给的dockerfile使用一直有问题，故这里直接使用ubuntu18.04镜像新建docker：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker pull homebrew/ubuntu18.04<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​ 然后根据仓库给出的指令安装相关包：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">apt-get</span> <span class="token function">install</span> clang-6.0 clang-6.0-dev llvm-6.0 llvm-6.0-dev
+<span class="token function">ln</span> -s /usr/bin/clang-6.0 /usr/bin/clang
+<span class="token function">apt-get</span> <span class="token function">install</span> <span class="token function">git</span> <span class="token function">wget</span> build-essential cmake gcc-multilib g++-multilib gnupg <span class="token function">zip</span> autoconf automake libtool docbook2x zlib1g-dev rapidjson-dev<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>​ 注意，这里只安装了clang没有安装clang++，故再补一个：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">apt-get</span> <span class="token function">install</span> clang++-6.0 clang++-6.0-dev
+<span class="token function">ln</span> -s /usr/bin/clang++-6.0 /usr/bin/clang++<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>​ 安装AFL（后期可替换为AFL++）：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> clone https://github.com/google/AFL.git
+<span class="token builtin class-name">cd</span> AFL
+<span class="token function">make</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">AFL_PATH</span><span class="token operator">=</span><span class="token environment constant">$PWD</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span><span class="token environment constant">$PATH</span><span class="token builtin class-name">:</span><span class="token environment constant">$PWD</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 编译FuzzBuilder：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> clone https://github.com/hksecurity/FuzzBuilder.git
+<span class="token builtin class-name">cd</span> FuzzBuilder
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">FuzzBuilder</span><span class="token operator">=</span><span class="token environment constant">$PWD</span>
+<span class="token function">mkdir</span> -p <span class="token variable">$FuzzBuilder</span>/build <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> <span class="token variable">$FuzzBuilder</span>/build
+cmake build <span class="token punctuation">..</span>/src
+<span class="token function">make</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 至此所需软件安装编译完成。</p>
+<h2 id="example-expat">2. Example: expat</h2>
+<p>​ 这里利用XML解析器库expat来举例说明FuzzBuilder的使用方法。</p>
+<h3 id="生成种子">2.1 生成种子</h3>
+<ul>
+<li><strong>下载源码，并切换到指定版本：</strong></li>
+</ul>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">mkdir</span> -p <span class="token variable">$FuzzBuilder</span>/exp/expat/source <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/source
+<span class="token function">git</span> clone <span class="token punctuation">[</span>https://github.com/libexpat/libexpat<span class="token punctuation">]</span><span class="token punctuation">(</span>https://github.com/libexpat/libexpat<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> libexpat
+<span class="token function">git</span> checkout 39e487da353b20bb3a724311d179ba0fddffc65b<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li><strong>引入辅助脚本：</strong></li>
+</ul>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">cp</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/fuzzer_main.cc ./expat
+<span class="token function">cp</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/build.sh ./expat<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>​ <code>fuzzer_main.cc</code></p>
+<p>​
+<code>build.sh</code>是expat项目的编译脚本，这里将其中的CC和CXX换成了对应的afl-clang和afl-clang++。</p>
+<ul>
+<li><strong>编译项目：</strong></li>
+</ul>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">cd</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/source/libexpat/expat
+<span class="token comment"># edit CC, CXX variable with correct path</span>
+<span class="token function">vi</span> ./build.sh
+./build.sh seed<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+如果在运行build.sh脚本时指定了cov或者seed，则会直接执行make，否则会使用AFL_USE_ASAN=1。</p>
+<p>​
+编译好的项目会在build文件夹下生成一个<code>fuzzbuilder</code>可执行文件。</p>
+<ul>
+<li><strong>生成种子：</strong></li>
+</ul>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">afl-clang -emit-llvm -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -c lib/xmlparse.c -fPIC -DPIC
+
+<span class="token variable">$FuzzBuilder</span>/build/fuzzbuilder seed <span class="token variable">$FuzzBuilder</span>/exp/expat/seed.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>​
+上述命令将目标库lib/xmlparse.c编译为bitcode：xmlparse.bc，<code>-m32</code>表明32位。然后使用fuzzbuilder命令从seed.conf中读取配置文件并生成种子。</p>
+<p>​ seed.conf是FuzzBuilder自带的文件，其指明了：</p>
+<pre class="line-numbers language-conf" data-language="conf"><code class="language-conf">&#123;
+    &quot;targets&quot; : [ [ &quot;XML_Parse&quot;, 2, 3 ]],
+    &quot;files&quot; : [ &quot;xmlparse.bc&quot; ]
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+<code>target</code>表明了需要分析的函数<code>XML_Parse()</code>和fuzzer需要给该函数传递的参数，2,3代表了第二个参数用于传递input，第三个用于表示input的大小。</p>
+<p>​ <code>files</code>表明了需要分析的文件，其以bitcode的形式输入。</p>
+<p>​ 以上命令运行结果如下：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230818190723.png" style="zoom:67%;" /></p>
+<p>​
+可以看到，插桩后的文件以<code>xmlparse.bc.mod.bc</code>存在。接下来编译这个插桩后的bc文件：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">afl-clang -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -c xmlparse.bc.mod.bc -fPIC -DPIC -o xmlparse.o
+ar r lib/.libs/libexpat.a xmlparse.o
+<span class="token function">rm</span> -f tests/runtests
+<span class="token function">make</span> check<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+以上命令将插桩后的bc文件编译为了<code>xmlparse.o</code>，并使用ar命令将
+"xmlparse.o" 文件添加到名为 "libexpat.a"
+的归档文件中，以便构建完整的静态库。这样在链接时，可以使用这个静态库来提供
+"xmlparse.o" 中定义的函数和符号。</p>
+<p>​
+接下来运行seed_maker.py脚本从已经生成的种子中提取（其中这里的<code>fuzzbuilder.collect</code>就是上一步中make
+check运行插桩后的单元测试时生成的种子文件）：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">mv</span> /tmp/fuzzbuilder.collect <span class="token builtin class-name">.</span>
+python <span class="token variable">$FuzzBuilder</span>/script/seed_maker.py fuzzbuilder.collect seed_fb
+<span class="token function">mkdir</span> -p <span class="token variable">$FuzzBuilder</span>/exp/expat/seed/fuzzbuilder
+<span class="token function">mv</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/source/libexpat/expat/seed_fb <span class="token variable">$FuzzBuilder</span>/exp/expat/seed/fuzzbuilder/org<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 可以看到生成的种子库：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230819095110.png" style="zoom:80%;" /></p>
+<h3 id="生成可执行文件">2.2 生成可执行文件</h3>
+<p>​
+这里根据作者给出的两个配置文件<code>XML_Parse.conf</code>和<code>bug.conf</code>对runtest.c做插桩，生成了两个可执行文件。</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#进入其自带的文件夹</span>
+<span class="token builtin class-name">cd</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/source/libexpat/expat/tests
+<span class="token comment">#将runtest.c编译为bitcode</span>
+afl-clang -emit-llvm -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -I./<span class="token punctuation">..</span>/lib -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -c runtests.c
+<span class="token comment">#根据配置文件生成runtests.bc.mod.bc</span>
+<span class="token variable">$FuzzBuilder</span>/build/fuzzbuilder <span class="token builtin class-name">exec</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/XML_Parse.conf
+<span class="token comment">#编译生成可执行文件</span>
+<span class="token variable">$AFL_PATH</span>/afl-clang -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -I./<span class="token punctuation">..</span>/lib -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -o runtests.o -c runtests.bc.mod.bc
+<span class="token variable">$AFL_PATH</span>/afl-clang -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -fno-strict-aliasing -o XML_Parse_fuzzer runtests.o libruntests.a <span class="token punctuation">..</span>/lib/.libs/libexpat.a
+<span class="token function">mkdir</span> -p <span class="token variable">$FuzzBuilder</span>/exp/expat/bin/fuzz/fuzzbuilder
+<span class="token function">mv</span> XML_Parse_fuzzer <span class="token variable">$FuzzBuilder</span>/exp/expat/bin/fuzz/fuzzbuilder
+
+<span class="token comment">#根据配置文件生成runtests.bc.mod.bc，bug.conf相较于XML_Parse.conf跳过了一些函数</span>
+<span class="token variable">$FuzzBuilder</span>/build/fuzzbuilder <span class="token builtin class-name">exec</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/bug.conf
+afl-clang -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -I./<span class="token punctuation">..</span>/lib -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -o runtests.o -c runtests.bc.mod.bc
+afl-clang -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -fno-strict-aliasing -o XML_Parse_fuzzer runtests.o libruntests.a <span class="token punctuation">..</span>/lib/.libs/libexpat.a
+<span class="token function">mv</span> XML_Parse_fuzzer <span class="token variable">$FuzzBuilder</span>/exp/expat/bin/fuzz/fuzzbuilder/bug_fuzzer<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 如果要成带有代码覆盖率的可执行文件：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">cd</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/source/libexpat/expat/tests
+afl-clang -emit-llvm -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -I./<span class="token punctuation">..</span>/lib -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -c runtests.c
+<span class="token variable">$FuzzBuilder</span>/build/fuzzbuilder <span class="token builtin class-name">exec</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/XML_Parse.conf
+afl-clang -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -I./<span class="token punctuation">..</span>/lib -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -o runtests.o -c runtests.bc.mod.bc
+afl-clang -fprofile-arcs -ftest-coverage -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -m32 -g -fno-strict-aliasing -o XML_Parse_fuzzer runtests.o  libruntests.a <span class="token punctuation">..</span>/lib/.libs/libexpat.a
+<span class="token function">mkdir</span> -p <span class="token variable">$FuzzBuilder</span>/exp/expat/bin/cov/fuzzbuilder
+<span class="token function">mv</span> XML_Parse_fuzzer <span class="token variable">$FuzzBuilder</span>/exp/expat/bin/cov/fuzzbuilder<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="种子优化">2.3 种子优化</h3>
+<p>​ 使用AFL自带的afl-cmin对种子库做优化：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">cd</span> <span class="token variable">$FuzzBuilder</span>/exp/expat
+<span class="token variable">$AFL_PATH</span>/afl-cmin -m <span class="token number">1024</span> -i seed/fuzzbuilder/org/XML_Parse -o seed/eval/XML_Parse_fuzzer/fuzzbuilder bin/fuzz/fuzzbuilder/XML_Parse_fuzzer @@<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>​ 下面就可以直接用生成的可执行文件和种子进行fuzzing了。</p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2023/08/03/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91AFL++-Instrumention-for-WAVM/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">(技术积累)AFL++ Instrumention for WAVM</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#fuzzbuilder%E5%A4%8D%E7%8E%B0"><span class="nav-number">1.</span> <span class="nav-text">FuzzBuilder复现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#tutorial"><span class="nav-number">1.1.</span> <span class="nav-text">1. Tutorial</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#example-expat"><span class="nav-number">1.2.</span> <span class="nav-text">2. Example: expat</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E7%A7%8D%E5%AD%90"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 生成种子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 生成可执行文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A7%8D%E5%AD%90%E4%BC%98%E5%8C%96"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 种子优化</span></a></li></ol></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+<footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2023 Shaw All Rights Reserved.
+        
+          <span id="busuanzi_container_site_pv">
+            本站总访问量<span id="busuanzi_value_site_pv"></span>次
+          </span>
+          <span class="post-meta-divider">|</span>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            本站访客数<span id="busuanzi_value_site_uv"></span>人
+          </span>
+          <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+
+  
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'true', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+<!-- Gaug.es Analytics -->
+<script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', 'true');
+    t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+    t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+<!-- End Gaug.es Analytics -->
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+	<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2439014eb270056ee1808a49956fe114";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<!-- Tencent Analytics -->
+	<script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId={{ theme.tencent_analytics }}";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+<!-- End Tencent Analytics -->
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>

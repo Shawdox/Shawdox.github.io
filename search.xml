@@ -7,6 +7,145 @@
 ]]></content>
   </entry>
   <entry>
+    <title>(技术积累)FuzzBuilder复现</title>
+    <url>/2023/08/15/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91FuzzBuilder%E5%A4%8D%E7%8E%B0/</url>
+    <content><![CDATA[<h1 id="fuzzbuilder复现">FuzzBuilder复现</h1>
+<p>对FuzzBuilder使用以及部分技术分析。</p>
+<span id="more"></span>
+<h2 id="tutorial">1. Tutorial</h2>
+<p>​ 由于国内科学上网等原因（可能），<a
+href="https://github.com/hksecurity/FuzzBuilder">hksecurity/FuzzBuilder
+(github.com)</a>给的dockerfile使用一直有问题，故这里直接使用ubuntu18.04镜像新建docker：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker pull homebrew/ubuntu18.04<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​ 然后根据仓库给出的指令安装相关包：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">apt-get</span> <span class="token function">install</span> clang-6.0 clang-6.0-dev llvm-6.0 llvm-6.0-dev
+<span class="token function">ln</span> -s /usr/bin/clang-6.0 /usr/bin/clang
+<span class="token function">apt-get</span> <span class="token function">install</span> <span class="token function">git</span> <span class="token function">wget</span> build-essential cmake gcc-multilib g++-multilib gnupg <span class="token function">zip</span> autoconf automake libtool docbook2x zlib1g-dev rapidjson-dev<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>​ 注意，这里只安装了clang没有安装clang++，故再补一个：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">apt-get</span> <span class="token function">install</span> clang++-6.0 clang++-6.0-dev
+<span class="token function">ln</span> -s /usr/bin/clang++-6.0 /usr/bin/clang++<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>​ 安装AFL（后期可替换为AFL++）：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> clone https://github.com/google/AFL.git
+<span class="token builtin class-name">cd</span> AFL
+<span class="token function">make</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">AFL_PATH</span><span class="token operator">=</span><span class="token environment constant">$PWD</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span><span class="token environment constant">$PATH</span><span class="token builtin class-name">:</span><span class="token environment constant">$PWD</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 编译FuzzBuilder：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> clone https://github.com/hksecurity/FuzzBuilder.git
+<span class="token builtin class-name">cd</span> FuzzBuilder
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">FuzzBuilder</span><span class="token operator">=</span><span class="token environment constant">$PWD</span>
+<span class="token function">mkdir</span> -p <span class="token variable">$FuzzBuilder</span>/build <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> <span class="token variable">$FuzzBuilder</span>/build
+cmake build <span class="token punctuation">..</span>/src
+<span class="token function">make</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 至此所需软件安装编译完成。</p>
+<h2 id="example-expat">2. Example: expat</h2>
+<p>​ 这里利用XML解析器库expat来举例说明FuzzBuilder的使用方法。</p>
+<h3 id="生成种子">2.1 生成种子</h3>
+<ul>
+<li><strong>下载源码，并切换到指定版本：</strong></li>
+</ul>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">mkdir</span> -p <span class="token variable">$FuzzBuilder</span>/exp/expat/source <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/source
+<span class="token function">git</span> clone <span class="token punctuation">[</span>https://github.com/libexpat/libexpat<span class="token punctuation">]</span><span class="token punctuation">(</span>https://github.com/libexpat/libexpat<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> libexpat
+<span class="token function">git</span> checkout 39e487da353b20bb3a724311d179ba0fddffc65b<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li><strong>引入辅助脚本：</strong></li>
+</ul>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">cp</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/fuzzer_main.cc ./expat
+<span class="token function">cp</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/build.sh ./expat<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>​ <code>fuzzer_main.cc</code></p>
+<p>​
+<code>build.sh</code>是expat项目的编译脚本，这里将其中的CC和CXX换成了对应的afl-clang和afl-clang++。</p>
+<ul>
+<li><strong>编译项目：</strong></li>
+</ul>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">cd</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/source/libexpat/expat
+<span class="token comment"># edit CC, CXX variable with correct path</span>
+<span class="token function">vi</span> ./build.sh
+./build.sh seed<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+如果在运行build.sh脚本时指定了cov或者seed，则会直接执行make，否则会使用AFL_USE_ASAN=1。</p>
+<p>​
+编译好的项目会在build文件夹下生成一个<code>fuzzbuilder</code>可执行文件。</p>
+<ul>
+<li><strong>生成种子：</strong></li>
+</ul>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">afl-clang -emit-llvm -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -c lib/xmlparse.c -fPIC -DPIC
+
+<span class="token variable">$FuzzBuilder</span>/build/fuzzbuilder seed <span class="token variable">$FuzzBuilder</span>/exp/expat/seed.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>​
+上述命令将目标库lib/xmlparse.c编译为bitcode：xmlparse.bc，<code>-m32</code>表明32位。然后使用fuzzbuilder命令从seed.conf中读取配置文件并生成种子。</p>
+<p>​ seed.conf是FuzzBuilder自带的文件，其指明了：</p>
+<pre class="line-numbers language-conf" data-language="conf"><code class="language-conf">&#123;
+    &quot;targets&quot; : [ [ &quot;XML_Parse&quot;, 2, 3 ]],
+    &quot;files&quot; : [ &quot;xmlparse.bc&quot; ]
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+<code>target</code>表明了需要分析的函数<code>XML_Parse()</code>和fuzzer需要给该函数传递的参数，2,3代表了第二个参数用于传递input，第三个用于表示input的大小。</p>
+<p>​ <code>files</code>表明了需要分析的文件，其以bitcode的形式输入。</p>
+<p>​ 以上命令运行结果如下：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230818190723.png" style="zoom:67%;" /></p>
+<p>​
+可以看到，插桩后的文件以<code>xmlparse.bc.mod.bc</code>存在。接下来编译这个插桩后的bc文件：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">afl-clang -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -c xmlparse.bc.mod.bc -fPIC -DPIC -o xmlparse.o
+ar r lib/.libs/libexpat.a xmlparse.o
+<span class="token function">rm</span> -f tests/runtests
+<span class="token function">make</span> check<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​
+以上命令将插桩后的bc文件编译为了<code>xmlparse.o</code>，并使用ar命令将
+"xmlparse.o" 文件添加到名为 "libexpat.a"
+的归档文件中，以便构建完整的静态库。这样在链接时，可以使用这个静态库来提供
+"xmlparse.o" 中定义的函数和符号。</p>
+<p>​
+接下来运行seed_maker.py脚本从已经生成的种子中提取（其中这里的<code>fuzzbuilder.collect</code>就是上一步中make
+check运行插桩后的单元测试时生成的种子文件）：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">mv</span> /tmp/fuzzbuilder.collect <span class="token builtin class-name">.</span>
+python <span class="token variable">$FuzzBuilder</span>/script/seed_maker.py fuzzbuilder.collect seed_fb
+<span class="token function">mkdir</span> -p <span class="token variable">$FuzzBuilder</span>/exp/expat/seed/fuzzbuilder
+<span class="token function">mv</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/source/libexpat/expat/seed_fb <span class="token variable">$FuzzBuilder</span>/exp/expat/seed/fuzzbuilder/org<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 可以看到生成的种子库：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230819095110.png" style="zoom:80%;" /></p>
+<h3 id="生成可执行文件">2.2 生成可执行文件</h3>
+<p>​
+这里根据作者给出的两个配置文件<code>XML_Parse.conf</code>和<code>bug.conf</code>对runtest.c做插桩，生成了两个可执行文件。</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#进入其自带的文件夹</span>
+<span class="token builtin class-name">cd</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/source/libexpat/expat/tests
+<span class="token comment">#将runtest.c编译为bitcode</span>
+afl-clang -emit-llvm -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -I./<span class="token punctuation">..</span>/lib -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -c runtests.c
+<span class="token comment">#根据配置文件生成runtests.bc.mod.bc</span>
+<span class="token variable">$FuzzBuilder</span>/build/fuzzbuilder <span class="token builtin class-name">exec</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/XML_Parse.conf
+<span class="token comment">#编译生成可执行文件</span>
+<span class="token variable">$AFL_PATH</span>/afl-clang -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -I./<span class="token punctuation">..</span>/lib -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -o runtests.o -c runtests.bc.mod.bc
+<span class="token variable">$AFL_PATH</span>/afl-clang -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -fno-strict-aliasing -o XML_Parse_fuzzer runtests.o libruntests.a <span class="token punctuation">..</span>/lib/.libs/libexpat.a
+<span class="token function">mkdir</span> -p <span class="token variable">$FuzzBuilder</span>/exp/expat/bin/fuzz/fuzzbuilder
+<span class="token function">mv</span> XML_Parse_fuzzer <span class="token variable">$FuzzBuilder</span>/exp/expat/bin/fuzz/fuzzbuilder
+
+<span class="token comment">#根据配置文件生成runtests.bc.mod.bc，bug.conf相较于XML_Parse.conf跳过了一些函数</span>
+<span class="token variable">$FuzzBuilder</span>/build/fuzzbuilder <span class="token builtin class-name">exec</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/bug.conf
+afl-clang -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -I./<span class="token punctuation">..</span>/lib -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -o runtests.o -c runtests.bc.mod.bc
+afl-clang -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -fno-strict-aliasing -o XML_Parse_fuzzer runtests.o libruntests.a <span class="token punctuation">..</span>/lib/.libs/libexpat.a
+<span class="token function">mv</span> XML_Parse_fuzzer <span class="token variable">$FuzzBuilder</span>/exp/expat/bin/fuzz/fuzzbuilder/bug_fuzzer<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​ 如果要成带有代码覆盖率的可执行文件：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">cd</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/source/libexpat/expat/tests
+afl-clang -emit-llvm -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -I./<span class="token punctuation">..</span>/lib -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -c runtests.c
+<span class="token variable">$FuzzBuilder</span>/build/fuzzbuilder <span class="token builtin class-name">exec</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/XML_Parse.conf
+afl-clang -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -I./<span class="token punctuation">..</span>/lib -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -o runtests.o -c runtests.bc.mod.bc
+afl-clang -fprofile-arcs -ftest-coverage -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -m32 -g -fno-strict-aliasing -o XML_Parse_fuzzer runtests.o  libruntests.a <span class="token punctuation">..</span>/lib/.libs/libexpat.a
+<span class="token function">mkdir</span> -p <span class="token variable">$FuzzBuilder</span>/exp/expat/bin/cov/fuzzbuilder
+<span class="token function">mv</span> XML_Parse_fuzzer <span class="token variable">$FuzzBuilder</span>/exp/expat/bin/cov/fuzzbuilder<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="种子优化">2.3 种子优化</h3>
+<p>​ 使用AFL自带的afl-cmin对种子库做优化：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">cd</span> <span class="token variable">$FuzzBuilder</span>/exp/expat
+<span class="token variable">$AFL_PATH</span>/afl-cmin -m <span class="token number">1024</span> -i seed/fuzzbuilder/org/XML_Parse -o seed/eval/XML_Parse_fuzzer/fuzzbuilder bin/fuzz/fuzzbuilder/XML_Parse_fuzzer @@<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>​ 下面就可以直接用生成的可执行文件和种子进行fuzzing了。</p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>Fuzzing</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>(技术积累)AFL++ Instrumention for WAVM</title>
     <url>/2023/08/03/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91AFL++-Instrumention-for-WAVM/</url>
     <content><![CDATA[<h1 id="技术积累afl-instrumention-for-wavm">(技术积累)AFL++
