@@ -13,19 +13,21 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="【论文复现】How Machine Learning Is Solving the Binary Function Similarity Problem 一、模糊哈希（Fuzzy Hashing） 1. Bytes fuzzy hashing——Catalog1  出处： ​ 1. xorpd | FCatalog ​ 2. binary_function_similarity&#x2F;">
+  <meta name="description" content="【论文复现】How Machine Learning Is Solving the Binary Function Similarity Problem一、模糊哈希（Fuzzy Hashing）1. Bytes fuzzy hashing——Catalog1 出处： ​    1. xorpd | FCatalog ​    2. binary_function_similarity&#x2F;Models">
 <meta property="og:type" content="article">
 <meta property="og:title" content="(论文复现)How Machine Learning Is Solving the Binary Function Similarity Problem">
 <meta property="og:url" content="http://example.com/2023/02/12/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91How%20Machine%20Learning%20Is%20Solving%20the%20Binary%20Function%20Similarity%20Problem/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="【论文复现】How Machine Learning Is Solving the Binary Function Similarity Problem 一、模糊哈希（Fuzzy Hashing） 1. Bytes fuzzy hashing——Catalog1  出处： ​ 1. xorpd | FCatalog ​ 2. binary_function_similarity&#x2F;">
+<meta property="og:description" content="【论文复现】How Machine Learning Is Solving the Binary Function Similarity Problem一、模糊哈希（Fuzzy Hashing）1. Bytes fuzzy hashing——Catalog1 出处： ​    1. xorpd | FCatalog ​    2. binary_function_similarity&#x2F;Models">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230213123532.png">
 <meta property="article:published_time" content="2023-02-12T02:04:09.593Z">
 <meta property="article:modified_time" content="2023-02-17T11:35:45.413Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="Binary">
 <meta property="article:tag" content="ML">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230213123532.png">
   
     <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
   
@@ -152,44 +154,29 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1
-id="论文复现how-machine-learning-is-solving-the-binary-function-similarity-problem">【论文复现】How
-Machine Learning Is Solving the Binary Function Similarity Problem</h1>
-<h2 id="一模糊哈希fuzzy-hashing">一、模糊哈希（Fuzzy Hashing）</h2>
-<h3 id="bytes-fuzzy-hashingcatalog1">1. Bytes fuzzy
-hashing——Catalog1</h3>
-<blockquote>
+        <h1 id="【论文复现】How-Machine-Learning-Is-Solving-the-Binary-Function-Similarity-Problem"><a href="#【论文复现】How-Machine-Learning-Is-Solving-the-Binary-Function-Similarity-Problem" class="headerlink" title="【论文复现】How Machine Learning Is Solving the Binary Function Similarity Problem"></a>【论文复现】How Machine Learning Is Solving the Binary Function Similarity Problem</h1><h2 id="一、模糊哈希（Fuzzy-Hashing）"><a href="#一、模糊哈希（Fuzzy-Hashing）" class="headerlink" title="一、模糊哈希（Fuzzy Hashing）"></a>一、模糊哈希（Fuzzy Hashing）</h2><h3 id="1-Bytes-fuzzy-hashing——Catalog1"><a href="#1-Bytes-fuzzy-hashing——Catalog1" class="headerlink" title="1. Bytes fuzzy hashing——Catalog1"></a>1. Bytes fuzzy hashing——Catalog1</h3><blockquote>
 <p><strong>出处：</strong></p>
-<p>​ 1. <a target="_blank" rel="noopener" href="https://www.xorpd.net/pages/fcatalog.html">xorpd |
-FCatalog</a></p>
-<p>​ 2. <a
-target="_blank" rel="noopener" href="https://github.com/Cisco-Talos/binary_function_similarity/tree/main/Models/Catalog1">binary_function_similarity/Models/Catalog1
-at main · Cisco-Talos/binary_function_similarity (github.com)</a></p>
-<p>"FCatalog allows you to keep a database of all your named functions,
-and find similarities from this database efficiently."</p>
+<p>​    1. <a target="_blank" rel="noopener" href="https://www.xorpd.net/pages/fcatalog.html">xorpd | FCatalog</a></p>
+<p>​    2. <a target="_blank" rel="noopener" href="https://github.com/Cisco-Talos/binary_function_similarity/tree/main/Models/Catalog1">binary_function_similarity/Models/Catalog1 at main · Cisco-Talos/binary_function_similarity (github.com)</a></p>
+<p>“FCatalog allows you to keep a database of all your named functions, and find similarities from this database efficiently.”</p>
 </blockquote>
-<h4 id="前置知识">前置知识：</h4>
-<ul>
-<li><p><strong>binary blob</strong>：一串bytes；</p></li>
-<li><p><strong>S(a)</strong>：字节串a的四字截取集合，例如: <span
-class="math display">\[
+<h4 id="前置知识："><a href="#前置知识：" class="headerlink" title="前置知识："></a>前置知识：</h4><ul>
+<li><p><strong>binary blob</strong>：一串bytes；</p>
+</li>
+<li><p><strong>S(a)</strong>：字节串a的四字截取集合，例如:</p>
+<script type="math/tex; mode=display">
 \mathbf{S(a)}= \{123x,23xy,3xy1\},a=123xy1 \\
-\mathbf{S(b)}= \{1111\},b=111111111 \\
-\]</span></p></li>
-<li><p><strong>Jaccard Similarity</strong>：计算两个集合相似性： <span
-class="math display">\[
-J（S(a),S(b)）=\frac {S(a)\cap S(b)}{S(a)\cup S(b)}
-\]</span></p></li>
-<li><p><strong>minhash</strong>：文本相似度比较算法，用于快速<strong>估算</strong>两个集合的相似度。</p></li>
+\mathbf{S(b)}= \{1111\},b=111111111 \\</script></li>
+<li><p><strong>Jaccard Similarity</strong>：计算两个集合相似性：</p>
+<script type="math/tex; mode=display">
+J（S(a),S(b)）=\frac {S(a)\cap S(b)}{S(a)\cup S(b)}</script></li>
+<li><p><strong>minhash</strong>：文本相似度比较算法，用于快速<strong>估算</strong>两个集合的相似度。</p>
+</li>
 </ul>
-<p>​
-Catalog1算法利用minhash，使用哈希近似替代两个S集合，以此来估算其Jaccard系数，从而达到高效率地比较两个集合。</p>
+<p>​    Catalog1算法利用minhash，使用哈希近似替代两个S集合，以此来估算其Jaccard系数，从而达到高效率地比较两个集合。</p>
 <span id="more"></span>
-<h4 id="代码结构分析">代码结构分析：</h4>
-<p>​
-Catalog1算法需要将二进制文件截取分割后，由于每个二进制文件的长度不定，故其分割计算出的S(a)也不定长。为了对每个二进制文件都得到一个定长的特征签名，就需要对S(a)进行特征提取。</p>
-<p>​
-使用哈希函数将集合中的每个DWORD映射到DWORD，这里的哈希采用类似密码学中置换的方法（permutation）：</p>
+<h4 id="代码结构分析："><a href="#代码结构分析：" class="headerlink" title="代码结构分析："></a>代码结构分析：</h4><p>​    Catalog1算法需要将二进制文件截取分割后，由于每个二进制文件的长度不定，故其分割计算出的S(a)也不定长。为了对每个二进制文件都得到一个定长的特征签名，就需要对S(a)进行特征提取。</p>
+<p>​    使用哈希函数将集合中的每个DWORD映射到DWORD，这里的哈希采用类似密码学中置换的方法（permutation）：</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">WORD_SIZE</span> <span class="token expression"><span class="token number">32</span>      	</span><span class="token comment">// 32 bits</span></span>
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">MAX_WORD</span> <span class="token expression"><span class="token number">0xffffffff</span>     </span><span class="token comment">// Maximum size of a dword.</span></span>
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">BYTE_SIZE</span> <span class="token expression"><span class="token number">8</span>             </span><span class="token comment">// Amount of bits in a byte.</span></span>
@@ -228,17 +215,11 @@ Catalog1算法需要将二进制文件截取分割后，由于每个二进制文
     <span class="token punctuation">&#125;</span>
     <span class="token keyword">return</span> x<span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​
-由上可知，<strong>perm(i，x)就是第i个哈希函数h<sub>i</sub>(x)</strong>。计算完k个哈希函数后，我们得到了k个集合：
-<span class="math display">\[
-h_{1}(x),h_{2}(x),h_{3}(x)\cdots h_{k}(x)
-\]</span> ​ 然后每个集合中最小的数，就是我们所需的定长特征： <span
-class="math display">\[
-sig(T) = \{min_{t\in T}h_{1}(T),min_{t\in T}h_{2}(T),min_{t\in
-T}h_{3}(T)\cdots min_{t\in T}h_{k}(T)\}
-\]</span> ​ 故用<span
-class="math inline">\(J(sig(A),sig(B))\)</span>代替<span
-class="math inline">\(J(A,B)\)</span>即可大大简化计算，k的数量可以自己选定。对于完整的二进制文件，以下代码可以生成其对应特征：</p>
+<p>​    由上可知，<strong>perm(i，x)就是第i个哈希函数h~i~(x)</strong>。计算完k个哈希函数后，我们得到了k个集合：</p>
+<script type="math/tex; mode=display">
+h_{1}(x),h_{2}(x),h_{3}(x)\cdots h_{k}(x)</script><p>​    然后每个集合中最小的数，就是我们所需的定长特征：</p>
+<script type="math/tex; mode=display">
+sig(T) = \{min_{t\in T}h_{1}(T),min_{t\in T}h_{2}(T),min_{t\in T}h_{3}(T)\cdots min_{t\in T}h_{k}(T)\}</script><p>​    故用$J(sig(A),sig(B))$代替$J(A,B)$即可大大简化计算，k的数量可以自己选定。对于完整的二进制文件，以下代码可以生成其对应特征：</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">sign</span><span class="token punctuation">(</span>
     <span class="token keyword">unsigned</span> <span class="token keyword">char</span><span class="token operator">*</span> data<span class="token punctuation">,</span>
     <span class="token keyword">unsigned</span> <span class="token keyword">int</span> len<span class="token punctuation">,</span>
@@ -284,17 +265,12 @@ class="math inline">\(J(A,B)\)</span>即可大大简化计算，k的数量可以
     <span class="token comment">// Result should be stored at &lt;result></span>
     <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​</p>
-<p>​</p>
-<h4 id="运行测试">运行测试：</h4>
-<p>​
-Catalog1共分为server和client两部分，client客户端作为IDA的一个插件，server服务器可以使用官方提供的testfcatalog.xorpd.net:1337，也可以自行搭建https://github.com/xorpd/fcatalog_server。</p>
-<p>​
-为了计算速度更快，这里使用C语言编写catalog相关计算操作，首先编译catalog1
-：</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230213123532.png" /></p>
-<p>​</p>
+<p>​    </p>
+<p>​    </p>
+<h4 id="运行测试："><a href="#运行测试：" class="headerlink" title="运行测试："></a>运行测试：</h4><p>​    Catalog1共分为server和client两部分，client客户端作为IDA的一个插件，server服务器可以使用官方提供的testfcatalog.xorpd.net:1337，也可以自行搭建<a target="_blank" rel="noopener" href="https://github.com/xorpd/fcatalog_server。">https://github.com/xorpd/fcatalog_server。</a></p>
+<p>​    为了计算速度更快，这里使用C语言编写catalog相关计算操作，首先编译catalog1 ：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230213123532.png" alt=""></p>
+<p>​    </p>
 <p>【更新中】</p>
 
       
@@ -342,9 +318,7 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230213123532.png" /></p>
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0how-machine-learning-is-solving-the-binary-function-similarity-problem"><span class="nav-number">1.</span> <span class="nav-text">【论文复现】How
-Machine Learning Is Solving the Binary Function Similarity Problem</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8Cfuzzy-hashing"><span class="nav-number">1.1.</span> <span class="nav-text">一、模糊哈希（Fuzzy Hashing）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#bytes-fuzzy-hashingcatalog1"><span class="nav-number">1.1.1.</span> <span class="nav-text">1. Bytes fuzzy
-hashing——Catalog1</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">前置知识：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84%E5%88%86%E6%9E%90"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">代码结构分析：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E6%B5%8B%E8%AF%95"><span class="nav-number">1.1.1.3.</span> <span class="nav-text">运行测试：</span></a></li></ol></li></ol></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91How-Machine-Learning-Is-Solving-the-Binary-Function-Similarity-Problem"><span class="nav-number">1.</span> <span class="nav-text">【论文复现】How Machine Learning Is Solving the Binary Function Similarity Problem</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C%EF%BC%88Fuzzy-Hashing%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">一、模糊哈希（Fuzzy Hashing）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Bytes-fuzzy-hashing%E2%80%94%E2%80%94Catalog1"><span class="nav-number">1.1.1.</span> <span class="nav-text">1. Bytes fuzzy hashing——Catalog1</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86%EF%BC%9A"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">前置知识：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84%E5%88%86%E6%9E%90%EF%BC%9A"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">代码结构分析：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E6%B5%8B%E8%AF%95%EF%BC%9A"><span class="nav-number">1.1.1.3.</span> <span class="nav-text">运行测试：</span></a></li></ol></li></ol></li></ol></li></ol>
     
     </div>
   </aside>

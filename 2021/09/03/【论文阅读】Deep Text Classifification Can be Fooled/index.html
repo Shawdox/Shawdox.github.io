@@ -13,13 +13,22 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="【论文阅读】Deep Text Classifification Can be Fooled  时间：2017 作者：Bin Liang, Hongcheng Li, Miaoqiang Su, Pan Bian, Xirong Li and Wenchang Shi 中国人民大学  Abstract: ​ 在这篇文章，我们提出了一种有效的生成文本对抗样本的方法，并且揭示了一个很">
+  <meta name="description" content="【论文阅读】Deep Text Classifification Can be Fooled 时间：2017 作者：Bin Liang, Hongcheng Li, Miaoqiang Su, Pan Bian, Xirong Li and Wenchang Shi     中国人民大学  Abstract:​    在这篇文章，我们提出了一种有效的生成文本对抗样本的方法，并且揭示了一个很重要但被">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Deep Text Classifification Can be Fooled">
 <meta property="og:url" content="http://example.com/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="【论文阅读】Deep Text Classifification Can be Fooled  时间：2017 作者：Bin Liang, Hongcheng Li, Miaoqiang Su, Pan Bian, Xirong Li and Wenchang Shi 中国人民大学  Abstract: ​ 在这篇文章，我们提出了一种有效的生成文本对抗样本的方法，并且揭示了一个很">
+<meta property="og:description" content="【论文阅读】Deep Text Classifification Can be Fooled 时间：2017 作者：Bin Liang, Hongcheng Li, Miaoqiang Su, Pan Bian, Xirong Li and Wenchang Shi     中国人民大学  Abstract:​    在这篇文章，我们提出了一种有效的生成文本对抗样本的方法，并且揭示了一个很重要但被">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830214227.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831150703.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831151929.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831154859.png">
+<meta property="og:image" content="http://example.com/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/20210831154910.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831160407.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831161007.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831161638.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831165135.png">
 <meta property="article:published_time" content="2021-09-03T06:08:27.107Z">
 <meta property="article:modified_time" content="2022-12-08T08:14:20.414Z">
 <meta property="article:author" content="Shaw">
@@ -27,6 +36,7 @@
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="DNN">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830214227.png">
   
     <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
   
@@ -153,147 +163,59 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1
-id="论文阅读deep-text-classifification-can-be-fooled">【论文阅读】<strong>Deep
-Text Classifification Can be Fooled</strong></h1>
-<blockquote>
+        <h1 id="【论文阅读】Deep-Text-Classifification-Can-be-Fooled"><a href="#【论文阅读】Deep-Text-Classifification-Can-be-Fooled" class="headerlink" title="【论文阅读】Deep Text Classifification Can be Fooled"></a>【论文阅读】<strong>Deep Text Classifification Can be Fooled</strong></h1><blockquote>
 <p><strong>时间：</strong>2017</p>
-<p><strong>作者：</strong>Bin Liang, Hongcheng Li, Miaoqiang Su, Pan
-Bian, Xirong Li and Wenchang Shi 中国人民大学</p>
+<p><strong>作者：</strong>Bin Liang, Hongcheng Li, Miaoqiang Su, Pan Bian, Xirong Li and Wenchang Shi     中国人民大学</p>
 </blockquote>
-<h3 id="abstract">Abstract:</h3>
-<p>​
-在这篇文章，我们提出了一种有效的生成文本对抗样本的方法，并且揭示了一个很重要但被低估的事实：基于DNN的文本分类器很容易被对抗样本攻击。</p>
-<p>​
-具体来说，面对不同的对抗场景，通过计算输入的代价梯度(白盒攻击)或生成一系列被遮挡的测试样本(黑盒攻击)来识别对分类重要的文本项。（<u>这句不是很懂，什么叫’
-the text items that are important for classifification‘？</u>）</p>
-<p>​
-基于这些项目，我们设计了三种扰动策略，insertion，modification，removal，用于生成对抗样本。实验结果表明基于我们的方法生成的对抗样本可以成功地欺骗主流的在字符等级和单词等级的DNN文本分类器。</p>
-<p>​
-对抗样本可以被扰动到任意理想的类中而不降低其效率。（？）同时，被引入的扰动很难被察觉。</p>
-<p>​ <span id="more"></span></p>
-<h3 id="introduction">1. Introduction:</h3>
-<p>​
-在文本中，即使很小的扰动也会使一个字母或者单词完全变化，这会导致句子不能被辨识。故如果直接将应用于多媒体（图片，音频）的算法应用到文本上，得到的对抗样本的原意就会改变，而且很大程度上变成人类无法理解的句子。</p>
-<p>​
-在这片论文里，我们提出了一种生成对抗样本的有效方法。与直接简单插入扰动相比，我们设计了三种扰动策略：<em>insertion</em>,
-<em>modifification</em>, and
-<em>removal</em>，并且引入了自然语言文本水印（<em>natural language
-watermarking</em>）技术用于生成对抗样本。</p>
-<p>​
-理论上，生成一个好的对抗样本很大程度上依赖于对目标分类模型的信息。在这里我们根据不同情形，使用了白盒攻击和黑盒攻击。</p>
-<p>​
-为了普遍性，我们使用了字符等级的模型和单词等级的模型作为受害者。我们的实验结果证明基于DNN的文本分类器在面对对抗样本攻击时是脆弱的。</p>
-<h3 id="target-models-and-datasets">2. Target Models and Datasets:</h3>
-<p>​ 这里使用的文本分类器是Zhang et al. 2015《Character-level
-Convolutional Networks foe Text Classification》，数据集是Lehmann et
-al.2014的DBpedia ontology
-dataset（一个多语言知识库），里面包括560000个训练样本和70000个测试样本，涵盖14个high-level
-类，比如公司类、建筑类、电影类等。</p>
-<p>​ 在把样本送进网络前，需要用独热编码法（one-hot
-representation）对每个字母编码成一个向量。通过网络的六个卷积层、三个全连接层，最终会被分到14个类中。</p>
-<h3 id="white-box-attacks"><u>3. White-Box-Attacks:</u></h3>
-<h4 id="fgsm算法">3.1 FGSM算法：</h4>
-<p>​
-FGSM是Goodfellow在2015年提出的对图片生成对抗样本的经典算法。使用类似的思路来在文本领域生成对抗样本结果并不好：</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830214227.png" /></p>
-<h4 id="idenfitying-classification-important-items">3.2 Idenfitying
-Classification-important Items:</h4>
-<p>​
-在白盒攻击中，我们需要定位文本中对于分类器的分类结果起到很大作用的文本段（通过计算代价梯度）。在这里，我们使用<strong><em>Hot
-Training Phrases</em> (HTPs)</strong>代表最常使用的短语：</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831150703.png" /></p>
-<p>​
-HTPS表明了用什么短语/词去做扰动，但是没有说在哪里做。在这里使用<strong><em>Hot
-Sample Phrases</em> (HSPs)</strong>来表明在哪里做扰动。</p>
-<h4 id="attacking-character-level-dnn">3.3 Attacking Character-level
-DNN:</h4>
-<p>​ 我们的方法是一种targeted攻击，可以指定对抗样本的误导类型。</p>
-<h5 id="insertion-strategy插入策略">3.3.1 Insertion
-Strategy（插入策略）:</h5>
-<p>​ 在某个HSP前插入一个HTP，就可以达到效果：</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831151929.png" /></p>
-<p>​
-由上图可以看到，将某个<strong>HTP</strong>（<em>historic</em>）插入到<strong>HSP</strong>（<em>principal
-stock exchange of Uganda. It was
-founded</em>）之前，就可以使一个公司的分类文本变为对建筑的分类。</p>
-<p>​
-实际上，我们通常需要进行多次插入，但插入次数过多会影响样本的效用和可读性，为了解决这个问题，这里引入NL水印技术（<em>Natural
-Language watermarking
-technique</em>）。该技术可以通过语义或句法操作将所有权水印隐形地嵌入到普通文本中,虽然我们的攻击目标与NL水印有本质的不同，但我们可以借用它的思想来构造对抗样本。实际上，扰动可以看作是一种水印，并以类似的方式嵌入到样本中。</p>
-<p>​
-在这里，我们拓展这个思路，在样本中插入<strong>Presupposition</strong>(读者熟知的模糊短语)和
-<strong>semantically empty
-phrases</strong>（可有可无的短语），有没有他们，在读者看来，原文的意思不会改变。</p>
-<p>​
-总的来说，我们考虑将各种HTPS组合成一个语法单元后再嵌入到文本中，新的单元可以是生成的可有可无的资料，或者甚至是不会改变文本原意的伪造的资料。</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831154859.png" /></p>
-<p>​
-<strong>特别的，通过互联网搜索或者查找一些数据集，我们可以找到与插入点很相关的资料，包括一些期望的目标分类的HTPs。</strong></p>
-<p>​
-由于我们不能总是找到合适的HTPs，所以提出一个新概念——伪造的事实（forged
-fact），也就是插入很难证伪的HTPs。例如：</p>
-<p><img
-src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/20210831154910.png" /></p>
-<p>​
-此外，我们排除了伪造的事实，这些事实可以通过检索他们在网上的相反证据而被否认。</p>
-<h5 id="modification-strategy修改策略">3.3.2 Modification
-Strategy（修改策略）：</h5>
-<p>​ Moidfication就是轻微修改一些HSP。</p>
-<p>​ 为了让修改不被人类观察者发现，我们采用了typo-based watermarking
-技术。具体的说，一个HSP可以通过两种方式来被修改：</p>
-<p>​ 1. 从相关的语料库中选择常见的拼写错误来替换它；</p>
-<p>​ 2.
-把它的一些字符修改成类似的外观（例如小写字母'l'与阿拉伯数字‘1’很像）。</p>
-<p>​ <img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831160407.png" /></p>
-<p>​ 由上图可以看出，这种方式对分类结果的扰动是巨大的。</p>
-<h5 id="removal-strategy移除策略">3.3.3 Removal
-Strategy（移除策略）:</h5>
-<p>​
-移除策略单独使用也许并不能足够有效地影响预测结果，但是可以很大程度上降低原始预测类型的置信度。</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831161007.png" /></p>
-<p>​
-由上图可以看出，移除'<strong><em>British</em></strong>'可以导致原始预测类型的置信度下降了35%。</p>
-<h5 id="combination-of-three-strategies">3.3.4 Combination of Three
-Strategies:</h5>
-<p>​
-如图6所示，单靠去除策略改变输出分类往往是困难的。但是，通过与其他策略相结合，可以避免对原文进行过多的修改或插入。在实践中，我们常常结合以上三种策略来制作微妙的对抗样本。</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831161638.png" /></p>
-<p>​
-以图7为例，通过去除一个HSP、插入一个伪造事实和修改一个HSP，可以成功地改变输出分类，但单独应用上述任何扰动都失败。具体来说，删除、插入和修改仅使置信度分别下降27.3
-%、17.5 %和10.1 %，保持预测类不变。</p>
-<h3 id="black-box-attack">4. Black-Box-Attack:</h3>
-<p>暂略</p>
-<h3 id="evaluation">5. Evaluation：</h3>
-<h4 id="我们的方法能否执行有效的源目标误分类攻击">5.1
-我们的方法能否执行有效的源/目标误分类攻击?</h4>
-<p>​ <strong><em>答：</em></strong>在众多测试集中，只有DBpedia
-ontology数据集是一个多分类数据集，故我们在其中随机选取了一些样本：</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831165135.png" /></p>
-<h4
-id="所生成的对抗样本能否避免被人类观察者认出来并同时保持其功能性">5.2
-所生成的对抗样本能否避免被人类观察者认出来，并同时保持其功能性？</h4>
-<p><strong><em>答：</em></strong>我们找了23个学生。他们对项目不了解，然后每个人给20个文本，其中一半是加扰的。让他们分到14个类中，如果他们觉得哪个文本不对劲，让他们指出来。</p>
-<p>​
-他们总的分类正确率是94.2%，10个对抗样本的正确率是94.8%。所以实用性还是有的。</p>
-<p>​
-他们标注出了240项修改处，其中12项符合真实的修改。但实际上我们做了594处修改。</p>
-<h4 id="我们的方法足够有效吗">5.3 我们的方法足够有效吗？</h4>
-<p><strong><em>答：</em></strong>实验中计算梯度和找HTPs花了116小时。14个类的HTPs每个类花了8.29小时。对所有的adversarial示例只执行一次计算。制作一个对抗性的样品大约需要10到20分钟。对于对手来说，获得理想的对抗样本是可以接受的。实际上，她或他愿意花更多的时间来做这件事。</p>
-<h3 id="realted-works">6. Realted Works:</h3>
-<p>​
-<strong>可以做的方向：</strong>1.自动生成对抗样本；（然而，Papernot等人(Papernot
-et al.
-2016a)提出了一种基于雅可比矩阵的数据集增强技术，该技术可以在不访问其模型、参数或训练数据的情况下，在有限对输入输出的基础上，为目标dnn提供替代模型。作者还表明，使用替代模型也可以有效地制作对抗样本，以攻击目标DNN。）2.迁移、黑盒攻击；</p>
-<p>​</p>
+<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract:"></a>Abstract:</h3><p>​    在这篇文章，我们提出了一种有效的生成文本对抗样本的方法，并且揭示了一个很重要但被低估的事实：基于DNN的文本分类器很容易被对抗样本攻击。</p>
+<p>​    具体来说，面对不同的对抗场景，通过计算输入的代价梯度(白盒攻击)或生成一系列被遮挡的测试样本(黑盒攻击)来识别对分类重要的文本项。（<u>这句不是很懂，什么叫’ the text items that are important for classifification‘？</u>）</p>
+<p>​    基于这些项目，我们设计了三种扰动策略，insertion，modification，removal，用于生成对抗样本。实验结果表明基于我们的方法生成的对抗样本可以成功地欺骗主流的在字符等级和单词等级的DNN文本分类器。</p>
+<p>​    对抗样本可以被扰动到任意理想的类中而不降低其效率。（？）同时，被引入的扰动很难被察觉。</p>
+<p>​    <span id="more"></span></p>
+<h3 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction:"></a>1. Introduction:</h3><p>​    在文本中，即使很小的扰动也会使一个字母或者单词完全变化，这会导致句子不能被辨识。故如果直接将应用于多媒体（图片，音频）的算法应用到文本上，得到的对抗样本的原意就会改变，而且很大程度上变成人类无法理解的句子。</p>
+<p>​    在这片论文里，我们提出了一种生成对抗样本的有效方法。与直接简单插入扰动相比，我们设计了三种扰动策略：<em>insertion</em>, <em>modifification</em>, and <em>removal</em>，并且引入了自然语言文本水印（<em>natural language watermarking</em>）技术用于生成对抗样本。</p>
+<p>​    理论上，生成一个好的对抗样本很大程度上依赖于对目标分类模型的信息。在这里我们根据不同情形，使用了白盒攻击和黑盒攻击。</p>
+<p>​    为了普遍性，我们使用了字符等级的模型和单词等级的模型作为受害者。我们的实验结果证明基于DNN的文本分类器在面对对抗样本攻击时是脆弱的。</p>
+<h3 id="2-Target-Models-and-Datasets"><a href="#2-Target-Models-and-Datasets" class="headerlink" title="2. Target Models and Datasets:"></a>2. Target Models and Datasets:</h3><p>​    这里使用的文本分类器是Zhang et al. 2015《Character-level Convolutional Networks foe Text Classification》，数据集是Lehmann et al.2014的DBpedia ontology dataset（一个多语言知识库），里面包括560000个训练样本和70000个测试样本，涵盖14个high-level 类，比如公司类、建筑类、电影类等。</p>
+<p>​    在把样本送进网络前，需要用独热编码法（one-hot representation）对每个字母编码成一个向量。通过网络的六个卷积层、三个全连接层，最终会被分到14个类中。</p>
+<h3 id="3-White-Box-Attacks"><a href="#3-White-Box-Attacks" class="headerlink" title="3. White-Box-Attacks:"></a><u>3. White-Box-Attacks:</u></h3><h4 id="3-1-FGSM算法："><a href="#3-1-FGSM算法：" class="headerlink" title="3.1 FGSM算法："></a>3.1 FGSM算法：</h4><p>​    FGSM是Goodfellow在2015年提出的对图片生成对抗样本的经典算法。使用类似的思路来在文本领域生成对抗样本结果并不好：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830214227.png" alt=""></p>
+<h4 id="3-2-Idenfitying-Classification-important-Items"><a href="#3-2-Idenfitying-Classification-important-Items" class="headerlink" title="3.2    Idenfitying Classification-important Items:"></a>3.2    Idenfitying Classification-important Items:</h4><p>​        在白盒攻击中，我们需要定位文本中对于分类器的分类结果起到很大作用的文本段（通过计算代价梯度）。在这里，我们使用<strong><em>Hot Training Phrases</em> (HTPs)</strong>代表最常使用的短语：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831150703.png" alt=""></p>
+<p>​        HTPS表明了用什么短语/词去做扰动，但是没有说在哪里做。在这里使用<strong><em>Hot Sample Phrases</em> (HSPs)</strong>来表明在哪里做扰动。</p>
+<h4 id="3-3-Attacking-Character-level-DNN"><a href="#3-3-Attacking-Character-level-DNN" class="headerlink" title="3.3    Attacking Character-level DNN:"></a>3.3    Attacking Character-level DNN:</h4><p>​        我们的方法是一种targeted攻击，可以指定对抗样本的误导类型。</p>
+<h5 id="3-3-1-Insertion-Strategy（插入策略）"><a href="#3-3-1-Insertion-Strategy（插入策略）" class="headerlink" title="3.3.1 Insertion Strategy（插入策略）:"></a>3.3.1 Insertion Strategy（插入策略）:</h5><p>​            在某个HSP前插入一个HTP，就可以达到效果：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831151929.png" alt=""></p>
+<p>​            由上图可以看到，将某个<strong>HTP</strong>（<em>historic</em>）插入到<strong>HSP</strong>（<em>principal stock exchange of Uganda. It was founded</em>）之前，就可以使一个公司的分类文本变为对建筑的分类。</p>
+<p>​            实际上，我们通常需要进行多次插入，但插入次数过多会影响样本的效用和可读性，为了解决这个问题，这里引入NL水印技术（<em>Natural Language watermarking technique</em>）。该技术可以通过语义或句法操作将所有权水印隐形地嵌入到普通文本中,虽然我们的攻击目标与NL水印有本质的不同，但我们可以借用它的思想来构造对抗样本。实际上，扰动可以看作是一种水印，并以类似的方式嵌入到样本中。</p>
+<p>​            在这里，我们拓展这个思路，在样本中插入<strong>Presupposition</strong>(读者熟知的模糊短语)和 <strong>semantically empty phrases</strong>（可有可无的短语），有没有他们，在读者看来，原文的意思不会改变。</p>
+<p>​            总的来说，我们考虑将各种HTPS组合成一个语法单元后再嵌入到文本中，新的单元可以是生成的可有可无的资料，或者甚至是不会改变文本原意的伪造的资料。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831154859.png" alt=""></p>
+<p>​            <strong>特别的，通过互联网搜索或者查找一些数据集，我们可以找到与插入点很相关的资料，包括一些期望的目标分类的HTPs。</strong></p>
+<p>​            由于我们不能总是找到合适的HTPs，所以提出一个新概念——伪造的事实（forged fact），也就是插入很难证伪的HTPs。例如：</p>
+<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/20210831154910.png" alt=""></p>
+<p>​            此外，我们排除了伪造的事实，这些事实可以通过检索他们在网上的相反证据而被否认。</p>
+<h5 id="3-3-2-Modification-Strategy（修改策略）："><a href="#3-3-2-Modification-Strategy（修改策略）：" class="headerlink" title="3.3.2 Modification Strategy（修改策略）："></a>3.3.2 Modification Strategy（修改策略）：</h5><p>​            Moidfication就是轻微修改一些HSP。</p>
+<p>​            为了让修改不被人类观察者发现，我们采用了typo-based watermarking 技术。具体的说，一个HSP可以通过两种方式来被修改：</p>
+<p>​            1. 从相关的语料库中选择常见的拼写错误来替换它；</p>
+<p>​            2. 把它的一些字符修改成类似的外观（例如小写字母’l’与阿拉伯数字‘1’很像）。</p>
+<p>​            <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831160407.png" alt=""></p>
+<p>​            由上图可以看出，这种方式对分类结果的扰动是巨大的。</p>
+<h5 id="3-3-3-Removal-Strategy（移除策略）"><a href="#3-3-3-Removal-Strategy（移除策略）" class="headerlink" title="3.3.3 Removal Strategy（移除策略）:"></a>3.3.3 Removal Strategy（移除策略）:</h5><p>​            移除策略单独使用也许并不能足够有效地影响预测结果，但是可以很大程度上降低原始预测类型的置信度。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831161007.png" alt=""></p>
+<p>​            由上图可以看出，移除’<strong><em>British</em></strong>‘可以导致原始预测类型的置信度下降了35%。</p>
+<h5 id="3-3-4-Combination-of-Three-Strategies"><a href="#3-3-4-Combination-of-Three-Strategies" class="headerlink" title="3.3.4 Combination of Three Strategies:"></a>3.3.4 Combination of Three Strategies:</h5><p>​            如图6所示，单靠去除策略改变输出分类往往是困难的。但是，通过与其他策略相结合，可以避免对原文进行过多的修改或插入。在实践中，我们常常结合以上三种策略来制作微妙的对抗样本。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831161638.png" alt=""></p>
+<p>​            以图7为例，通过去除一个HSP、插入一个伪造事实和修改一个HSP，可以成功地改变输出分类，但单独应用上述任何扰动都失败。具体来说，删除、插入和修改仅使置信度分别下降27.3 %、17.5 %和10.1 %，保持预测类不变。</p>
+<h3 id="4-Black-Box-Attack"><a href="#4-Black-Box-Attack" class="headerlink" title="4. Black-Box-Attack:"></a>4. Black-Box-Attack:</h3><p>暂略</p>
+<h3 id="5-Evaluation："><a href="#5-Evaluation：" class="headerlink" title="5.  Evaluation："></a>5.  Evaluation：</h3><h4 id="5-1-我们的方法能否执行有效的源-目标误分类攻击"><a href="#5-1-我们的方法能否执行有效的源-目标误分类攻击" class="headerlink" title="5.1 我们的方法能否执行有效的源/目标误分类攻击?"></a>5.1 我们的方法能否执行有效的源/目标误分类攻击?</h4><p>​    <strong><em>答：</em></strong>在众多测试集中，只有DBpedia ontology数据集是一个多分类数据集，故我们在其中随机选取了一些样本：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831165135.png" alt=""></p>
+<h4 id="5-2-所生成的对抗样本能否避免被人类观察者认出来，并同时保持其功能性？"><a href="#5-2-所生成的对抗样本能否避免被人类观察者认出来，并同时保持其功能性？" class="headerlink" title="5.2 所生成的对抗样本能否避免被人类观察者认出来，并同时保持其功能性？"></a>5.2 所生成的对抗样本能否避免被人类观察者认出来，并同时保持其功能性？</h4><p><strong><em>答：</em></strong>我们找了23个学生。他们对项目不了解，然后每个人给20个文本，其中一半是加扰的。让他们分到14个类中，如果他们觉得哪个文本不对劲，让他们指出来。</p>
+<p>​            他们总的分类正确率是94.2%，10个对抗样本的正确率是94.8%。所以实用性还是有的。</p>
+<p>​            他们标注出了240项修改处，其中12项符合真实的修改。但实际上我们做了594处修改。</p>
+<h4 id="5-3-我们的方法足够有效吗？"><a href="#5-3-我们的方法足够有效吗？" class="headerlink" title="5.3 我们的方法足够有效吗？"></a>5.3 我们的方法足够有效吗？</h4><p><strong><em>答：</em></strong>实验中计算梯度和找HTPs花了116小时。14个类的HTPs每个类花了8.29小时。对所有的adversarial示例只执行一次计算。制作一个对抗性的样品大约需要10到20分钟。对于对手来说，获得理想的对抗样本是可以接受的。实际上，她或他愿意花更多的时间来做这件事。</p>
+<h3 id="6-Realted-Works"><a href="#6-Realted-Works" class="headerlink" title="6. Realted Works:"></a>6. Realted Works:</h3><p>​    <strong>可以做的方向：</strong>1.自动生成对抗样本；（然而，Papernot等人(Papernot et al. 2016a)提出了一种基于雅可比矩阵的数据集增强技术，该技术可以在不访问其模型、参数或训练数据的情况下，在有限对输入输出的基础上，为目标dnn提供替代模型。作者还表明，使用替代模型也可以有效地制作对抗样本，以攻击目标DNN。）2.迁移、黑盒攻击；</p>
+<p>​    </p>
 
       
     </div>
@@ -340,16 +262,7 @@ et al.
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BBdeep-text-classifification-can-be-fooled"><span class="nav-number">1.</span> <span class="nav-text">【论文阅读】Deep
-Text Classifification Can be Fooled</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#abstract"><span class="nav-number">1.0.1.</span> <span class="nav-text">Abstract:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#introduction"><span class="nav-number">1.0.2.</span> <span class="nav-text">1. Introduction:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#target-models-and-datasets"><span class="nav-number">1.0.3.</span> <span class="nav-text">2. Target Models and Datasets:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#white-box-attacks"><span class="nav-number">1.0.4.</span> <span class="nav-text">3. White-Box-Attacks:</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#fgsm%E7%AE%97%E6%B3%95"><span class="nav-number">1.0.4.1.</span> <span class="nav-text">3.1 FGSM算法：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#idenfitying-classification-important-items"><span class="nav-number">1.0.4.2.</span> <span class="nav-text">3.2 Idenfitying
-Classification-important Items:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#attacking-character-level-dnn"><span class="nav-number">1.0.4.3.</span> <span class="nav-text">3.3 Attacking Character-level
-DNN:</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#insertion-strategy%E6%8F%92%E5%85%A5%E7%AD%96%E7%95%A5"><span class="nav-number">1.0.4.3.1.</span> <span class="nav-text">3.3.1 Insertion
-Strategy（插入策略）:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#modification-strategy%E4%BF%AE%E6%94%B9%E7%AD%96%E7%95%A5"><span class="nav-number">1.0.4.3.2.</span> <span class="nav-text">3.3.2 Modification
-Strategy（修改策略）：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#removal-strategy%E7%A7%BB%E9%99%A4%E7%AD%96%E7%95%A5"><span class="nav-number">1.0.4.3.3.</span> <span class="nav-text">3.3.3 Removal
-Strategy（移除策略）:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#combination-of-three-strategies"><span class="nav-number">1.0.4.3.4.</span> <span class="nav-text">3.3.4 Combination of Three
-Strategies:</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#black-box-attack"><span class="nav-number">1.0.5.</span> <span class="nav-text">4. Black-Box-Attack:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#evaluation"><span class="nav-number">1.0.6.</span> <span class="nav-text">5. Evaluation：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%88%91%E4%BB%AC%E7%9A%84%E6%96%B9%E6%B3%95%E8%83%BD%E5%90%A6%E6%89%A7%E8%A1%8C%E6%9C%89%E6%95%88%E7%9A%84%E6%BA%90%E7%9B%AE%E6%A0%87%E8%AF%AF%E5%88%86%E7%B1%BB%E6%94%BB%E5%87%BB"><span class="nav-number">1.0.6.1.</span> <span class="nav-text">5.1
-我们的方法能否执行有效的源&#x2F;目标误分类攻击?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%80%E7%94%9F%E6%88%90%E7%9A%84%E5%AF%B9%E6%8A%97%E6%A0%B7%E6%9C%AC%E8%83%BD%E5%90%A6%E9%81%BF%E5%85%8D%E8%A2%AB%E4%BA%BA%E7%B1%BB%E8%A7%82%E5%AF%9F%E8%80%85%E8%AE%A4%E5%87%BA%E6%9D%A5%E5%B9%B6%E5%90%8C%E6%97%B6%E4%BF%9D%E6%8C%81%E5%85%B6%E5%8A%9F%E8%83%BD%E6%80%A7"><span class="nav-number">1.0.6.2.</span> <span class="nav-text">5.2
-所生成的对抗样本能否避免被人类观察者认出来，并同时保持其功能性？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%88%91%E4%BB%AC%E7%9A%84%E6%96%B9%E6%B3%95%E8%B6%B3%E5%A4%9F%E6%9C%89%E6%95%88%E5%90%97"><span class="nav-number">1.0.6.3.</span> <span class="nav-text">5.3 我们的方法足够有效吗？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#realted-works"><span class="nav-number">1.0.7.</span> <span class="nav-text">6. Realted Works:</span></a></li></ol></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep-Text-Classifification-Can-be-Fooled"><span class="nav-number">1.</span> <span class="nav-text">【论文阅读】Deep Text Classifification Can be Fooled</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Abstract"><span class="nav-number">1.0.1.</span> <span class="nav-text">Abstract:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Introduction"><span class="nav-number">1.0.2.</span> <span class="nav-text">1. Introduction:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Target-Models-and-Datasets"><span class="nav-number">1.0.3.</span> <span class="nav-text">2. Target Models and Datasets:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-White-Box-Attacks"><span class="nav-number">1.0.4.</span> <span class="nav-text">3. White-Box-Attacks:</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-FGSM%E7%AE%97%E6%B3%95%EF%BC%9A"><span class="nav-number">1.0.4.1.</span> <span class="nav-text">3.1 FGSM算法：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-Idenfitying-Classification-important-Items"><span class="nav-number">1.0.4.2.</span> <span class="nav-text">3.2    Idenfitying Classification-important Items:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-Attacking-Character-level-DNN"><span class="nav-number">1.0.4.3.</span> <span class="nav-text">3.3    Attacking Character-level DNN:</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-3-1-Insertion-Strategy%EF%BC%88%E6%8F%92%E5%85%A5%E7%AD%96%E7%95%A5%EF%BC%89"><span class="nav-number">1.0.4.3.1.</span> <span class="nav-text">3.3.1 Insertion Strategy（插入策略）:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-3-2-Modification-Strategy%EF%BC%88%E4%BF%AE%E6%94%B9%E7%AD%96%E7%95%A5%EF%BC%89%EF%BC%9A"><span class="nav-number">1.0.4.3.2.</span> <span class="nav-text">3.3.2 Modification Strategy（修改策略）：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-3-3-Removal-Strategy%EF%BC%88%E7%A7%BB%E9%99%A4%E7%AD%96%E7%95%A5%EF%BC%89"><span class="nav-number">1.0.4.3.3.</span> <span class="nav-text">3.3.3 Removal Strategy（移除策略）:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-3-4-Combination-of-Three-Strategies"><span class="nav-number">1.0.4.3.4.</span> <span class="nav-text">3.3.4 Combination of Three Strategies:</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Black-Box-Attack"><span class="nav-number">1.0.5.</span> <span class="nav-text">4. Black-Box-Attack:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Evaluation%EF%BC%9A"><span class="nav-number">1.0.6.</span> <span class="nav-text">5.  Evaluation：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-%E6%88%91%E4%BB%AC%E7%9A%84%E6%96%B9%E6%B3%95%E8%83%BD%E5%90%A6%E6%89%A7%E8%A1%8C%E6%9C%89%E6%95%88%E7%9A%84%E6%BA%90-%E7%9B%AE%E6%A0%87%E8%AF%AF%E5%88%86%E7%B1%BB%E6%94%BB%E5%87%BB"><span class="nav-number">1.0.6.1.</span> <span class="nav-text">5.1 我们的方法能否执行有效的源&#x2F;目标误分类攻击?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-%E6%89%80%E7%94%9F%E6%88%90%E7%9A%84%E5%AF%B9%E6%8A%97%E6%A0%B7%E6%9C%AC%E8%83%BD%E5%90%A6%E9%81%BF%E5%85%8D%E8%A2%AB%E4%BA%BA%E7%B1%BB%E8%A7%82%E5%AF%9F%E8%80%85%E8%AE%A4%E5%87%BA%E6%9D%A5%EF%BC%8C%E5%B9%B6%E5%90%8C%E6%97%B6%E4%BF%9D%E6%8C%81%E5%85%B6%E5%8A%9F%E8%83%BD%E6%80%A7%EF%BC%9F"><span class="nav-number">1.0.6.2.</span> <span class="nav-text">5.2 所生成的对抗样本能否避免被人类观察者认出来，并同时保持其功能性？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-3-%E6%88%91%E4%BB%AC%E7%9A%84%E6%96%B9%E6%B3%95%E8%B6%B3%E5%A4%9F%E6%9C%89%E6%95%88%E5%90%97%EF%BC%9F"><span class="nav-number">1.0.6.3.</span> <span class="nav-text">5.3 我们的方法足够有效吗？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-Realted-Works"><span class="nav-number">1.0.7.</span> <span class="nav-text">6. Realted Works:</span></a></li></ol></li></ol></li></ol>
     
     </div>
   </aside>

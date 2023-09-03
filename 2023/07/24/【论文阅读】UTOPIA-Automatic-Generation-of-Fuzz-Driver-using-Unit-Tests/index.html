@@ -13,12 +13,12 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="UTOPIA: Automatic Generation of Fuzz Driver using Unit Tests  时间：2022 作者：Bokdeuk Jeong、Joonun Jang（Samsung Research）、Taesoo Kim（佐治亚理工） 会议：S&amp;P&#39;2023 开源：https:&#x2F;&#x2F;github.com&#x2F;Samsung&#x2F;UTopia  Ab">
+  <meta name="description" content="UTOPIA: Automatic Generation of Fuzz Driver using Unit Tests 时间：2022 作者：Bokdeuk Jeong、Joonun Jang（Samsung Research）、Taesoo Kim（佐治亚理工） 会议：S&amp;P’2023 开源：https:&#x2F;&#x2F;github.com&#x2F;Samsung&#x2F;UTopia  Abstract​">
 <meta property="og:type" content="article">
 <meta property="og:title" content="(论文阅读)UTOPIA-Automatic Generation of Fuzz Driver using Unit Tests">
 <meta property="og:url" content="http://example.com/2023/07/24/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91UTOPIA-Automatic-Generation-of-Fuzz-Driver-using-Unit-Tests/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="UTOPIA: Automatic Generation of Fuzz Driver using Unit Tests  时间：2022 作者：Bokdeuk Jeong、Joonun Jang（Samsung Research）、Taesoo Kim（佐治亚理工） 会议：S&amp;P&#39;2023 开源：https:&#x2F;&#x2F;github.com&#x2F;Samsung&#x2F;UTopia  Ab">
+<meta property="og:description" content="UTOPIA: Automatic Generation of Fuzz Driver using Unit Tests 时间：2022 作者：Bokdeuk Jeong、Joonun Jang（Samsung Research）、Taesoo Kim（佐治亚理工） 会议：S&amp;P’2023 开源：https:&#x2F;&#x2F;github.com&#x2F;Samsung&#x2F;UTopia  Abstract​">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230724140338.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230724141628.png">
@@ -154,188 +154,81 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1
-id="utopia-automatic-generation-of-fuzz-driver-using-unit-tests">UTOPIA:
-Automatic Generation of Fuzz Driver using Unit Tests</h1>
-<blockquote>
+        <h1 id="UTOPIA-Automatic-Generation-of-Fuzz-Driver-using-Unit-Tests"><a href="#UTOPIA-Automatic-Generation-of-Fuzz-Driver-using-Unit-Tests" class="headerlink" title="UTOPIA: Automatic Generation of Fuzz Driver using Unit Tests"></a>UTOPIA: Automatic Generation of Fuzz Driver using Unit Tests</h1><blockquote>
 <p><strong>时间：</strong>2022</p>
-<p><strong>作者：</strong>Bokdeuk Jeong、Joonun Jang（Samsung
-Research）、Taesoo Kim（佐治亚理工）</p>
-<p><strong>会议：</strong>S&amp;P'2023</p>
-<p><strong>开源：</strong>https://github.com/Samsung/UTopia</p>
+<p><strong>作者：</strong>Bokdeuk Jeong、Joonun Jang（Samsung Research）、Taesoo Kim（佐治亚理工）</p>
+<p><strong>会议：</strong>S&amp;P’2023</p>
+<p><strong>开源：</strong><a target="_blank" rel="noopener" href="https://github.com/Samsung/UTopia">https://github.com/Samsung/UTopia</a></p>
 </blockquote>
-<h2 id="abstract">Abstract</h2>
-<p>​
-Fuzzing可以说是检测软件安全漏洞的最实用方法，但采用这种方法需要付出不小的努力。要想取得成效，<u>高质量的fuzz
-driver程序应首先应当包含适当的 API
-序列</u>，以便详尽地探索程序状态。为减轻这一负担，现有解决方案试图通过从用户代码（即
-API 的实际使用）中推断出有效的 API 序列，或直接从样本执行中提取 API
-序列来生成fuzz
-driver程序。遗憾的是，所有现有方法都存在一个共同问题：<u>观察到的 API
-序列（无论是静态推断还是动态监控）都与自定义应用程序逻辑混杂在一起</u>。然而，我们观察到，单元测试是由应用程序接口的实际设计者精心制作的，以验证其正确使用，而且重要的是，在开发过程中编写单元测试是一种常见做法（例如，超过
-70% 的流行 GitHub 项目）。</p>
-<p>​
-在本文中，我们提出了一种开源工具和分析算法--UTOPIA，<strong>它可以从现有的单元测试中自动合成有效的fuzz
-driver程序，几乎不需要人工参与</strong>。为了证明其有效性，我们将 UTOPIA
-应用于 55 个开源项目库，包括 Tizen 和 Node.js，并从 8K
-个合格的单元测试中自动生成了 5K 个fuzz
-driver程序。此外，我们在每个内核上执行了约 500
-万小时生成的fuzzer，发现了 123 个错误。更重要的是，2.4K 个生成的fuzz
-driver程序被Tizen项目的持续集成流程采用，这表明了合成fuzz
-driver程序的质量。为了让研究人员和从业人员更广泛地采用，我们公开并维护了所提出的工具和结果。</p>
+<h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>​    Fuzzing可以说是检测软件安全漏洞的最实用方法，但采用这种方法需要付出不小的努力。要想取得成效，<u>高质量的fuzz driver程序应首先应当包含适当的 API 序列</u>，以便详尽地探索程序状态。为减轻这一负担，现有解决方案试图通过从用户代码（即 API 的实际使用）中推断出有效的 API 序列，或直接从样本执行中提取 API 序列来生成fuzz driver程序。遗憾的是，所有现有方法都存在一个共同问题：<u>观察到的 API 序列（无论是静态推断还是动态监控）都与自定义应用程序逻辑混杂在一起</u>。然而，我们观察到，单元测试是由应用程序接口的实际设计者精心制作的，以验证其正确使用，而且重要的是，在开发过程中编写单元测试是一种常见做法（例如，超过 70% 的流行 GitHub 项目）。</p>
+<p>​    在本文中，我们提出了一种开源工具和分析算法—UTOPIA，<strong>它可以从现有的单元测试中自动合成有效的fuzz driver程序，几乎不需要人工参与</strong>。为了证明其有效性，我们将 UTOPIA 应用于 55 个开源项目库，包括 Tizen 和 Node.js，并从 8K 个合格的单元测试中自动生成了 5K 个fuzz driver程序。此外，我们在每个内核上执行了约 500 万小时生成的fuzzer，发现了 123 个错误。更重要的是，2.4K 个生成的fuzz driver程序被Tizen项目的持续集成流程采用，这表明了合成fuzz driver程序的质量。为了让研究人员和从业人员更广泛地采用，我们公开并维护了所提出的工具和结果。</p>
 <span id="more"></span>
-<h2 id="background">Background</h2>
-<p>​ 最近，研究人员一直在探索一种方法，通过自动生成或合成fuzz
-driver程序来减轻library fuzzing人工集成的负担[12, 16, 18,
-28]。他们通过随机推断源代码中的应用程序接口依赖关系[12,
-16]，或通过运行时观察到的执行轨迹[18,
-28]，为fuzzing制定了适当的应用程序接口序列。</p>
-<p>​ 更具体地说，最初的项目之一
-<strong>Fudge</strong>[12]，侧重于从消费者代码中直接还原适当的 API
-调用序列，其中 API
-使用和自定义应用程序逻辑相互交织。后续项目<strong>FuzzGen</strong>[16]通过对整个程序进行分析，从多个消费者代码中推理出
-API 的依赖关系，理论上可以产生合理有效的fuzz driver程序（即推断出有效的
-API
-调用序列）。尽管这些方法具有通用性和广泛适用性，但<u>它们所依赖的用户代码却存在根本性的局限</u>。特别是，混合代码最终可能会生成过于简单的
-API
-序列/语义上无效的状态（例如，在一个代码中分配，而在其他地方使用）。<strong>从消费者代码的统计聚合中推断有效的
-API
-序列和依赖关系，会产生刻板的情况，这对于寻找无效、不常见输入的模糊器来说并不理想。</strong></p>
-<p>​ 与试图推断 API 依赖关系的现有项目不同，我们在单元测试 (UT)
-中使用了准确的 API 调用顺序，我们观察到：</p>
-<ol type="1">
+<h2 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h2><p>​    最近，研究人员一直在探索一种方法，通过自动生成或合成fuzz driver程序来减轻library fuzzing人工集成的负担[12, 16, 18, 28]。他们通过随机推断源代码中的应用程序接口依赖关系[12, 16]，或通过运行时观察到的执行轨迹[18, 28]，为fuzzing制定了适当的应用程序接口序列。</p>
+<p>​    更具体地说，最初的项目之一 <strong>Fudge</strong>[12]，侧重于从消费者代码中直接还原适当的 API 调用序列，其中 API 使用和自定义应用程序逻辑相互交织。后续项目<strong>FuzzGen</strong>[16]通过对整个程序进行分析，从多个消费者代码中推理出 API 的依赖关系，理论上可以产生合理有效的fuzz driver程序（即推断出有效的 API 调用序列）。尽管这些方法具有通用性和广泛适用性，但<u>它们所依赖的用户代码却存在根本性的局限</u>。特别是，混合代码最终可能会生成过于简单的 API 序列/语义上无效的状态（例如，在一个代码中分配，而在其他地方使用）。<strong>从消费者代码的统计聚合中推断有效的 API 序列和依赖关系，会产生刻板的情况，这对于寻找无效、不常见输入的模糊器来说并不理想。</strong></p>
+<p>​    与试图推断 API 依赖关系的现有项目不同，我们在单元测试 (UT) 中使用了准确的 API 调用顺序，我们观察到：</p>
+<ol>
 <li>现有的UT明确表达了开发人员所关心的 API 的这种依赖性；</li>
 <li>UT检查library所提供功能的各个方面，其API（如内部API）多于消费者代码；</li>
-<li>许多现有项目已经有了写得很好的UT--在来自 Github、Android 外部和
-OSS-Fuzz的项目中占比73%。</li>
+<li>许多现有项目已经有了写得很好的UT—在来自 Github、Android 外部和 OSS-Fuzz的项目中占比73%。</li>
 </ol>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230724140338.png" style="zoom:67%;" /></p>
-<p>​</p>
-<h2 id="contribution">Contribution</h2>
-<p>​
-在本文中，我们提出了UTOPIA，利用各种技术，以自动化和可扩展的方式将现有的UT转换为有效的fuzz
-driver程序，UTOPIA背后的主要思想是：</p>
-<ol type="1">
-<li><p>利用UT的特定属性来揭示UT分析的复杂性；</p></li>
-<li><p>执行root-definition
-analysis（一种新引入的技术）来追溯API参数的源头，以进行适当的fuzz
-input注入，从而保持开发人员所希望的程序间关系和数据流；</p></li>
-<li><p>在fuzz
-input突变中反映对每个参数在其API内部可能产生的影响的分析。这样，UTOPIA
-就能深入探索代码空间，避免因无效 API 使用而导致崩溃。因此，UTOPIA
-可以提供一个push-button式解决方案，在没有人工参与的情况下自动合成高质量的fuzz
-driver程序。</p></li>
+<p>​    </p>
+<h2 id="Contribution"><a href="#Contribution" class="headerlink" title="Contribution"></a>Contribution</h2><p>​    在本文中，我们提出了UTOPIA，利用各种技术，以自动化和可扩展的方式将现有的UT转换为有效的fuzz driver程序，UTOPIA背后的主要思想是：</p>
+<ol>
+<li><p>利用UT的特定属性来揭示UT分析的复杂性；</p>
+</li>
+<li><p>执行root-definition analysis（一种新引入的技术）来追溯API参数的源头，以进行适当的fuzz input注入，从而保持开发人员所希望的程序间关系和数据流；</p>
+</li>
+<li><p>在fuzz input突变中反映对每个参数在其API内部可能产生的影响的分析。这样，UTOPIA 就能深入探索代码空间，避免因无效 API 使用而导致崩溃。因此，UTOPIA 可以提供一个push-button式解决方案，在没有人工参与的情况下自动合成高质量的fuzz driver程序。</p>
+</li>
 </ol>
-<p>​ <strong>本文的贡献如下：</strong></p>
-<ol type="1">
-<li>我们提出了一种新的fuzz
-driver程序合成方法，该方法包含现有的单元测试，可自动生成fuzz
-driver程序；</li>
-<li>我们利用 gtest 和 boost UT 框架，为 C/C++ 库实施了本方法的原型
-UTOPIA，并通过经验验证，本方法可成功地将五千多的UT转化为 55
-个开源项目库的有意义的fuzz driver程序；</li>
+<p>​    <strong>本文的贡献如下：</strong></p>
+<ol>
+<li>我们提出了一种新的fuzz driver程序合成方法，该方法包含现有的单元测试，可自动生成fuzz driver程序；</li>
+<li>我们利用 gtest 和 boost UT 框架，为 C/C++ 库实施了本方法的原型 UTOPIA，并通过经验验证，本方法可成功地将五千多的UT转化为 55 个开源项目库的有意义的fuzz driver程序；</li>
 <li>我们报告了 123 个新漏洞，其中 70 个在责任披露过程中得到确认。</li>
 </ol>
-<h2 id="model">Model</h2>
-<h3 id="挑战">1. 挑战</h3>
-<blockquote>
+<h2 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h2><h3 id="1-挑战"><a href="#1-挑战" class="headerlink" title="1. 挑战"></a>1. 挑战</h3><blockquote>
 <p><strong><em>C1.</em></strong> 生成有效的API序列；</p>
 <p><strong><em>C2.</em></strong> 生成有效的API参数。</p>
 </blockquote>
-<p>​ 在fuzz
-driver中，library不仅可以因为bug崩溃，也可以是因为API的不当使用（如C1、C2），这种崩溃会严重影响fuzzing的进程。</p>
+<p>​    在fuzz driver中，library不仅可以因为bug崩溃，也可以是因为API的不当使用（如C1、C2），这种崩溃会严重影响fuzzing的进程。</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230724141628.png" style="zoom: 67%;" /></p>
-<p>​ 上图是一个用OpenCV库读/写raw data的UT，UTOPIA 通过对原始 UT
-代码进行细微修改，将 UT 转换为fuzz driver程序，以便将fuzz
-input分配给被分析为API参数来源的现有变量。</p>
-<p>​
-上图可以观察到UTOPIA对UT所做的改动，其将一些常数值变为了变量以将其分配给fuzzer进行改动（文章里的说法真巧妙啊:cupid:）</p>
-<h3 id="方法">2. 方法</h3>
-<h4 id="生成有效的api序列">2.1 生成有效的API序列</h4>
-<h5 id="先前工作的问题">2.1.1 先前工作的问题</h5>
-<p>​
-如果要像以前的研究那样，对任何特定的消费者代码进行分析，则应决定对消费者代码做分析的程序。</p>
-<p>​ 一种可能的方法是对整个消费者代码进行分析，从而提取消费者内部的整个
-API 使用模式。但是，<u>如果遇到复杂的消费者代码，其中有大量 API
-调用分散在复杂的控制流中，提取的模式可能会变得臃肿</u>。这会导致驱动程序调用数十或数百次
-API 调用，由于来自众多 API
-的输入空间过于臃肿，这会阻碍驱动程序的fuzzing工作。</p>
-<p>​ 为了避免这种情况，一种方法是限制生成单个fuzz
-driver程序时所需要分析的用户代码量（例如，先前的工作[12,
-16]仅对同一编译单元进行分析，以提取库 API
-调用的使用情况）。<u>虽然这缓解了之前序列臃肿的问题，但由于一些必要的
-API 调用存在于不同的源文件中，这可能会导致获取的 API
-序列不完整。此外，从这样的序列生成fuzz
-driver程序可能会产生虚假崩溃。</u></p>
-<h5 id="我们的方法">2.1.2 我们的方法</h5>
-<p>​ 以前的研究侧重于从任何给定的消费者中正确重建有效的 API
-序列，与此不同，我们利用单元测试中编写的显式 API 序列，完全避开了上述
-API 序列合成的难题。</p>
-<p>​ 使用UT有两个好处：</p>
-<ol type="1">
+<p>​    上图是一个用OpenCV库读/写raw data的UT，UTOPIA 通过对原始 UT 代码进行细微修改，将 UT 转换为fuzz  driver程序，以便将fuzz input分配给被分析为API参数来源的现有变量。</p>
+<p>​    上图可以观察到UTOPIA对UT所做的改动，其将一些常数值变为了变量以将其分配给fuzzer进行改动（文章里的说法真巧妙啊:cupid:）</p>
+<h3 id="2-方法"><a href="#2-方法" class="headerlink" title="2. 方法"></a>2. 方法</h3><h4 id="2-1-生成有效的API序列"><a href="#2-1-生成有效的API序列" class="headerlink" title="2.1 生成有效的API序列"></a>2.1 生成有效的API序列</h4><h5 id="2-1-1-先前工作的问题"><a href="#2-1-1-先前工作的问题" class="headerlink" title="2.1.1 先前工作的问题"></a>2.1.1 先前工作的问题</h5><p>​    如果要像以前的研究那样，对任何特定的消费者代码进行分析，则应决定对消费者代码做分析的程序。</p>
+<p>​    一种可能的方法是对整个消费者代码进行分析，从而提取消费者内部的整个 API 使用模式。但是，<u>如果遇到复杂的消费者代码，其中有大量 API 调用分散在复杂的控制流中，提取的模式可能会变得臃肿</u>。这会导致驱动程序调用数十或数百次 API 调用，由于来自众多 API 的输入空间过于臃肿，这会阻碍驱动程序的fuzzing工作。</p>
+<p>​    为了避免这种情况，一种方法是限制生成单个fuzz  driver程序时所需要分析的用户代码量（例如，先前的工作[12, 16]仅对同一编译单元进行分析，以提取库 API 调用的使用情况）。<u>虽然这缓解了之前序列臃肿的问题，但由于一些必要的 API 调用存在于不同的源文件中，这可能会导致获取的 API 序列不完整。此外，从这样的序列生成fuzz driver程序可能会产生虚假崩溃。</u></p>
+<h5 id="2-1-2-我们的方法"><a href="#2-1-2-我们的方法" class="headerlink" title="2.1.2 我们的方法"></a>2.1.2 我们的方法</h5><p>​    以前的研究侧重于从任何给定的消费者中正确重建有效的 API 序列，与此不同，我们利用单元测试中编写的显式 API 序列，完全避开了上述 API 序列合成的难题。</p>
+<p>​    使用UT有两个好处：</p>
+<ol>
 <li>在UT中为每个测试用例明确构建库状态，这意味着在生成模糊驱动程序时无需进行应用程序接口模式推理或提取；</li>
-<li>这与fuzz
-driver程序的目的是一致的，即每个测试用例及其所包含的API序列，都是为了测试库开发人员认为必不可少的库的特定属性/变量而设计的。</li>
+<li>这与fuzz driver程序的目的是一致的，即每个测试用例及其所包含的API序列，都是为了测试库开发人员认为必不可少的库的特定属性/变量而设计的。</li>
 </ol>
-<p>​ 在我们运行的示例中，这种方法使我们能够在代码中保持所有的 API
-顺序关系，因为<u>我们不会改变任何调用</u>。此外，由于UT只包含测试库特定属性所需的简短API序列，UTOPIA不容易生成臃肿的API序列。</p>
-<h4 id="生成有效的api参数">2.2 生成有效的API参数</h4>
-<h5 id="inferring-inter-api-semantics">2.2.1 Inferring inter-API
-semantics</h5>
-<p>​ 有效语义的API之间的主要关系是：</p>
+<p>​    在我们运行的示例中，这种方法使我们能够在代码中保持所有的 API 顺序关系，因为<u>我们不会改变任何调用</u>。此外，由于UT只包含测试库特定属性所需的简短API序列，UTOPIA不容易生成臃肿的API序列。</p>
+<h4 id="2-2-生成有效的API参数"><a href="#2-2-生成有效的API参数" class="headerlink" title="2.2 生成有效的API参数"></a>2.2 生成有效的API参数</h4><h5 id="2-2-1-Inferring-inter-API-semantics"><a href="#2-2-1-Inferring-inter-API-semantics" class="headerlink" title="2.2.1 Inferring inter-API semantics"></a>2.2.1 Inferring inter-API semantics</h5><p>​    有效语义的API之间的主要关系是：</p>
 <ul>
 <li>out-to-in: 一个API的输出是另一个API的输入；</li>
 <li>fixed: 每个 API 中的参数在所有 API 调用中都应相同；</li>
-<li>relative: 不同API的参数由同一值生成（x=f(y)；API_1(x)；z=x+g(y);
-API_2(z);）。</li>
+<li>relative: 不同API的参数由同一值生成（x=f(y)；API_1(x)；z=x+g(y); API_2(z);）。</li>
 </ul>
-<p>​
-使用传统的程序内数据流分析方法，无法从一般消费者代码的使用中准确分析出应用程序间的关系，因为如果我们在输入fuzz
-input时不考虑程序间的数据流，就可能会忽略开发者的预期数据流，例如：</p>
+<p>​    使用传统的程序内数据流分析方法，无法从一般消费者代码的使用中准确分析出应用程序间的关系，因为如果我们在输入fuzz input时不考虑程序间的数据流，就可能会忽略开发者的预期数据流，例如：</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c">var a <span class="token operator">=</span> <span class="token number">3</span><span class="token punctuation">;</span>
 b <span class="token operator">=</span> <span class="token function">func</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token function">Target_API</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<p>​ 反之，如果只依赖程序内分析，则会将fuzz input分配给 b，而不是
-a。另外，也可以通过API之间的参数类型别名来推断这种关系[16]，但无法确定它们是否指的是同一个对象。在这种情况下，生成的fuzz
-driver程序无法反映参数之间的 API 间关系。</p>
-<h5 id="inferring-intra-api-semantics">2.2.2 Inferring intra-API
-semantics</h5>
-<p>​ 此外，还应考虑同一 API
-中参数之间的关系，最常见的考虑因素包括与数组有关的因素：</p>
+<p>​    反之，如果只依赖程序内分析，则会将fuzz input分配给 b，而不是 a。另外，也可以通过API之间的参数类型别名来推断这种关系[16]，但无法确定它们是否指的是同一个对象。在这种情况下，生成的fuzz driver程序无法反映参数之间的 API 间关系。</p>
+<h5 id="2-2-2-Inferring-intra-API-semantics"><a href="#2-2-2-Inferring-intra-API-semantics" class="headerlink" title="2.2.2 Inferring intra-API semantics"></a>2.2.2 Inferring intra-API semantics</h5><p>​    此外，还应考虑同一 API 中参数之间的关系，最常见的考虑因素包括与数组有关的因素：</p>
 <ul>
-<li>array↔︎length: 输入参数表示另一个输入数组参数的长度；</li>
-<li>array↔︎index: 输入参数是另一个数组输入参数的索引。</li>
+<li>array↔length: 输入参数表示另一个输入数组参数的长度；</li>
+<li>array↔index: 输入参数是另一个数组输入参数的索引。</li>
 </ul>
-<p>​ 例如，Mat 类构造函数中的第一个参数（图 1 中第 14
-行）要求与第二个和第四个参数中所述数组的大小相对应。如果对这两个参数进行随机fuzzing，驱动程序大多会导致故障（参数大小大于数组实际大小）或浪费精力更改未使用的fuzz
-input字节（参数大小小于数组实际大小）。</p>
-<p>​ 如果将 Fudge [12]
-基于类型的模式匹配方法应用于这个示例，<u>它将无法匹配第一个参数和第四个参数之间的逻辑关系，因为这种关系并没有明确地暴露在消费者代码中</u>。虽然
-FuzzGen [16]
-的值集方法可以对应用程序接口的内部结构进行分析，<u>但由于它推断的是单个参数的类型和值集，而不是参数之间的关系，因此在表示三个参数之间的关系时容易失败</u>。</p>
-<h5 id="detrimental-input-for-fuzzing">2.2.3 Detrimental input for
-fuzzing</h5>
-<p>​
-虽然不属于滥用API，但我们注意到，有些参数在不经意地进行fuzzing时，会降低fuzzing的性能。例如，如果某个参数用于内存分配或循环计数，过大的数值经常会分别导致内存不足或超时错误。虽然这些并不是虚假崩溃，但往往同样会阻碍进一步的模糊探索。</p>
-<p>​ 为了保持有效的参数语义，UTOPIA 保留了 UT
-中的原始数据流，并通过静态分析找到注入fuzz input（即fuzz
-target）的位置以及它们应该如何变异（API 属性）。为了识别注入fuzz
-input的合适位置，我们定义了一个新的root-definition
-analysis，即用常量定义变量的赋值语句。通过只在root-definition处分配fuzz
-input，我们可以保留原有的数据流，并自然地遵循现有的应用程序接口间语义，因为应用程序接口参数之间的流动是不间断的。在图
-1 中，UTOPIA 通过在root-definition（第 23 行）中分配fuzz input，将fuzz
-input传递给写原始数据（writeRaw() API）中的第三个参数 rawdata（第 31
-行），在根定义中，rawdata 向量的每个元素都被分配了常数。</p>
-<p>​ 找到根定义后，UTOPIA 会根据从根定义中获取值的 API
-参数的属性分析注入模糊输入（确定属性的 API 静态分析详见第三节
-B）。例如，在 Mat 类的构造函数中（图 1 中的第 18 行），UTOPIA
-推断出了数组↔︎长度关系，并将 dim 的大小（数组属性）分配给第 18
-行的第一个参数（ArrayLength 属性）和第 17
-行的每个带有模糊输入的元素。</p>
-<h4 id="使用单元测试的独特挑战">2.3 使用单元测试的独特挑战</h4>
-<p>​ 然而，简单地将 UT 作为消费者提供给现有方法并不合适，因为使用 UT
-会带来自身的一系列挑战 (UT-C)。</p>
-<p>​ [……这里待更新，笔记着重了解fuzzing过程]</p>
+<p>​    例如，Mat 类构造函数中的第一个参数（图 1 中第 14 行）要求与第二个和第四个参数中所述数组的大小相对应。如果对这两个参数进行随机fuzzing，驱动程序大多会导致故障（参数大小大于数组实际大小）或浪费精力更改未使用的fuzz input字节（参数大小小于数组实际大小）。</p>
+<p>​    如果将 Fudge [12] 基于类型的模式匹配方法应用于这个示例，<u>它将无法匹配第一个参数和第四个参数之间的逻辑关系，因为这种关系并没有明确地暴露在消费者代码中</u>。虽然 FuzzGen [16] 的值集方法可以对应用程序接口的内部结构进行分析，<u>但由于它推断的是单个参数的类型和值集，而不是参数之间的关系，因此在表示三个参数之间的关系时容易失败</u>。</p>
+<h5 id="2-2-3-Detrimental-input-for-fuzzing"><a href="#2-2-3-Detrimental-input-for-fuzzing" class="headerlink" title="2.2.3 Detrimental input for fuzzing"></a>2.2.3 Detrimental input for fuzzing</h5><p>​    虽然不属于滥用API，但我们注意到，有些参数在不经意地进行fuzzing时，会降低fuzzing的性能。例如，如果某个参数用于内存分配或循环计数，过大的数值经常会分别导致内存不足或超时错误。虽然这些并不是虚假崩溃，但往往同样会阻碍进一步的模糊探索。</p>
+<p>​    为了保持有效的参数语义，UTOPIA 保留了 UT 中的原始数据流，并通过静态分析找到注入fuzz input（即fuzz target）的位置以及它们应该如何变异（API 属性）。为了识别注入fuzz input的合适位置，我们定义了一个新的root-definition analysis，即用常量定义变量的赋值语句。通过只在root-definition处分配fuzz input，我们可以保留原有的数据流，并自然地遵循现有的应用程序接口间语义，因为应用程序接口参数之间的流动是不间断的。在图 1 中，UTOPIA 通过在root-definition（第 23 行）中分配fuzz input，将fuzz input传递给写原始数据（writeRaw() API）中的第三个参数 rawdata（第 31 行），在根定义中，rawdata 向量的每个元素都被分配了常数。</p>
+<p>​    找到根定义后，UTOPIA 会根据从根定义中获取值的 API 参数的属性分析注入模糊输入（确定属性的 API 静态分析详见第三节 B）。例如，在 Mat 类的构造函数中（图 1 中的第 18 行），UTOPIA 推断出了数组↔长度关系，并将 dim 的大小（数组属性）分配给第 18 行的第一个参数（ArrayLength 属性）和第 17 行的每个带有模糊输入的元素。</p>
+<h4 id="2-3-使用单元测试的独特挑战"><a href="#2-3-使用单元测试的独特挑战" class="headerlink" title="2.3 使用单元测试的独特挑战"></a>2.3 使用单元测试的独特挑战</h4><p>​    然而，简单地将 UT 作为消费者提供给现有方法并不合适，因为使用 UT 会带来自身的一系列挑战 (UT-C)。</p>
+<p>​    [……这里待更新，笔记着重了解fuzzing过程]</p>
 
       
     </div>
@@ -382,11 +275,7 @@ B）。例如，在 Mat 类的构造函数中（图 1 中的第 18 行），UTOP
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#utopia-automatic-generation-of-fuzz-driver-using-unit-tests"><span class="nav-number">1.</span> <span class="nav-text">UTOPIA:
-Automatic Generation of Fuzz Driver using Unit Tests</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#abstract"><span class="nav-number">1.1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#background"><span class="nav-number">1.2.</span> <span class="nav-text">Background</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#contribution"><span class="nav-number">1.3.</span> <span class="nav-text">Contribution</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#model"><span class="nav-number">1.4.</span> <span class="nav-text">Model</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%91%E6%88%98"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. 挑战</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E6%9C%89%E6%95%88%E7%9A%84api%E5%BA%8F%E5%88%97"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">2.1 生成有效的API序列</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%85%88%E5%89%8D%E5%B7%A5%E4%BD%9C%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">1.4.2.1.1.</span> <span class="nav-text">2.1.1 先前工作的问题</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%88%91%E4%BB%AC%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.2.1.2.</span> <span class="nav-text">2.1.2 我们的方法</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E6%9C%89%E6%95%88%E7%9A%84api%E5%8F%82%E6%95%B0"><span class="nav-number">1.4.2.2.</span> <span class="nav-text">2.2 生成有效的API参数</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#inferring-inter-api-semantics"><span class="nav-number">1.4.2.2.1.</span> <span class="nav-text">2.2.1 Inferring inter-API
-semantics</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#inferring-intra-api-semantics"><span class="nav-number">1.4.2.2.2.</span> <span class="nav-text">2.2.2 Inferring intra-API
-semantics</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#detrimental-input-for-fuzzing"><span class="nav-number">1.4.2.2.3.</span> <span class="nav-text">2.2.3 Detrimental input for
-fuzzing</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E7%9A%84%E7%8B%AC%E7%89%B9%E6%8C%91%E6%88%98"><span class="nav-number">1.4.2.3.</span> <span class="nav-text">2.3 使用单元测试的独特挑战</span></a></li></ol></li></ol></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#UTOPIA-Automatic-Generation-of-Fuzz-Driver-using-Unit-Tests"><span class="nav-number">1.</span> <span class="nav-text">UTOPIA: Automatic Generation of Fuzz Driver using Unit Tests</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Abstract"><span class="nav-number">1.1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Background"><span class="nav-number">1.2.</span> <span class="nav-text">Background</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Contribution"><span class="nav-number">1.3.</span> <span class="nav-text">Contribution</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Model"><span class="nav-number">1.4.</span> <span class="nav-text">Model</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%8C%91%E6%88%98"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. 挑战</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E7%94%9F%E6%88%90%E6%9C%89%E6%95%88%E7%9A%84API%E5%BA%8F%E5%88%97"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">2.1 生成有效的API序列</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-1-1-%E5%85%88%E5%89%8D%E5%B7%A5%E4%BD%9C%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">1.4.2.1.1.</span> <span class="nav-text">2.1.1 先前工作的问题</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-1-2-%E6%88%91%E4%BB%AC%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.2.1.2.</span> <span class="nav-text">2.1.2 我们的方法</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E7%94%9F%E6%88%90%E6%9C%89%E6%95%88%E7%9A%84API%E5%8F%82%E6%95%B0"><span class="nav-number">1.4.2.2.</span> <span class="nav-text">2.2 生成有效的API参数</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-2-1-Inferring-inter-API-semantics"><span class="nav-number">1.4.2.2.1.</span> <span class="nav-text">2.2.1 Inferring inter-API semantics</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-2-2-Inferring-intra-API-semantics"><span class="nav-number">1.4.2.2.2.</span> <span class="nav-text">2.2.2 Inferring intra-API semantics</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-2-3-Detrimental-input-for-fuzzing"><span class="nav-number">1.4.2.2.3.</span> <span class="nav-text">2.2.3 Detrimental input for fuzzing</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-%E4%BD%BF%E7%94%A8%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E7%9A%84%E7%8B%AC%E7%89%B9%E6%8C%91%E6%88%98"><span class="nav-number">1.4.2.3.</span> <span class="nav-text">2.3 使用单元测试的独特挑战</span></a></li></ol></li></ol></li></ol></li></ol>
     
     </div>
   </aside>

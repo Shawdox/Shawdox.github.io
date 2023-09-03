@@ -144,25 +144,15 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1
-id="随写极大似然估计maximum-likelihood-estimatemle">【随写】极大似然估计（<em>Maximum
-Likelihood Estimate，MLE</em>）</h1>
-<p>​ “模型已定，参数未知。”</p>
-<p>​
-极大似然估计，<strong>就是利用已知的样本结果信息，反推最具有可能（<u>最大概率</u>）导致这些样本结果出现的模型参数值。</strong></p>
-<p>​</p>
-<p>​ 对于这个函数：<span class="math inline">\(P(x|θ)\)</span>，</p>
-<p>​ 输入有两个：x表示某一个具体的数据；θ表示模型的参数。</p>
-<p>​ 如果θ是已知确定的，x是变量，这个函数叫做<strong>概率函数(probability
-function)</strong>，它描述对于不同的样本点x，其出现概率是多少。</p>
-<p>​ 如果x是已知确定的，θ 是变量，这个函数叫做<strong>似然函数(likelihood
-function)</strong>,
-它描述对于不同的模型参数，出现x这个样本点的概率是多少。</p>
-<p>​</p>
-<p>​
-一般说来，事件A发生的概率与某一未知参数θ有关，θ取值不同，则事件A发生的概率<span
-class="math inline">\(P(A|θ)\)</span>也不同，当我们在一次试验中事件A发生了，则认为此时的θ值应是t的一切可能取值中使<span
-class="math inline">\(P(A|θ)\)</span>达到最大的那一个，极大似然估计法就是要选取这样的t值作为参数t的估计值，使所选取的样本在被选的总体中出现的可能性为最大。</p>
+        <h1 id="【随写】极大似然估计（Maximum-Likelihood-Estimate，MLE）"><a href="#【随写】极大似然估计（Maximum-Likelihood-Estimate，MLE）" class="headerlink" title="【随写】极大似然估计（Maximum Likelihood Estimate，MLE）"></a>【随写】极大似然估计（<em>Maximum Likelihood Estimate，MLE</em>）</h1><p>​    “模型已定，参数未知。”</p>
+<p>​    极大似然估计，<strong>就是利用已知的样本结果信息，反推最具有可能（<u>最大概率</u>）导致这些样本结果出现的模型参数值。</strong></p>
+<p>​    </p>
+<p>​    对于这个函数：$P(x|θ)$，</p>
+<p>​    输入有两个：x表示某一个具体的数据；θ表示模型的参数。</p>
+<p>​    如果θ是已知确定的，x是变量，这个函数叫做<strong>概率函数(probability function)</strong>，它描述对于不同的样本点x，其出现概率是多少。</p>
+<p>​    如果x是已知确定的，θ 是变量，这个函数叫做<strong>似然函数(likelihood function)</strong>, 它描述对于不同的模型参数，出现x这个样本点的概率是多少。</p>
+<p>​    </p>
+<p>​    一般说来，事件A发生的概率与某一未知参数θ有关，θ取值不同，则事件A发生的概率$P(A|θ)$也不同，当我们在一次试验中事件A发生了，则认为此时的θ值应是t的一切可能取值中使$P(A|θ)$达到最大的那一个，极大似然估计法就是要选取这样的t值作为参数t的估计值，使所选取的样本在被选的总体中出现的可能性为最大。</p>
 
       
     </div>
@@ -213,136 +203,79 @@ class="math inline">\(P(A|θ)\)</span>达到最大的那一个，极大似然估
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1
-id="论文阅读adversarial-training-with-fast-gradient-projection-method-against-synonym-substitution-based-text-attacks">【论文阅读】Adversarial
-Training with Fast Gradient Projection Method against Synonym
-Substitution Based Text Attacks</h1>
-<blockquote>
+        <h1 id="【论文阅读】Adversarial-Training-with-Fast-Gradient-Projection-Method-against-Synonym-Substitution-Based-Text-Attacks"><a href="#【论文阅读】Adversarial-Training-with-Fast-Gradient-Projection-Method-against-Synonym-Substitution-Based-Text-Attacks" class="headerlink" title="【论文阅读】Adversarial Training with Fast Gradient Projection Method against Synonym Substitution Based Text Attacks"></a>【论文阅读】Adversarial Training with Fast Gradient Projection Method against Synonym Substitution Based Text Attacks</h1><blockquote>
 <p><strong>时间：2020</strong></p>
-<p><strong>作者：王晓森，杨逸辰等 </strong>华中科技大学</p>
+<p><strong>作者：王晓森，杨逸辰等      </strong>华中科技大学</p>
 <p><strong>会议：AAAI</strong></p>
 </blockquote>
-<h3 id="总结">总结：</h3>
-<ol type="1">
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><ol>
 <li><p><strong>做了什么？</strong></p>
 <ul>
-<li><p>提出了一种速度更快的，更容易应用在复杂神经网络和大数据集上的，基于同义词替换的NLP对抗样本生成方法，FGPM；</p></li>
-<li><p>将FGPM纳入对抗训练中，以提高深度神经网络的鲁棒性。</p></li>
-</ul></li>
-<li><p><strong>怎么做的？</strong></p></li>
+<li><p>提出了一种速度更快的，更容易应用在复杂神经网络和大数据集上的，基于同义词替换的NLP对抗样本生成方法，FGPM；</p>
+</li>
+<li><p>将FGPM纳入对抗训练中，以提高深度神经网络的鲁棒性。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>怎么做的？</strong></p>
+</li>
+</ol>
+<ol>
 <li><p><strong>实验结果？</strong></p>
 <ul>
 <li>FGPM的效果不是最高的，但也跟最高的差不多，但生成对抗样本的时间对比同类方法，缩减了1-3个数量级。</li>
 <li>ATFL的对抗样本防御能力和抗转移能力很强。</li>
-</ul></li>
+</ul>
+</li>
 </ol>
-<hr />
-<h3 id="abstract">Abstract:</h3>
-<p>​
-对抗训练是对于提升图像分类深度神经网络鲁棒性的，基于实验的最成功的进步所在。</p>
-<p>​
-然而，对于文本分类，现有的基于同义词替换的对抗样本攻击十分奏效，但却没有被很有效地合并入实际的文本对抗训练中。</p>
-<p>​
-基于梯度的攻击对于图像很有效，但因为文本的词汇，语法，语义结构的限制以及离散的文本输入空间，不能很好的应用于基于近义词替换的文本攻击中。</p>
-<p>​
-因此，我们提出了一个基于同义词的替换的快速的文本对抗抗攻击方法名为<strong><em>Fast
-Gradient Projection Method
-(FGPM)</em></strong>。它的速度是已有文本攻击方法的20余倍，攻击效果也跟这些方法差不多。</p>
-<p>​
-我们接着将FGPM合并入对抗训练中，提出了一个文本防御方法，<strong><em>Adversarial
-Training with FGPM enhanced by Logit pairing</em>(ATFL)</strong>。</p>
-<p>​
-实验结果表明ATFL可以显著提高模型的鲁棒性，破坏对抗样本的可转移性。</p>
-<hr />
-<h3 id="introduction">1 Introduction:</h3>
-<p>​
-现有的针对NLP的攻击方法包括了：字符等级攻击，单词等级攻击，句子等级攻击。</p>
-<p>​ 对于字符等级的攻击，最近的工作（<em>Pruthi, Dhingra, and Lipton
-2019</em>）表明了拼写检查器很容易修正样本中的扰动；</p>
-<p>​
-对于句子等级的攻击，其一般需要基于改述，故需要更长的时间来生成对抗样本；</p>
-<p>​ 对于单词等级的攻击，基于嵌入扰动的替换（<em>replacing word based on
-embedding
-perturbation</em>），添加，删除单词都会很容易改变句子的语法语义结构与正确性，<strong>故同义词替换的方法可以更好的处理上述问题，同时保证对抗样本更难被人类观察者发现</strong>。</p>
-<p>​
-但不幸的是，基于同义词替换的攻击相较于如今对图像的攻击展现出了更低的功效。</p>
-<p>​</p>
-<p>​
-据我们所知，对抗训练，对图像数据最有效的防御方法之一，并没有在对抗基于同义词替换的攻击上很好的实施过。</p>
-<p>​
-一方面，现有的基于同义词替换的攻击方法通常效率要低得多，难以纳入对抗训练。另一方面，尽管对图像的方法很有效，但其并不能直接移植到文本数据上。</p>
-<p>​</p>
-<h4 id="adversarial-defense">1.1 Adversarial Defense:</h4>
-<p>​
-有一系列工作对词嵌入进行扰动，并将扰动作为正则化策略用于对抗训练(<em>Miyato,
-Dai, and Goodfellow</em></p>
-<p><em>2016; Sato et al. 2018; Barham and Feizi 2019</em>)
-。这些工作目的是提高模型对于原始数据集的表现，并不是为了防御对抗样本攻击，因此，我们不会考虑这些工作。</p>
-<p>​
-不同于如今现有的防御方法，我们的工作聚焦于快速对抗样本生成，容易应用在复杂的神经网络和大数据集上的防御方法。</p>
-<hr />
-<h3 id="fast-gradient-projection-methodfgpm">2 Fast Gradient Projection
-Method（FGPM）:</h3>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904144444.png" /></p>
-<hr />
-<h3 id="adversarial-training-with-fgpm">3 Adversarial Training with
-FGPM：</h3>
-<p>​ 具体算法中文描述见：</p>
-<p><a
-target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/248425749">《基于同义词替换的快速梯度映射（FGPM）文本对抗攻击方法》阅读笔记
-- 知乎 (zhihu.com)</a></p>
-<hr />
-<h3 id="experimental-results">4 Experimental Results：</h3>
-<p>​ 我们衡量FGPM使用四种攻击准则，衡量ATFL使用两种防御准则。</p>
-<p>​
-我们在三个很受欢迎的基准数据集上，同时包括CNN和RNN模型上进行测试，代码开源：https://github.com/JHL-HUST/FGPM</p>
-<h4 id="baselines">4.1 Baselines:</h4>
-<p>​ 为了评估FGPM的攻击效能，我们将其与Papernot’、GSA (
-Kuleshov等人的4种对抗性攻击进行了比较。2018 )、PWWS ( Ren et al . 2019
-)和Iga ( Wang，jin，and he 2019 )。</p>
-<p>​ 此外，为了验证我们的ATFL的防御能力，我们采用了SEM ( Wang，Jin，He
-2019 )和IBP ( Jia et al . 2019
-)，针对上述Word-Level攻击。由于攻击基线的效率很低，我们在每个数据集上随机抽取200个示例，并在各种模型上生成对抗样本。</p>
-<h4 id="datasets">4.2 Datasets:</h4>
-<p>​ <em>AG’s News</em>, <em>DBPedia ontology</em> and <em>Yahoo!
-Answers</em> (Zhang,Zhao, and LeCun 2015).</p>
-<h4 id="models">4.3 Models:</h4>
-<p>​
-我们使用了CNNs,RNNs,来达到主流的文本分类表现，所有模型的嵌入维度均为300。</p>
-<h4 id="evaluation-on-attack-effectiveness">4.4 Evaluation on Attack
-Effectiveness：</h4>
-<p>​ 我们评估模型在攻击下的准确率和转移率：</p>
-<p>​ <strong>准确率：</strong></p>
-<p>​ <img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904134852.png" /></p>
-<p>​ <strong>转移率：</strong></p>
-<p>​ <img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904135419.png" /></p>
-<h4 id="evaluation-on-attack-efficiency">4.4 Evaluation on Attack
-Efficiency：</h4>
-<p>​
-对抗训练需要高效率的生成对抗样本以有效地提升模型鲁棒性。因此，我们评估了不同攻击方法在三个数据集上生成生成200个对抗样本的总时间。</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904135842.png" /></p>
-<h4 id="evaluation-on-adversarial-training">4.5 Evaluation on
-Adversarial Training：</h4>
-<p>​ 我们评估ATFL的对抗样本防御能力和抗转移能力：</p>
-<p>​ <strong>对抗样本防御能力：</strong></p>
-<p>​ <img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904140647.png" /></p>
-<p>​ <strong>抗转移能力：</strong></p>
-<p>​ <img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904141719.png" /></p>
-<h4 id="evaluation-on-adversarial-training-variants">4.6 Evaluation on
-Adversarial Training Variants:</h4>
-<p>​
-许多对抗训练的变体，例如CLP和ALP，TRADES等，已经尝试采用不同的正则化方法来提高针对图像数据的对抗训练准确率。</p>
-<p>​
-在这里，我们回答一个问题：这些变体方法也可以提高文本数据准确率吗？</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904142406.png" /></p>
-<p>​ 从表中可以看出，只有ALP可以长远地提升对抗训练的表现。</p>
+<hr>
+<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract:"></a>Abstract:</h3><p>​    对抗训练是对于提升图像分类深度神经网络鲁棒性的，基于实验的最成功的进步所在。</p>
+<p>​    然而，对于文本分类，现有的基于同义词替换的对抗样本攻击十分奏效，但却没有被很有效地合并入实际的文本对抗训练中。</p>
+<p>​    基于梯度的攻击对于图像很有效，但因为文本的词汇，语法，语义结构的限制以及离散的文本输入空间，不能很好的应用于基于近义词替换的文本攻击中。</p>
+<p>​    因此，我们提出了一个基于同义词的替换的快速的文本对抗抗攻击方法名为<strong><em>Fast Gradient Projection Method (FGPM)</em></strong>。它的速度是已有文本攻击方法的20余倍，攻击效果也跟这些方法差不多。</p>
+<p>​    我们接着将FGPM合并入对抗训练中，提出了一个文本防御方法，<strong><em>Adversarial Training with FGPM enhanced by Logit pairing</em>(ATFL)</strong>。</p>
+<p>​    实验结果表明ATFL可以显著提高模型的鲁棒性，破坏对抗样本的可转移性。</p>
+<hr>
+<h3 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction:"></a>1 Introduction:</h3><p>​    现有的针对NLP的攻击方法包括了：字符等级攻击，单词等级攻击，句子等级攻击。</p>
+<p>​    对于字符等级的攻击，最近的工作（<em>Pruthi, Dhingra, and Lipton 2019</em>）表明了拼写检查器很容易修正样本中的扰动；</p>
+<p>​    对于句子等级的攻击，其一般需要基于改述，故需要更长的时间来生成对抗样本；</p>
+<p>​    对于单词等级的攻击，基于嵌入扰动的替换（<em>replacing word based on embedding perturbation</em>），添加，删除单词都会很容易改变句子的语法语义结构与正确性，<strong>故同义词替换的方法可以更好的处理上述问题，同时保证对抗样本更难被人类观察者发现</strong>。</p>
+<p>​    但不幸的是，基于同义词替换的攻击相较于如今对图像的攻击展现出了更低的功效。</p>
+<p>​    </p>
+<p>​    据我们所知，对抗训练，对图像数据最有效的防御方法之一，并没有在对抗基于同义词替换的攻击上很好的实施过。</p>
+<p>​    一方面，现有的基于同义词替换的攻击方法通常效率要低得多，难以纳入对抗训练。另一方面，尽管对图像的方法很有效，但其并不能直接移植到文本数据上。</p>
+<p>​    </p>
+<h4 id="1-1-Adversarial-Defense"><a href="#1-1-Adversarial-Defense" class="headerlink" title="1.1 Adversarial Defense:"></a>1.1 Adversarial Defense:</h4><p>​    有一系列工作对词嵌入进行扰动，并将扰动作为正则化策略用于对抗训练(<em>Miyato, Dai, and Goodfellow</em></p>
+<p><em>2016; Sato et al. 2018; Barham and Feizi 2019</em>) 。这些工作目的是提高模型对于原始数据集的表现，并不是为了防御对抗样本攻击，因此，我们不会考虑这些工作。</p>
+<p>​        不同于如今现有的防御方法，我们的工作聚焦于快速对抗样本生成，容易应用在复杂的神经网络和大数据集上的防御方法。</p>
+<hr>
+<h3 id="2-Fast-Gradient-Projection-Method（FGPM）"><a href="#2-Fast-Gradient-Projection-Method（FGPM）" class="headerlink" title="2 Fast Gradient Projection Method（FGPM）:"></a>2 Fast Gradient Projection Method（FGPM）:</h3><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904144444.png" alt=""></p>
+<hr>
+<h3 id="3-Adversarial-Training-with-FGPM："><a href="#3-Adversarial-Training-with-FGPM：" class="headerlink" title="3 Adversarial Training with FGPM："></a>3 Adversarial Training with FGPM：</h3><p>​    具体算法中文描述见：</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/248425749">《基于同义词替换的快速梯度映射（FGPM）文本对抗攻击方法》阅读笔记 - 知乎 (zhihu.com)</a></p>
+<hr>
+<h3 id="4-Experimental-Results："><a href="#4-Experimental-Results：" class="headerlink" title="4 Experimental Results："></a>4 Experimental Results：</h3><p>​    我们衡量FGPM使用四种攻击准则，衡量ATFL使用两种防御准则。</p>
+<p>​    我们在三个很受欢迎的基准数据集上，同时包括CNN和RNN模型上进行测试，代码开源：<a target="_blank" rel="noopener" href="https://github.com/JHL-HUST/FGPM">https://github.com/JHL-HUST/FGPM</a></p>
+<h4 id="4-1-Baselines"><a href="#4-1-Baselines" class="headerlink" title="4.1 Baselines:"></a>4.1 Baselines:</h4><p>​    为了评估FGPM的攻击效能，我们将其与Papernot’、GSA ( Kuleshov等人的4种对抗性攻击进行了比较。2018 )、PWWS ( Ren et al . 2019 )和Iga ( Wang，jin，and he 2019 )。</p>
+<p>​    此外，为了验证我们的ATFL的防御能力，我们采用了SEM ( Wang，Jin，He 2019 )和IBP ( Jia et al . 2019 )，针对上述Word-Level攻击。由于攻击基线的效率很低，我们在每个数据集上随机抽取200个示例，并在各种模型上生成对抗样本。</p>
+<h4 id="4-2-Datasets"><a href="#4-2-Datasets" class="headerlink" title="4.2 Datasets:"></a>4.2 Datasets:</h4><p>​    <em>AG’s News</em>, <em>DBPedia ontology</em> and <em>Yahoo! Answers</em> (Zhang,Zhao, and LeCun 2015).</p>
+<h4 id="4-3-Models"><a href="#4-3-Models" class="headerlink" title="4.3 Models:"></a>4.3 Models:</h4><p>​    我们使用了CNNs,RNNs,来达到主流的文本分类表现，所有模型的嵌入维度均为300。</p>
+<h4 id="4-4-Evaluation-on-Attack-Effectiveness："><a href="#4-4-Evaluation-on-Attack-Effectiveness：" class="headerlink" title="4.4 Evaluation on Attack Effectiveness："></a>4.4 Evaluation on Attack Effectiveness：</h4><p>​    我们评估模型在攻击下的准确率和转移率：</p>
+<p>​    <strong>准确率：</strong></p>
+<p>​        <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904134852.png" alt=""></p>
+<p>​    <strong>转移率：</strong></p>
+<p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904135419.png" alt=""></p>
+<h4 id="4-4-Evaluation-on-Attack-Efficiency："><a href="#4-4-Evaluation-on-Attack-Efficiency：" class="headerlink" title="4.4 Evaluation on Attack Efficiency："></a>4.4 Evaluation on Attack Efficiency：</h4><p>​        对抗训练需要高效率的生成对抗样本以有效地提升模型鲁棒性。因此，我们评估了不同攻击方法在三个数据集上生成生成200个对抗样本的总时间。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904135842.png" alt=""></p>
+<h4 id="4-5-Evaluation-on-Adversarial-Training："><a href="#4-5-Evaluation-on-Adversarial-Training：" class="headerlink" title="4.5 Evaluation on Adversarial Training："></a>4.5 Evaluation on Adversarial Training：</h4><p>​        我们评估ATFL的对抗样本防御能力和抗转移能力：</p>
+<p>​    <strong>对抗样本防御能力：</strong></p>
+<p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904140647.png" alt=""></p>
+<p>​    <strong>抗转移能力：</strong></p>
+<p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904141719.png" alt=""></p>
+<h4 id="4-6-Evaluation-on-Adversarial-Training-Variants"><a href="#4-6-Evaluation-on-Adversarial-Training-Variants" class="headerlink" title="4.6 Evaluation on Adversarial Training Variants:"></a>4.6 Evaluation on Adversarial Training Variants:</h4><p>​        许多对抗训练的变体，例如CLP和ALP，TRADES等，已经尝试采用不同的正则化方法来提高针对图像数据的对抗训练准确率。</p>
+<p>​        在这里，我们回答一个问题：这些变体方法也可以提高文本数据准确率吗？</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904142406.png" alt=""></p>
+<p>​        从表中可以看出，只有ALP可以长远地提升对抗训练的表现。</p>
 
       
     </div>
@@ -397,31 +330,25 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210904142406.png" /></p>
 
           
             <div class="entry-thumbnail">
-              <a href="/2021/09/03/%E3%80%90%E4%B9%A6%E7%B1%8D%E9%98%85%E8%AF%BB%E3%80%91%E3%80%8A%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95%E3%80%8B/"><img src="http://lorempixel.com/750/450/city/4" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2021/09/03/%E3%80%90%E4%B9%A6%E7%B1%8D%E9%98%85%E8%AF%BB%E3%80%91%E3%80%8A%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95%E3%80%8B/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          【书籍阅读】《统计学习方法》
-一. 统计学习方法概论：
-​
-首先，要明确计算机科学中存在三个维度：系统，计算，与信息。统计学习方法（机器学习）主要属于信息这一维度，并在其中扮演者核心角色。
-1. 监督学习概念：
-​ 监督学习，Supervised
-learning，指在已经做好标注的训练集上学习，为了叙述方便，定义以下基本概念：
+          【书籍阅读】《统计学习方法》一. 统计学习方法概论：​    首先，要明确计算机科学中存在三个维度：系统，计算，与信息。统计学习方法（机器学习）主要属于信息这一维度，并在其中扮演者核心角色。
+1. 监督学习概念：​    监督学习，Supervised learning，指在已经做好标注的训练集上学习，为了叙述方便，定义以下基本概念：
 
 
 输入空间（X），输出空间（Y）：输入所有可能取值，输出所有可能取值；
 特征空间：输入一般由特征向量表示，所有特征向量存在的空间称为特征空间，输入空间与特征空间并不完全等价，有时需要映射；
-上标 xi :表示一个输入的第 i
-个特征；
-下标 xj：表示第 j 个输入。
+上标  x^i^ :表示一个输入的第  i 个特征；
+下标  x~j~：表示第 j 个输入。
 回归问题：输入输出都为连续型变量；
 分类问题：输出变量为有限个离散型变量；
 标注问题：输入与输出变量都为变量序列。
 假设空间：所有可能的模型的集合，也就是学习的范围。
 
 
-​ 使用训练集学习----&gt;对未知数据进行预测
+​    使用训练集学习——&gt;对未知数据进行预测
 ​
 
         
@@ -482,27 +409,18 @@ learning，指在已经做好标注的训练集上学习，为了叙述方便，
 
           
             <div class="entry-thumbnail">
-              <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/"><img src="http://lorempixel.com/750/450/city/4" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          【论文阅读】Deep
-Text Classifification Can be Fooled
-
+          【论文阅读】Deep Text Classifification Can be Fooled
 时间：2017
-作者：Bin Liang, Hongcheng Li, Miaoqiang Su, Pan
-Bian, Xirong Li and Wenchang Shi 中国人民大学
+作者：Bin Liang, Hongcheng Li, Miaoqiang Su, Pan Bian, Xirong Li and Wenchang Shi     中国人民大学
 
-Abstract:
-​
-在这篇文章，我们提出了一种有效的生成文本对抗样本的方法，并且揭示了一个很重要但被低估的事实：基于DNN的文本分类器很容易被对抗样本攻击。
-​
-具体来说，面对不同的对抗场景，通过计算输入的代价梯度(白盒攻击)或生成一系列被遮挡的测试样本(黑盒攻击)来识别对分类重要的文本项。（这句不是很懂，什么叫’
-the text items that are important for classifification‘？）
-​
-基于这些项目，我们设计了三种扰动策略，insertion，modification，removal，用于生成对抗样本。实验结果表明基于我们的方法生成的对抗样本可以成功地欺骗主流的在字符等级和单词等级的DNN文本分类器。
-​
-对抗样本可以被扰动到任意理想的类中而不降低其效率。（？）同时，被引入的扰动很难被察觉。
+Abstract:​    在这篇文章，我们提出了一种有效的生成文本对抗样本的方法，并且揭示了一个很重要但被低估的事实：基于DNN的文本分类器很容易被对抗样本攻击。
+​    具体来说，面对不同的对抗场景，通过计算输入的代价梯度(白盒攻击)或生成一系列被遮挡的测试样本(黑盒攻击)来识别对分类重要的文本项。（这句不是很懂，什么叫’ the text items that are important for classifification‘？）
+​    基于这些项目，我们设计了三种扰动策略，insertion，modification，removal，用于生成对抗样本。实验结果表明基于我们的方法生成的对抗样本可以成功地欺骗主流的在字符等级和单词等级的DNN文本分类器。
+​    对抗样本可以被扰动到任意理想的类中而不降低其效率。（？）同时，被引入的扰动很难被察觉。
 ​
 
         
@@ -563,29 +481,23 @@ the text items that are important for classifification‘？）
 
           
             <div class="entry-thumbnail">
-              <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Black-Box%20Attacks%20against%20RNN%20based%20Malware%20Detection%20Algorithms/"><img src="http://lorempixel.com/750/450/city/3" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Black-Box%20Attacks%20against%20RNN%20based%20Malware%20Detection%20Algorithms/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          【论文阅读】Black-Box
-Attacks against RNN based Malware Detection Algorithms
-
+          【论文阅读】Black-Box Attacks against RNN based Malware Detection Algorithms
 时间：2017
 作者： Weiwei Hu 北京大学
-​ Ying Tan 北京大学
+​                 Ying Tan    北京大学
 
 
-Abstract：
-​ 1. 原文：
-​
-最近的研究表明，基于机器学习的恶意软件分类算法在面对对抗样本攻击时表现的十分脆弱。这些工作主要集中于那些利用了混合维度的特征的追踪算法，但一些研究者已经开始使用RNN，基于API特征序列来辨识恶意软件。
-​
-这篇文章提出了一种用于生成对抗样本序列的原创算法，它被用于攻击基于RNN的恶意软件分类系统。对于攻击者来说，通常，知晓目标RNN的内部结构和权重是很难的。于是一个替代的用于近似目标RNN的RNN模型就被训练了出来，接着我们利用这个RNN来从原始序列输入中生成对抗样本序列。
-​
-权威结果表明基于RNN的恶意软件分类算法不能追踪大多数我们所生成的恶意对抗样本，这意味着我们生成的模型可以很有效的规避追踪算法。
-​ 2. 总结：
-​
-一个对基于RNN的恶意样本分类器的灰盒攻击，有三个RNN，受害者RNN（源RNN），替代RNN，对抗样本生成RNN。
+Abstract：​    1. 原文：
+​    最近的研究表明，基于机器学习的恶意软件分类算法在面对对抗样本攻击时表现的十分脆弱。这些工作主要集中于那些利用了混合维度的特征的追踪算法，但一些研究者已经开始使用RNN，基于API特征序列来辨识恶意软件。
+​    这篇文章提出了一种用于生成对抗样本序列的原创算法，它被用于攻击基于RNN的恶意软件分类系统。对于攻击者来说，通常，知晓目标RNN的内部结构和权重是很难的。于是一个替代的用于近似目标RNN的RNN模型就被训练了出来，接着我们利用这个RNN来从原始序列输入中生成对抗样本序列。
+​    权威结果表明基于RNN的恶意软件分类算法不能追踪大多数我们所生成的恶意对抗样本，这意味着我们生成的模型可以很有效的规避追踪算法。
+​    2. 总结：
+​    一个对基于RNN的恶意样本分类器的灰盒攻击，有三个RNN，受害者RNN（源RNN），替代RNN，对抗样本生成RNN。
+
 
 
         
@@ -642,74 +554,49 @@ Abstract：
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1
-id="论文阅读automatically-evading-classififiers----a-case-study-on-pdf-malware-classififiers">【论文阅读】Automatically
-Evading Classififiers----A Case Study on PDF Malware Classififiers</h1>
-<blockquote>
+        <h1 id="【论文阅读】Automatically-Evading-Classififiers——A-Case-Study-on-PDF-Malware-Classififiers"><a href="#【论文阅读】Automatically-Evading-Classififiers——A-Case-Study-on-PDF-Malware-Classififiers" class="headerlink" title="【论文阅读】Automatically Evading Classififiers——A Case Study on PDF Malware Classififiers"></a>【论文阅读】Automatically Evading Classififiers——A Case Study on PDF Malware Classififiers</h1><blockquote>
 <p><strong>时间：2016</strong></p>
-<p><strong>作者：Weilin Xu, Yanjun Qi, and David Evans
-弗吉尼亚大学</strong></p>
+<p><strong>作者：Weilin Xu, Yanjun Qi, and David Evans    弗吉尼亚大学</strong></p>
 <p><strong>会议：NDSS（ccf_B类）</strong></p>
 </blockquote>
-<h3 id="总结">总结：</h3>
-<ol type="1">
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><ol>
 <li><p><strong>白盒黑盒？</strong></p>
-<p><strong>黑盒攻击</strong>，需要知道生成样本在目标模型中的输出（分类分数）和目标模型所使用的特征（粗略知道）；</p></li>
+<p><strong>黑盒攻击</strong>，需要知道生成样本在目标模型中的输出（分类分数）和目标模型所使用的特征（粗略知道）；</p>
+</li>
 <li><p><strong>针对什么目标？</strong></p>
-<p>仅仅使用表层特征的分类器；</p></li>
+<p>仅仅使用表层特征的分类器；</p>
+</li>
 <li><p><strong>攻击方法？</strong></p>
 <p>3.1 <strong>如何制造对抗样本？</strong></p>
-<p>​ 使用<strong>遗传算法（GP-BASED）</strong>进行随机扰动</p>
+<p>​    使用<strong>遗传算法（GP-BASED）</strong>进行随机扰动</p>
 <p>3.2 <strong>如何判别对抗样本的恶意能力？</strong></p>
-<p>​ 使用<strong><em>oracle</em></strong></p></li>
+<p>​    使用<strong><em>oracle</em></strong></p>
+</li>
 </ol>
-<h3 id="abstract">Abstract:</h3>
-<p>​
-在本文，我们提出了一个一般化的方法来检验分类器的鲁棒性，通过在两个PDF恶意样本分类器，PDFrate和Hidost上来检验。其关键就是随机控制一个恶意样本来找到一个对抗样本。</p>
-<p>​
-我们的方法可以自动地对500个恶意样本种子中找到对于两个PDF分类器的对抗样本，我们的结果提出了一个严重的疑问，基于表面特征的分类器在面对对抗样本时是否还有效？</p>
-<hr />
-<h3 id="introduction">1. Introduction:</h3>
-<p>​ 主要贡献：</p>
+<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract:"></a>Abstract:</h3><p>​    在本文，我们提出了一个一般化的方法来检验分类器的鲁棒性，通过在两个PDF恶意样本分类器，PDFrate和Hidost上来检验。其关键就是随机控制一个恶意样本来找到一个对抗样本。</p>
+<p>​    我们的方法可以自动地对500个恶意样本种子中找到对于两个PDF分类器的对抗样本，我们的结果提出了一个严重的疑问，基于表面特征的分类器在面对对抗样本时是否还有效？</p>
+<hr>
+<h3 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction:"></a>1. Introduction:</h3><p>​    主要贡献：</p>
 <pre><code>1. 提出了一个一般化的方法用于自动寻找分类器的对抗样本；
 2. 制作了一个原型系统用于自动生成对抗样本；
-3. 我们的系统在对500个恶意样本种子寻找对抗样本的过程中，达到了100%的准确率。</code></pre>
-<hr />
-<h3 id="overview">2. Overview：</h3>
-<h4 id="finding-evasive-samples"><em>2.1 Finding Evasive
-Samples</em>：</h4>
-<p>​ <strong>整体思路：</strong></p>
-<p>​ <img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901185852.png" /></p>
-<p>​
-<strong><em>oracle</em></strong>用于判断一个样本是否具有恶意行为；</p>
-<hr />
-<h3 id="pdf-malware-and-classifiers">3. PDF Malware and Classifiers</h3>
-<h4 id="pdfmalware"><em>3.1 PDFmalware:</em></h4>
-<p>​ PDF文件的整体结构：</p>
-<p>​ <img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901191527.png" /></p>
-<p>​
-早些的PDF恶意样本一般使用JavaScript嵌入，用户双击打开时出发执行恶意脚本。</p>
-<p>​
-因为不是所有的PDF恶意样本都是嵌入了JavaScript代码，最近的一些PDF恶意分类器就着重于PDF文件的结构化特征。在本文，我们的目标就是攻击这些有代表性的基于文件结构化特征的分类器。</p>
-<h4 id="target-classififiers"><em>3.2 Target Classififiers：</em></h4>
-<p>​ <strong>PDFrate：</strong>一个使用随机森林算法的分类器。</p>
-<p>​ <strong>Hidost:</strong>一个SVM分类器。</p>
-<p>​</p>
-<hr />
-<h3 id="evading-pdf-malware-classifiers">4. Evading PDF Malware
-Classifiers：</h3>
-<hr />
-<h3 id="experiment">5. Experiment:</h3>
-<h4 id="dataset"><em>5.1 Dataset:</em></h4>
-<p>​ <img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194138.png" /></p>
-<h4 id="test"><em>5.2 Test：</em></h4>
-<p>​ <img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194328.png" /></p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194448.png" /></p>
+3. 我们的系统在对500个恶意样本种子寻找对抗样本的过程中，达到了100%的准确率。
+</code></pre><hr>
+<h3 id="2-Overview："><a href="#2-Overview：" class="headerlink" title="2. Overview："></a>2. Overview：</h3><h4 id="2-1-Finding-Evasive-Samples："><a href="#2-1-Finding-Evasive-Samples：" class="headerlink" title="2.1 Finding Evasive Samples："></a><em>2.1 Finding Evasive Samples</em>：</h4><p>​    <strong>整体思路：</strong></p>
+<p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901185852.png" alt=""></p>
+<p>​    <strong><em>oracle</em></strong>用于判断一个样本是否具有恶意行为；</p>
+<hr>
+<h3 id="3-PDF-Malware-and-Classifiers"><a href="#3-PDF-Malware-and-Classifiers" class="headerlink" title="3. PDF Malware and Classifiers"></a>3. PDF Malware and Classifiers</h3><h4 id="3-1-PDFmalware"><a href="#3-1-PDFmalware" class="headerlink" title="3.1 PDFmalware:"></a><em>3.1 PDFmalware:</em></h4><p>​    PDF文件的整体结构：</p>
+<p>​        <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901191527.png" alt=""></p>
+<p>​    早些的PDF恶意样本一般使用JavaScript嵌入，用户双击打开时出发执行恶意脚本。</p>
+<p>​    因为不是所有的PDF恶意样本都是嵌入了JavaScript代码，最近的一些PDF恶意分类器就着重于PDF文件的结构化特征。在本文，我们的目标就是攻击这些有代表性的基于文件结构化特征的分类器。</p>
+<h4 id="3-2-Target-Classififiers："><a href="#3-2-Target-Classififiers：" class="headerlink" title="3.2 Target Classififiers："></a><em>3.2 Target Classififiers：</em></h4><p>​    <strong>PDFrate：</strong>一个使用随机森林算法的分类器。</p>
+<p>​    <strong>Hidost:</strong>一个SVM分类器。</p>
+<p>​    </p>
+<hr>
+<h3 id="4-Evading-PDF-Malware-Classifiers："><a href="#4-Evading-PDF-Malware-Classifiers：" class="headerlink" title="4.  Evading PDF Malware Classifiers："></a>4.  Evading PDF Malware Classifiers：</h3><hr>
+<h3 id="5-Experiment"><a href="#5-Experiment" class="headerlink" title="5.  Experiment:"></a>5.  Experiment:</h3><h4 id="5-1-Dataset"><a href="#5-1-Dataset" class="headerlink" title="5.1 Dataset:"></a><em>5.1 Dataset:</em></h4><p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194138.png" alt=""></p>
+<h4 id="5-2-Test："><a href="#5-2-Test：" class="headerlink" title="5.2 Test："></a><em>5.2 Test：</em></h4><p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194328.png" alt=""></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194448.png" alt=""></p>
 
       
     </div>
@@ -769,16 +656,12 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194448.png" /></p>
           
           <div class="entry-summary">
           【论文阅读】AD nlp Survey
-
 作者：Wei Emma Zhang（阿德莱德大学，澳大利亚）
-​ QUAN Z. SHENG（麦考瑞大学，澳大利亚）
-​ AHOUD ALHAZMI（麦考瑞大学，澳大利亚）
-​ 李晨亮（武汉大学，中国）
+​             QUAN Z. SHENG（麦考瑞大学，澳大利亚）
+​             AHOUD ALHAZMI（麦考瑞大学，澳大利亚）
+​             李晨亮（武汉大学，中国）
 
-1.
-关键词：DNN，对抗样本，文本数据（textual data），NLP
-2. 摘要：
-
+1. 关键词：DNN，对抗样本，文本数据（textual data），NLP2. 摘要：
 
 传统对抗样本基本都针对计算机视觉领域；
 本调查提供针对基于DNNs的NLP对抗样本攻击；
@@ -844,38 +727,22 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194448.png" /></p>
 
           
             <div class="entry-thumbnail">
-              <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91A%20novel%20Android%20malware%20detection%20system%20adaption%20of%20flter%E2%80%91based%20%20feature%20selection%20methods/"><img src="http://lorempixel.com/750/450/city/3" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91A%20novel%20Android%20malware%20detection%20system%20adaption%20of%20flter%E2%80%91based%20%20feature%20selection%20methods/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          【论文阅读】A
-novel Android malware detection system: adaption of flter‑based feature
-selection methods
-
+          【论文阅读】A novel Android malware detection system: adaption of flter‑based  feature selection methods
 时间：2021
-作者： Durmuş Özkan Şahin
-Oğuz Emre Kural · Sedat Akleylek
-Erdal Kılıç
+作者： Durmuş Özkan Şahin   Oğuz Emre Kural   · Sedat Akleylek   Erdal Kılıç
 
 总结：
-
 二分类，静态代码检测；
 创新点主要在特征提取（已经有的方法+文本分类的方法）上，分类器用的各种现成的方法；
 
 
-Abstract:
-​
-在本研究中，提出了一个基于过滤器特征选择方法的，原创的安卓端恶意软件追踪系统。
-​
-该方法是一个在机器学习的基础上的静态安卓恶意软件追踪方法。在所开发的系统中，使用应用程序文件中提取的权限作为特征。八个不同的特征选择方法被用于维度降低，以减少运行时间，提升机器学习算法的效率。
-​
-其中四种方法应用于安卓恶意样本分类，其余四种方法是从文本分类研究中采用的，其从提取特征和分类结果两方面对方法进行了比较，在对结果进行检验时，表明所采用的方法提高了分类算法的效率，可以在本领域中使用。
-
-
-
-
-
-
+Abstract:​    在本研究中，提出了一个基于过滤器特征选择方法的，原创的安卓端恶意软件追踪系统。
+​    该方法是一个在机器学习的基础上的静态安卓恶意软件追踪方法。在所开发的系统中，使用应用程序文件中提取的权限作为特征。八个不同的特征选择方法被用于维度降低，以减少运行时间，提升机器学习算法的效率。
+​    其中四种方法应用于安卓恶意样本分类，其余四种方法是从文本分类研究中采用的，其从提取特征和分类结果两方面对方法进行了比较，在对结果进行检验时，表明所采用的方法提高了分类算法的效率，可以在本领域中使用。
 
 
         
@@ -936,31 +803,17 @@ Abstract:
 
           
             <div class="entry-thumbnail">
-              <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91A%20Benchmark%20API%20Call%20Dataset%20For%20Windows%20PE%20Malware%20Classification/"><img src="http://lorempixel.com/750/450/city/3" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91A%20Benchmark%20API%20Call%20Dataset%20For%20Windows%20PE%20Malware%20Classification/"><img src="http://lorempixel.com/750/450/city/4" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          【论文阅读】A
-Benchmark API Call Dataset For Windows PE Malware Classification
-
+          【论文阅读】A Benchmark API Call Dataset For Windows PE Malware Classification
 作者：Ferhat Ozgur Catak（土耳其）
-​ Ahmet Faruk Yazi（土耳其）
+​            Ahmet Faruk Yazi（土耳其）
 时间：2021.2.23
 关键词：恶意软件分析，网络空间安全，数据集，沙箱环境，恶意软件分类
 
-1. Abstract
-​
-在Windows操作系统中，系统API调用的使用在监控恶意PE程序中是一个很有前途的方法。这个方法被定义为在安全隔离的沙箱环境中运行恶意软件，记录其调用的Windows系统API，再顺序分析这些调用。
-​
-在这里，我们在隔离沙箱中分析了7107个属于不同家族（病毒，后门，木马等）的恶意软件，并把这些分析结果转化为了不同分类算法和方法可以使用的形式。
-​
-首先，我们会解释如何得到这些恶意软件；其次，我们会解释如何将这些软件捆绑至家族中；最后，我们会描述如何使用这些数据集来通过不同的方法实现恶意软件的分类。
-
-
-
-
-
-
+1. Abstract​    在Windows操作系统中，系统API调用的使用在监控恶意PE程序中是一个很有前途的方法。这个方法被定义为在安全隔离的沙箱环境中运行恶意软件，记录其调用的Windows系统API，再顺序分析这些调用。​    在这里，我们在隔离沙箱中分析了7107个属于不同家族（病毒，后门，木马等）的恶意软件，并把这些分析结果转化为了不同分类算法和方法可以使用的形式。​    首先，我们会解释如何得到这些恶意软件；其次，我们会解释如何将这些软件捆绑至家族中；最后，我们会描述如何使用这些数据集来通过不同的方法实现恶意软件的分类。
 
 
         
@@ -1017,99 +870,54 @@ Benchmark API Call Dataset For Windows PE Malware Classification
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1
-id="论文阅读generic-black-box-end-to-end-attack-against-state-of-the-art-api-call-based-malware-classifiers">【论文阅读】Generic
-Black-Box End-to-End Attack Against State of the art API Call Based
-Malware Classifiers</h1>
-<blockquote>
+        <h1 id="【论文阅读】Generic-Black-Box-End-to-End-Attack-Against-State-of-the-art-API-Call-Based-Malware-Classifiers"><a href="#【论文阅读】Generic-Black-Box-End-to-End-Attack-Against-State-of-the-art-API-Call-Based-Malware-Classifiers" class="headerlink" title="【论文阅读】Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers"></a>【论文阅读】Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers</h1><blockquote>
 <p><strong>作者：Ishai Rosenberg </strong></p>
 <p><strong>大学：Ben-Gurion University of the Negev</strong></p>
 <p><strong>时间：2018.6.4</strong></p>
 </blockquote>
-<h3 id="做了什么">1. 做了什么？</h3>
-<ul>
-<li><p>​
-对一个通过机器学习训练的，通过API调用来分类恶意软件的分类器的攻击。</p>
-<p>​
-这个攻击可以使分类器不能成功识别恶意软件，并且不改变原有软件的功能。</p></li>
-<li><p>​
-实现了<strong>GADGET</strong>，一个可以直接将二进制恶意软件文件转换为分类器无法检测的二进制文件，<strong>并不需要访问文件源代码。</strong></p></li>
+<h3 id="1-做了什么？"><a href="#1-做了什么？" class="headerlink" title="1. 做了什么？"></a>1. 做了什么？</h3><ul>
+<li><p>​    对一个通过机器学习训练的，通过API调用来分类恶意软件的分类器的攻击。</p>
+<p>​    这个攻击可以使分类器不能成功识别恶意软件，并且不改变原有软件的功能。</p>
+</li>
+<li><p>​    实现了<strong>GADGET</strong>，一个可以直接将二进制恶意软件文件转换为分类器无法检测的二进制文件，<strong>并不需要访问文件源代码。</strong></p>
+</li>
 </ul>
-<h3 id="一些概念">2. 一些概念：</h3>
-<h4
-id="machine-learning-malware-classififiers基于机器学习的恶意软件分类器">2.1
-Machine learning malware
-classififiers（基于机器学习的恶意软件分类器）</h4>
-<p>​ 优点：1. 可以自动训练，节省时间；</p>
-<p>​ 2.
-只要分类器并不是基于指纹特征或者某个特定的特征（如Hash值）来分类，面对不可见威胁时泛化能力较强。</p>
-<h4 id="adversarial-examples对抗样本">2.2 Adversarial
-Examples（对抗样本）</h4>
-<p><strong>对输入样本故意添加一些人无法察觉的细微的干扰，导致模型以高置信度给出一个错误的输出。</strong></p>
-<ol type="1">
+<h3 id="2-一些概念："><a href="#2-一些概念：" class="headerlink" title="2. 一些概念："></a>2. 一些概念：</h3><h4 id="2-1-Machine-learning-malware-classififiers（基于机器学习的恶意软件分类器）"><a href="#2-1-Machine-learning-malware-classififiers（基于机器学习的恶意软件分类器）" class="headerlink" title="2.1 Machine learning malware classififiers（基于机器学习的恶意软件分类器）"></a>2.1 Machine learning malware classififiers（基于机器学习的恶意软件分类器）</h4><p>​    优点：1. 可以自动训练，节省时间；</p>
+<p>​                2. 只要分类器并不是基于指纹特征或者某个特定的特征（如Hash值）来分类，面对不可见威胁时泛化能力较强。</p>
+<h4 id="2-2-Adversarial-Examples（对抗样本）"><a href="#2-2-Adversarial-Examples（对抗样本）" class="headerlink" title="2.2 Adversarial Examples（对抗样本）"></a>2.2 Adversarial Examples（对抗样本）</h4><p><strong>对输入样本故意添加一些人无法察觉的细微的干扰，导致模型以高置信度给出一个错误的输出。</strong></p>
+<ol>
 <li><strong>可以针对一张已经有正确分类的image，对其进行细微的像素修改，可以在DNN下被错分为其他label。</strong></li>
 </ol>
-<p><img
-src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-ed60089ae25c81ba2677ec34ffa2a47f_720w.jpg" /></p>
-<p>​
-样本x的label为熊猫，在对x添加部分干扰后，在人眼中仍然分为熊猫，但对深度模型，却将其错分为长臂猿，且给出了高达99.3%的置信度。</p>
-<p><img
-src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-59a3afcc069df94927ffe1efd62822e9_720w.jpg" /></p>
+<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-ed60089ae25c81ba2677ec34ffa2a47f_720w.jpg" alt=""></p>
+<p>​    样本x的label为熊猫，在对x添加部分干扰后，在人眼中仍然分为熊猫，但对深度模型，却将其错分为长臂猿，且给出了高达99.3%的置信度。</p>
+<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-59a3afcc069df94927ffe1efd62822e9_720w.jpg" alt=""></p>
 <p>像素攻击：改动图片上的一个像素，就能让神经网络认错图，甚至还可以诱导它返回特定的结果。</p>
 <p>改动图片上的一个像素，就能让神经网络认错图，甚至还可以诱导它返回特定的结果</p>
-<p><strong>2.
-同样，根据DNN，很容易产生一张在人眼下毫无意义的image，但是在DNN中能够获得高confidence的label。</strong></p>
-<p><img
-src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-0390bba1f2c35220c8b099b8ab0f4ebc_720w.jpg" /></p>
+<p><strong>2. 同样，根据DNN，很容易产生一张在人眼下毫无意义的image，但是在DNN中能够获得高confidence的label。</strong></p>
+<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-0390bba1f2c35220c8b099b8ab0f4ebc_720w.jpg" alt=""></p>
 <p>两种EA算法生成的样本，这些样本人类完全无法识别，但深度学习模型会以高置信度对它们进行分类，例如将噪声识别为狮子。</p>
-<h5
-id="adversarial-examples-for-api-sequences生成api序列对抗样本与生成图像对抗样本并不同">2.2.1：
-Adversarial examples for API
-sequences(生成API序列对抗样本与生成图像对抗样本并不同):</h5>
-<ol type="1">
+<h5 id="2-2-1：-Adversarial-examples-for-API-sequences-生成API序列对抗样本与生成图像对抗样本并不同"><a href="#2-2-1：-Adversarial-examples-for-API-sequences-生成API序列对抗样本与生成图像对抗样本并不同" class="headerlink" title="2.2.1： Adversarial examples for API sequences(生成API序列对抗样本与生成图像对抗样本并不同):"></a>2.2.1： Adversarial examples for API sequences(生成API序列对抗样本与生成图像对抗样本并不同):</h5><ol>
 <li>API序列由长度可变的离散符号组成，但图像可以用固定维度的矩阵表示为矩阵，且矩阵的值是连续的。</li>
 <li>对于对抗API序列，其必须验证原始的恶意功能是完整的。</li>
 <li><strong>对抗样本的迁移性</strong>：针对一种模型的对抗样本通常对另一种模型也奏效，即使这两个模型不是用同一数据集训练的。</li>
 </ol>
-<h4 id="几种攻击方法">2.3 几种攻击方法：</h4>
-<blockquote>
-<p><strong>White-box
-attack</strong>：白盒攻击，对模型和训练集完全了解。</p>
-<p><strong>Black-box
-attack</strong>：黑盒攻击：对模型不了解，对训练集不了解或了解很少。</p>
-<p><strong>Real-word
-attack</strong>：在真实世界攻击。如将对抗样本打印出来，用手机拍照识别。</p>
+<h4 id="2-3-几种攻击方法："><a href="#2-3-几种攻击方法：" class="headerlink" title="2.3 几种攻击方法："></a>2.3 几种攻击方法：</h4><blockquote>
+<p><strong>White-box attack</strong>：白盒攻击，对模型和训练集完全了解。</p>
+<p><strong>Black-box attack</strong>：黑盒攻击：对模型不了解，对训练集不了解或了解很少。</p>
+<p><strong>Real-word attack</strong>：在真实世界攻击。如将对抗样本打印出来，用手机拍照识别。</p>
 <p><strong>targeted attack</strong>：使得图像都被错分到给定类别上。</p>
-<p><strong>non-target
-attack</strong>：事先不知道需要攻击的网络细节，也不指定预测的类别，生成对抗样本来欺骗防守方的网络。</p>
-<p><strong>mimicry attack</strong>:
-编写恶意的exploit，该exp模拟良性代码系统调用的痕迹，因为能够逃逸检测。</p>
-<p><strong>disguise attack:</strong>
-仅修改系统调用的参数使良性系统调用生成恶意行为 。</p>
-<p><strong>No-op attack</strong>:
-添加语义的no-ops-系统调用，其没有影响，或者是不相干的影响，即，打开一个不存在的文件。</p>
-<p><strong>Equivalence attack</strong>:
-使用一个不同的系统调用来达到恶意的目的.</p>
+<p><strong>non-target attack</strong>：事先不知道需要攻击的网络细节，也不指定预测的类别，生成对抗样本来欺骗防守方的网络。</p>
+<p><strong>mimicry attack</strong>: 编写恶意的exploit，该exp模拟良性代码系统调用的痕迹，因为能够逃逸检测。</p>
+<p><strong>disguise attack:</strong> 仅修改系统调用的参数使良性系统调用生成恶意行为 。</p>
+<p><strong>No-op attack</strong>: 添加语义的no-ops-系统调用，其没有影响，或者是不相干的影响，即，打开一个不存在的文件。</p>
+<p><strong>Equivalence attack</strong>: 使用一个不同的系统调用来达到恶意的目的.</p>
 </blockquote>
-<h4 id="decision-boundary决策界限">2.4 decision boundary(决策界限)</h4>
-<h4 id="end-to-end">2.5 end-to-end:</h4>
-<h4 id="结果分类">2.6 结果分类：</h4>
-<p>虑一个二分问题，即将实例分成正类（positive）或负类（negative）。对一个二分问题来说，会出现四种情况。如果一个实例是正类并且也被
-预测成正类，即为真正类（True
-positive）,如果实例是负类被预测成正类，称之为假正类（False
-positive）。相应地，如果实例是负类被预测成负类，称之为真负类（True
-negative）,正类被预测成负类则为假负类（false negative）。</p>
+<h4 id="2-4-decision-boundary-决策界限"><a href="#2-4-decision-boundary-决策界限" class="headerlink" title="2.4 decision boundary(决策界限)"></a>2.4 decision boundary(决策界限)</h4><h4 id="2-5-end-to-end"><a href="#2-5-end-to-end" class="headerlink" title="2.5 end-to-end:"></a>2.5 end-to-end:</h4><h4 id="2-6-结果分类："><a href="#2-6-结果分类：" class="headerlink" title="2.6 结果分类："></a>2.6 结果分类：</h4><p>虑一个二分问题，即将实例分成正类（positive）或负类（negative）。对一个二分问题来说，会出现四种情况。如果一个实例是正类并且也被 预测成正类，即为真正类（True positive）,如果实例是负类被预测成正类，称之为假正类（False positive）。相应地，如果实例是负类被预测成负类，称之为真负类（True negative）,正类被预测成负类则为假负类（false negative）。</p>
 <p>列联表如下表所示，1代表正类，0代表负类。（预测正确：true，预测是正类：positive）</p>
+<div class="table-container">
 <table>
-<colgroup>
-<col style="width: 5%" />
-<col style="width: 5%" />
-<col style="width: 31%" />
-<col style="width: 31%" />
-<col style="width: 27%" />
-</colgroup>
 <thead>
-<tr class="header">
+<tr>
 <th></th>
 <th></th>
 <th>预测</th>
@@ -1118,28 +926,28 @@ negative）,正类被预测成负类则为假负类（false negative）。</p>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td></td>
 <td></td>
 <td>1</td>
 <td>0</td>
 <td>合计</td>
 </tr>
-<tr class="even">
+<tr>
 <td>实际</td>
 <td>1</td>
 <td>True Positive（TP）</td>
 <td>False Negative（FN）</td>
 <td>Actual Positive(TP+FN)</td>
 </tr>
-<tr class="odd">
+<tr>
 <td></td>
 <td>0</td>
 <td>False Positive（FP)</td>
 <td>True Negative(TN)</td>
 <td>Actual Negative(FP+TN)</td>
 </tr>
-<tr class="even">
+<tr>
 <td>合计</td>
 <td></td>
 <td>Predicted Positive(TP+FP)</td>
@@ -1148,17 +956,12 @@ negative）,正类被预测成负类则为假负类（false negative）。</p>
 </tr>
 </tbody>
 </table>
+</div>
 <p>从列联表引入两个新名词。</p>
-<p>其一是真正类率(true positive rate ,TPR), 计算公式为 <em>TPR=TP</em>/
-( <em>TP</em>+ <em>FN</em>)，刻画的是分类器所识别出的
-正实例占所有正实例的比例。</p>
-<p>另外一个是负正类率(false positive rate, FPR),计算公式为 <em>FPR= FP /
-(FP + TN)，</em>计算的是分类器错认为负类的正实例占所有负实例的比例。</p>
-<p>还有一个真负类率（True Negative
-Rate，TNR），也称为specificity,计算公式为TNR= <em>TN</em>/ (
-<em>FP</em>+ <em>TN</em>) = 1 - <em>FPR</em>。</p>
-<h3 id="如何实现">3. 如何实现？</h3>
-<p>一些问题：程序调用API的过程；</p>
+<p>其一是真正类率(true positive rate ,TPR), 计算公式为 <em>TPR=TP</em>/ ( <em>TP</em>+ <em>FN</em>)，刻画的是分类器所识别出的 正实例占所有正实例的比例。</p>
+<p>另外一个是负正类率(false positive rate, FPR),计算公式为 <em>FPR= FP / (FP + TN)，</em>计算的是分类器错认为负类的正实例占所有负实例的比例。</p>
+<p>还有一个真负类率（True Negative Rate，TNR），也称为specificity,计算公式为TNR= <em>TN</em>/ ( <em>FP</em>+ <em>TN</em>) = 1 - <em>FPR</em>。</p>
+<h3 id="3-如何实现？"><a href="#3-如何实现？" class="headerlink" title="3. 如何实现？"></a>3. 如何实现？</h3><p>一些问题：程序调用API的过程；</p>
 
       
     </div>

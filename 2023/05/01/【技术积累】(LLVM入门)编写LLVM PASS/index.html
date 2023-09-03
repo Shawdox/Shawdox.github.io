@@ -13,13 +13,14 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="(LLVM入门)编写LLVM PASS ​ 前置知识：   LLVM IR结构； C++ 面向对象； CMake；">
+  <meta name="description" content="(LLVM入门)编写LLVM PASS​    前置知识：   LLVM IR结构； C++ 面向对象； CMake；">
 <meta property="og:type" content="article">
 <meta property="og:title" content="(LLVM入门)编写LLVM PASS">
 <meta property="og:url" content="http://example.com/2023/05/01/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91(LLVM%E5%85%A5%E9%97%A8)%E7%BC%96%E5%86%99LLVM%20PASS/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="(LLVM入门)编写LLVM PASS ​ 前置知识：   LLVM IR结构； C++ 面向对象； CMake；">
+<meta property="og:description" content="(LLVM入门)编写LLVM PASS​    前置知识：   LLVM IR结构； C++ 面向对象； CMake；">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230420162739440.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230429225221269.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230501140915.png">
 <meta property="article:published_time" content="2023-05-01T06:40:01.508Z">
@@ -27,7 +28,7 @@
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="LLVM">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230429225221269.png">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230420162739440.png">
   
     <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
   
@@ -154,51 +155,32 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="llvm入门编写llvm-pass">(LLVM入门)编写LLVM PASS</h1>
-<p>​ 前置知识：</p>
+        <h1 id="LLVM入门-编写LLVM-PASS"><a href="#LLVM入门-编写LLVM-PASS" class="headerlink" title="(LLVM入门)编写LLVM PASS"></a>(LLVM入门)编写LLVM PASS</h1><p>​    前置知识：</p>
 <blockquote>
-<ol type="1">
+<ol>
 <li>LLVM IR结构；</li>
 <li>C++ 面向对象；</li>
 <li>CMake；</li>
 </ol>
 </blockquote>
 <span id="more"></span>
-<h2 id="一理论">一、理论</h2>
-<h4 id="llvm-ir">LLVM IR</h4>
-<ol type="1">
-<li>LLVM IR 文件的基本单位称为
-<code>module</code>，LLVM中的Module，代表了一块代码。它是一个比较完整独立的代码块，是一个最小的编译单元。；</li>
-<li>一个 <code>module</code> 中可以拥有多个顶层实体，比如
-<code>function</code> 和 <code>global variavle</code>；</li>
-<li>一个 <code>function define</code> 中至少有一个
-<code>basicblock</code>；</li>
-<li>每个 <code>basicblock</code> 中有若干
-<code>instruction</code>，并且都以 <code>terminator instruction</code>
-结尾。</li>
+<h2 id="一、理论"><a href="#一、理论" class="headerlink" title="一、理论"></a>一、理论</h2><h4 id="LLVM-IR"><a href="#LLVM-IR" class="headerlink" title="LLVM IR"></a>LLVM IR</h4><ol>
+<li>LLVM IR 文件的基本单位称为 <code>module</code>，LLVM中的Module，代表了一块代码。它是一个比较完整独立的代码块，是一个最小的编译单元。；</li>
+<li>一个 <code>module</code> 中可以拥有多个顶层实体，比如 <code>function</code> 和 <code>global variavle</code>；</li>
+<li>一个 <code>function define</code> 中至少有一个 <code>basicblock</code>；</li>
+<li>每个 <code>basicblock</code> 中有若干 <code>instruction</code>，并且都以 <code>terminator instruction</code> 结尾。</li>
 </ol>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230420162739440.png" /></p>
-<p>(详见：<a
-target="_blank" rel="noopener" href="https://llvm.org/devmtg/2019-04/slides/Tutorial-Bridgers-LLVM_IR_tutorial.pdf">PowerPoint
-Presentation (llvm.org)</a>)</p>
-<h4 id="what-is-a-pass">What is a PASS?</h4>
-<ol type="1">
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230420162739440.png" alt=""></p>
+<p>(详见：<a target="_blank" rel="noopener" href="https://llvm.org/devmtg/2019-04/slides/Tutorial-Bridgers-LLVM_IR_tutorial.pdf">PowerPoint Presentation (llvm.org)</a>)</p>
+<h4 id="What-is-a-PASS"><a href="#What-is-a-PASS" class="headerlink" title="What is a PASS?"></a>What is a PASS?</h4><ol>
 <li>pass 对LLVM IR的一些单元进行操作，例如module或者function；</li>
-<li>pass有两类，Analysis pass和Transformation pass。Transformation
-pass会对单元进行修改操作，Analysis
-pass不修改，只观察并生成一些高层信息；</li>
+<li>pass有两类，Analysis pass和Transformation pass。Transformation pass会对单元进行修改操作，Analysis pass不修改，只观察并生成一些高层信息；</li>
 </ol>
-<p>​ Pass Manager：调度Pass在各IR层级按顺序运行。
-（什么是各IR层级？）</p>
-<h4 id="opt">opt</h4>
-<p>​
-opt是LLVM的代码优化器，其输入ll源文件，其可以对源文件进行优化（输出优化后的ll源文件）或者分析（输出分析结果）。</p>
+<p>​    Pass Manager：调度Pass在各IR层级按顺序运行。 （什么是各IR层级？）</p>
+<h4 id="opt"><a href="#opt" class="headerlink" title="opt"></a>opt</h4><p>​    opt是LLVM的代码优化器，其输入ll源文件，其可以对源文件进行优化（输出优化后的ll源文件）或者分析（输出分析结果）。</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230429225221269.png" alt="opt workflow" style="zoom:80%;" /></p>
-<p>​
-在使用opt命令时，-{passname}提供了以任何顺序运行任何LLVM优化或分析Pass的能力。</p>
-<h2 id="二代码实践">二、代码实践</h2>
-<p>常见llvm编译命令：</p>
+<p>​    在使用opt命令时，-{passname}提供了以任何顺序运行任何LLVM优化或分析Pass的能力。</p>
+<h2 id="二、代码实践"><a href="#二、代码实践" class="headerlink" title="二、代码实践"></a>二、代码实践</h2><p>常见llvm编译命令：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#.c -> .ll：</span>
 clang -emit-llvm -S a.c -o a.ll
 <span class="token comment">#.c -> .bc: </span>
@@ -209,15 +191,11 @@ llvm-as a.ll -o a.bc
 llvm-dis a.bc -o a.ll
 <span class="token comment">#.bc -> .s: </span>
 lc a.bc -o a.s<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="hellow-world-pass">2. Hellow World PASS</h3>
-<blockquote>
-<p>目标：打印出编译程序中存在的非外部函数的名称，该 Pass
-只是检查程序，不修改原程序。</p>
+<h3 id="2-Hellow-World-PASS"><a href="#2-Hellow-World-PASS" class="headerlink" title="2. Hellow World PASS"></a>2. Hellow World PASS</h3><blockquote>
+<p>目标：打印出编译程序中存在的非外部函数的名称，该 Pass 只是检查程序，不修改原程序。</p>
 </blockquote>
-<p>​ llvm安装编译过程略，详见github官方项目。</p>
-<h4 id="old-manager">2.1 old manager</h4>
-<p>​ <strong><u>旧版pass
-manager采用继承对应PASS类，覆写父类虚函数的方式定义用户自己的pass类</u></strong>，编写old_hello.cpp如下：</p>
+<p>​    llvm安装编译过程略，详见github官方项目。</p>
+<h4 id="2-1-old-manager"><a href="#2-1-old-manager" class="headerlink" title="2.1 old manager"></a>2.1 old manager</h4><p>​    <strong><u>旧版pass manager采用继承对应PASS类，覆写父类虚函数的方式定义用户自己的pass类</u></strong>，编写old_hello.cpp如下：</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token comment">//old_Hello.cpp</span>
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"llvm/Pass.h"</span></span>
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"llvm/IR/Function.h"</span></span>
@@ -251,7 +229,7 @@ manager采用继承对应PASS类，覆写父类虚函数的方式定义用户自
                             <span class="token boolean">false</span><span class="token comment">/* Only looks at CFG */</span><span class="token punctuation">,</span>
                             <span class="token boolean">false</span><span class="token comment">/* Only looks at CFG */</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
                         <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​ 编写一个待测试文件test.cpp：</p>
+<p>​    编写一个待测试文件test.cpp：</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;stdio.h></span></span>
 <span class="token keyword">void</span> <span class="token function">fun1</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
     <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"111\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -268,7 +246,7 @@ manager采用继承对应PASS类，覆写父类虚函数的方式定义用户自
     <span class="token comment">//printf("%d\n",fun3());</span>
     <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​ 编译pass和test文件：</p>
+<p>​    编译pass和test文件：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#编译pass，也可以自行定义CMakeLists文件，手动编译;</span>
 <span class="token comment">#llvm-config提供了CXXFLAGS与LDFLAGS参数方便查找LLVM的头文件与库文件;</span>
 <span class="token comment">#如果链接有问题，还可以用llvm-config --libs提供动态链接的LLVM库;</span>
@@ -280,7 +258,7 @@ manager采用继承对应PASS类，覆写父类虚函数的方式定义用户自
 clang <span class="token variable"><span class="token variable">`</span>llvm-config --cxxflags<span class="token variable">`</span></span> -Wl,-znodelete -fno-rtti -fPIC -shared old_hello.cpp -o LLVMHello.so <span class="token variable"><span class="token variable">`</span>llvm-config --ldflags<span class="token variable">`</span></span>
 <span class="token comment">#将待测试文件编译为bitcode</span>
 clang -emit-llvm -c test.cpp -o test.bc<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​ 使用opt命令加载运行，运行结果：</p>
+<p>​    使用opt命令加载运行，运行结果：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#-loda 选项表明要加载进程序的pass</span>
 <span class="token comment">#-hello 是注册时规定的参数</span>
 <span class="token comment">#由于此pass并不修改程序，故将opt的输出结果放入/dev/null(丢弃)</span>
@@ -290,7 +268,7 @@ Hello: _Z4fun1v
 Hello: _Z4fun2v
 Hello: _Z4fun3v
 Hello: main<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​ 在命令中加入-time-passes参数，可以获得运行时间相关结果：</p>
+<p>​    在命令中加入-time-passes参数，可以获得运行时间相关结果：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token variable">$sudo</span> opt -load ./LLVMHello.so -hello -time-passes <span class="token operator">&lt;</span> test.bc <span class="token operator">></span> /dev/null
 Hello: _Z4fun1v
 Hello: _Z4fun2v
@@ -314,7 +292,7 @@ Hello: main
    ---User Time---   --System Time--   --User+System--   ---Wall Time---  --- Name ---
    <span class="token number">0.0002</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0003</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0005</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0005</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>  Parse IR
    <span class="token number">0.0002</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0003</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0005</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>   <span class="token number">0.0005</span> <span class="token punctuation">(</span><span class="token number">100.0</span>%<span class="token punctuation">)</span>  Total<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​ 如果想直接使用clang集成这个过程，需要在pass注册时添加：</p>
+<p>​    如果想直接使用clang集成这个过程，需要在pass注册时添加：</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"llvm/IR/LegacyPassManager.h"</span></span>
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"llvm/Transforms/IPO/PassManagerBuilder.h"</span></span>
 
@@ -323,19 +301,14 @@ Hello: main
   <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">(</span><span class="token keyword">const</span> PassManagerBuilder <span class="token operator">&amp;</span>Builder<span class="token punctuation">,</span> legacy<span class="token operator">::</span>PassManagerBase <span class="token operator">&amp;</span>PM<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     PM<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token function">Hello</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​ 接下来无需提前编译bc文件再调用opt，直接使用clang即可：</p>
+<p>​    接下来无需提前编译bc文件再调用opt，直接使用clang即可：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">clang -Xclang -load -Xclang ./LLVMHello.so test.cpp -o clang_test
 
 Hello: _Z4fun1v
 Hello: _Z4fun2v
 Hello: _Z4fun3v
 Hello: main<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h4 id="new-manager">2.2 new manager</h4>
-<p>​ llvm新版本的pass
-manager定义依赖于多态，意味着并不存在显示的接口，所有的 Pass 是继承自
-CRTP
-模板<code>PassInfoMixin&lt;PassT&gt;</code>，其中需要有一个<code>run()</code>方法，接收一些
-IR 单元和一个分析管理器，返回类型为 PreservedAnalyses。</p>
+<h4 id="2-2-new-manager"><a href="#2-2-new-manager" class="headerlink" title="2.2 new manager"></a>2.2 new manager</h4><p>​    llvm新版本的pass manager定义依赖于多态，意味着并不存在显示的接口，所有的 Pass 是继承自 CRTP 模板<code>PassInfoMixin&lt;PassT&gt;</code>，其中需要有一个<code>run()</code>方法，接收一些 IR 单元和一个分析管理器，返回类型为 PreservedAnalyses。</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F;new_hellp.cpp
 #include &quot;llvm&#x2F;IR&#x2F;LegacyPassManager.h&quot;
 #include &quot;llvm&#x2F;Passes&#x2F;PassBuilder.h&quot;
@@ -380,9 +353,7 @@ extern &quot;C&quot; LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo
 llvmGetPassPluginInfo()&#123;
     return getHelloWorldPluginInfo();
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​
-以上代码分为两部分，Pass本体和Pass注册，具体含义和对应的CMakeLists.txt可参照<a
-target="_blank" rel="noopener" href="https://github.com/banach-space/llvm-tutor">llvm-tutor</a>，这里不做赘述。尝试运行：</p>
+<p>​    以上代码分为两部分，Pass本体和Pass注册，具体含义和对应的CMakeLists.txt可参照<a target="_blank" rel="noopener" href="https://github.com/banach-space/llvm-tutor">llvm-tutor</a>，这里不做赘述。尝试运行：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#编译Pass</span>
 <span class="token builtin class-name">export</span> <span class="token assign-left variable">LLVM_DIR</span><span class="token operator">=</span>/usr/local/include/llvm/
 cmake -DLT_LLVM_INSTALL_DIR<span class="token operator">=</span><span class="token variable">$LLVM_DIR</span> <span class="token punctuation">..</span>/
@@ -394,23 +365,12 @@ clang -O1 -S -emit-llvm <span class="token punctuation">..</span>/<span class="t
 <span class="token comment">#使用new manager加载pass</span>
 opt -load-pass-plugin ./libHelloWorld.so -passes<span class="token operator">=</span>hello-world -disable-output <span class="token punctuation">..</span>/<span class="token punctuation">..</span>/data/test.ll<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230501140915.png" style="zoom: 67%;" /></p>
-<h2 id="reference">Reference</h2>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/416754155">LLVM IR 的第二个
-Pass：上手官方文档 New Pass Manager HelloWorld Pass - 知乎
-(zhihu.com)</a></li>
-<li><a
-target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/290946850#:~:text=因此，LLVM%20pass管理机制的主要模块包括pass、pass管理器、pass注册及相关模块，如PassRegistry、AnalysisUsage、AnalysisResolver等。.%201、LLVM%20Pass及常用子类.,pass是一种编译器开发的结构化技术，用于完成编译对象（如IR）的转换、分析或优化等功能。.%20pass的执行就是编译器对编译对象进行转换、分析和优化的过程，pass构建了这些过程所需要的分析结果。.%20LLVM%20Pass是LLVM系统的重要组成部分，定义在llvmincludellvmPass.h中：.">LLVM中的pass及其管理机制
-- 知乎 (zhihu.com)</a></li>
-<li><a target="_blank" rel="noopener" href="https://llvm.org/docs/NewPassManager.html">Using the New
-Pass Manager — LLVM 17.0.0git documentation</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=ar7cJl2aBuU">2019 LLVM
-Developers’ Meeting: A. Warzynski “Writing an LLVM Pass: 101” -
-YouTube</a></li>
-<li><a
-target="_blank" rel="noopener" href="https://github.com/banach-space/llvm-tutor">banach-space/llvm-tutor:
-A collection of out-of-tree LLVM passes for teaching and learning
-(github.com)</a></li>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/416754155">LLVM IR 的第二个 Pass：上手官方文档 New Pass Manager HelloWorld Pass - 知乎 (zhihu.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/290946850#:~:text=因此，LLVM pass管理机制的主要模块包括pass、pass管理器、pass注册及相关模块，如PassRegistry、AnalysisUsage、AnalysisResolver等。. 1、LLVM Pass及常用子类.,pass是一种编译器开发的结构化技术，用于完成编译对象（如IR）的转换、分析或优化等功能。. pass的执行就是编译器对编译对象进行转换、分析和优化的过程，pass构建了这些过程所需要的分析结果。. LLVM Pass是LLVM系统的重要组成部分，定义在llvmincludellvmPass.h中：.">LLVM中的pass及其管理机制 - 知乎 (zhihu.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://llvm.org/docs/NewPassManager.html">Using the New Pass Manager — LLVM 17.0.0git documentation</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=ar7cJl2aBuU">2019 LLVM Developers’ Meeting: A. Warzynski “Writing an LLVM Pass: 101” - YouTube</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/banach-space/llvm-tutor">banach-space/llvm-tutor: A collection of out-of-tree LLVM passes for teaching and learning (github.com)</a></li>
 </ul>
 
       
@@ -458,7 +418,7 @@ A collection of out-of-tree LLVM passes for teaching and learning
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#llvm%E5%85%A5%E9%97%A8%E7%BC%96%E5%86%99llvm-pass"><span class="nav-number">1.</span> <span class="nav-text">(LLVM入门)编写LLVM PASS</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E7%90%86%E8%AE%BA"><span class="nav-number">1.1.</span> <span class="nav-text">一、理论</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#llvm-ir"><span class="nav-number">1.1.0.1.</span> <span class="nav-text">LLVM IR</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#what-is-a-pass"><span class="nav-number">1.1.0.2.</span> <span class="nav-text">What is a PASS?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#opt"><span class="nav-number">1.1.0.3.</span> <span class="nav-text">opt</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E4%BB%A3%E7%A0%81%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.2.</span> <span class="nav-text">二、代码实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#hellow-world-pass"><span class="nav-number">1.2.1.</span> <span class="nav-text">2. Hellow World PASS</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#old-manager"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">2.1 old manager</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#new-manager"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">2.2 new manager</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">1.3.</span> <span class="nav-text">Reference</span></a></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#LLVM%E5%85%A5%E9%97%A8-%E7%BC%96%E5%86%99LLVM-PASS"><span class="nav-number">1.</span> <span class="nav-text">(LLVM入门)编写LLVM PASS</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E7%90%86%E8%AE%BA"><span class="nav-number">1.1.</span> <span class="nav-text">一、理论</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#LLVM-IR"><span class="nav-number">1.1.0.1.</span> <span class="nav-text">LLVM IR</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#What-is-a-PASS"><span class="nav-number">1.1.0.2.</span> <span class="nav-text">What is a PASS?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#opt"><span class="nav-number">1.1.0.3.</span> <span class="nav-text">opt</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E4%BB%A3%E7%A0%81%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.2.</span> <span class="nav-text">二、代码实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Hellow-World-PASS"><span class="nav-number">1.2.1.</span> <span class="nav-text">2. Hellow World PASS</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-old-manager"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">2.1 old manager</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-new-manager"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">2.2 new manager</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-number">1.3.</span> <span class="nav-text">Reference</span></a></li></ol></li></ol>
     
     </div>
   </aside>
