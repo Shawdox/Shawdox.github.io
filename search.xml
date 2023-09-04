@@ -7,6 +7,68 @@
 ]]></content>
   </entry>
   <entry>
+    <title>(论文阅读)Security Risks of Porting C Programs to WebAssembly</title>
+    <url>/2023/09/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Security-Risks-of-Porting-C-Programs-to-WebAssembly/</url>
+    <content><![CDATA[<h1 id="论文阅读-Security-Risks-of-Porting-C-Programs-to-WebAssembly"><a href="#论文阅读-Security-Risks-of-Porting-C-Programs-to-WebAssembly" class="headerlink" title="(论文阅读)Security Risks of Porting C Programs to WebAssembly"></a>(论文阅读)Security Risks of Porting C Programs to WebAssembly</h1><blockquote>
+<p><strong>时间:</strong> 2022</p>
+<p><strong>作者：</strong>Quentin Stiévenart、Coen De Roover、Mohammad Ghafari</p>
+<p><strong>会议：</strong>Proceedings of the 37th ACM/SIGAPP Symposium on Applied Computing</p>
+</blockquote>
+<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>​    WebAssembly是一种用于跨平台应用程序的编译目标，目前正被越来越多地使用。在本文中，我们研究了<strong>能否将 C 程序不需要大量修改直接编译到 WebAssembly 中</strong>，如果不能，移植会对其安全性产生什么影响。我们将表现出常见漏洞的17802个程序编译成64位的x86和WebAssembly二进制文件，并观察到在这些平台上执行4911个二进制文件会产生不同的结果。</p>
+<p>​    通过<u>人工检查</u>，我们找出了造成这种差异的三类根本原因：</p>
+<blockquote>
+<ol>
+<li>使用了不同的标准库实现；</li>
+<li>WebAssembly 缺乏安全措施；</li>
+<li>执行环境的语义不同。</li>
+</ol>
+</blockquote>
+<p>​    我们描述了我们的观察结果，并讨论了从安全角度来看至关重要、最需要开发人员关注的问题。我们的结论是，将现有的 C 程序编译成 WebAssembly 进行跨平台发布可能需要对源代码进行调整；否则，WebAssembly 应用程序的安全性可能会受到威胁。<br><span id="more"></span></p>
+<h2 id="Backgrouond"><a href="#Backgrouond" class="headerlink" title="Backgrouond"></a>Backgrouond</h2><p>​    由于WebAssembly作为编译器目标的时间尚短，许多工具链（如各种语言的编译器后端和相互竞争的 WebAssembly 运行时）还不像现有目标那样成熟。事实上，最近的一项研究表明，<u><strong>为本地二进制程序开发的程序在编译成 WebAssembly 后，其语义可能并不完全相同</strong></u>[30]。我们将在这项工作的基础上进一步研究，旨在找出造成这些差异的根本原因。从安全角度来看，这一点尤为重要：如果本地应用程序和 WebAssembly 应用程序的安全保证不匹配，那么在将应用程序移植到 WebAssembly 时就必须意识到这一点。</p>
+<h2 id="Contribution"><a href="#Contribution" class="headerlink" title="Contribution"></a>Contribution</h2><p>​    我们特别研究了在执行编译为64位x86 native代码和WebAssembly代码的C程序时，我们是否能观察到代码输出结果上的差异。为此，我们将17802个包含常见问题的C程序分别编译成本地二进制代码和 WebAssembly 二进制代码。运行这些程序，并调查在执行过程中是否能观察到任何差异，即本地可执行文件的行为与相应的 WebAssembly 可执行文件的行为不同。</p>
+<p>​    我们在4911个程序中观察到了这种差异，这可能会使C应用程序移植到 WebAssembly 变得复杂。我们调查了所有暴露出行为差异的情况，并确定了其根本原因。我们总共发现了三类根本原因：不同的标准库实现、WebAssembly 缺乏安全措施以及执行环境的语义偏差。我们描述了每种根源，并举例说明了表现出不同行为的实例。重要的是，我们强调了可能影响 WebAssembly 应用程序安全性的原因。总之，这项工作有以下贡献：</p>
+<blockquote>
+<ol>
+<li>发现了编译成 WebAssembly 的 C 程序与编译成本地代码的 C 程序在执行上存在差异的三个根本原因；</li>
+<li>我们将讨论一组示例，揭示行为差异的每个根本原因，并重点讨论从安全角度来看最重要的差异；</li>
+<li>我们公开分享了4911个表现出不同行为的 C 程序的数据集，以及相应的 x86 和 WebAssembly 可执行文件。</li>
+</ol>
+</blockquote>
+<h2 id="How-to-deal-with-the-Juliet-test-suite"><a href="#How-to-deal-with-the-Juliet-test-suite" class="headerlink" title="How to deal with the Juliet test suite?"></a>How to deal with the Juliet test suite?</h2><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230903171704326.png" alt=""></p>
+<ol>
+<li><p><strong>过滤掉non-determinism的程序：</strong></p>
+<ul>
+<li>将所有rand()函数的返回值替换为1；</li>
+<li>排除运行时间超过100秒的程序；</li>
+<li>每个程序运行10次，排除输出不一样的；</li>
+</ul>
+</li>
+<li><p><strong>good函数和bad函数都编译进程序：</strong></p>
+<p>同一个测试样例的good function和bad function都使用，先执行bad，再执行good</p>
+</li>
+<li><p><strong>编译为WASM的参数：</strong></p>
+<blockquote>
+<ul>
+<li><p>Clang v12.0.1</p>
+</li>
+<li><p>-O2</p>
+</li>
+<li><p>排除使用threads和sockets的函数</p>
+</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>Vulnerability</tag>
+        <tag>AEG</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>(技术积累)FuzzBuilder复现</title>
     <url>/2023/08/15/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91FuzzBuilder%E5%A4%8D%E7%8E%B0/</url>
     <content><![CDATA[<h1 id="FuzzBuilder复现"><a href="#FuzzBuilder复现" class="headerlink" title="FuzzBuilder复现"></a>FuzzBuilder复现</h1><p>Use of FuzzBuilder and some technical analysis.</p>
@@ -2327,6 +2389,212 @@ exec_ms <span class="token operator">=</span> <span class="token function">read_
       </tags>
   </entry>
   <entry>
+    <title>(技术积累)Syzkaller环境配置</title>
+    <url>/2023/06/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Syzkaller%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<h1 id="Syzkaller环境配置"><a href="#Syzkaller环境配置" class="headerlink" title="Syzkaller环境配置"></a>Syzkaller环境配置</h1><blockquote>
+<p>Syzkaller内核模糊测试工具环境搭建，简单测试</p>
+<p>项目地址：<a href="https://github.com/google/syzkaller">google/syzkaller: syzkaller is an unsupervised coverage-guided kernel fuzzer (github.com)</a></p>
+</blockquote>
+<span id="more"></span>
+<h1 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h1><blockquote>
+<p>gcc 6.10 or later;</p>
+<p>go 1.20 or later;</p>
+</blockquote>
+<ul>
+<li>C compiler with coverage support</li>
+<li>Linux kernel with coverage additions</li>
+<li>Virtual machine or a physical device</li>
+<li><p>syzkaller itself</p>
+<p> 更新apt并安装相关编译器：</p>
+</li>
+</ul>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">apt</span> update
+<span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> <span class="token function">make</span> gcc flex bison libncurses-dev libelf-dev libssl-dev<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>​    下载内核源码：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> clone --branch v6.2 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git <span class="token variable">$KERNEL</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​    内核编译常用的配置参数：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#文本对话式，基于命令行的一种配置,其会在命令行一个个询问具体配置选择</span>
+<span class="token function">make</span> config
+<span class="token comment">#基于图形界面配置</span>
+<span class="token function">make</span> menuconfig
+<span class="token comment">##将当前系统存在的.config 文件拷贝至源码目录，并询问新符号如何设置</span>
+<span class="token function">make</span> oldconfig
+<span class="token comment">#将当前系统存在的.config 文件拷贝至源码目录，新符号设为默认值，不提示</span>
+<span class="token function">make</span> olddefconfig
+<span class="token comment">#基于当前config和加载的模块创建一个配置</span>
+<span class="token function">make</span> localmodconfig
+<span class="token comment">#基于QT的配置工具</span>
+<span class="token function">make</span> xconfig
+<span class="token comment">#使用系统中的默认符号值创建一个config</span>
+<span class="token function">make</span> defconfig
+<span class="token comment">#基于GTK+的配置工具</span>
+<span class="token function">make</span> gconfig
+<span class="token comment">#为kvm客户内核支持启用其他选项</span>
+<span class="token function">make</span> kvm_guest.config<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​    进入源码目录：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">make</span> olddefconfig<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​    手动在.config文件中添加编译选项（一定去掉原来的注释）：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># Coverage collection.</span>
+<span class="token assign-left variable">CONFIG_KCOV</span><span class="token operator">=</span>y
+
+<span class="token comment"># Debug info for symbolization.</span>
+<span class="token assign-left variable">CONFIG_DEBUG_INFO_DWARF4</span><span class="token operator">=</span>y
+
+<span class="token comment"># Memory bug detector</span>
+<span class="token assign-left variable">CONFIG_KASAN</span><span class="token operator">=</span>y
+<span class="token assign-left variable">CONFIG_KASAN_INLINE</span><span class="token operator">=</span>y
+
+<span class="token comment"># Required for Debian Stretch and later</span>
+<span class="token assign-left variable">CONFIG_CONFIGFS_FS</span><span class="token operator">=</span>y
+<span class="token assign-left variable">CONFIG_SECURITYFS</span><span class="token operator">=</span>y
+
+<span class="token comment">#这个一定要加上</span>
+<span class="token assign-left variable">CONFIG_CMDLINE_BOOL</span><span class="token operator">=</span>y
+<span class="token assign-left variable">CONFIG_CMDLINE</span><span class="token operator">=</span><span class="token string">"net.ifnames=0"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​    再次make：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">make</span> olddefconfig<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​    编译：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">make</span> -j<span class="token variable"><span class="token variable">`</span>nproc<span class="token variable">`</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​    编译好的内核文件夹内应出现：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415160954894.png" style="zoom:80%;" /></p>
+<p>​    <code>debootstrap</code>是debian/ubuntu下的一个工具，用来构建一套基本的系统(根文件系统)。生成的目录符合Linux文件系统标准(FHS)，即包含了/boot、/etc、/bin、/usr等等目录，但它比发行版本的Linux体积小很多，当然功能也没那么强大，因此，只能说是“基本的系统”。</p>
+<p>​    这里以创建一个Debian Bullseye版本的Linux镜像为例：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> <span class="token function">debootstrap</span>
+
+<span class="token function">mkdir</span> <span class="token variable">$IMAGE</span>
+<span class="token builtin class-name">cd</span> <span class="token variable">$IMAGE</span>/
+<span class="token function">wget</span> https://raw.githubusercontent.com/google/syzkaller/master/tools/create-image.sh -O create-image.sh
+<span class="token function">chmod</span> +x create-image.sh
+./create-image.sh<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​    创建好后对应文件夹下应该有一个<code>bullseye.img</code>文件。</p>
+<p>​    如果Host使用的是虚拟机，需要在设置处开启虚拟化引擎（若是物理机则需要在BIOS上开启）：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415170223601.png" style="zoom:80%;" /></p>
+<p>​    测试qemu：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">qemu-system-x86_64 <span class="token punctuation">\</span>
+  -m 2G <span class="token punctuation">\</span>
+  -smp <span class="token number">2</span> <span class="token punctuation">\</span>
+  -kernel /home/wx/SyzKaller/linux/arch/x86/boot/bzImage <span class="token punctuation">\</span>
+  -append <span class="token string">"console=ttyS0 root=/dev/sda earlyprintk=serial net.ifnames=0"</span> <span class="token punctuation">\</span>
+  -drive <span class="token assign-left variable">file</span><span class="token operator">=</span>/home/wx/SyzKaller/image/bullseye.img,format<span class="token operator">=</span>raw <span class="token punctuation">\</span>
+  -net user,host<span class="token operator">=</span><span class="token number">10.0</span>.2.10,hostfwd<span class="token operator">=</span>tcp:127.0.0.1:10021-:22 <span class="token punctuation">\</span>
+  -net nic,model<span class="token operator">=</span>e1000 <span class="token punctuation">\</span>
+  -enable-kvm <span class="token punctuation">\</span>
+  -nographic <span class="token punctuation">\</span>
+  -pidfile vm.pid <span class="token punctuation">\</span>
+  <span class="token operator"><span class="token file-descriptor important">2</span>></span><span class="token file-descriptor important">&amp;1</span> <span class="token operator">|</span> <span class="token function">tee</span> vm.log<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​    另开一个终端，测试ssh连接：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">ssh</span> -i <span class="token variable">$IMAGE</span>/bullseye.id_rsa -p <span class="token number">10021</span> -o <span class="token string">"StrictHostKeyChecking no"</span> root@localhost<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​    测试完成后就可以关闭qemu（直接poweroff），下面进行syzkaller安装：</p>
+<p>​    安装go：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#如果显示地址不可达</span>
+<span class="token comment">#在站长工具处查询dl.google.com</span>
+<span class="token comment">#找到可以Ping的IP</span>
+<span class="token comment">#修改本机hosts文件即可</span>
+<span class="token function">wget</span> https://go.dev/dl/go1.20.3.linux-amd64.tar.gz
+<span class="token comment">#如果之前安装过go，一定要先删除原来的</span>
+<span class="token function">tar</span> -C /usr/local -xzf go1.20.3.linux-amd64.tar.gz
+<span class="token comment">#添加环境变量</span>
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">GOROOT</span><span class="token operator">=</span><span class="token variable"><span class="token variable">`</span><span class="token builtin class-name">pwd</span><span class="token variable">`</span></span>/go
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span><span class="token variable">$GOROOT</span>/bin:<span class="token environment constant">$PATH</span>
+<span class="token comment">#测试</span>
+go version
+<span class="token comment">#-> go version go1.20.3 linux/amd64</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​    安装syzkaller:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> clone https://github.com/google/syzkaller
+<span class="token builtin class-name">cd</span> syzkaller
+<span class="token comment">#安装之前一定要保证gcc和go的版本正确</span>
+<span class="token function">make</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h1 id="Crash-Test"><a href="#Crash-Test" class="headerlink" title="Crash Test"></a>Crash Test</h1><p>​    在$linux/fs/open.c文件中的chmod_common（）添加一段代码，使得当连续两次<code>chmod</code>调用的<code>mode</code>参数值为0时会产生空指针解引用异常：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">static</span> <span class="token class-name">umode_t</span> old_mode <span class="token operator">=</span> <span class="token number">0xffff</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>old_mode <span class="token operator">==</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> mode <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        path <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+old_mode <span class="token operator">=</span> mode<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>​    重新编译Linux内核，设置Syzkaller配置文件如下：</p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
+	<span class="token property">"target"</span><span class="token operator">:</span> <span class="token string">"linux/amd64"</span><span class="token punctuation">,</span>
+	<span class="token property">"http"</span><span class="token operator">:</span> <span class="token string">"127.0.0.1:56741"</span><span class="token punctuation">,</span>
+	<span class="token property">"workdir"</span><span class="token operator">:</span> <span class="token string">"/home/wx/SyzKaller/syzkaller/workdir"</span><span class="token punctuation">,</span>
+	<span class="token property">"kernel_obj"</span><span class="token operator">:</span> <span class="token string">"/home/wx/SyzKaller/linux/"</span><span class="token punctuation">,</span>
+	<span class="token property">"image"</span><span class="token operator">:</span> <span class="token string">"/home/wx/SyzKaller/image/bullseye.img"</span><span class="token punctuation">,</span>
+	<span class="token property">"sshkey"</span><span class="token operator">:</span> <span class="token string">"/home/wx/SyzKaller/image/bullseye.id_rsa"</span><span class="token punctuation">,</span>
+	<span class="token property">"syzkaller"</span><span class="token operator">:</span> <span class="token string">"/home/wx/SyzKaller/syzkaller"</span><span class="token punctuation">,</span>
+	<span class="token property">"enable_syscalls"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"chmod"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+	<span class="token property">"procs"</span><span class="token operator">:</span> <span class="token number">8</span><span class="token punctuation">,</span>
+	<span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"qemu"</span><span class="token punctuation">,</span>
+	<span class="token property">"vm"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+		<span class="token property">"count"</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">,</span>
+		<span class="token property">"kernel"</span><span class="token operator">:</span> <span class="token string">"/home/wx/SyzKaller/linux/arch/x86/boot/bzImage"</span><span class="token punctuation">,</span>
+		<span class="token property">"cpu"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+		<span class="token property">"mem"</span><span class="token operator">:</span> <span class="token number">2048</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li><code>enable_syscalls</code>选项表明了仅对其中的系统调用做fuzzing，如果其中的某个系统调用依赖其他调用，syzkaller会提醒你。</li>
+<li>同理，<code>disable_syscalls</code>选项表明了不对哪些系统调用fuzzing。</li>
+</ul>
+<p>​    执行：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">syz-manager --config config.json<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210618032.png" style="zoom:80%;" /></p>
+<p>​    在对应的web<code>127.0.0.1:56741</code>上就可以看到当前fuzzing的情况：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210718938.png" style="zoom:67%;" /></p>
+<p>​    可以看到已经抓到了一个内核Crash：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210814372.png" style="zoom: 67%;" /></p>
+<p>​    <a href="https://www.collabora.com/news-and-blog/blog/2020/04/17/using-syzkaller-to-detect-programming-bugs-in-linux/">Using syzkaller, part 2: Detecting programming bugs in the Linux kernel (collabora.com)</a>这个Blog详细说明了网站里各个模块的作用。</p>
+<p>​    查看报告：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210930515.png" alt=""></p>
+<p>​    打开目录workdir/carsh/···/log0：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416211532552.png" style="zoom:80%;" /></p>
+<h1 id="Problem-Summary"><a href="#Problem-Summary" class="headerlink" title="Problem Summary"></a>Problem Summary</h1><ul>
+<li><p><strong>问题1：在使用ssh连接qemu时无法连接，报错：</strong></p>
+<p><strong>“ssh_exchange_identification: Connection closed by remote host”</strong></p>
+</li>
+</ul>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415200044323.png" style="zoom:80%;" /></p>
+<p>​    <strong>解决方法：</strong></p>
+<p>​    查看QEMU虚拟机内sshd服务状态，发现其服务没有开启：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415200148895.png" style="zoom:80%;" /></p>
+<p>​    尝试使用命令<code>service sshd start</code>，无效。</p>
+<p>​    尝试google，发现如下帖子：<a href="https://groups.google.com/g/syzkaller/c/n8BDOc5cXds">ssh : Why sshd does not start on qemu booting (google.com)</a></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415202522042.png" alt="这也能遇到自己老师hh"></p>
+<p>​    故重新检查linux源码的config后发现，由于手动修改后没有删除原来对应的“xxx not set”注释，导致当时的修改在后续<code>make olddefconfig</code>时又被改回去了。</p>
+<p>​    重新修改.config文件，重新编译，创建qemu虚拟机，再次尝试登陆：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415211857811.png" style="zoom:80%;" /></p>
+<p>​    <u>这里的问题其实就出现在没有去掉注释，在.config文件中注释也会被扫描分析。</u></p>
+<ul>
+<li><p><strong>问题二：sshd服务错误定位</strong></p>
+<p><strong>解决方法：</strong></p>
+<ol>
+<li><code>/usr/bin/sshd -T</code>命令可以显示出sshd配置文件的错误之处；</li>
+<li>在ssh连接时使用命令-v/-vv可以查看调试信息</li>
+</ol>
+</li>
+</ul>
+<ul>
+<li><p><strong>问题三：开启syzkaller后一直没有虚拟机连接</strong></p>
+<p><strong>解决方法：</strong>在使用命令<code>./bin/syz-manager -config=my.cfg</code>后面加上<code>-debug</code>，查看调试信息后发现qemu虚拟机显示<strong>”Failed to start Raise network interfaces“</strong>，查找官方文档后发现需要在内核config上加上：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token assign-left variable">CONFIG_CMDLINE_BOOL</span><span class="token operator">=</span>y
+<span class="token assign-left variable">CONFIG_CMDLINE</span><span class="token operator">=</span><span class="token string">"net.ifnames=0"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+</li>
+</ul>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a href="https://github.com/google/syzkaller">google/syzkaller: syzkaller is an unsupervised coverage-guided kernel fuzzer (github.com)</a></li>
+<li><a href="https://github.com/google/syzkaller/blob/master/docs/setup.md">syzkaller/setup.md at master · google/syzkaller (github.com)</a></li>
+<li><a href="https://fuchsia.googlesource.com/third_party/syzkaller/+/usb-fuzzer/docs/linux/setup.md">How to set up syzkaller (googlesource.com)</a></li>
+<li><a href="https://groups.google.com/g/syzkaller/c/n8BDOc5cXds">ssh : Why sshd does not start on qemu booting (google.com)</a></li>
+<li><a href="https://github.com/hardenedlinux/Debian-GNU-Linux-Profiles/blob/master/docs/harbian_qa/fuzz_testing/test.c">Debian-GNU-Linux-Profiles/test.c at master · hardenedlinux/Debian-GNU-Linux-Profiles (github.com)</a></li>
+<li><a href="http://pwn4.fun/2019/10/29/Syzkaller-Fuzz-Android-Kernel/">Syzkaller Fuzz Android Kernel | BruceFan’s Blog (pwn4.fun)</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>Vulnerability</tag>
+        <tag>AEG</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>(论文复现)GREBE-Unveiling Exploitation Potential for Linux Kernel Bugs</title>
     <url>/2023/06/11/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91GREBE-Unveiling-Exploitation-Potential-for-Linux-Kernel-Bugs/</url>
     <content><![CDATA[<h1 id="论文复现-GREBE-Unveiling-Exploitation-Potential-for-Linux-Kernel-Bugs"><a href="#论文复现-GREBE-Unveiling-Exploitation-Potential-for-Linux-Kernel-Bugs" class="headerlink" title="(论文复现)GREBE: Unveiling Exploitation Potential for Linux Kernel Bugs"></a>(论文复现)GREBE: Unveiling Exploitation Potential for Linux Kernel Bugs</h1><p>源码：<a href="https://github.com/Markakd/GREBE">Markakd/GREBE (github.com)</a></p>
@@ -2647,212 +2915,6 @@ open_mode &#x3D; S_IRUSR, S_IWUSR, S_IXUSR, S_IRGRP, S_IWGRP, S_IXGRP, S_IROTH, 
 <li><a href="https://blog.csdn.net/sinat_38816924/article/details/122048886">kcov-用于内核模糊测试的代码覆盖-CSDN博客</a></li>
 </ul>
 </li>
-</ul>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>Vulnerability</tag>
-        <tag>AEG</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>(技术积累)Syzkaller环境配置</title>
-    <url>/2023/06/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Syzkaller%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<h1 id="Syzkaller环境配置"><a href="#Syzkaller环境配置" class="headerlink" title="Syzkaller环境配置"></a>Syzkaller环境配置</h1><blockquote>
-<p>Syzkaller内核模糊测试工具环境搭建，简单测试</p>
-<p>项目地址：<a href="https://github.com/google/syzkaller">google/syzkaller: syzkaller is an unsupervised coverage-guided kernel fuzzer (github.com)</a></p>
-</blockquote>
-<span id="more"></span>
-<h1 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h1><blockquote>
-<p>gcc 6.10 or later;</p>
-<p>go 1.20 or later;</p>
-</blockquote>
-<ul>
-<li>C compiler with coverage support</li>
-<li>Linux kernel with coverage additions</li>
-<li>Virtual machine or a physical device</li>
-<li><p>syzkaller itself</p>
-<p> 更新apt并安装相关编译器：</p>
-</li>
-</ul>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">apt</span> update
-<span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> <span class="token function">make</span> gcc flex bison libncurses-dev libelf-dev libssl-dev<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<p>​    下载内核源码：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> clone --branch v6.2 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git <span class="token variable">$KERNEL</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>​    内核编译常用的配置参数：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#文本对话式，基于命令行的一种配置,其会在命令行一个个询问具体配置选择</span>
-<span class="token function">make</span> config
-<span class="token comment">#基于图形界面配置</span>
-<span class="token function">make</span> menuconfig
-<span class="token comment">##将当前系统存在的.config 文件拷贝至源码目录，并询问新符号如何设置</span>
-<span class="token function">make</span> oldconfig
-<span class="token comment">#将当前系统存在的.config 文件拷贝至源码目录，新符号设为默认值，不提示</span>
-<span class="token function">make</span> olddefconfig
-<span class="token comment">#基于当前config和加载的模块创建一个配置</span>
-<span class="token function">make</span> localmodconfig
-<span class="token comment">#基于QT的配置工具</span>
-<span class="token function">make</span> xconfig
-<span class="token comment">#使用系统中的默认符号值创建一个config</span>
-<span class="token function">make</span> defconfig
-<span class="token comment">#基于GTK+的配置工具</span>
-<span class="token function">make</span> gconfig
-<span class="token comment">#为kvm客户内核支持启用其他选项</span>
-<span class="token function">make</span> kvm_guest.config<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    进入源码目录：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">make</span> olddefconfig<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>​    手动在.config文件中添加编译选项（一定去掉原来的注释）：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># Coverage collection.</span>
-<span class="token assign-left variable">CONFIG_KCOV</span><span class="token operator">=</span>y
-
-<span class="token comment"># Debug info for symbolization.</span>
-<span class="token assign-left variable">CONFIG_DEBUG_INFO_DWARF4</span><span class="token operator">=</span>y
-
-<span class="token comment"># Memory bug detector</span>
-<span class="token assign-left variable">CONFIG_KASAN</span><span class="token operator">=</span>y
-<span class="token assign-left variable">CONFIG_KASAN_INLINE</span><span class="token operator">=</span>y
-
-<span class="token comment"># Required for Debian Stretch and later</span>
-<span class="token assign-left variable">CONFIG_CONFIGFS_FS</span><span class="token operator">=</span>y
-<span class="token assign-left variable">CONFIG_SECURITYFS</span><span class="token operator">=</span>y
-
-<span class="token comment">#这个一定要加上</span>
-<span class="token assign-left variable">CONFIG_CMDLINE_BOOL</span><span class="token operator">=</span>y
-<span class="token assign-left variable">CONFIG_CMDLINE</span><span class="token operator">=</span><span class="token string">"net.ifnames=0"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    再次make：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">make</span> olddefconfig<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>​    编译：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">make</span> -j<span class="token variable"><span class="token variable">`</span>nproc<span class="token variable">`</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>​    编译好的内核文件夹内应出现：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415160954894.png" style="zoom:80%;" /></p>
-<p>​    <code>debootstrap</code>是debian/ubuntu下的一个工具，用来构建一套基本的系统(根文件系统)。生成的目录符合Linux文件系统标准(FHS)，即包含了/boot、/etc、/bin、/usr等等目录，但它比发行版本的Linux体积小很多，当然功能也没那么强大，因此，只能说是“基本的系统”。</p>
-<p>​    这里以创建一个Debian Bullseye版本的Linux镜像为例：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> <span class="token function">debootstrap</span>
-
-<span class="token function">mkdir</span> <span class="token variable">$IMAGE</span>
-<span class="token builtin class-name">cd</span> <span class="token variable">$IMAGE</span>/
-<span class="token function">wget</span> https://raw.githubusercontent.com/google/syzkaller/master/tools/create-image.sh -O create-image.sh
-<span class="token function">chmod</span> +x create-image.sh
-./create-image.sh<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    创建好后对应文件夹下应该有一个<code>bullseye.img</code>文件。</p>
-<p>​    如果Host使用的是虚拟机，需要在设置处开启虚拟化引擎（若是物理机则需要在BIOS上开启）：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415170223601.png" style="zoom:80%;" /></p>
-<p>​    测试qemu：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">qemu-system-x86_64 <span class="token punctuation">\</span>
-  -m 2G <span class="token punctuation">\</span>
-  -smp <span class="token number">2</span> <span class="token punctuation">\</span>
-  -kernel /home/wx/SyzKaller/linux/arch/x86/boot/bzImage <span class="token punctuation">\</span>
-  -append <span class="token string">"console=ttyS0 root=/dev/sda earlyprintk=serial net.ifnames=0"</span> <span class="token punctuation">\</span>
-  -drive <span class="token assign-left variable">file</span><span class="token operator">=</span>/home/wx/SyzKaller/image/bullseye.img,format<span class="token operator">=</span>raw <span class="token punctuation">\</span>
-  -net user,host<span class="token operator">=</span><span class="token number">10.0</span>.2.10,hostfwd<span class="token operator">=</span>tcp:127.0.0.1:10021-:22 <span class="token punctuation">\</span>
-  -net nic,model<span class="token operator">=</span>e1000 <span class="token punctuation">\</span>
-  -enable-kvm <span class="token punctuation">\</span>
-  -nographic <span class="token punctuation">\</span>
-  -pidfile vm.pid <span class="token punctuation">\</span>
-  <span class="token operator"><span class="token file-descriptor important">2</span>></span><span class="token file-descriptor important">&amp;1</span> <span class="token operator">|</span> <span class="token function">tee</span> vm.log<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    另开一个终端，测试ssh连接：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">ssh</span> -i <span class="token variable">$IMAGE</span>/bullseye.id_rsa -p <span class="token number">10021</span> -o <span class="token string">"StrictHostKeyChecking no"</span> root@localhost<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>​    测试完成后就可以关闭qemu（直接poweroff），下面进行syzkaller安装：</p>
-<p>​    安装go：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#如果显示地址不可达</span>
-<span class="token comment">#在站长工具处查询dl.google.com</span>
-<span class="token comment">#找到可以Ping的IP</span>
-<span class="token comment">#修改本机hosts文件即可</span>
-<span class="token function">wget</span> https://go.dev/dl/go1.20.3.linux-amd64.tar.gz
-<span class="token comment">#如果之前安装过go，一定要先删除原来的</span>
-<span class="token function">tar</span> -C /usr/local -xzf go1.20.3.linux-amd64.tar.gz
-<span class="token comment">#添加环境变量</span>
-<span class="token builtin class-name">export</span> <span class="token assign-left variable">GOROOT</span><span class="token operator">=</span><span class="token variable"><span class="token variable">`</span><span class="token builtin class-name">pwd</span><span class="token variable">`</span></span>/go
-<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span><span class="token variable">$GOROOT</span>/bin:<span class="token environment constant">$PATH</span>
-<span class="token comment">#测试</span>
-go version
-<span class="token comment">#-> go version go1.20.3 linux/amd64</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    安装syzkaller:</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> clone https://github.com/google/syzkaller
-<span class="token builtin class-name">cd</span> syzkaller
-<span class="token comment">#安装之前一定要保证gcc和go的版本正确</span>
-<span class="token function">make</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<h1 id="Crash-Test"><a href="#Crash-Test" class="headerlink" title="Crash Test"></a>Crash Test</h1><p>​    在$linux/fs/open.c文件中的chmod_common（）添加一段代码，使得当连续两次<code>chmod</code>调用的<code>mode</code>参数值为0时会产生空指针解引用异常：</p>
-<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">static</span> <span class="token class-name">umode_t</span> old_mode <span class="token operator">=</span> <span class="token number">0xffff</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>old_mode <span class="token operator">==</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> mode <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        path <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-old_mode <span class="token operator">=</span> mode<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    重新编译Linux内核，设置Syzkaller配置文件如下：</p>
-<pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
-	<span class="token property">"target"</span><span class="token operator">:</span> <span class="token string">"linux/amd64"</span><span class="token punctuation">,</span>
-	<span class="token property">"http"</span><span class="token operator">:</span> <span class="token string">"127.0.0.1:56741"</span><span class="token punctuation">,</span>
-	<span class="token property">"workdir"</span><span class="token operator">:</span> <span class="token string">"/home/wx/SyzKaller/syzkaller/workdir"</span><span class="token punctuation">,</span>
-	<span class="token property">"kernel_obj"</span><span class="token operator">:</span> <span class="token string">"/home/wx/SyzKaller/linux/"</span><span class="token punctuation">,</span>
-	<span class="token property">"image"</span><span class="token operator">:</span> <span class="token string">"/home/wx/SyzKaller/image/bullseye.img"</span><span class="token punctuation">,</span>
-	<span class="token property">"sshkey"</span><span class="token operator">:</span> <span class="token string">"/home/wx/SyzKaller/image/bullseye.id_rsa"</span><span class="token punctuation">,</span>
-	<span class="token property">"syzkaller"</span><span class="token operator">:</span> <span class="token string">"/home/wx/SyzKaller/syzkaller"</span><span class="token punctuation">,</span>
-	<span class="token property">"enable_syscalls"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"chmod"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-	<span class="token property">"procs"</span><span class="token operator">:</span> <span class="token number">8</span><span class="token punctuation">,</span>
-	<span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"qemu"</span><span class="token punctuation">,</span>
-	<span class="token property">"vm"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
-		<span class="token property">"count"</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">,</span>
-		<span class="token property">"kernel"</span><span class="token operator">:</span> <span class="token string">"/home/wx/SyzKaller/linux/arch/x86/boot/bzImage"</span><span class="token punctuation">,</span>
-		<span class="token property">"cpu"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
-		<span class="token property">"mem"</span><span class="token operator">:</span> <span class="token number">2048</span>
-	<span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<ul>
-<li><code>enable_syscalls</code>选项表明了仅对其中的系统调用做fuzzing，如果其中的某个系统调用依赖其他调用，syzkaller会提醒你。</li>
-<li>同理，<code>disable_syscalls</code>选项表明了不对哪些系统调用fuzzing。</li>
-</ul>
-<p>​    执行：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">syz-manager --config config.json<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210618032.png" style="zoom:80%;" /></p>
-<p>​    在对应的web<code>127.0.0.1:56741</code>上就可以看到当前fuzzing的情况：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210718938.png" style="zoom:67%;" /></p>
-<p>​    可以看到已经抓到了一个内核Crash：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210814372.png" style="zoom: 67%;" /></p>
-<p>​    <a href="https://www.collabora.com/news-and-blog/blog/2020/04/17/using-syzkaller-to-detect-programming-bugs-in-linux/">Using syzkaller, part 2: Detecting programming bugs in the Linux kernel (collabora.com)</a>这个Blog详细说明了网站里各个模块的作用。</p>
-<p>​    查看报告：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210930515.png" alt=""></p>
-<p>​    打开目录workdir/carsh/···/log0：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416211532552.png" style="zoom:80%;" /></p>
-<h1 id="Problem-Summary"><a href="#Problem-Summary" class="headerlink" title="Problem Summary"></a>Problem Summary</h1><ul>
-<li><p><strong>问题1：在使用ssh连接qemu时无法连接，报错：</strong></p>
-<p><strong>“ssh_exchange_identification: Connection closed by remote host”</strong></p>
-</li>
-</ul>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415200044323.png" style="zoom:80%;" /></p>
-<p>​    <strong>解决方法：</strong></p>
-<p>​    查看QEMU虚拟机内sshd服务状态，发现其服务没有开启：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415200148895.png" style="zoom:80%;" /></p>
-<p>​    尝试使用命令<code>service sshd start</code>，无效。</p>
-<p>​    尝试google，发现如下帖子：<a href="https://groups.google.com/g/syzkaller/c/n8BDOc5cXds">ssh : Why sshd does not start on qemu booting (google.com)</a></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415202522042.png" alt="这也能遇到自己老师hh"></p>
-<p>​    故重新检查linux源码的config后发现，由于手动修改后没有删除原来对应的“xxx not set”注释，导致当时的修改在后续<code>make olddefconfig</code>时又被改回去了。</p>
-<p>​    重新修改.config文件，重新编译，创建qemu虚拟机，再次尝试登陆：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415211857811.png" style="zoom:80%;" /></p>
-<p>​    <u>这里的问题其实就出现在没有去掉注释，在.config文件中注释也会被扫描分析。</u></p>
-<ul>
-<li><p><strong>问题二：sshd服务错误定位</strong></p>
-<p><strong>解决方法：</strong></p>
-<ol>
-<li><code>/usr/bin/sshd -T</code>命令可以显示出sshd配置文件的错误之处；</li>
-<li>在ssh连接时使用命令-v/-vv可以查看调试信息</li>
-</ol>
-</li>
-</ul>
-<ul>
-<li><p><strong>问题三：开启syzkaller后一直没有虚拟机连接</strong></p>
-<p><strong>解决方法：</strong>在使用命令<code>./bin/syz-manager -config=my.cfg</code>后面加上<code>-debug</code>，查看调试信息后发现qemu虚拟机显示<strong>”Failed to start Raise network interfaces“</strong>，查找官方文档后发现需要在内核config上加上：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token assign-left variable">CONFIG_CMDLINE_BOOL</span><span class="token operator">=</span>y
-<span class="token assign-left variable">CONFIG_CMDLINE</span><span class="token operator">=</span><span class="token string">"net.ifnames=0"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-</li>
-</ul>
-<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
-<li><a href="https://github.com/google/syzkaller">google/syzkaller: syzkaller is an unsupervised coverage-guided kernel fuzzer (github.com)</a></li>
-<li><a href="https://github.com/google/syzkaller/blob/master/docs/setup.md">syzkaller/setup.md at master · google/syzkaller (github.com)</a></li>
-<li><a href="https://fuchsia.googlesource.com/third_party/syzkaller/+/usb-fuzzer/docs/linux/setup.md">How to set up syzkaller (googlesource.com)</a></li>
-<li><a href="https://groups.google.com/g/syzkaller/c/n8BDOc5cXds">ssh : Why sshd does not start on qemu booting (google.com)</a></li>
-<li><a href="https://github.com/hardenedlinux/Debian-GNU-Linux-Profiles/blob/master/docs/harbian_qa/fuzz_testing/test.c">Debian-GNU-Linux-Profiles/test.c at master · hardenedlinux/Debian-GNU-Linux-Profiles (github.com)</a></li>
-<li><a href="http://pwn4.fun/2019/10/29/Syzkaller-Fuzz-Android-Kernel/">Syzkaller Fuzz Android Kernel | BruceFan’s Blog (pwn4.fun)</a></li>
 </ul>
 ]]></content>
       <categories>
@@ -8529,69 +8591,179 @@ $$
       </tags>
   </entry>
   <entry>
-    <title>Deep Text Classifification Can be Fooled</title>
-    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/</url>
-    <content><![CDATA[<h1 id="【论文阅读】Deep-Text-Classifification-Can-be-Fooled"><a href="#【论文阅读】Deep-Text-Classifification-Can-be-Fooled" class="headerlink" title="【论文阅读】Deep Text Classifification Can be Fooled"></a>【论文阅读】<strong>Deep Text Classifification Can be Fooled</strong></h1><blockquote>
-<p><strong>时间：</strong>2017</p>
-<p><strong>作者：</strong>Bin Liang, Hongcheng Li, Miaoqiang Su, Pan Bian, Xirong Li and Wenchang Shi     中国人民大学</p>
+    <title>A Benchmark API Call Dataset For Windows PE Malware Classification</title>
+    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91A%20Benchmark%20API%20Call%20Dataset%20For%20Windows%20PE%20Malware%20Classification/</url>
+    <content><![CDATA[<h1 id="【论文阅读】A-Benchmark-API-Call-Dataset-For-Windows-PE-Malware-Classification"><a href="#【论文阅读】A-Benchmark-API-Call-Dataset-For-Windows-PE-Malware-Classification" class="headerlink" title="【论文阅读】A Benchmark API Call Dataset For Windows PE Malware Classification"></a>【论文阅读】A Benchmark API Call Dataset For Windows PE Malware Classification</h1><blockquote>
+<p><strong>作者：Ferhat Ozgur Catak（土耳其）</strong></p>
+<p>​            <strong>Ahmet Faruk Yazi（土耳其）</strong></p>
+<p><strong>时间：2021.2.23</strong></p>
+<p><strong>关键词：恶意软件分析，网络空间安全，数据集，沙箱环境，恶意软件分类</strong></p>
 </blockquote>
-<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract:"></a>Abstract:</h3><p>​    在这篇文章，我们提出了一种有效的生成文本对抗样本的方法，并且揭示了一个很重要但被低估的事实：基于DNN的文本分类器很容易被对抗样本攻击。</p>
-<p>​    具体来说，面对不同的对抗场景，通过计算输入的代价梯度(白盒攻击)或生成一系列被遮挡的测试样本(黑盒攻击)来识别对分类重要的文本项。（<u>这句不是很懂，什么叫’ the text items that are important for classifification‘？</u>）</p>
-<p>​    基于这些项目，我们设计了三种扰动策略，insertion，modification，removal，用于生成对抗样本。实验结果表明基于我们的方法生成的对抗样本可以成功地欺骗主流的在字符等级和单词等级的DNN文本分类器。</p>
-<p>​    对抗样本可以被扰动到任意理想的类中而不降低其效率。（？）同时，被引入的扰动很难被察觉。</p>
-<p>​    <span id="more"></span></p>
-<h3 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction:"></a>1. Introduction:</h3><p>​    在文本中，即使很小的扰动也会使一个字母或者单词完全变化，这会导致句子不能被辨识。故如果直接将应用于多媒体（图片，音频）的算法应用到文本上，得到的对抗样本的原意就会改变，而且很大程度上变成人类无法理解的句子。</p>
-<p>​    在这片论文里，我们提出了一种生成对抗样本的有效方法。与直接简单插入扰动相比，我们设计了三种扰动策略：<em>insertion</em>, <em>modifification</em>, and <em>removal</em>，并且引入了自然语言文本水印（<em>natural language watermarking</em>）技术用于生成对抗样本。</p>
-<p>​    理论上，生成一个好的对抗样本很大程度上依赖于对目标分类模型的信息。在这里我们根据不同情形，使用了白盒攻击和黑盒攻击。</p>
-<p>​    为了普遍性，我们使用了字符等级的模型和单词等级的模型作为受害者。我们的实验结果证明基于DNN的文本分类器在面对对抗样本攻击时是脆弱的。</p>
-<h3 id="2-Target-Models-and-Datasets"><a href="#2-Target-Models-and-Datasets" class="headerlink" title="2. Target Models and Datasets:"></a>2. Target Models and Datasets:</h3><p>​    这里使用的文本分类器是Zhang et al. 2015《Character-level Convolutional Networks foe Text Classification》，数据集是Lehmann et al.2014的DBpedia ontology dataset（一个多语言知识库），里面包括560000个训练样本和70000个测试样本，涵盖14个high-level 类，比如公司类、建筑类、电影类等。</p>
-<p>​    在把样本送进网络前，需要用独热编码法（one-hot representation）对每个字母编码成一个向量。通过网络的六个卷积层、三个全连接层，最终会被分到14个类中。</p>
-<h3 id="3-White-Box-Attacks"><a href="#3-White-Box-Attacks" class="headerlink" title="3. White-Box-Attacks:"></a><u>3. White-Box-Attacks:</u></h3><h4 id="3-1-FGSM算法："><a href="#3-1-FGSM算法：" class="headerlink" title="3.1 FGSM算法："></a>3.1 FGSM算法：</h4><p>​    FGSM是Goodfellow在2015年提出的对图片生成对抗样本的经典算法。使用类似的思路来在文本领域生成对抗样本结果并不好：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830214227.png" alt=""></p>
-<h4 id="3-2-Idenfitying-Classification-important-Items"><a href="#3-2-Idenfitying-Classification-important-Items" class="headerlink" title="3.2    Idenfitying Classification-important Items:"></a>3.2    Idenfitying Classification-important Items:</h4><p>​        在白盒攻击中，我们需要定位文本中对于分类器的分类结果起到很大作用的文本段（通过计算代价梯度）。在这里，我们使用<strong><em>Hot Training Phrases</em> (HTPs)</strong>代表最常使用的短语：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831150703.png" alt=""></p>
-<p>​        HTPS表明了用什么短语/词去做扰动，但是没有说在哪里做。在这里使用<strong><em>Hot Sample Phrases</em> (HSPs)</strong>来表明在哪里做扰动。</p>
-<h4 id="3-3-Attacking-Character-level-DNN"><a href="#3-3-Attacking-Character-level-DNN" class="headerlink" title="3.3    Attacking Character-level DNN:"></a>3.3    Attacking Character-level DNN:</h4><p>​        我们的方法是一种targeted攻击，可以指定对抗样本的误导类型。</p>
-<h5 id="3-3-1-Insertion-Strategy（插入策略）"><a href="#3-3-1-Insertion-Strategy（插入策略）" class="headerlink" title="3.3.1 Insertion Strategy（插入策略）:"></a>3.3.1 Insertion Strategy（插入策略）:</h5><p>​            在某个HSP前插入一个HTP，就可以达到效果：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831151929.png" alt=""></p>
-<p>​            由上图可以看到，将某个<strong>HTP</strong>（<em>historic</em>）插入到<strong>HSP</strong>（<em>principal stock exchange of Uganda. It was founded</em>）之前，就可以使一个公司的分类文本变为对建筑的分类。</p>
-<p>​            实际上，我们通常需要进行多次插入，但插入次数过多会影响样本的效用和可读性，为了解决这个问题，这里引入NL水印技术（<em>Natural Language watermarking technique</em>）。该技术可以通过语义或句法操作将所有权水印隐形地嵌入到普通文本中,虽然我们的攻击目标与NL水印有本质的不同，但我们可以借用它的思想来构造对抗样本。实际上，扰动可以看作是一种水印，并以类似的方式嵌入到样本中。</p>
-<p>​            在这里，我们拓展这个思路，在样本中插入<strong>Presupposition</strong>(读者熟知的模糊短语)和 <strong>semantically empty phrases</strong>（可有可无的短语），有没有他们，在读者看来，原文的意思不会改变。</p>
-<p>​            总的来说，我们考虑将各种HTPS组合成一个语法单元后再嵌入到文本中，新的单元可以是生成的可有可无的资料，或者甚至是不会改变文本原意的伪造的资料。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831154859.png" alt=""></p>
-<p>​            <strong>特别的，通过互联网搜索或者查找一些数据集，我们可以找到与插入点很相关的资料，包括一些期望的目标分类的HTPs。</strong></p>
-<p>​            由于我们不能总是找到合适的HTPs，所以提出一个新概念——伪造的事实（forged fact），也就是插入很难证伪的HTPs。例如：</p>
-<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/20210831154910.png" alt=""></p>
-<p>​            此外，我们排除了伪造的事实，这些事实可以通过检索他们在网上的相反证据而被否认。</p>
-<h5 id="3-3-2-Modification-Strategy（修改策略）："><a href="#3-3-2-Modification-Strategy（修改策略）：" class="headerlink" title="3.3.2 Modification Strategy（修改策略）："></a>3.3.2 Modification Strategy（修改策略）：</h5><p>​            Moidfication就是轻微修改一些HSP。</p>
-<p>​            为了让修改不被人类观察者发现，我们采用了typo-based watermarking 技术。具体的说，一个HSP可以通过两种方式来被修改：</p>
-<p>​            1. 从相关的语料库中选择常见的拼写错误来替换它；</p>
-<p>​            2. 把它的一些字符修改成类似的外观（例如小写字母’l’与阿拉伯数字‘1’很像）。</p>
-<p>​            <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831160407.png" alt=""></p>
-<p>​            由上图可以看出，这种方式对分类结果的扰动是巨大的。</p>
-<h5 id="3-3-3-Removal-Strategy（移除策略）"><a href="#3-3-3-Removal-Strategy（移除策略）" class="headerlink" title="3.3.3 Removal Strategy（移除策略）:"></a>3.3.3 Removal Strategy（移除策略）:</h5><p>​            移除策略单独使用也许并不能足够有效地影响预测结果，但是可以很大程度上降低原始预测类型的置信度。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831161007.png" alt=""></p>
-<p>​            由上图可以看出，移除’<strong><em>British</em></strong>‘可以导致原始预测类型的置信度下降了35%。</p>
-<h5 id="3-3-4-Combination-of-Three-Strategies"><a href="#3-3-4-Combination-of-Three-Strategies" class="headerlink" title="3.3.4 Combination of Three Strategies:"></a>3.3.4 Combination of Three Strategies:</h5><p>​            如图6所示，单靠去除策略改变输出分类往往是困难的。但是，通过与其他策略相结合，可以避免对原文进行过多的修改或插入。在实践中，我们常常结合以上三种策略来制作微妙的对抗样本。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831161638.png" alt=""></p>
-<p>​            以图7为例，通过去除一个HSP、插入一个伪造事实和修改一个HSP，可以成功地改变输出分类，但单独应用上述任何扰动都失败。具体来说，删除、插入和修改仅使置信度分别下降27.3 %、17.5 %和10.1 %，保持预测类不变。</p>
-<h3 id="4-Black-Box-Attack"><a href="#4-Black-Box-Attack" class="headerlink" title="4. Black-Box-Attack:"></a>4. Black-Box-Attack:</h3><p>暂略</p>
-<h3 id="5-Evaluation："><a href="#5-Evaluation：" class="headerlink" title="5.  Evaluation："></a>5.  Evaluation：</h3><h4 id="5-1-我们的方法能否执行有效的源-目标误分类攻击"><a href="#5-1-我们的方法能否执行有效的源-目标误分类攻击" class="headerlink" title="5.1 我们的方法能否执行有效的源/目标误分类攻击?"></a>5.1 我们的方法能否执行有效的源/目标误分类攻击?</h4><p>​    <strong><em>答：</em></strong>在众多测试集中，只有DBpedia ontology数据集是一个多分类数据集，故我们在其中随机选取了一些样本：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831165135.png" alt=""></p>
-<h4 id="5-2-所生成的对抗样本能否避免被人类观察者认出来，并同时保持其功能性？"><a href="#5-2-所生成的对抗样本能否避免被人类观察者认出来，并同时保持其功能性？" class="headerlink" title="5.2 所生成的对抗样本能否避免被人类观察者认出来，并同时保持其功能性？"></a>5.2 所生成的对抗样本能否避免被人类观察者认出来，并同时保持其功能性？</h4><p><strong><em>答：</em></strong>我们找了23个学生。他们对项目不了解，然后每个人给20个文本，其中一半是加扰的。让他们分到14个类中，如果他们觉得哪个文本不对劲，让他们指出来。</p>
-<p>​            他们总的分类正确率是94.2%，10个对抗样本的正确率是94.8%。所以实用性还是有的。</p>
-<p>​            他们标注出了240项修改处，其中12项符合真实的修改。但实际上我们做了594处修改。</p>
-<h4 id="5-3-我们的方法足够有效吗？"><a href="#5-3-我们的方法足够有效吗？" class="headerlink" title="5.3 我们的方法足够有效吗？"></a>5.3 我们的方法足够有效吗？</h4><p><strong><em>答：</em></strong>实验中计算梯度和找HTPs花了116小时。14个类的HTPs每个类花了8.29小时。对所有的adversarial示例只执行一次计算。制作一个对抗性的样品大约需要10到20分钟。对于对手来说，获得理想的对抗样本是可以接受的。实际上，她或他愿意花更多的时间来做这件事。</p>
-<h3 id="6-Realted-Works"><a href="#6-Realted-Works" class="headerlink" title="6. Realted Works:"></a>6. Realted Works:</h3><p>​    <strong>可以做的方向：</strong>1.自动生成对抗样本；（然而，Papernot等人(Papernot et al. 2016a)提出了一种基于雅可比矩阵的数据集增强技术，该技术可以在不访问其模型、参数或训练数据的情况下，在有限对输入输出的基础上，为目标dnn提供替代模型。作者还表明，使用替代模型也可以有效地制作对抗样本，以攻击目标DNN。）2.迁移、黑盒攻击；</p>
-<p>​    </p>
+<h3 id="1-Abstract"><a href="#1-Abstract" class="headerlink" title="1. Abstract"></a>1. Abstract</h3><p>​    在Windows操作系统中，系统API调用的使用在监控恶意PE程序中是一个很有前途的方法。这个方法被定义为在安全隔离的沙箱环境中运行恶意软件，记录其调用的Windows系统API，再顺序分析这些调用。<br>​    在这里，我们在隔离沙箱中分析了7107个属于不同家族（病毒，后门，木马等）的恶意软件，并把这些分析结果转化为了不同分类算法和方法可以使用的形式。<br>​    <strong>首先</strong>，我们会解释如何得到这些恶意软件；<strong>其次</strong>，我们会解释如何将这些软件捆绑至家族中；<strong>最后，</strong>我们会描述如何使用这些数据集来通过不同的方法实现恶意软件的分类。</p>
+<hr>
+<span id="more"></span>
+<h3 id="2-Introduction"><a href="#2-Introduction" class="headerlink" title="2. Introduction"></a>2. Introduction</h3><h4 id="2-1-简单介绍了恶意软件"><a href="#2-1-简单介绍了恶意软件" class="headerlink" title="2.1 简单介绍了恶意软件"></a>2.1 简单介绍了恶意软件</h4><h4 id="2-2-恶意软件与恶意软件识别之间的竞争"><a href="#2-2-恶意软件与恶意软件识别之间的竞争" class="headerlink" title="2.2 恶意软件与恶意软件识别之间的竞争"></a>2.2 恶意软件与恶意软件识别之间的竞争</h4><p>​    相互促进</p>
+<h4 id="2-3-变形恶意软件（Metamorphic-malware）"><a href="#2-3-变形恶意软件（Metamorphic-malware）" class="headerlink" title="2.3 变形恶意软件（Metamorphic malware）"></a>2.3 变形恶意软件（Metamorphic malware）</h4><p>​        恶意软件家族里很先进的一种，这种软件可以持续不断的改变自身源代码以此改变自身结构，通过这种方式来改变自身代码特征。还有，这种软件可能还可以通过强度反算（counter-analysis）来识别自身运行的环境，以此来隐藏自身的恶意功能。</p>
+<p>​        变形恶意软件很难识别。</p>
+<h4 id="2-4-恶意软件的识别："><a href="#2-4-恶意软件的识别：" class="headerlink" title="2.4 恶意软件的识别："></a>2.4 恶意软件的识别：</h4><p>​        所有恶意软件都会有恶意行为以达成其目的，如果可以很好的分析恶意行为，就可以做成恶意软件的识别与分类。<br>​        恶意软件的识别包括了很多需要解决的问题，例如在汇编中不正确的跳转操作码，PE文本段代码隐藏，代码加密。本研究收集了现有的恶意软件及其变式，例如WannaCry，Zeus，特别是在Github上。</p>
+<p>​        我们通过在VirusTotal网站上寻找每个恶意软件的哈希值，从而获得了得到了其家族类。</p>
+<p>​        最后，所有我们记录的行为都是在Cuckoo沙盒环境中运行的。</p>
+<p>​        我们发现几乎所有恶意软件都会使用很多方法改变其行为，但即使这样，恶意软件还是有一个目标，有一个确定的模式来达到此目标。还有，恶意软件会做出一些不必要的API调用，但其还是可以被一个训练好的分析器识别，因为其行为模式是相同的。</p>
+<p>​        恶意软件分析被视为网络空间安全的一个分支，其由两方面组成：</p>
+<h5 id="1-静态分析-："><a href="#1-静态分析-：" class="headerlink" title="1. 静态分析 ："></a><strong>1. 静态分析 </strong>：</h5><p>​                静态分析可以可以定义为通过执行一个孤立的环境检查可执行文件而不查看实际指令。例如MD5校验和，其通过反病毒检测攻击识别，查找字符串。</p>
+<h5 id="2-动态分析"><a href="#2-动态分析" class="headerlink" title="2. 动态分析"></a>2. 动态分析</h5><p>​                动态分析指运行恶意程序来理解其功能，观察其表现，识别其技术指标。几乎所有的重要行为都包含API调用序列。</p>
+<p>​        <strong>大多数动态分析领域的研究都只关注分类算法，有个基本问题是没有标准的数据集来检查所提出模型的效率。</strong></p>
+<p>​        <strong>我们在Github上分享了我们的数据集：<a href="https://github.com/ocatak/malware_api_class">https://github.com/ocatak/malware_api_class</a> ，该数据集包含了基于Cuckoo沙箱的已知恶意软件执行和基于VirusTotal的文件MD5特征分类的原始数据。</strong></p>
+<hr>
+<h3 id="3-Methods"><a href="#3-Methods" class="headerlink" title="3. Methods"></a>3. Methods</h3><h4 id="3-1-Windows-API-Calls："><a href="#3-1-Windows-API-Calls：" class="headerlink" title="3.1 Windows API Calls："></a>3.1 Windows API Calls：</h4><p>​    软件安全知识，略</p>
+<h4 id="3-2-Cuckoo-SandBox"><a href="#3-2-Cuckoo-SandBox" class="headerlink" title="3.2 Cuckoo SandBox"></a>3.2 Cuckoo SandBox</h4><p>​    免费软件，高度集成，开源，可以自动分析Winodws,OS X,Linux,Android系统下的恶意文件。</p>
+<h4 id="3-3-VirusTotal"><a href="#3-3-VirusTotal" class="headerlink" title="3.3 VirusTotal"></a>3.3 VirusTotal</h4><p>​    可以在线免费分析文件或者URL。其提供了一个API，可以不通过浏览器来提供分析结果，可以自动分析。其以JSON文件的形式提供分析结果，不同反病毒应用引擎和浏览器的分析结果会分开存放。</p>
+<h4 id="3-4-数据集生成"><a href="#3-4-数据集生成" class="headerlink" title="3.4 数据集生成"></a>3.4 数据集生成</h4><p>​    本文的数据集有着简单明了的结构。数据集以CVS格式文件提供来提高互操作性，而且并不需要特定的软件或者库来读取他们。数据由来自不同Github页面的Git命令实施收集，数据集中的每一行都是在沙箱中分析的Windows操作系统的API调用序列。</p>
+<p>​    数据集的生成过程如下：</p>
+<p>​    <strong>1. 沙箱环境准备：</strong></p>
+<p>​    分析机器使用Ubuntu系统，将Cuckoo沙箱安装在其中，分析机运行虚拟服务，Windows操作系统就运行在虚拟服务上，同时关掉防火墙，系统升级。</p>
+<p>​    <strong>2. 分析恶意软件:</strong></p>
+<p>​    虚拟机中同时运行超过20000个恶意软件，应用程序会将每个恶意软件的分析结果写入MongoDB数据库，分析结果中包含恶意软件的行为数据，这些数据都是恶意软件在Win7上的API调用请求。</p>
+<p>​    <strong>3. 处理API调用：</strong></p>
+<p>​    我们在数据集中收集到了342种API调用，这些调用会被以0-341来标记，以此生成一个新数据集。我们使用了该数据集中至少有10个不同API调用的恶意软件的分析结果。</p>
+<p>​    <strong>4. 使用Virus Total公用API分析恶意软件：</strong></p>
+<p>​    作为分析的补充，所有在数据集中的恶意软件也会被Virus Total所分析，通过这种方式，每个恶意软件都会被不同的反病毒引擎所分析，结果会被记录。</p>
+<p>​    <strong>5. 处理分析结果：</strong></p>
+<p>​    Virus Total服务使用大约66个不同的防病毒应用程序进行文件分析。利用我们利用这个服务得到的每个研究结果，我们识别了每个恶意软件的家族。通过观察，我们发现对于同一恶意软件，不同的防病毒应用程序给出了不同的结果。此外，观察到并非每一个防病毒应用程序都能检测到一些恶意软件。因此，在检测每一个恶意软件类时，认为它属于所有分析中的大多数类。</p>
+<p><img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210716172418.png" alt=""></p>
+<p><img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210716172518.png" alt=""></p>
 ]]></content>
       <categories>
         <category>Paper</category>
       </categories>
       <tags>
         <tag>AD</tag>
-        <tag>NLP</tag>
-        <tag>DNN</tag>
+        <tag>Malware Classifiers</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>A novel Android malware detection system-adaption of flter‑based  feature selection methods</title>
+    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91A%20novel%20Android%20malware%20detection%20system%20adaption%20of%20flter%E2%80%91based%20%20feature%20selection%20methods/</url>
+    <content><![CDATA[<h1 id="【论文阅读】A-novel-Android-malware-detection-system-adaption-of-flter‑based-feature-selection-methods"><a href="#【论文阅读】A-novel-Android-malware-detection-system-adaption-of-flter‑based-feature-selection-methods" class="headerlink" title="【论文阅读】A novel Android malware detection system: adaption of flter‑based  feature selection methods"></a>【论文阅读】A novel Android malware detection system: adaption of flter‑based  feature selection methods</h1><blockquote>
+<p><strong>时间：</strong>2021</p>
+<p><strong>作者：</strong> <strong>Durmuş Özkan Şahin</strong>   <strong>Oğuz Emre Kural</strong>   <strong>· Sedat Akleylek</strong>   <strong>Erdal Kılıç</strong></p>
+</blockquote>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><ol>
+<li><strong>二分类</strong>，<strong>静态</strong>代码检测；</li>
+<li>创新点主要在<strong>特征提取</strong>（已经有的方法+文本分类的方法）上，分类器用的各种现成的方法；</li>
+</ol>
+<hr>
+<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract:"></a>Abstract:</h3><p>​    在本研究中，提出了一个基于过滤器特征选择方法的，原创的安卓端恶意软件追踪系统。</p>
+<p>​    该方法是一个在机器学习的基础上的<strong>静态</strong>安卓恶意软件追踪方法。在所开发的系统中，使用应用程序文件中提取的权限作为特征。八个不同的特征选择方法被用于维度降低，以减少运行时间，提升机器学习算法的效率。</p>
+<p>​    其中四种方法应用于安卓恶意样本分类，其余四种方法是从文本分类研究中采用的，其从提取特征和分类结果两方面对方法进行了比较，在对结果进行检验时，表明所采用的方法提高了分类算法的效率，可以在本领域中使用。</p>
+<hr>
+<span id="more"></span>
+<h3 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction:"></a>1. Introduction:</h3><h4 id="1-1-如何提取相关特征？"><a href="#1-1-如何提取相关特征？" class="headerlink" title="1.1 如何提取相关特征？"></a>1.1 如何提取相关特征？</h4><p>​    <strong>Shabtai (2012)</strong>介绍了Andromaly架构，其中包含不同的特征选取方法和分类方法。</p>
+<p>​    <strong>Zhao（2015）</strong>提出了一个特征选择方法FrequelSel，其基于无害样本和恶意样本的频率特征差异。</p>
+<p>​    <strong>Xu （2016）</strong>提出了一个新的安卓恶意样本追踪方法ICCdetector，他们使用CFS（Correlation </p>
+<p>Based Feature Selection）在许多特征向量中做特征提取。</p>
+<p>​    <strong>Morales-Ortega（2016）</strong>提出了一种可以在恶意软件分析和检测设备上本地运行的方法，他们使用不同的特征选择方法和分类方法进行了对比实验。</p>
+<p>​    <strong>Bhattacharya and Goswami (2018) </strong>提出了一种通过通过混合基于community的粗略设置特征选择方法（community-based rough set feature selection method）来进行特征选择的新方法。</p>
+<p>​    <strong>Peynirci et al. (2020) </strong>提出了Delta IDF方法，其通过选择具有最高IDF（NLP中的）无害样本和最低IDF的恶意样本来提取特征。在特征提取中使用了字符串，API调用序列，权限等来作为特征。</p>
+<p>​    <strong>Ananya et al. (2020) </strong>提出了一种安卓恶意样本追踪的动态分析技术。</p>
+<p>​    <strong>Kouliaridis et al. (2021)</strong>使用了两个特征选取算法和八个不同的分类器进行了比较试验。</p>
+<p>​    <strong>Jung et al. (2021) </strong>在Gini Importance 和 domaind 知识上进行了特征提取。使用了API调用序列和应用权限。</p>
+<p>​    <strong>Liu et al. (2021)</strong>使用非监督学习进行了安卓恶意样本的特征提取。</p>
+<h4 id="1-2-Contribution"><a href="#1-2-Contribution" class="headerlink" title="1.2 Contribution:"></a>1.2 Contribution:</h4><p>​    <strong>主要贡献：</strong></p>
+<ol>
+<li>提出了一个基于过滤器特征选择方法的，原创的安卓端恶意软件追踪系统（<strong>静态检查</strong>）；<ol>
+<li>基于文本分类的特征选择方法对现有的属性选择方法进行替代是适应于Android恶意软件检测系统的。因此，不使用所有的权限，而是选择了最具特色的权限，提高了分类算法的性能；</li>
+<li>比较给出各度量得到的允许度和分类结果。在检查结果时，所提出的系统使用的特征比现有的检测系统少；</li>
+<li>从我们所采用的特征提取方法中得到的结果总体上所得到的特征比其他方法少；</li>
+<li>实验结果更好，run的时间更短，分类效果更佳；</li>
+<li>一些矩阵与贪婪方法相结合形成各种属性子集。这些创建的属性子集在用大量classifer进行测试时表现出了显著的性能。</li>
+</ol>
+</li>
+</ol>
+<hr>
+<h3 id="2-Preliminaries："><a href="#2-Preliminaries：" class="headerlink" title="2. Preliminaries："></a>2. Preliminaries：</h3><h4 id="2-1-Feature-extraction（如何处理APK文件）："><a href="#2-1-Feature-extraction（如何处理APK文件）：" class="headerlink" title="2.1 Feature extraction（如何处理APK文件）："></a>2.1 Feature extraction（如何处理APK文件）：</h4><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901113521.png" alt=""></p>
+<h4 id="2-2-Feature-selection（提取特征）："><a href="#2-2-Feature-selection（提取特征）：" class="headerlink" title="2.2 Feature selection（提取特征）："></a>2.2 Feature selection（提取特征）：</h4><p>​        特征选择技术分为三类：<strong>flter-based</strong>，wrapper-based，embedded methods.</p>
+<p>​        <strong>在基于过滤的技术中，就是在所有属性中选择最好的k个属性，而不使用剩余的属性。各种基于统计或信息论的技术被用来寻找最佳的k个特征。</strong></p>
+<p>​        基于Wrapper的技术在操作上与过滤技术类似，但在搜索策略上，选择是用遗传算法等启发式方法代替统计技术进行的。</p>
+<p>​        特征选择过程是在机器学习算法的训练阶段进行的。特征选择是通过找到影响在训练阶段创建的模型性能的最佳子集来进行的。</p>
+<h4 id="2-3-The-proposed-Android-malware-detection-system："><a href="#2-3-The-proposed-Android-malware-detection-system：" class="headerlink" title="2.3 The proposed Android malware detection system："></a>2.3 <strong>The proposed Android malware detection</strong> system：</h4><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901115235.png" alt=""></p>
+<p>​    </p>
+<hr>
+<h3 id="3-Experimental-settings："><a href="#3-Experimental-settings：" class="headerlink" title="3.  Experimental settings："></a>3.  Experimental settings：</h3><h4 id="3-1-datasets："><a href="#3-1-datasets：" class="headerlink" title="3.1 datasets："></a>3.1 datasets：</h4><p>​    3000恶意样本（VirusShare dataset ），3000无害样本（APKPure）</p>
+<h4 id="3-2-Classifcation-algorithms"><a href="#3-2-Classifcation-algorithms" class="headerlink" title="3.2 Classifcation algorithms"></a>3.2 Classifcation algorithms</h4><h4 id="3-3-Performance-measure"><a href="#3-3-Performance-measure" class="headerlink" title="3.3 Performance measure"></a>3.3 Performance measure</h4><hr>
+<h3 id="4-Results-and-discussions"><a href="#4-Results-and-discussions" class="headerlink" title="4. Results and discussions:"></a>4. Results and discussions:</h3><h4 id="4-1-Results-of-performed-experiments"><a href="#4-1-Results-of-performed-experiments" class="headerlink" title="4.1 Results of performed experiments:"></a>4.1 Results of performed experiments:</h4><p>数据处理：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901120437.png" alt=""></p>
+<p>分类结果（部分）：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901151407.png" alt=""></p>
+<p>总：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901151954.png" alt=""></p>
+<p>与其他方法比较：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901152049.png" alt=""></p>
+<hr>
+<h3 id=""><a href="#" class="headerlink" title=" "></a> </h3><p>​    </p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>Malware Classifiers</tag>
+        <tag>Android</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Automatically Evading Classififiers----A Case Study on PDF Malware Classififiers</title>
+    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Automatically%20Evading%20Classififiers----A%20Case%20Study%20on%20PDF%20Malware%20Classififiers/</url>
+    <content><![CDATA[<h1 id="【论文阅读】Automatically-Evading-Classififiers——A-Case-Study-on-PDF-Malware-Classififiers"><a href="#【论文阅读】Automatically-Evading-Classififiers——A-Case-Study-on-PDF-Malware-Classififiers" class="headerlink" title="【论文阅读】Automatically Evading Classififiers——A Case Study on PDF Malware Classififiers"></a>【论文阅读】Automatically Evading Classififiers——A Case Study on PDF Malware Classififiers</h1><blockquote>
+<p><strong>时间：2016</strong></p>
+<p><strong>作者：Weilin Xu, Yanjun Qi, and David Evans    弗吉尼亚大学</strong></p>
+<p><strong>会议：NDSS（ccf_B类）</strong></p>
+</blockquote>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><ol>
+<li><p><strong>白盒黑盒？</strong></p>
+<p><strong>黑盒攻击</strong>，需要知道生成样本在目标模型中的输出（分类分数）和目标模型所使用的特征（粗略知道）；</p>
+</li>
+<li><p><strong>针对什么目标？</strong></p>
+<p>仅仅使用表层特征的分类器；</p>
+</li>
+<li><p><strong>攻击方法？</strong></p>
+<p>3.1 <strong>如何制造对抗样本？</strong></p>
+<p>​    使用<strong>遗传算法（GP-BASED）</strong>进行随机扰动</p>
+<p>3.2 <strong>如何判别对抗样本的恶意能力？</strong></p>
+<p>​    使用<strong><em>oracle</em></strong></p>
+</li>
+</ol>
+<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract:"></a>Abstract:</h3><p>​    在本文，我们提出了一个一般化的方法来检验分类器的鲁棒性，通过在两个PDF恶意样本分类器，PDFrate和Hidost上来检验。其关键就是随机控制一个恶意样本来找到一个对抗样本。</p>
+<p>​    我们的方法可以自动地对500个恶意样本种子中找到对于两个PDF分类器的对抗样本，我们的结果提出了一个严重的疑问，基于表面特征的分类器在面对对抗样本时是否还有效？</p>
+<hr>
+<h3 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction:"></a>1. Introduction:</h3><p>​    主要贡献：</p>
+<pre><code>1. 提出了一个一般化的方法用于自动寻找分类器的对抗样本；
+2. 制作了一个原型系统用于自动生成对抗样本；
+3. 我们的系统在对500个恶意样本种子寻找对抗样本的过程中，达到了100%的准确率。
+</code></pre><hr>
+<h3 id="2-Overview："><a href="#2-Overview：" class="headerlink" title="2. Overview："></a>2. Overview：</h3><h4 id="2-1-Finding-Evasive-Samples："><a href="#2-1-Finding-Evasive-Samples：" class="headerlink" title="2.1 Finding Evasive Samples："></a><em>2.1 Finding Evasive Samples</em>：</h4><p>​    <strong>整体思路：</strong></p>
+<p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901185852.png" alt=""></p>
+<p>​    <strong><em>oracle</em></strong>用于判断一个样本是否具有恶意行为；</p>
+<hr>
+<h3 id="3-PDF-Malware-and-Classifiers"><a href="#3-PDF-Malware-and-Classifiers" class="headerlink" title="3. PDF Malware and Classifiers"></a>3. PDF Malware and Classifiers</h3><h4 id="3-1-PDFmalware"><a href="#3-1-PDFmalware" class="headerlink" title="3.1 PDFmalware:"></a><em>3.1 PDFmalware:</em></h4><p>​    PDF文件的整体结构：</p>
+<p>​        <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901191527.png" alt=""></p>
+<p>​    早些的PDF恶意样本一般使用JavaScript嵌入，用户双击打开时出发执行恶意脚本。</p>
+<p>​    因为不是所有的PDF恶意样本都是嵌入了JavaScript代码，最近的一些PDF恶意分类器就着重于PDF文件的结构化特征。在本文，我们的目标就是攻击这些有代表性的基于文件结构化特征的分类器。</p>
+<h4 id="3-2-Target-Classififiers："><a href="#3-2-Target-Classififiers：" class="headerlink" title="3.2 Target Classififiers："></a><em>3.2 Target Classififiers：</em></h4><p>​    <strong>PDFrate：</strong>一个使用随机森林算法的分类器。</p>
+<p>​    <strong>Hidost:</strong>一个SVM分类器。</p>
+<p>​    </p>
+<hr>
+<h3 id="4-Evading-PDF-Malware-Classifiers："><a href="#4-Evading-PDF-Malware-Classifiers：" class="headerlink" title="4.  Evading PDF Malware Classifiers："></a>4.  Evading PDF Malware Classifiers：</h3><hr>
+<h3 id="5-Experiment"><a href="#5-Experiment" class="headerlink" title="5.  Experiment:"></a>5.  Experiment:</h3><h4 id="5-1-Dataset"><a href="#5-1-Dataset" class="headerlink" title="5.1 Dataset:"></a><em>5.1 Dataset:</em></h4><p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194138.png" alt=""></p>
+<h4 id="5-2-Test："><a href="#5-2-Test：" class="headerlink" title="5.2 Test："></a><em>5.2 Test：</em></h4><p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194328.png" alt=""></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194448.png" alt=""></p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>AD</tag>
+        <tag>Malware Classifiers</tag>
+        <tag>PDF</tag>
       </tags>
   </entry>
   <entry>
@@ -8670,51 +8842,166 @@ $$
       </tags>
   </entry>
   <entry>
-    <title>Automatically Evading Classififiers----A Case Study on PDF Malware Classififiers</title>
-    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Automatically%20Evading%20Classififiers----A%20Case%20Study%20on%20PDF%20Malware%20Classififiers/</url>
-    <content><![CDATA[<h1 id="【论文阅读】Automatically-Evading-Classififiers——A-Case-Study-on-PDF-Malware-Classififiers"><a href="#【论文阅读】Automatically-Evading-Classififiers——A-Case-Study-on-PDF-Malware-Classififiers" class="headerlink" title="【论文阅读】Automatically Evading Classififiers——A Case Study on PDF Malware Classififiers"></a>【论文阅读】Automatically Evading Classififiers——A Case Study on PDF Malware Classififiers</h1><blockquote>
-<p><strong>时间：2016</strong></p>
-<p><strong>作者：Weilin Xu, Yanjun Qi, and David Evans    弗吉尼亚大学</strong></p>
-<p><strong>会议：NDSS（ccf_B类）</strong></p>
+    <title>Deep Text Classifification Can be Fooled</title>
+    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/</url>
+    <content><![CDATA[<h1 id="【论文阅读】Deep-Text-Classifification-Can-be-Fooled"><a href="#【论文阅读】Deep-Text-Classifification-Can-be-Fooled" class="headerlink" title="【论文阅读】Deep Text Classifification Can be Fooled"></a>【论文阅读】<strong>Deep Text Classifification Can be Fooled</strong></h1><blockquote>
+<p><strong>时间：</strong>2017</p>
+<p><strong>作者：</strong>Bin Liang, Hongcheng Li, Miaoqiang Su, Pan Bian, Xirong Li and Wenchang Shi     中国人民大学</p>
 </blockquote>
-<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><ol>
-<li><p><strong>白盒黑盒？</strong></p>
-<p><strong>黑盒攻击</strong>，需要知道生成样本在目标模型中的输出（分类分数）和目标模型所使用的特征（粗略知道）；</p>
-</li>
-<li><p><strong>针对什么目标？</strong></p>
-<p>仅仅使用表层特征的分类器；</p>
-</li>
-<li><p><strong>攻击方法？</strong></p>
-<p>3.1 <strong>如何制造对抗样本？</strong></p>
-<p>​    使用<strong>遗传算法（GP-BASED）</strong>进行随机扰动</p>
-<p>3.2 <strong>如何判别对抗样本的恶意能力？</strong></p>
-<p>​    使用<strong><em>oracle</em></strong></p>
-</li>
-</ol>
-<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract:"></a>Abstract:</h3><p>​    在本文，我们提出了一个一般化的方法来检验分类器的鲁棒性，通过在两个PDF恶意样本分类器，PDFrate和Hidost上来检验。其关键就是随机控制一个恶意样本来找到一个对抗样本。</p>
-<p>​    我们的方法可以自动地对500个恶意样本种子中找到对于两个PDF分类器的对抗样本，我们的结果提出了一个严重的疑问，基于表面特征的分类器在面对对抗样本时是否还有效？</p>
-<hr>
-<h3 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction:"></a>1. Introduction:</h3><p>​    主要贡献：</p>
-<pre><code>1. 提出了一个一般化的方法用于自动寻找分类器的对抗样本；
-2. 制作了一个原型系统用于自动生成对抗样本；
-3. 我们的系统在对500个恶意样本种子寻找对抗样本的过程中，达到了100%的准确率。
-</code></pre><hr>
-<h3 id="2-Overview："><a href="#2-Overview：" class="headerlink" title="2. Overview："></a>2. Overview：</h3><h4 id="2-1-Finding-Evasive-Samples："><a href="#2-1-Finding-Evasive-Samples：" class="headerlink" title="2.1 Finding Evasive Samples："></a><em>2.1 Finding Evasive Samples</em>：</h4><p>​    <strong>整体思路：</strong></p>
-<p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901185852.png" alt=""></p>
-<p>​    <strong><em>oracle</em></strong>用于判断一个样本是否具有恶意行为；</p>
-<hr>
-<h3 id="3-PDF-Malware-and-Classifiers"><a href="#3-PDF-Malware-and-Classifiers" class="headerlink" title="3. PDF Malware and Classifiers"></a>3. PDF Malware and Classifiers</h3><h4 id="3-1-PDFmalware"><a href="#3-1-PDFmalware" class="headerlink" title="3.1 PDFmalware:"></a><em>3.1 PDFmalware:</em></h4><p>​    PDF文件的整体结构：</p>
-<p>​        <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901191527.png" alt=""></p>
-<p>​    早些的PDF恶意样本一般使用JavaScript嵌入，用户双击打开时出发执行恶意脚本。</p>
-<p>​    因为不是所有的PDF恶意样本都是嵌入了JavaScript代码，最近的一些PDF恶意分类器就着重于PDF文件的结构化特征。在本文，我们的目标就是攻击这些有代表性的基于文件结构化特征的分类器。</p>
-<h4 id="3-2-Target-Classififiers："><a href="#3-2-Target-Classififiers：" class="headerlink" title="3.2 Target Classififiers："></a><em>3.2 Target Classififiers：</em></h4><p>​    <strong>PDFrate：</strong>一个使用随机森林算法的分类器。</p>
-<p>​    <strong>Hidost:</strong>一个SVM分类器。</p>
+<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract:"></a>Abstract:</h3><p>​    在这篇文章，我们提出了一种有效的生成文本对抗样本的方法，并且揭示了一个很重要但被低估的事实：基于DNN的文本分类器很容易被对抗样本攻击。</p>
+<p>​    具体来说，面对不同的对抗场景，通过计算输入的代价梯度(白盒攻击)或生成一系列被遮挡的测试样本(黑盒攻击)来识别对分类重要的文本项。（<u>这句不是很懂，什么叫’ the text items that are important for classifification‘？</u>）</p>
+<p>​    基于这些项目，我们设计了三种扰动策略，insertion，modification，removal，用于生成对抗样本。实验结果表明基于我们的方法生成的对抗样本可以成功地欺骗主流的在字符等级和单词等级的DNN文本分类器。</p>
+<p>​    对抗样本可以被扰动到任意理想的类中而不降低其效率。（？）同时，被引入的扰动很难被察觉。</p>
+<p>​    <span id="more"></span></p>
+<h3 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction:"></a>1. Introduction:</h3><p>​    在文本中，即使很小的扰动也会使一个字母或者单词完全变化，这会导致句子不能被辨识。故如果直接将应用于多媒体（图片，音频）的算法应用到文本上，得到的对抗样本的原意就会改变，而且很大程度上变成人类无法理解的句子。</p>
+<p>​    在这片论文里，我们提出了一种生成对抗样本的有效方法。与直接简单插入扰动相比，我们设计了三种扰动策略：<em>insertion</em>, <em>modifification</em>, and <em>removal</em>，并且引入了自然语言文本水印（<em>natural language watermarking</em>）技术用于生成对抗样本。</p>
+<p>​    理论上，生成一个好的对抗样本很大程度上依赖于对目标分类模型的信息。在这里我们根据不同情形，使用了白盒攻击和黑盒攻击。</p>
+<p>​    为了普遍性，我们使用了字符等级的模型和单词等级的模型作为受害者。我们的实验结果证明基于DNN的文本分类器在面对对抗样本攻击时是脆弱的。</p>
+<h3 id="2-Target-Models-and-Datasets"><a href="#2-Target-Models-and-Datasets" class="headerlink" title="2. Target Models and Datasets:"></a>2. Target Models and Datasets:</h3><p>​    这里使用的文本分类器是Zhang et al. 2015《Character-level Convolutional Networks foe Text Classification》，数据集是Lehmann et al.2014的DBpedia ontology dataset（一个多语言知识库），里面包括560000个训练样本和70000个测试样本，涵盖14个high-level 类，比如公司类、建筑类、电影类等。</p>
+<p>​    在把样本送进网络前，需要用独热编码法（one-hot representation）对每个字母编码成一个向量。通过网络的六个卷积层、三个全连接层，最终会被分到14个类中。</p>
+<h3 id="3-White-Box-Attacks"><a href="#3-White-Box-Attacks" class="headerlink" title="3. White-Box-Attacks:"></a><u>3. White-Box-Attacks:</u></h3><h4 id="3-1-FGSM算法："><a href="#3-1-FGSM算法：" class="headerlink" title="3.1 FGSM算法："></a>3.1 FGSM算法：</h4><p>​    FGSM是Goodfellow在2015年提出的对图片生成对抗样本的经典算法。使用类似的思路来在文本领域生成对抗样本结果并不好：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210830214227.png" alt=""></p>
+<h4 id="3-2-Idenfitying-Classification-important-Items"><a href="#3-2-Idenfitying-Classification-important-Items" class="headerlink" title="3.2    Idenfitying Classification-important Items:"></a>3.2    Idenfitying Classification-important Items:</h4><p>​        在白盒攻击中，我们需要定位文本中对于分类器的分类结果起到很大作用的文本段（通过计算代价梯度）。在这里，我们使用<strong><em>Hot Training Phrases</em> (HTPs)</strong>代表最常使用的短语：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831150703.png" alt=""></p>
+<p>​        HTPS表明了用什么短语/词去做扰动，但是没有说在哪里做。在这里使用<strong><em>Hot Sample Phrases</em> (HSPs)</strong>来表明在哪里做扰动。</p>
+<h4 id="3-3-Attacking-Character-level-DNN"><a href="#3-3-Attacking-Character-level-DNN" class="headerlink" title="3.3    Attacking Character-level DNN:"></a>3.3    Attacking Character-level DNN:</h4><p>​        我们的方法是一种targeted攻击，可以指定对抗样本的误导类型。</p>
+<h5 id="3-3-1-Insertion-Strategy（插入策略）"><a href="#3-3-1-Insertion-Strategy（插入策略）" class="headerlink" title="3.3.1 Insertion Strategy（插入策略）:"></a>3.3.1 Insertion Strategy（插入策略）:</h5><p>​            在某个HSP前插入一个HTP，就可以达到效果：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831151929.png" alt=""></p>
+<p>​            由上图可以看到，将某个<strong>HTP</strong>（<em>historic</em>）插入到<strong>HSP</strong>（<em>principal stock exchange of Uganda. It was founded</em>）之前，就可以使一个公司的分类文本变为对建筑的分类。</p>
+<p>​            实际上，我们通常需要进行多次插入，但插入次数过多会影响样本的效用和可读性，为了解决这个问题，这里引入NL水印技术（<em>Natural Language watermarking technique</em>）。该技术可以通过语义或句法操作将所有权水印隐形地嵌入到普通文本中,虽然我们的攻击目标与NL水印有本质的不同，但我们可以借用它的思想来构造对抗样本。实际上，扰动可以看作是一种水印，并以类似的方式嵌入到样本中。</p>
+<p>​            在这里，我们拓展这个思路，在样本中插入<strong>Presupposition</strong>(读者熟知的模糊短语)和 <strong>semantically empty phrases</strong>（可有可无的短语），有没有他们，在读者看来，原文的意思不会改变。</p>
+<p>​            总的来说，我们考虑将各种HTPS组合成一个语法单元后再嵌入到文本中，新的单元可以是生成的可有可无的资料，或者甚至是不会改变文本原意的伪造的资料。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831154859.png" alt=""></p>
+<p>​            <strong>特别的，通过互联网搜索或者查找一些数据集，我们可以找到与插入点很相关的资料，包括一些期望的目标分类的HTPs。</strong></p>
+<p>​            由于我们不能总是找到合适的HTPs，所以提出一个新概念——伪造的事实（forged fact），也就是插入很难证伪的HTPs。例如：</p>
+<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Deep%20Text%20Classifification%20Can%20be%20Fooled/20210831154910.png" alt=""></p>
+<p>​            此外，我们排除了伪造的事实，这些事实可以通过检索他们在网上的相反证据而被否认。</p>
+<h5 id="3-3-2-Modification-Strategy（修改策略）："><a href="#3-3-2-Modification-Strategy（修改策略）：" class="headerlink" title="3.3.2 Modification Strategy（修改策略）："></a>3.3.2 Modification Strategy（修改策略）：</h5><p>​            Moidfication就是轻微修改一些HSP。</p>
+<p>​            为了让修改不被人类观察者发现，我们采用了typo-based watermarking 技术。具体的说，一个HSP可以通过两种方式来被修改：</p>
+<p>​            1. 从相关的语料库中选择常见的拼写错误来替换它；</p>
+<p>​            2. 把它的一些字符修改成类似的外观（例如小写字母’l’与阿拉伯数字‘1’很像）。</p>
+<p>​            <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831160407.png" alt=""></p>
+<p>​            由上图可以看出，这种方式对分类结果的扰动是巨大的。</p>
+<h5 id="3-3-3-Removal-Strategy（移除策略）"><a href="#3-3-3-Removal-Strategy（移除策略）" class="headerlink" title="3.3.3 Removal Strategy（移除策略）:"></a>3.3.3 Removal Strategy（移除策略）:</h5><p>​            移除策略单独使用也许并不能足够有效地影响预测结果，但是可以很大程度上降低原始预测类型的置信度。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831161007.png" alt=""></p>
+<p>​            由上图可以看出，移除’<strong><em>British</em></strong>‘可以导致原始预测类型的置信度下降了35%。</p>
+<h5 id="3-3-4-Combination-of-Three-Strategies"><a href="#3-3-4-Combination-of-Three-Strategies" class="headerlink" title="3.3.4 Combination of Three Strategies:"></a>3.3.4 Combination of Three Strategies:</h5><p>​            如图6所示，单靠去除策略改变输出分类往往是困难的。但是，通过与其他策略相结合，可以避免对原文进行过多的修改或插入。在实践中，我们常常结合以上三种策略来制作微妙的对抗样本。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831161638.png" alt=""></p>
+<p>​            以图7为例，通过去除一个HSP、插入一个伪造事实和修改一个HSP，可以成功地改变输出分类，但单独应用上述任何扰动都失败。具体来说，删除、插入和修改仅使置信度分别下降27.3 %、17.5 %和10.1 %，保持预测类不变。</p>
+<h3 id="4-Black-Box-Attack"><a href="#4-Black-Box-Attack" class="headerlink" title="4. Black-Box-Attack:"></a>4. Black-Box-Attack:</h3><p>暂略</p>
+<h3 id="5-Evaluation："><a href="#5-Evaluation：" class="headerlink" title="5.  Evaluation："></a>5.  Evaluation：</h3><h4 id="5-1-我们的方法能否执行有效的源-目标误分类攻击"><a href="#5-1-我们的方法能否执行有效的源-目标误分类攻击" class="headerlink" title="5.1 我们的方法能否执行有效的源/目标误分类攻击?"></a>5.1 我们的方法能否执行有效的源/目标误分类攻击?</h4><p>​    <strong><em>答：</em></strong>在众多测试集中，只有DBpedia ontology数据集是一个多分类数据集，故我们在其中随机选取了一些样本：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210831165135.png" alt=""></p>
+<h4 id="5-2-所生成的对抗样本能否避免被人类观察者认出来，并同时保持其功能性？"><a href="#5-2-所生成的对抗样本能否避免被人类观察者认出来，并同时保持其功能性？" class="headerlink" title="5.2 所生成的对抗样本能否避免被人类观察者认出来，并同时保持其功能性？"></a>5.2 所生成的对抗样本能否避免被人类观察者认出来，并同时保持其功能性？</h4><p><strong><em>答：</em></strong>我们找了23个学生。他们对项目不了解，然后每个人给20个文本，其中一半是加扰的。让他们分到14个类中，如果他们觉得哪个文本不对劲，让他们指出来。</p>
+<p>​            他们总的分类正确率是94.2%，10个对抗样本的正确率是94.8%。所以实用性还是有的。</p>
+<p>​            他们标注出了240项修改处，其中12项符合真实的修改。但实际上我们做了594处修改。</p>
+<h4 id="5-3-我们的方法足够有效吗？"><a href="#5-3-我们的方法足够有效吗？" class="headerlink" title="5.3 我们的方法足够有效吗？"></a>5.3 我们的方法足够有效吗？</h4><p><strong><em>答：</em></strong>实验中计算梯度和找HTPs花了116小时。14个类的HTPs每个类花了8.29小时。对所有的adversarial示例只执行一次计算。制作一个对抗性的样品大约需要10到20分钟。对于对手来说，获得理想的对抗样本是可以接受的。实际上，她或他愿意花更多的时间来做这件事。</p>
+<h3 id="6-Realted-Works"><a href="#6-Realted-Works" class="headerlink" title="6. Realted Works:"></a>6. Realted Works:</h3><p>​    <strong>可以做的方向：</strong>1.自动生成对抗样本；（然而，Papernot等人(Papernot et al. 2016a)提出了一种基于雅可比矩阵的数据集增强技术，该技术可以在不访问其模型、参数或训练数据的情况下，在有限对输入输出的基础上，为目标dnn提供替代模型。作者还表明，使用替代模型也可以有效地制作对抗样本，以攻击目标DNN。）2.迁移、黑盒攻击；</p>
 <p>​    </p>
-<hr>
-<h3 id="4-Evading-PDF-Malware-Classifiers："><a href="#4-Evading-PDF-Malware-Classifiers：" class="headerlink" title="4.  Evading PDF Malware Classifiers："></a>4.  Evading PDF Malware Classifiers：</h3><hr>
-<h3 id="5-Experiment"><a href="#5-Experiment" class="headerlink" title="5.  Experiment:"></a>5.  Experiment:</h3><h4 id="5-1-Dataset"><a href="#5-1-Dataset" class="headerlink" title="5.1 Dataset:"></a><em>5.1 Dataset:</em></h4><p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194138.png" alt=""></p>
-<h4 id="5-2-Test："><a href="#5-2-Test：" class="headerlink" title="5.2 Test："></a><em>5.2 Test：</em></h4><p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194328.png" alt=""></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901194448.png" alt=""></p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>AD</tag>
+        <tag>NLP</tag>
+        <tag>DNN</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers</title>
+    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/</url>
+    <content><![CDATA[<h1 id="【论文阅读】Generic-Black-Box-End-to-End-Attack-Against-State-of-the-art-API-Call-Based-Malware-Classifiers"><a href="#【论文阅读】Generic-Black-Box-End-to-End-Attack-Against-State-of-the-art-API-Call-Based-Malware-Classifiers" class="headerlink" title="【论文阅读】Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers"></a>【论文阅读】Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers</h1><blockquote>
+<p><strong>作者：Ishai Rosenberg </strong></p>
+<p><strong>大学：Ben-Gurion University of the Negev</strong></p>
+<p><strong>时间：2018.6.4</strong></p>
+</blockquote>
+<h3 id="1-做了什么？"><a href="#1-做了什么？" class="headerlink" title="1. 做了什么？"></a>1. 做了什么？</h3><ul>
+<li><p>​    对一个通过机器学习训练的，通过API调用来分类恶意软件的分类器的攻击。</p>
+<p>​    这个攻击可以使分类器不能成功识别恶意软件，并且不改变原有软件的功能。</p>
+</li>
+<li><p>​    实现了<strong>GADGET</strong>，一个可以直接将二进制恶意软件文件转换为分类器无法检测的二进制文件，<strong>并不需要访问文件源代码。</strong></p>
+</li>
+</ul>
+<h3 id="2-一些概念："><a href="#2-一些概念：" class="headerlink" title="2. 一些概念："></a>2. 一些概念：</h3><h4 id="2-1-Machine-learning-malware-classififiers（基于机器学习的恶意软件分类器）"><a href="#2-1-Machine-learning-malware-classififiers（基于机器学习的恶意软件分类器）" class="headerlink" title="2.1 Machine learning malware classififiers（基于机器学习的恶意软件分类器）"></a>2.1 Machine learning malware classififiers（基于机器学习的恶意软件分类器）</h4><p>​    优点：1. 可以自动训练，节省时间；</p>
+<p>​                2. 只要分类器并不是基于指纹特征或者某个特定的特征（如Hash值）来分类，面对不可见威胁时泛化能力较强。</p>
+<h4 id="2-2-Adversarial-Examples（对抗样本）"><a href="#2-2-Adversarial-Examples（对抗样本）" class="headerlink" title="2.2 Adversarial Examples（对抗样本）"></a>2.2 Adversarial Examples（对抗样本）</h4><p><strong>对输入样本故意添加一些人无法察觉的细微的干扰，导致模型以高置信度给出一个错误的输出。</strong></p>
+<ol>
+<li><strong>可以针对一张已经有正确分类的image，对其进行细微的像素修改，可以在DNN下被错分为其他label。</strong></li>
+</ol>
+<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-ed60089ae25c81ba2677ec34ffa2a47f_720w.jpg" alt=""></p>
+<p>​    样本x的label为熊猫，在对x添加部分干扰后，在人眼中仍然分为熊猫，但对深度模型，却将其错分为长臂猿，且给出了高达99.3%的置信度。</p>
+<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-59a3afcc069df94927ffe1efd62822e9_720w.jpg" alt=""></p>
+<p>像素攻击：改动图片上的一个像素，就能让神经网络认错图，甚至还可以诱导它返回特定的结果。</p>
+<p>改动图片上的一个像素，就能让神经网络认错图，甚至还可以诱导它返回特定的结果</p>
+<p><strong>2. 同样，根据DNN，很容易产生一张在人眼下毫无意义的image，但是在DNN中能够获得高confidence的label。</strong></p>
+<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-0390bba1f2c35220c8b099b8ab0f4ebc_720w.jpg" alt=""></p>
+<p>两种EA算法生成的样本，这些样本人类完全无法识别，但深度学习模型会以高置信度对它们进行分类，例如将噪声识别为狮子。</p>
+<h5 id="2-2-1：-Adversarial-examples-for-API-sequences-生成API序列对抗样本与生成图像对抗样本并不同"><a href="#2-2-1：-Adversarial-examples-for-API-sequences-生成API序列对抗样本与生成图像对抗样本并不同" class="headerlink" title="2.2.1： Adversarial examples for API sequences(生成API序列对抗样本与生成图像对抗样本并不同):"></a>2.2.1： Adversarial examples for API sequences(生成API序列对抗样本与生成图像对抗样本并不同):</h5><ol>
+<li>API序列由长度可变的离散符号组成，但图像可以用固定维度的矩阵表示为矩阵，且矩阵的值是连续的。</li>
+<li>对于对抗API序列，其必须验证原始的恶意功能是完整的。</li>
+<li><strong>对抗样本的迁移性</strong>：针对一种模型的对抗样本通常对另一种模型也奏效，即使这两个模型不是用同一数据集训练的。</li>
+</ol>
+<h4 id="2-3-几种攻击方法："><a href="#2-3-几种攻击方法：" class="headerlink" title="2.3 几种攻击方法："></a>2.3 几种攻击方法：</h4><blockquote>
+<p><strong>White-box attack</strong>：白盒攻击，对模型和训练集完全了解。</p>
+<p><strong>Black-box attack</strong>：黑盒攻击：对模型不了解，对训练集不了解或了解很少。</p>
+<p><strong>Real-word attack</strong>：在真实世界攻击。如将对抗样本打印出来，用手机拍照识别。</p>
+<p><strong>targeted attack</strong>：使得图像都被错分到给定类别上。</p>
+<p><strong>non-target attack</strong>：事先不知道需要攻击的网络细节，也不指定预测的类别，生成对抗样本来欺骗防守方的网络。</p>
+<p><strong>mimicry attack</strong>: 编写恶意的exploit，该exp模拟良性代码系统调用的痕迹，因为能够逃逸检测。</p>
+<p><strong>disguise attack:</strong> 仅修改系统调用的参数使良性系统调用生成恶意行为 。</p>
+<p><strong>No-op attack</strong>: 添加语义的no-ops-系统调用，其没有影响，或者是不相干的影响，即，打开一个不存在的文件。</p>
+<p><strong>Equivalence attack</strong>: 使用一个不同的系统调用来达到恶意的目的.</p>
+</blockquote>
+<h4 id="2-4-decision-boundary-决策界限"><a href="#2-4-decision-boundary-决策界限" class="headerlink" title="2.4 decision boundary(决策界限)"></a>2.4 decision boundary(决策界限)</h4><h4 id="2-5-end-to-end"><a href="#2-5-end-to-end" class="headerlink" title="2.5 end-to-end:"></a>2.5 end-to-end:</h4><h4 id="2-6-结果分类："><a href="#2-6-结果分类：" class="headerlink" title="2.6 结果分类："></a>2.6 结果分类：</h4><p>虑一个二分问题，即将实例分成正类（positive）或负类（negative）。对一个二分问题来说，会出现四种情况。如果一个实例是正类并且也被 预测成正类，即为真正类（True positive）,如果实例是负类被预测成正类，称之为假正类（False positive）。相应地，如果实例是负类被预测成负类，称之为真负类（True negative）,正类被预测成负类则为假负类（false negative）。</p>
+<p>列联表如下表所示，1代表正类，0代表负类。（预测正确：true，预测是正类：positive）</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+<th>预测</th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td>1</td>
+<td>0</td>
+<td>合计</td>
+</tr>
+<tr>
+<td>实际</td>
+<td>1</td>
+<td>True Positive（TP）</td>
+<td>False Negative（FN）</td>
+<td>Actual Positive(TP+FN)</td>
+</tr>
+<tr>
+<td></td>
+<td>0</td>
+<td>False Positive（FP)</td>
+<td>True Negative(TN)</td>
+<td>Actual Negative(FP+TN)</td>
+</tr>
+<tr>
+<td>合计</td>
+<td></td>
+<td>Predicted Positive(TP+FP)</td>
+<td>Predicted Negative(FN+TN)</td>
+<td>TP+FP+FN+TN</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>从列联表引入两个新名词。</p>
+<p>其一是真正类率(true positive rate ,TPR), 计算公式为 <em>TPR=TP</em>/ ( <em>TP</em>+ <em>FN</em>)，刻画的是分类器所识别出的 正实例占所有正实例的比例。</p>
+<p>另外一个是负正类率(false positive rate, FPR),计算公式为 <em>FPR= FP / (FP + TN)，</em>计算的是分类器错认为负类的正实例占所有负实例的比例。</p>
+<p>还有一个真负类率（True Negative Rate，TNR），也称为specificity,计算公式为TNR= <em>TN</em>/ ( <em>FP</em>+ <em>TN</em>) = 1 - <em>FPR</em>。</p>
+<h3 id="3-如何实现？"><a href="#3-如何实现？" class="headerlink" title="3. 如何实现？"></a>3. 如何实现？</h3><p>一些问题：程序调用API的过程；</p>
 ]]></content>
       <categories>
         <category>Paper</category>
@@ -8722,7 +9009,6 @@ $$
       <tags>
         <tag>AD</tag>
         <tag>Malware Classifiers</tag>
-        <tag>PDF</tag>
       </tags>
   </entry>
   <entry>
@@ -8993,230 +9279,6 @@ $$
       <tags>
         <tag>AD</tag>
         <tag>NLP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>A novel Android malware detection system-adaption of flter‑based  feature selection methods</title>
-    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91A%20novel%20Android%20malware%20detection%20system%20adaption%20of%20flter%E2%80%91based%20%20feature%20selection%20methods/</url>
-    <content><![CDATA[<h1 id="【论文阅读】A-novel-Android-malware-detection-system-adaption-of-flter‑based-feature-selection-methods"><a href="#【论文阅读】A-novel-Android-malware-detection-system-adaption-of-flter‑based-feature-selection-methods" class="headerlink" title="【论文阅读】A novel Android malware detection system: adaption of flter‑based  feature selection methods"></a>【论文阅读】A novel Android malware detection system: adaption of flter‑based  feature selection methods</h1><blockquote>
-<p><strong>时间：</strong>2021</p>
-<p><strong>作者：</strong> <strong>Durmuş Özkan Şahin</strong>   <strong>Oğuz Emre Kural</strong>   <strong>· Sedat Akleylek</strong>   <strong>Erdal Kılıç</strong></p>
-</blockquote>
-<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><ol>
-<li><strong>二分类</strong>，<strong>静态</strong>代码检测；</li>
-<li>创新点主要在<strong>特征提取</strong>（已经有的方法+文本分类的方法）上，分类器用的各种现成的方法；</li>
-</ol>
-<hr>
-<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract:"></a>Abstract:</h3><p>​    在本研究中，提出了一个基于过滤器特征选择方法的，原创的安卓端恶意软件追踪系统。</p>
-<p>​    该方法是一个在机器学习的基础上的<strong>静态</strong>安卓恶意软件追踪方法。在所开发的系统中，使用应用程序文件中提取的权限作为特征。八个不同的特征选择方法被用于维度降低，以减少运行时间，提升机器学习算法的效率。</p>
-<p>​    其中四种方法应用于安卓恶意样本分类，其余四种方法是从文本分类研究中采用的，其从提取特征和分类结果两方面对方法进行了比较，在对结果进行检验时，表明所采用的方法提高了分类算法的效率，可以在本领域中使用。</p>
-<hr>
-<span id="more"></span>
-<h3 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction:"></a>1. Introduction:</h3><h4 id="1-1-如何提取相关特征？"><a href="#1-1-如何提取相关特征？" class="headerlink" title="1.1 如何提取相关特征？"></a>1.1 如何提取相关特征？</h4><p>​    <strong>Shabtai (2012)</strong>介绍了Andromaly架构，其中包含不同的特征选取方法和分类方法。</p>
-<p>​    <strong>Zhao（2015）</strong>提出了一个特征选择方法FrequelSel，其基于无害样本和恶意样本的频率特征差异。</p>
-<p>​    <strong>Xu （2016）</strong>提出了一个新的安卓恶意样本追踪方法ICCdetector，他们使用CFS（Correlation </p>
-<p>Based Feature Selection）在许多特征向量中做特征提取。</p>
-<p>​    <strong>Morales-Ortega（2016）</strong>提出了一种可以在恶意软件分析和检测设备上本地运行的方法，他们使用不同的特征选择方法和分类方法进行了对比实验。</p>
-<p>​    <strong>Bhattacharya and Goswami (2018) </strong>提出了一种通过通过混合基于community的粗略设置特征选择方法（community-based rough set feature selection method）来进行特征选择的新方法。</p>
-<p>​    <strong>Peynirci et al. (2020) </strong>提出了Delta IDF方法，其通过选择具有最高IDF（NLP中的）无害样本和最低IDF的恶意样本来提取特征。在特征提取中使用了字符串，API调用序列，权限等来作为特征。</p>
-<p>​    <strong>Ananya et al. (2020) </strong>提出了一种安卓恶意样本追踪的动态分析技术。</p>
-<p>​    <strong>Kouliaridis et al. (2021)</strong>使用了两个特征选取算法和八个不同的分类器进行了比较试验。</p>
-<p>​    <strong>Jung et al. (2021) </strong>在Gini Importance 和 domaind 知识上进行了特征提取。使用了API调用序列和应用权限。</p>
-<p>​    <strong>Liu et al. (2021)</strong>使用非监督学习进行了安卓恶意样本的特征提取。</p>
-<h4 id="1-2-Contribution"><a href="#1-2-Contribution" class="headerlink" title="1.2 Contribution:"></a>1.2 Contribution:</h4><p>​    <strong>主要贡献：</strong></p>
-<ol>
-<li>提出了一个基于过滤器特征选择方法的，原创的安卓端恶意软件追踪系统（<strong>静态检查</strong>）；<ol>
-<li>基于文本分类的特征选择方法对现有的属性选择方法进行替代是适应于Android恶意软件检测系统的。因此，不使用所有的权限，而是选择了最具特色的权限，提高了分类算法的性能；</li>
-<li>比较给出各度量得到的允许度和分类结果。在检查结果时，所提出的系统使用的特征比现有的检测系统少；</li>
-<li>从我们所采用的特征提取方法中得到的结果总体上所得到的特征比其他方法少；</li>
-<li>实验结果更好，run的时间更短，分类效果更佳；</li>
-<li>一些矩阵与贪婪方法相结合形成各种属性子集。这些创建的属性子集在用大量classifer进行测试时表现出了显著的性能。</li>
-</ol>
-</li>
-</ol>
-<hr>
-<h3 id="2-Preliminaries："><a href="#2-Preliminaries：" class="headerlink" title="2. Preliminaries："></a>2. Preliminaries：</h3><h4 id="2-1-Feature-extraction（如何处理APK文件）："><a href="#2-1-Feature-extraction（如何处理APK文件）：" class="headerlink" title="2.1 Feature extraction（如何处理APK文件）："></a>2.1 Feature extraction（如何处理APK文件）：</h4><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901113521.png" alt=""></p>
-<h4 id="2-2-Feature-selection（提取特征）："><a href="#2-2-Feature-selection（提取特征）：" class="headerlink" title="2.2 Feature selection（提取特征）："></a>2.2 Feature selection（提取特征）：</h4><p>​        特征选择技术分为三类：<strong>flter-based</strong>，wrapper-based，embedded methods.</p>
-<p>​        <strong>在基于过滤的技术中，就是在所有属性中选择最好的k个属性，而不使用剩余的属性。各种基于统计或信息论的技术被用来寻找最佳的k个特征。</strong></p>
-<p>​        基于Wrapper的技术在操作上与过滤技术类似，但在搜索策略上，选择是用遗传算法等启发式方法代替统计技术进行的。</p>
-<p>​        特征选择过程是在机器学习算法的训练阶段进行的。特征选择是通过找到影响在训练阶段创建的模型性能的最佳子集来进行的。</p>
-<h4 id="2-3-The-proposed-Android-malware-detection-system："><a href="#2-3-The-proposed-Android-malware-detection-system：" class="headerlink" title="2.3 The proposed Android malware detection system："></a>2.3 <strong>The proposed Android malware detection</strong> system：</h4><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901115235.png" alt=""></p>
-<p>​    </p>
-<hr>
-<h3 id="3-Experimental-settings："><a href="#3-Experimental-settings：" class="headerlink" title="3.  Experimental settings："></a>3.  Experimental settings：</h3><h4 id="3-1-datasets："><a href="#3-1-datasets：" class="headerlink" title="3.1 datasets："></a>3.1 datasets：</h4><p>​    3000恶意样本（VirusShare dataset ），3000无害样本（APKPure）</p>
-<h4 id="3-2-Classifcation-algorithms"><a href="#3-2-Classifcation-algorithms" class="headerlink" title="3.2 Classifcation algorithms"></a>3.2 Classifcation algorithms</h4><h4 id="3-3-Performance-measure"><a href="#3-3-Performance-measure" class="headerlink" title="3.3 Performance measure"></a>3.3 Performance measure</h4><hr>
-<h3 id="4-Results-and-discussions"><a href="#4-Results-and-discussions" class="headerlink" title="4. Results and discussions:"></a>4. Results and discussions:</h3><h4 id="4-1-Results-of-performed-experiments"><a href="#4-1-Results-of-performed-experiments" class="headerlink" title="4.1 Results of performed experiments:"></a>4.1 Results of performed experiments:</h4><p>数据处理：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901120437.png" alt=""></p>
-<p>分类结果（部分）：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901151407.png" alt=""></p>
-<p>总：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901151954.png" alt=""></p>
-<p>与其他方法比较：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20210901152049.png" alt=""></p>
-<hr>
-<h3 id=""><a href="#" class="headerlink" title=" "></a> </h3><p>​    </p>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>Malware Classifiers</tag>
-        <tag>Android</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>A Benchmark API Call Dataset For Windows PE Malware Classification</title>
-    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91A%20Benchmark%20API%20Call%20Dataset%20For%20Windows%20PE%20Malware%20Classification/</url>
-    <content><![CDATA[<h1 id="【论文阅读】A-Benchmark-API-Call-Dataset-For-Windows-PE-Malware-Classification"><a href="#【论文阅读】A-Benchmark-API-Call-Dataset-For-Windows-PE-Malware-Classification" class="headerlink" title="【论文阅读】A Benchmark API Call Dataset For Windows PE Malware Classification"></a>【论文阅读】A Benchmark API Call Dataset For Windows PE Malware Classification</h1><blockquote>
-<p><strong>作者：Ferhat Ozgur Catak（土耳其）</strong></p>
-<p>​            <strong>Ahmet Faruk Yazi（土耳其）</strong></p>
-<p><strong>时间：2021.2.23</strong></p>
-<p><strong>关键词：恶意软件分析，网络空间安全，数据集，沙箱环境，恶意软件分类</strong></p>
-</blockquote>
-<h3 id="1-Abstract"><a href="#1-Abstract" class="headerlink" title="1. Abstract"></a>1. Abstract</h3><p>​    在Windows操作系统中，系统API调用的使用在监控恶意PE程序中是一个很有前途的方法。这个方法被定义为在安全隔离的沙箱环境中运行恶意软件，记录其调用的Windows系统API，再顺序分析这些调用。<br>​    在这里，我们在隔离沙箱中分析了7107个属于不同家族（病毒，后门，木马等）的恶意软件，并把这些分析结果转化为了不同分类算法和方法可以使用的形式。<br>​    <strong>首先</strong>，我们会解释如何得到这些恶意软件；<strong>其次</strong>，我们会解释如何将这些软件捆绑至家族中；<strong>最后，</strong>我们会描述如何使用这些数据集来通过不同的方法实现恶意软件的分类。</p>
-<hr>
-<span id="more"></span>
-<h3 id="2-Introduction"><a href="#2-Introduction" class="headerlink" title="2. Introduction"></a>2. Introduction</h3><h4 id="2-1-简单介绍了恶意软件"><a href="#2-1-简单介绍了恶意软件" class="headerlink" title="2.1 简单介绍了恶意软件"></a>2.1 简单介绍了恶意软件</h4><h4 id="2-2-恶意软件与恶意软件识别之间的竞争"><a href="#2-2-恶意软件与恶意软件识别之间的竞争" class="headerlink" title="2.2 恶意软件与恶意软件识别之间的竞争"></a>2.2 恶意软件与恶意软件识别之间的竞争</h4><p>​    相互促进</p>
-<h4 id="2-3-变形恶意软件（Metamorphic-malware）"><a href="#2-3-变形恶意软件（Metamorphic-malware）" class="headerlink" title="2.3 变形恶意软件（Metamorphic malware）"></a>2.3 变形恶意软件（Metamorphic malware）</h4><p>​        恶意软件家族里很先进的一种，这种软件可以持续不断的改变自身源代码以此改变自身结构，通过这种方式来改变自身代码特征。还有，这种软件可能还可以通过强度反算（counter-analysis）来识别自身运行的环境，以此来隐藏自身的恶意功能。</p>
-<p>​        变形恶意软件很难识别。</p>
-<h4 id="2-4-恶意软件的识别："><a href="#2-4-恶意软件的识别：" class="headerlink" title="2.4 恶意软件的识别："></a>2.4 恶意软件的识别：</h4><p>​        所有恶意软件都会有恶意行为以达成其目的，如果可以很好的分析恶意行为，就可以做成恶意软件的识别与分类。<br>​        恶意软件的识别包括了很多需要解决的问题，例如在汇编中不正确的跳转操作码，PE文本段代码隐藏，代码加密。本研究收集了现有的恶意软件及其变式，例如WannaCry，Zeus，特别是在Github上。</p>
-<p>​        我们通过在VirusTotal网站上寻找每个恶意软件的哈希值，从而获得了得到了其家族类。</p>
-<p>​        最后，所有我们记录的行为都是在Cuckoo沙盒环境中运行的。</p>
-<p>​        我们发现几乎所有恶意软件都会使用很多方法改变其行为，但即使这样，恶意软件还是有一个目标，有一个确定的模式来达到此目标。还有，恶意软件会做出一些不必要的API调用，但其还是可以被一个训练好的分析器识别，因为其行为模式是相同的。</p>
-<p>​        恶意软件分析被视为网络空间安全的一个分支，其由两方面组成：</p>
-<h5 id="1-静态分析-："><a href="#1-静态分析-：" class="headerlink" title="1. 静态分析 ："></a><strong>1. 静态分析 </strong>：</h5><p>​                静态分析可以可以定义为通过执行一个孤立的环境检查可执行文件而不查看实际指令。例如MD5校验和，其通过反病毒检测攻击识别，查找字符串。</p>
-<h5 id="2-动态分析"><a href="#2-动态分析" class="headerlink" title="2. 动态分析"></a>2. 动态分析</h5><p>​                动态分析指运行恶意程序来理解其功能，观察其表现，识别其技术指标。几乎所有的重要行为都包含API调用序列。</p>
-<p>​        <strong>大多数动态分析领域的研究都只关注分类算法，有个基本问题是没有标准的数据集来检查所提出模型的效率。</strong></p>
-<p>​        <strong>我们在Github上分享了我们的数据集：<a href="https://github.com/ocatak/malware_api_class">https://github.com/ocatak/malware_api_class</a> ，该数据集包含了基于Cuckoo沙箱的已知恶意软件执行和基于VirusTotal的文件MD5特征分类的原始数据。</strong></p>
-<hr>
-<h3 id="3-Methods"><a href="#3-Methods" class="headerlink" title="3. Methods"></a>3. Methods</h3><h4 id="3-1-Windows-API-Calls："><a href="#3-1-Windows-API-Calls：" class="headerlink" title="3.1 Windows API Calls："></a>3.1 Windows API Calls：</h4><p>​    软件安全知识，略</p>
-<h4 id="3-2-Cuckoo-SandBox"><a href="#3-2-Cuckoo-SandBox" class="headerlink" title="3.2 Cuckoo SandBox"></a>3.2 Cuckoo SandBox</h4><p>​    免费软件，高度集成，开源，可以自动分析Winodws,OS X,Linux,Android系统下的恶意文件。</p>
-<h4 id="3-3-VirusTotal"><a href="#3-3-VirusTotal" class="headerlink" title="3.3 VirusTotal"></a>3.3 VirusTotal</h4><p>​    可以在线免费分析文件或者URL。其提供了一个API，可以不通过浏览器来提供分析结果，可以自动分析。其以JSON文件的形式提供分析结果，不同反病毒应用引擎和浏览器的分析结果会分开存放。</p>
-<h4 id="3-4-数据集生成"><a href="#3-4-数据集生成" class="headerlink" title="3.4 数据集生成"></a>3.4 数据集生成</h4><p>​    本文的数据集有着简单明了的结构。数据集以CVS格式文件提供来提高互操作性，而且并不需要特定的软件或者库来读取他们。数据由来自不同Github页面的Git命令实施收集，数据集中的每一行都是在沙箱中分析的Windows操作系统的API调用序列。</p>
-<p>​    数据集的生成过程如下：</p>
-<p>​    <strong>1. 沙箱环境准备：</strong></p>
-<p>​    分析机器使用Ubuntu系统，将Cuckoo沙箱安装在其中，分析机运行虚拟服务，Windows操作系统就运行在虚拟服务上，同时关掉防火墙，系统升级。</p>
-<p>​    <strong>2. 分析恶意软件:</strong></p>
-<p>​    虚拟机中同时运行超过20000个恶意软件，应用程序会将每个恶意软件的分析结果写入MongoDB数据库，分析结果中包含恶意软件的行为数据，这些数据都是恶意软件在Win7上的API调用请求。</p>
-<p>​    <strong>3. 处理API调用：</strong></p>
-<p>​    我们在数据集中收集到了342种API调用，这些调用会被以0-341来标记，以此生成一个新数据集。我们使用了该数据集中至少有10个不同API调用的恶意软件的分析结果。</p>
-<p>​    <strong>4. 使用Virus Total公用API分析恶意软件：</strong></p>
-<p>​    作为分析的补充，所有在数据集中的恶意软件也会被Virus Total所分析，通过这种方式，每个恶意软件都会被不同的反病毒引擎所分析，结果会被记录。</p>
-<p>​    <strong>5. 处理分析结果：</strong></p>
-<p>​    Virus Total服务使用大约66个不同的防病毒应用程序进行文件分析。利用我们利用这个服务得到的每个研究结果，我们识别了每个恶意软件的家族。通过观察，我们发现对于同一恶意软件，不同的防病毒应用程序给出了不同的结果。此外，观察到并非每一个防病毒应用程序都能检测到一些恶意软件。因此，在检测每一个恶意软件类时，认为它属于所有分析中的大多数类。</p>
-<p><img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210716172418.png" alt=""></p>
-<p><img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210716172518.png" alt=""></p>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>AD</tag>
-        <tag>Malware Classifiers</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers</title>
-    <url>/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/</url>
-    <content><![CDATA[<h1 id="【论文阅读】Generic-Black-Box-End-to-End-Attack-Against-State-of-the-art-API-Call-Based-Malware-Classifiers"><a href="#【论文阅读】Generic-Black-Box-End-to-End-Attack-Against-State-of-the-art-API-Call-Based-Malware-Classifiers" class="headerlink" title="【论文阅读】Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers"></a>【论文阅读】Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers</h1><blockquote>
-<p><strong>作者：Ishai Rosenberg </strong></p>
-<p><strong>大学：Ben-Gurion University of the Negev</strong></p>
-<p><strong>时间：2018.6.4</strong></p>
-</blockquote>
-<h3 id="1-做了什么？"><a href="#1-做了什么？" class="headerlink" title="1. 做了什么？"></a>1. 做了什么？</h3><ul>
-<li><p>​    对一个通过机器学习训练的，通过API调用来分类恶意软件的分类器的攻击。</p>
-<p>​    这个攻击可以使分类器不能成功识别恶意软件，并且不改变原有软件的功能。</p>
-</li>
-<li><p>​    实现了<strong>GADGET</strong>，一个可以直接将二进制恶意软件文件转换为分类器无法检测的二进制文件，<strong>并不需要访问文件源代码。</strong></p>
-</li>
-</ul>
-<h3 id="2-一些概念："><a href="#2-一些概念：" class="headerlink" title="2. 一些概念："></a>2. 一些概念：</h3><h4 id="2-1-Machine-learning-malware-classififiers（基于机器学习的恶意软件分类器）"><a href="#2-1-Machine-learning-malware-classififiers（基于机器学习的恶意软件分类器）" class="headerlink" title="2.1 Machine learning malware classififiers（基于机器学习的恶意软件分类器）"></a>2.1 Machine learning malware classififiers（基于机器学习的恶意软件分类器）</h4><p>​    优点：1. 可以自动训练，节省时间；</p>
-<p>​                2. 只要分类器并不是基于指纹特征或者某个特定的特征（如Hash值）来分类，面对不可见威胁时泛化能力较强。</p>
-<h4 id="2-2-Adversarial-Examples（对抗样本）"><a href="#2-2-Adversarial-Examples（对抗样本）" class="headerlink" title="2.2 Adversarial Examples（对抗样本）"></a>2.2 Adversarial Examples（对抗样本）</h4><p><strong>对输入样本故意添加一些人无法察觉的细微的干扰，导致模型以高置信度给出一个错误的输出。</strong></p>
-<ol>
-<li><strong>可以针对一张已经有正确分类的image，对其进行细微的像素修改，可以在DNN下被错分为其他label。</strong></li>
-</ol>
-<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-ed60089ae25c81ba2677ec34ffa2a47f_720w.jpg" alt=""></p>
-<p>​    样本x的label为熊猫，在对x添加部分干扰后，在人眼中仍然分为熊猫，但对深度模型，却将其错分为长臂猿，且给出了高达99.3%的置信度。</p>
-<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-59a3afcc069df94927ffe1efd62822e9_720w.jpg" alt=""></p>
-<p>像素攻击：改动图片上的一个像素，就能让神经网络认错图，甚至还可以诱导它返回特定的结果。</p>
-<p>改动图片上的一个像素，就能让神经网络认错图，甚至还可以诱导它返回特定的结果</p>
-<p><strong>2. 同样，根据DNN，很容易产生一张在人眼下毫无意义的image，但是在DNN中能够获得高confidence的label。</strong></p>
-<p><img src="%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/v2-0390bba1f2c35220c8b099b8ab0f4ebc_720w.jpg" alt=""></p>
-<p>两种EA算法生成的样本，这些样本人类完全无法识别，但深度学习模型会以高置信度对它们进行分类，例如将噪声识别为狮子。</p>
-<h5 id="2-2-1：-Adversarial-examples-for-API-sequences-生成API序列对抗样本与生成图像对抗样本并不同"><a href="#2-2-1：-Adversarial-examples-for-API-sequences-生成API序列对抗样本与生成图像对抗样本并不同" class="headerlink" title="2.2.1： Adversarial examples for API sequences(生成API序列对抗样本与生成图像对抗样本并不同):"></a>2.2.1： Adversarial examples for API sequences(生成API序列对抗样本与生成图像对抗样本并不同):</h5><ol>
-<li>API序列由长度可变的离散符号组成，但图像可以用固定维度的矩阵表示为矩阵，且矩阵的值是连续的。</li>
-<li>对于对抗API序列，其必须验证原始的恶意功能是完整的。</li>
-<li><strong>对抗样本的迁移性</strong>：针对一种模型的对抗样本通常对另一种模型也奏效，即使这两个模型不是用同一数据集训练的。</li>
-</ol>
-<h4 id="2-3-几种攻击方法："><a href="#2-3-几种攻击方法：" class="headerlink" title="2.3 几种攻击方法："></a>2.3 几种攻击方法：</h4><blockquote>
-<p><strong>White-box attack</strong>：白盒攻击，对模型和训练集完全了解。</p>
-<p><strong>Black-box attack</strong>：黑盒攻击：对模型不了解，对训练集不了解或了解很少。</p>
-<p><strong>Real-word attack</strong>：在真实世界攻击。如将对抗样本打印出来，用手机拍照识别。</p>
-<p><strong>targeted attack</strong>：使得图像都被错分到给定类别上。</p>
-<p><strong>non-target attack</strong>：事先不知道需要攻击的网络细节，也不指定预测的类别，生成对抗样本来欺骗防守方的网络。</p>
-<p><strong>mimicry attack</strong>: 编写恶意的exploit，该exp模拟良性代码系统调用的痕迹，因为能够逃逸检测。</p>
-<p><strong>disguise attack:</strong> 仅修改系统调用的参数使良性系统调用生成恶意行为 。</p>
-<p><strong>No-op attack</strong>: 添加语义的no-ops-系统调用，其没有影响，或者是不相干的影响，即，打开一个不存在的文件。</p>
-<p><strong>Equivalence attack</strong>: 使用一个不同的系统调用来达到恶意的目的.</p>
-</blockquote>
-<h4 id="2-4-decision-boundary-决策界限"><a href="#2-4-decision-boundary-决策界限" class="headerlink" title="2.4 decision boundary(决策界限)"></a>2.4 decision boundary(决策界限)</h4><h4 id="2-5-end-to-end"><a href="#2-5-end-to-end" class="headerlink" title="2.5 end-to-end:"></a>2.5 end-to-end:</h4><h4 id="2-6-结果分类："><a href="#2-6-结果分类：" class="headerlink" title="2.6 结果分类："></a>2.6 结果分类：</h4><p>虑一个二分问题，即将实例分成正类（positive）或负类（negative）。对一个二分问题来说，会出现四种情况。如果一个实例是正类并且也被 预测成正类，即为真正类（True positive）,如果实例是负类被预测成正类，称之为假正类（False positive）。相应地，如果实例是负类被预测成负类，称之为真负类（True negative）,正类被预测成负类则为假负类（false negative）。</p>
-<p>列联表如下表所示，1代表正类，0代表负类。（预测正确：true，预测是正类：positive）</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-<th>预测</th>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td></td>
-<td></td>
-<td>1</td>
-<td>0</td>
-<td>合计</td>
-</tr>
-<tr>
-<td>实际</td>
-<td>1</td>
-<td>True Positive（TP）</td>
-<td>False Negative（FN）</td>
-<td>Actual Positive(TP+FN)</td>
-</tr>
-<tr>
-<td></td>
-<td>0</td>
-<td>False Positive（FP)</td>
-<td>True Negative(TN)</td>
-<td>Actual Negative(FP+TN)</td>
-</tr>
-<tr>
-<td>合计</td>
-<td></td>
-<td>Predicted Positive(TP+FP)</td>
-<td>Predicted Negative(FN+TN)</td>
-<td>TP+FP+FN+TN</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>从列联表引入两个新名词。</p>
-<p>其一是真正类率(true positive rate ,TPR), 计算公式为 <em>TPR=TP</em>/ ( <em>TP</em>+ <em>FN</em>)，刻画的是分类器所识别出的 正实例占所有正实例的比例。</p>
-<p>另外一个是负正类率(false positive rate, FPR),计算公式为 <em>FPR= FP / (FP + TN)，</em>计算的是分类器错认为负类的正实例占所有负实例的比例。</p>
-<p>还有一个真负类率（True Negative Rate，TNR），也称为specificity,计算公式为TNR= <em>TN</em>/ ( <em>FP</em>+ <em>TN</em>) = 1 - <em>FPR</em>。</p>
-<h3 id="3-如何实现？"><a href="#3-如何实现？" class="headerlink" title="3. 如何实现？"></a>3. 如何实现？</h3><p>一些问题：程序调用API的过程；</p>
-]]></content>
-      <categories>
-        <category>Paper</category>
-      </categories>
-      <tags>
-        <tag>AD</tag>
-        <tag>Malware Classifiers</tag>
       </tags>
   </entry>
 </search>
