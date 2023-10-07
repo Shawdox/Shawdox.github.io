@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>论文阅读 | Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Differential fuzzing" />
+  
+  
+  
+    <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
+  
+  
+  <meta name="description" content="Go or No Go: Differential Fuzzing of Native and C Libraries 时间：2023.5 作者：Alessandro Sorniotti（IBM）、Michael Weissbacher、Anil Kurmus 会议：S&amp;P‘2023  Abstract​    十多年来，Go 已经成为当今最流行的编程语言之一。Go 是一种静态类型的编译语">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文阅读">
+<meta property="og:url" content="http://example.com/2023/10/07/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Go%20or%20No%20Go%20Differential%20Fuzzing%20of%20Native%20and%20C%20Libraries/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="Go or No Go: Differential Fuzzing of Native and C Libraries 时间：2023.5 作者：Alessandro Sorniotti（IBM）、Michael Weissbacher、Anil Kurmus 会议：S&amp;P‘2023  Abstract​    十多年来，Go 已经成为当今最流行的编程语言之一。Go 是一种静态类型的编译语">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-10-07T08:19:00.000Z">
+<meta property="article:modified_time" content="2023-10-07T10:06:29.208Z">
+<meta property="article:author" content="Shaw">
+<meta property="article:tag" content="Differential fuzzing">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-【论文阅读】Go or No Go Differential Fuzzing of Native and C Libraries" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      论文阅读
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/10/07/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Go%20or%20No%20Go%20Differential%20Fuzzing%20of%20Native%20and%20C%20Libraries/" class="article-date">
+	  <time datetime="2023-10-07T08:19:00.000Z" itemprop="datePublished">十月 7, 2023</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Go-or-No-Go-Differential-Fuzzing-of-Native-and-C-Libraries"><a href="#Go-or-No-Go-Differential-Fuzzing-of-Native-and-C-Libraries" class="headerlink" title="Go or No Go: Differential Fuzzing of Native and C Libraries"></a>Go or No Go: Differential Fuzzing of Native and C Libraries</h1><blockquote>
+<p><strong>时间：</strong>2023.5</p>
+<p><strong>作者：</strong>Alessandro Sorniotti（IBM）、Michael Weissbacher、Anil Kurmus</p>
+<p><strong>会议：</strong>S&amp;P‘2023</p>
+</blockquote>
+<h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>​    十多年来，Go 已经成为当今最流行的编程语言之一。Go 是一种静态类型的编译语言，通过强类型、自动插入的边界检查和标记-清扫垃圾收集器，实现了空间和时间上的内存安全性。Go 开发人员可以即时使用大量的本地库，这些库可以作为运行时的一部分提供，也可以从社区代码中导入；或者，Go 开发人员可以直接链接到 C/C++ 库，这些库可以通过cgo功能从GO源码中调用。做出支持以上功能的这一决定的原因包括稳定性、性能和可用性。因此，<strong><u>开发人员可以在 Go 本地库或非本地代码之间做出选择</u></strong>。然而，如今人们对如何在这一决策中考虑安全问题还知之甚少。</p>
+<p>​    <u>我们的研究首次探讨了 Go 程序在本地库和非本地库之间做出选择的安全影响。</u>我们首先调查了流行的 GitHub 项目在多大程度上使用了 cgo，结果发现这种选择实际上相当流行。然后，我们设计并构建了一个differential fuzzer，它可以比较相同功能的本地和 C/C++ 实现。我们实现了该fuzzer，并在四个流行软件包（libcrypto、libpng、libssl 和 libz）上测试了其有效性，描述了结果并强调了它们的安全影响。最后，我们介绍了两个真实世界的案例研究（anti-virus evasion，包括 Gmail 中包含的反病毒扫描仪和证书透明度案例研究），并讨论了我们的differential fuzzer是如何发现具有安全影响的实现差异的。我们的工作促使 Golang zlib 发生了变化，这些变化已经发布。</p>
+<h2 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h2><p>​    Go 是一种编程语言，因其安全优势和并发性而广受赞誉。该语言默认情况下是内存安全的，并克服了 C/C++ 等语言数十年来的安全问题。然而，在使用库来利用常用功能时，开发人员面临着一个艰难的选择： 使用本地 Go 库或非本地 C/C++（使用编译器/运行时的 cgo 功能）。目前，影响这一决定的因素包括可用性、性能和稳定性。</p>
+<p>​    尽管 Go 提供了大量库，但并非所有库都能在 Go 中使用，开发人员可能需要按照规范重新实现功能。这不仅成本高昂，而且容易出错。在决定使用本地库还是非本地库时，性能也是一个考虑因素，因为使用 C/C++ 库可以为大量使用此类功能的程序带来性能优势。稳定性是另一个因素，因为库的成熟度各不相同。Go 库是从零开始实现的，但可能缺少大量的测试，而 C/C++ 库可能有陈旧的代码，但经过了数十年的测试。</p>
+<p>​    除了可用性、性能、稳定性等因素外，在做出这一决定时还应考虑安全问题，因为无论哪种方案都会涉及安全问题。如果开发人员重用现有的 C 代码，就有可能引入 C 库中可能存在的内存安全问题。如果重新实现 Go，则可能在规范或实现层面引入 C 库版本中不存在的新缺陷。更广义地说，不同设计和实现的库可能会在输出结果上产生偏差。从语言理论的角度来看，我们可以将其视为解析树差异攻击的一个实例[38]、[30]、[37]：相同协议/语言存在两种不同的解析器，它们之间的差异可能会导致安全问题。遗憾的是，对于无上下文语言来说，正式验证两个解析器是否等价是无法判定的[29]，这就促使人们采用灰盒模糊（greybox fuzzing）等实用但不完整的方法。</p>
+<h2 id="Contribution"><a href="#Contribution" class="headerlink" title="Contribution"></a>Contribution</h2><p>​    在本文中，我们提出并实现了一种方法，用于研究在 Go 编程语言中使用本地库与非本地库所产生的问题。特别是，我们通过使用差分模糊（differential fuzzing）来寻找这两类库之间的差异，重点关注差异可能导致广泛安全影响的常用库。</p>
+<p>​    我们采用了一种有效的差异模糊方法，利用现有的fuzzer，针对两个库版本中的任何一个生成输入语料库和harness。对于每个输入，我们都会比较两个库的输出（可能还有其他副作用）。例如，就解析库而言，如果相同的输入导致两种不同的解析输出，则可能存在潜在缺陷。仅根据解析结果，并不能立即看出两个解析器中哪个偏离了规范（如果有的话）。具体来说，安全漏洞可能仅仅来自于差异，而不是一个解析器误解了输入。</p>
+<p>​    我们还介绍了两个案例研究：在第一个案例研究中，我们展示了如何破坏 libz 压缩数据的标头，从而导致 19 种反病毒（AV）产品和 Gmail 中包含的 AV 扫描仪出现漏洞。在附录提供的第二部分中，我们展示了解析器错配如何影响证书透明度基础设施。对于所有受影响的产品，我们都启动了负责任的披露程序。</p>
+<p>​    我们的研究结果表明<strong>(i)</strong> 从安全角度来看，Go 开发人员在 Go 实现库和 C/C++ 库之间的选择并不简单；<strong>(ii)</strong> 差异模糊是发现库实现之间解析器差异的有效方法，应在 C 库的 Go 再实现中系统地使用；<strong>(iii)</strong> 解析器差异可能导致重要的安全问题。</p>
+<p>​    <strong>我们的主要贡献有：</strong></p>
+<ol>
+<li>我们设计了一种定制的differential fuzzer，以发现 Go 程序所用库中与安全相关的解析差异；</li>
+<li>我们实现了设计原型，支持广泛使用的 libcrypto、libpng、libssl 和 libz 库；</li>
+<li>我们对fuzzer的独特差异进行了广泛评估，并分析了根本原因和其潜在影响；</li>
+<li>我们介绍了两个case-study，其中发现的解析器差异导致了安全问题。一项研究影响了证书透明度，一项研究绕过了在 Virus Total 和 Gmail 上测试的 19 个防病毒系统。</li>
+</ol>
+<p>​    </p>
+<h2 id="Some-Questions"><a href="#Some-Questions" class="headerlink" title="Some Questions"></a>Some Questions</h2><h3 id="1-How-to-choose-generate-Fuzz-target-for-C-C-library"><a href="#1-How-to-choose-generate-Fuzz-target-for-C-C-library" class="headerlink" title="1. How to choose/generate Fuzz target for C/C++ library?"></a>1. How to choose/generate Fuzz target for C/C++ library?</h3><p>​    作者选用的待测试库（asn1,libpng,libcrypto,libzip）在go中都有现成的fuzz harness，然后将其转化为等价的C/C++ api，生成C的fuzz harness.</p>
+<h3 id="2-How-to-locate-the-root-cause-of-discrepancy"><a href="#2-How-to-locate-the-root-cause-of-discrepancy" class="headerlink" title="2. How to locate the root cause of discrepancy?"></a>2. How to locate the root cause of discrepancy?</h3><p>​    没说，大概率是手动分析。</p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Differential-fuzzing/" rel="tag">Differential fuzzing</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2023/09/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Security-Risks-of-Porting-C-Programs-to-WebAssembly/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">(论文阅读)Security Risks of Porting C Programs to WebAssembly</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Go-or-No-Go-Differential-Fuzzing-of-Native-and-C-Libraries"><span class="nav-number">1.</span> <span class="nav-text">Go or No Go: Differential Fuzzing of Native and C Libraries</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Abstract"><span class="nav-number">1.1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Background"><span class="nav-number">1.2.</span> <span class="nav-text">Background</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Contribution"><span class="nav-number">1.3.</span> <span class="nav-text">Contribution</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Some-Questions"><span class="nav-number">1.4.</span> <span class="nav-text">Some Questions</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-How-to-choose-generate-Fuzz-target-for-C-C-library"><span class="nav-number">1.4.1.</span> <span class="nav-text">1. How to choose&#x2F;generate Fuzz target for C&#x2F;C++ library?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-How-to-locate-the-root-cause-of-discrepancy"><span class="nav-number">1.4.2.</span> <span class="nav-text">2. How to locate the root cause of discrepancy?</span></a></li></ol></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+<footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2023 Shaw All Rights Reserved.
+        
+          <span id="busuanzi_container_site_pv">
+            本站总访问量<span id="busuanzi_value_site_pv"></span>次
+          </span>
+          <span class="post-meta-divider">|</span>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            本站访客数<span id="busuanzi_value_site_uv"></span>人
+          </span>
+          <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+
+  
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'true', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+<!-- Gaug.es Analytics -->
+<script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', 'true');
+    t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+    t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+<!-- End Gaug.es Analytics -->
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+	<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2439014eb270056ee1808a49956fe114";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<!-- Tencent Analytics -->
+	<script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId={{ theme.tencent_analytics }}";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+<!-- End Tencent Analytics -->
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>

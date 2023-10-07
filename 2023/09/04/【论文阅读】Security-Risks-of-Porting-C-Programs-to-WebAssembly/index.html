@@ -13,21 +13,19 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="(论文阅读)Security Risks of Porting C Programs to WebAssembly 时间: 2022 作者：Quentin Stiévenart、Coen De Roover、Mohammad Ghafari 会议：Proceedings of the 37th ACM&#x2F;SIGAPP Symposium on Applied Computing  Abstract​">
+  <meta name="description" content="(论文阅读)Security Risks of Porting C Programs to WebAssembly  时间: 2022 作者：Quentin Stiévenart、Coen De Roover、Mohammad Ghafari 会议：Proceedings of the 37th ACM&#x2F;SIGAPP Symposium on Applied Computing">
 <meta property="og:type" content="article">
 <meta property="og:title" content="(论文阅读)Security Risks of Porting C Programs to WebAssembly">
 <meta property="og:url" content="http://example.com/2023/09/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Security-Risks-of-Porting-C-Programs-to-WebAssembly/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="(论文阅读)Security Risks of Porting C Programs to WebAssembly 时间: 2022 作者：Quentin Stiévenart、Coen De Roover、Mohammad Ghafari 会议：Proceedings of the 37th ACM&#x2F;SIGAPP Symposium on Applied Computing  Abstract​">
+<meta property="og:description" content="(论文阅读)Security Risks of Porting C Programs to WebAssembly  时间: 2022 作者：Quentin Stiévenart、Coen De Roover、Mohammad Ghafari 会议：Proceedings of the 37th ACM&#x2F;SIGAPP Symposium on Applied Computing">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230903171704326.png">
 <meta property="article:published_time" content="2023-09-04T10:40:18.558Z">
 <meta property="article:modified_time" content="2023-09-03T13:40:37.885Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="Vulnerability">
 <meta property="article:tag" content="AEG">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230903171704326.png">
   
     <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
   
@@ -154,55 +152,84 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="论文阅读-Security-Risks-of-Porting-C-Programs-to-WebAssembly"><a href="#论文阅读-Security-Risks-of-Porting-C-Programs-to-WebAssembly" class="headerlink" title="(论文阅读)Security Risks of Porting C Programs to WebAssembly"></a>(论文阅读)Security Risks of Porting C Programs to WebAssembly</h1><blockquote>
-<p><strong>时间:</strong> 2022</p>
-<p><strong>作者：</strong>Quentin Stiévenart、Coen De Roover、Mohammad Ghafari</p>
-<p><strong>会议：</strong>Proceedings of the 37th ACM/SIGAPP Symposium on Applied Computing</p>
-</blockquote>
-<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>​    WebAssembly是一种用于跨平台应用程序的编译目标，目前正被越来越多地使用。在本文中，我们研究了<strong>能否将 C 程序不需要大量修改直接编译到 WebAssembly 中</strong>，如果不能，移植会对其安全性产生什么影响。我们将表现出常见漏洞的17802个程序编译成64位的x86和WebAssembly二进制文件，并观察到在这些平台上执行4911个二进制文件会产生不同的结果。</p>
-<p>​    通过<u>人工检查</u>，我们找出了造成这种差异的三类根本原因：</p>
+        <h1
+id="论文阅读security-risks-of-porting-c-programs-to-webassembly">(论文阅读)Security
+Risks of Porting C Programs to WebAssembly</h1>
 <blockquote>
-<ol>
+<p><strong>时间:</strong> 2022</p>
+<p><strong>作者：</strong>Quentin Stiévenart、Coen De Roover、Mohammad
+Ghafari</p>
+<p><strong>会议：</strong>Proceedings of the 37th ACM/SIGAPP Symposium
+on Applied Computing</p>
+</blockquote>
+<h1 id="abstract">Abstract</h1>
+<p>​
+WebAssembly是一种用于跨平台应用程序的编译目标，目前正被越来越多地使用。在本文中，我们研究了<strong>能否将
+C 程序不需要大量修改直接编译到 WebAssembly
+中</strong>，如果不能，移植会对其安全性产生什么影响。我们将表现出常见漏洞的17802个程序编译成64位的x86和WebAssembly二进制文件，并观察到在这些平台上执行4911个二进制文件会产生不同的结果。</p>
+<p>​ 通过<u>人工检查</u>，我们找出了造成这种差异的三类根本原因：</p>
+<blockquote>
+<ol type="1">
 <li>使用了不同的标准库实现；</li>
 <li>WebAssembly 缺乏安全措施；</li>
 <li>执行环境的语义不同。</li>
 </ol>
 </blockquote>
-<p>​    我们描述了我们的观察结果，并讨论了从安全角度来看至关重要、最需要开发人员关注的问题。我们的结论是，将现有的 C 程序编译成 WebAssembly 进行跨平台发布可能需要对源代码进行调整；否则，WebAssembly 应用程序的安全性可能会受到威胁。<br><span id="more"></span></p>
-<h2 id="Backgrouond"><a href="#Backgrouond" class="headerlink" title="Backgrouond"></a>Backgrouond</h2><p>​    由于WebAssembly作为编译器目标的时间尚短，许多工具链（如各种语言的编译器后端和相互竞争的 WebAssembly 运行时）还不像现有目标那样成熟。事实上，最近的一项研究表明，<u><strong>为本地二进制程序开发的程序在编译成 WebAssembly 后，其语义可能并不完全相同</strong></u>[30]。我们将在这项工作的基础上进一步研究，旨在找出造成这些差异的根本原因。从安全角度来看，这一点尤为重要：如果本地应用程序和 WebAssembly 应用程序的安全保证不匹配，那么在将应用程序移植到 WebAssembly 时就必须意识到这一点。</p>
-<h2 id="Contribution"><a href="#Contribution" class="headerlink" title="Contribution"></a>Contribution</h2><p>​    我们特别研究了在执行编译为64位x86 native代码和WebAssembly代码的C程序时，我们是否能观察到代码输出结果上的差异。为此，我们将17802个包含常见问题的C程序分别编译成本地二进制代码和 WebAssembly 二进制代码。运行这些程序，并调查在执行过程中是否能观察到任何差异，即本地可执行文件的行为与相应的 WebAssembly 可执行文件的行为不同。</p>
-<p>​    我们在4911个程序中观察到了这种差异，这可能会使C应用程序移植到 WebAssembly 变得复杂。我们调查了所有暴露出行为差异的情况，并确定了其根本原因。我们总共发现了三类根本原因：不同的标准库实现、WebAssembly 缺乏安全措施以及执行环境的语义偏差。我们描述了每种根源，并举例说明了表现出不同行为的实例。重要的是，我们强调了可能影响 WebAssembly 应用程序安全性的原因。总之，这项工作有以下贡献：</p>
+<p>​
+我们描述了我们的观察结果，并讨论了从安全角度来看至关重要、最需要开发人员关注的问题。我们的结论是，将现有的
+C 程序编译成 WebAssembly
+进行跨平台发布可能需要对源代码进行调整；否则，WebAssembly
+应用程序的安全性可能会受到威胁。 <span id="more"></span> ## Backgrouond</p>
+<p>​
+由于WebAssembly作为编译器目标的时间尚短，许多工具链（如各种语言的编译器后端和相互竞争的
+WebAssembly
+运行时）还不像现有目标那样成熟。事实上，最近的一项研究表明，<u><strong>为本地二进制程序开发的程序在编译成
+WebAssembly
+后，其语义可能并不完全相同</strong></u>[30]。我们将在这项工作的基础上进一步研究，旨在找出造成这些差异的根本原因。从安全角度来看，这一点尤为重要：如果本地应用程序和
+WebAssembly 应用程序的安全保证不匹配，那么在将应用程序移植到 WebAssembly
+时就必须意识到这一点。</p>
+<h2 id="contribution">Contribution</h2>
+<p>​ 我们特别研究了在执行编译为64位x86
+native代码和WebAssembly代码的C程序时，我们是否能观察到代码输出结果上的差异。为此，我们将17802个包含常见问题的C程序分别编译成本地二进制代码和
+WebAssembly
+二进制代码。运行这些程序，并调查在执行过程中是否能观察到任何差异，即本地可执行文件的行为与相应的
+WebAssembly 可执行文件的行为不同。</p>
+<p>​ 我们在4911个程序中观察到了这种差异，这可能会使C应用程序移植到
+WebAssembly
+变得复杂。我们调查了所有暴露出行为差异的情况，并确定了其根本原因。我们总共发现了三类根本原因：不同的标准库实现、WebAssembly
+缺乏安全措施以及执行环境的语义偏差。我们描述了每种根源，并举例说明了表现出不同行为的实例。重要的是，我们强调了可能影响
+WebAssembly 应用程序安全性的原因。总之，这项工作有以下贡献：</p>
 <blockquote>
-<ol>
-<li>发现了编译成 WebAssembly 的 C 程序与编译成本地代码的 C 程序在执行上存在差异的三个根本原因；</li>
+<ol type="1">
+<li>发现了编译成 WebAssembly 的 C 程序与编译成本地代码的 C
+程序在执行上存在差异的三个根本原因；</li>
 <li>我们将讨论一组示例，揭示行为差异的每个根本原因，并重点讨论从安全角度来看最重要的差异；</li>
-<li>我们公开分享了4911个表现出不同行为的 C 程序的数据集，以及相应的 x86 和 WebAssembly 可执行文件。</li>
+<li>我们公开分享了4911个表现出不同行为的 C 程序的数据集，以及相应的 x86
+和 WebAssembly 可执行文件。</li>
 </ol>
 </blockquote>
-<h2 id="How-to-deal-with-the-Juliet-test-suite"><a href="#How-to-deal-with-the-Juliet-test-suite" class="headerlink" title="How to deal with the Juliet test suite?"></a>How to deal with the Juliet test suite?</h2><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230903171704326.png" alt=""></p>
-<ol>
+<h2 id="how-to-deal-with-the-juliet-test-suite">How to deal with the
+Juliet test suite?</h2>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230903171704326.png" /></p>
+<ol type="1">
 <li><p><strong>过滤掉non-determinism的程序：</strong></p>
 <ul>
 <li>将所有rand()函数的返回值替换为1；</li>
 <li>排除运行时间超过100秒的程序；</li>
 <li>每个程序运行10次，排除输出不一样的；</li>
-</ul>
-</li>
+</ul></li>
 <li><p><strong>good函数和bad函数都编译进程序：</strong></p>
-<p>同一个测试样例的good function和bad function都使用，先执行bad，再执行good</p>
-</li>
+<p>同一个测试样例的good function和bad
+function都使用，先执行bad，再执行good</p></li>
 <li><p><strong>编译为WASM的参数：</strong></p>
 <blockquote>
 <ul>
-<li><p>Clang v12.0.1</p>
-</li>
-<li><p>-O2</p>
-</li>
-<li><p>排除使用threads和sockets的函数</p>
-</li>
+<li><p>Clang v12.0.1</p></li>
+<li><p>-O2</p></li>
+<li><p>排除使用threads和sockets的函数</p></li>
 </ul>
-</blockquote>
-</li>
+</blockquote></li>
 </ol>
 
       
@@ -224,6 +251,15 @@
     
 <nav id="article-nav">
   
+    <a href="/2023/10/07/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Go%20or%20No%20Go%20Differential%20Fuzzing%20of%20Native%20and%20C%20Libraries/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          论文阅读
+        
+      </div>
+    </a>
+  
   
     <a href="/2023/08/15/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91FuzzBuilder%E5%A4%8D%E7%8E%B0/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">下一篇</strong>
@@ -241,7 +277,9 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB-Security-Risks-of-Porting-C-Programs-to-WebAssembly"><span class="nav-number">1.</span> <span class="nav-text">(论文阅读)Security Risks of Porting C Programs to WebAssembly</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Abstract"><span class="nav-number">2.</span> <span class="nav-text">Abstract</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Backgrouond"><span class="nav-number">2.1.</span> <span class="nav-text">Backgrouond</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Contribution"><span class="nav-number">2.2.</span> <span class="nav-text">Contribution</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How-to-deal-with-the-Juliet-test-suite"><span class="nav-number">2.3.</span> <span class="nav-text">How to deal with the Juliet test suite?</span></a></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BBsecurity-risks-of-porting-c-programs-to-webassembly"><span class="nav-number">1.</span> <span class="nav-text">(论文阅读)Security
+Risks of Porting C Programs to WebAssembly</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#abstract"><span class="nav-number">2.</span> <span class="nav-text">Abstract</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#contribution"><span class="nav-number">2.1.</span> <span class="nav-text">Contribution</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#how-to-deal-with-the-juliet-test-suite"><span class="nav-number">2.2.</span> <span class="nav-text">How to deal with the
+Juliet test suite?</span></a></li></ol></li></ol>
     
     </div>
   </aside>
@@ -435,5 +473,20 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>

@@ -13,12 +13,12 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="(论文复现)Finding Unstable Code via Compiler-Driven Differential Testing​    对论文《Finding Unstable Code via Compiler-Driven Differential Testing》的过程复现+代码分析。">
+  <meta name="description" content="(论文复现)Finding Unstable Code via Compiler-Driven Differential Testing ​ 对论文《Finding Unstable Code via Compiler-Driven Differential Testing》的过程复现+代码分析。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="(论文复现)CompDiff(一) 实验复现">
 <meta property="og:url" content="http://example.com/2023/07/28/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91Finding-Unstable-Code-via-Compiler-Driven-Differential-Testing/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="(论文复现)Finding Unstable Code via Compiler-Driven Differential Testing​    对论文《Finding Unstable Code via Compiler-Driven Differential Testing》的过程复现+代码分析。">
+<meta property="og:description" content="(论文复现)Finding Unstable Code via Compiler-Driven Differential Testing ​ 对论文《Finding Unstable Code via Compiler-Driven Differential Testing》的过程复现+代码分析。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731152702.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230728215257.png">
@@ -157,12 +157,20 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="论文复现-Finding-Unstable-Code-via-Compiler-Driven-Differential-Testing"><a href="#论文复现-Finding-Unstable-Code-via-Compiler-Driven-Differential-Testing" class="headerlink" title="(论文复现)Finding Unstable Code via Compiler-Driven Differential Testing"></a>(论文复现)Finding Unstable Code via Compiler-Driven Differential Testing</h1><p>​    对论文《Finding Unstable Code via Compiler-Driven Differential Testing》的过程复现+代码分析。</p>
+        <h1
+id="论文复现finding-unstable-code-via-compiler-driven-differential-testing">(论文复现)Finding
+Unstable Code via Compiler-Driven Differential Testing</h1>
+<p>​ 对论文《Finding Unstable Code via Compiler-Driven Differential
+Testing》的过程复现+代码分析。</p>
 <span id="more"></span>
-<h2 id="代码结构"><a href="#代码结构" class="headerlink" title="代码结构"></a>代码结构</h2><p>​    CompDiff的代码结构如下：</p>
+<h2 id="代码结构">代码结构</h2>
+<p>​ CompDiff的代码结构如下：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731152702.png" style="zoom: 50%;" /></p>
-<p>​    其中，<code>aflpp</code>是以AFL++ 3.15a为基础魔改的版本，<code>compilers</code>用于生成包装后的编译器，<code>examples</code>包含了作者提供的两个待测试程序和其对应构建脚本。</p>
-<h2 id="实验复现"><a href="#实验复现" class="headerlink" title="实验复现"></a>实验复现</h2><h3 id="1-生成包装编译器"><a href="#1-生成包装编译器" class="headerlink" title="1. 生成包装编译器"></a>1. 生成包装编译器</h3><p>​    从仓库下载代码，运行<code>./diff-build.sh</code>脚本：</p>
+<p>​ 其中，<code>aflpp</code>是以AFL++
+3.15a为基础魔改的版本，<code>compilers</code>用于生成包装后的编译器，<code>examples</code>包含了作者提供的两个待测试程序和其对应构建脚本。</p>
+<h2 id="实验复现">实验复现</h2>
+<h3 id="生成包装编译器">1. 生成包装编译器</h3>
+<p>​ 从仓库下载代码，运行<code>./diff-build.sh</code>脚本：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
 <span class="token builtin class-name">set</span> -e
 
@@ -183,9 +191,14 @@
 <span class="token builtin class-name">cd</span> <span class="token string">"./compilers"</span>
 <span class="token builtin class-name">source</span> build.sh
 <span class="token builtin class-name">cd</span> <span class="token punctuation">..</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    该脚本会编译魔改版的AFL和<code>compilers</code>，<code>compilers</code>利用了AFL++提供的编译器包装器（warpper）生成不同配置的包装后的编译器：</p>
+<p>​
+该脚本会编译魔改版的AFL和<code>compilers</code>，<code>compilers</code>利用了AFL++提供的编译器包装器（warpper）生成不同配置的包装后的编译器：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230728215257.png" style="zoom: 67%;" /></p>
-<p>​    对于CC和CXX，各有10个生成，其分别对应用gcc和clang使用<code>-O0</code>, <code>-O1</code>,<code>-O2</code>,<code>-O3</code>, 和<code>-Os</code>5种优化选项，2×5 = 10。具体逻辑可见/compdiff/compilers/<code>build.sh</code>：</p>
+<p>​
+对于CC和CXX，各有10个生成，其分别对应用gcc和clang使用<code>-O0</code>,
+<code>-O1</code>,<code>-O2</code>,<code>-O3</code>,
+和<code>-Os</code>5种优化选项，2×5 =
+10。具体逻辑可见/compdiff/compilers/<code>build.sh</code>：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
 <span class="token comment"># This is the building script for different compiler configurations.</span>
 
@@ -211,24 +224,32 @@
     <span class="token keyword">done</span>
     <span class="token assign-left variable">compiler_id</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$((</span>compiler_id<span class="token operator">+</span><span class="token number">1</span><span class="token variable">))</span></span>
 <span class="token keyword">done</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    其中，<code>FORKSRV_FD</code>是对应在AFL中打开的forkserver中使用的文件描述符；<code>DIFF_CONFIG</code>就是对应的优化选项，例如-O1、-O2等；<code>DIFF_ID</code>用于区分不同的编译配置（编译器+优化选项），其序号在/compdiff/compilers/config中对应如下：</p>
+<p>​
+其中，<code>FORKSRV_FD</code>是对应在AFL中打开的forkserver中使用的文件描述符；<code>DIFF_CONFIG</code>就是对应的优化选项，例如-O1、-O2等；<code>DIFF_ID</code>用于区分不同的编译配置（编译器+优化选项），其序号在/compdiff/compilers/config中对应如下：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230728221003.png" style="zoom:50%;" /></p>
-<p>​    在for循环中从config获取这些编译选项参数后，通过printf函数将对应设置写入到./compiler-base/diff-config.h文件中，该文件会被同文件夹下的config.h文件包含，并最终被diff-cc.c包装器引用，最终生成我们所需的10种编译器。</p>
-<p>​    在后续的过程中，这10中不同的编译器将会用来编译待测试项目/文件。</p>
-<h3 id="2-编译项目"><a href="#2-编译项目" class="headerlink" title="2. 编译项目"></a>2. 编译项目</h3><p>​    这里以libtiff为例，用作者已经给出的编译脚本编译（后续可以写自己的）：</p>
+<p>​
+在for循环中从config获取这些编译选项参数后，通过printf函数将对应设置写入到./compiler-base/diff-config.h文件中，该文件会被同文件夹下的config.h文件包含，并最终被diff-cc.c包装器引用，最终生成我们所需的10种编译器。</p>
+<p>​ 在后续的过程中，这10中不同的编译器将会用来编译待测试项目/文件。</p>
+<h3 id="编译项目">2. 编译项目</h3>
+<p>​
+这里以libtiff为例，用作者已经给出的编译脚本编译（后续可以写自己的）：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">./diff-instrument.sh ./examples/libtiff/build.sh<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>​    可以看到脚本自动下载了libtiff并编译，然后用上一步生成的编译器编译了10个不同的版本和一个原生版本：</p>
+<p>​
+可以看到脚本自动下载了libtiff并编译，然后用上一步生成的编译器编译了10个不同的版本和一个原生版本：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230729143953.png" style="zoom: 67%;" /></p>
 <blockquote>
 <p>PS:由于作者给出的shell脚本都是直接从github仓库下载最新版的软件，最新版本的xpdf样例(2023.7.29)在我的虚拟机上存在QTso库不兼容问题，但这个bug不重要，故避免浪费时间见这里使用libtiff做演示。</p>
 </blockquote>
-<h3 id="3-Fuzzing"><a href="#3-Fuzzing" class="headerlink" title="3. Fuzzing"></a>3. Fuzzing</h3><p>​    直接运行魔改后的AFL即可：</p>
+<h3 id="fuzzing">3. Fuzzing</h3>
+<p>​ 直接运行魔改后的AFL即可：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ ./aflpp/afl-fuzz -y <span class="token number">10</span> -i examples/libtiff/seeds -o examples/libtiff/findings -Y <span class="token string">"out.file"</span> -- ./examples/libtiff/bin/tiffcp -M -i @@ out.file<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>​    但其由于需要将程序结果输出到文件中，大量的I/O操作以及每轮需要运行10+1个forkserver，导致其速度还不如正常的1/10：</p>
+<p>​
+但其由于需要将程序结果输出到文件中，大量的I/O操作以及每轮需要运行10+1个forkserver，导致其速度还不如正常的1/10：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230729145245.png" style="zoom:50%;" /></p>
-<p>​    当然，这是在虚拟机内跑的结果，实际物理机会略快一些，但不会快太多。</p>
-<p>​    </p>
-<p>​    </p>
+<p>​
+当然，这是在虚拟机内跑的结果，实际物理机会略快一些，但不会快太多。</p>
+<p>​</p>
+<p>​</p>
 
       
     </div>
@@ -275,7 +296,8 @@
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0-Finding-Unstable-Code-via-Compiler-Driven-Differential-Testing"><span class="nav-number">1.</span> <span class="nav-text">(论文复现)Finding Unstable Code via Compiler-Driven Differential Testing</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84"><span class="nav-number">1.1.</span> <span class="nav-text">代码结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E5%A4%8D%E7%8E%B0"><span class="nav-number">1.2.</span> <span class="nav-text">实验复现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%94%9F%E6%88%90%E5%8C%85%E8%A3%85%E7%BC%96%E8%AF%91%E5%99%A8"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. 生成包装编译器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%BC%96%E8%AF%91%E9%A1%B9%E7%9B%AE"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 编译项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Fuzzing"><span class="nav-number">1.2.3.</span> <span class="nav-text">3. Fuzzing</span></a></li></ol></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0finding-unstable-code-via-compiler-driven-differential-testing"><span class="nav-number">1.</span> <span class="nav-text">(论文复现)Finding
+Unstable Code via Compiler-Driven Differential Testing</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84"><span class="nav-number">1.1.</span> <span class="nav-text">代码结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E5%A4%8D%E7%8E%B0"><span class="nav-number">1.2.</span> <span class="nav-text">实验复现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E5%8C%85%E8%A3%85%E7%BC%96%E8%AF%91%E5%99%A8"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. 生成包装编译器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E9%A1%B9%E7%9B%AE"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 编译项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fuzzing"><span class="nav-number">1.2.3.</span> <span class="nav-text">3. Fuzzing</span></a></li></ol></li></ol></li></ol>
     
     </div>
   </aside>
@@ -469,5 +491,20 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>

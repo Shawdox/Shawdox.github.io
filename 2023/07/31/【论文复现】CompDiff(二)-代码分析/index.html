@@ -13,37 +13,18 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="​    CompDiff与AFL++源码对比分析。">
+  <meta name="description" content="​ CompDiff与AFL++源码对比分析。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="(论文复现)CompDiff(二) 代码分析">
 <meta property="og:url" content="http://example.com/2023/07/31/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91CompDiff(%E4%BA%8C)-%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="​    CompDiff与AFL++源码对比分析。">
+<meta property="og:description" content="​ CompDiff与AFL++源码对比分析。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731102213.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731102356.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731102540.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731102633.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731102732.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731094948.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731110619.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731112112.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731112328.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731113845.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731114400.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731114819.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731144910.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731153108.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731153230.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731153815.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731185057.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731185557.png">
 <meta property="article:published_time" content="2023-07-31T07:29:55.000Z">
 <meta property="article:modified_time" content="2023-09-04T07:12:46.000Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="Fuzzing">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731102213.png">
   
     <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
   
@@ -170,42 +151,71 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <p>​    CompDiff与AFL++源码对比分析。</p>
+        <p>​ CompDiff与AFL++源码对比分析。</p>
 <span id="more"></span>
-<h2 id="Code-analysis"><a href="#Code-analysis" class="headerlink" title="Code  analysis"></a>Code  analysis</h2><p>​    CompDiff与AFL++源码对比分析。</p>
-<h3 id="1-相关数据结构变化"><a href="#1-相关数据结构变化" class="headerlink" title="1. 相关数据结构变化"></a>1. 相关数据结构变化</h3><h4 id="1-1-struct-afl-state"><a href="#1-1-struct-afl-state" class="headerlink" title="1.1 struct afl_state"></a>1.1 struct afl_state</h4><p>​    在afl_state中， 相较于原本AFL++的数据结构，这里增加了一些变量用于处理多forserver。首先是增加了多forkserver数组<code>diff_srv</code>以及diff forkserver数量<code>diff_num</code>：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731102213.png" alt=""></p>
-<p>​    增加了用于保存输出文件的指针<code>output_file</code>：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731102356.png" alt=""></p>
-<p>​    增加了用于确定输出文件的<code>flag_use_output</code>：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731102540.png" alt=""></p>
-<p>​    增加了用于对比输出文件差异的bitmap <code>virgin_diff</code>：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731102633.png" alt=""></p>
-<p>​    增加了用于保存差异数量的<code>total_diffs</code>和<code>total_diffs</code>：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731102732.png" alt=""></p>
-<p>​    </p>
-<h3 id="2-主函数——afl-fuzz-c"><a href="#2-主函数——afl-fuzz-c" class="headerlink" title="2. 主函数——afl-fuzz.c"></a>2. 主函数——afl-fuzz.c</h3><blockquote>
+<h2 id="code-analysis">Code analysis</h2>
+<p>​ CompDiff与AFL++源码对比分析。</p>
+<h3 id="相关数据结构变化">1. 相关数据结构变化</h3>
+<h4 id="struct-afl_state">1.1 struct afl_state</h4>
+<p>​ 在afl_state中，
+相较于原本AFL++的数据结构，这里增加了一些变量用于处理多forserver。首先是增加了多forkserver数组<code>diff_srv</code>以及diff
+forkserver数量<code>diff_num</code>：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731102213.png" /></p>
+<p>​ 增加了用于保存输出文件的指针<code>output_file</code>：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731102356.png" /></p>
+<p>​ 增加了用于确定输出文件的<code>flag_use_output</code>：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731102540.png" /></p>
+<p>​ 增加了用于对比输出文件差异的bitmap <code>virgin_diff</code>：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731102633.png" /></p>
+<p>​
+增加了用于保存差异数量的<code>total_diffs</code>和<code>total_diffs</code>：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731102732.png" /></p>
+<p>​</p>
+<h3 id="主函数afl-fuzz.c">2. 主函数——afl-fuzz.c</h3>
+<blockquote>
 <p>简要分析CompDiff与AFL++中alf-fucc.c文件异同。</p>
 </blockquote>
-<h4 id="2-1-afl-fsrv-init"><a href="#2-1-afl-fsrv-init" class="headerlink" title="2.1 afl_fsrv_init()"></a>2.1 afl_fsrv_init()</h4><p>​    在main函数开头，原生forkserver完成初始化后，接着调用afl_fsrv_init()完成对另外10个待测试forkserver的初始化：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731094948.png" alt=""></p>
-<p>​    在这之前，afl_state_init()函数会将<code>afl-&gt;diff_num</code>设置为10，然后CompDiff就会初始化diff_num个forkserver，该由于该部分forkserver用于后续的比较，故我们称这部分forkserver为<u>diff forkserver</u>。afl_fsrv_init()函数与AFL++无异。</p>
-<h4 id="2-2-参数处理"><a href="#2-2-参数处理" class="headerlink" title="2.2 参数处理"></a>2.2 参数处理</h4><p>​    在参数处理方面，CompDiff增加了<code>-y</code>与<code>-Y</code>选项:</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731110619.png" alt=""></p>
+<h4 id="afl_fsrv_init">2.1 afl_fsrv_init()</h4>
+<p>​
+在main函数开头，原生forkserver完成初始化后，接着调用afl_fsrv_init()完成对另外10个待测试forkserver的初始化：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731094948.png" /></p>
+<p>​
+在这之前，afl_state_init()函数会将<code>afl-&gt;diff_num</code>设置为10，然后CompDiff就会初始化diff_num个forkserver，该由于该部分forkserver用于后续的比较，故我们称这部分forkserver为<u>diff
+forkserver</u>。afl_fsrv_init()函数与AFL++无异。</p>
+<h4 id="参数处理">2.2 参数处理</h4>
+<p>​
+在参数处理方面，CompDiff增加了<code>-y</code>与<code>-Y</code>选项:</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731110619.png" /></p>
 <ul>
 <li><p><strong>-y选项：</strong></p>
-<p>-y选项用于指定diff forkserver的数量（如果不指定则默认为10），并将指定的参数存储于afl-&gt;diff_num中。</p>
-</li>
+<p>-y选项用于指定diff
+forkserver的数量（如果不指定则默认为10），并将指定的参数存储于afl-&gt;diff_num中。</p></li>
 <li><p><strong>-Y选项：</strong></p>
-<p>-Y选项用于指定输出文件的存储位置，该位用于将待测试文件的输出到用户指定的文件中（AFL++默认丢弃fuzz target 的输出）。</p>
-<p>其设置了两个参数：<code>afl-&gt;output_file</code> = optarg、<code>afl-&gt;flag_use_output</code> = 1;</p>
-</li>
+<p>-Y选项用于指定输出文件的存储位置，该位用于将待测试文件的输出到用户指定的文件中（AFL++默认丢弃fuzz
+target 的输出）。</p>
+<p>其设置了两个参数：<code>afl-&gt;output_file</code> =
+optarg、<code>afl-&gt;flag_use_output</code> = 1;</p></li>
 </ul>
-<h4 id="2-3-设置kill-signal"><a href="#2-3-设置kill-signal" class="headerlink" title="2.3 设置kill-signal"></a>2.3 设置kill-signal</h4><p>​    在设置了主forkserver的kill signal后，将diff forkservers的kill signal设置为相同值：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731112112.png" alt=""></p>
-<h4 id="2-4-设置fsrv-out-file"><a href="#2-4-设置fsrv-out-file" class="headerlink" title="2.4 设置fsrv.out_file"></a>2.4 设置fsrv.out_file</h4><p>​    fsrv.out_file是需要传入fuzz target的参数，在设置完主forkserver的参数后，将diff forkserver的参数设置为相同的值：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731112328.png" alt=""></p>
-<p>​    同时，增加了处理函数<code>setup_stdout_file_diff()</code>，其定义在diff-afl-fuzz-init.c中：</p>
+<h4 id="设置kill-signal">2.3 设置kill-signal</h4>
+<p>​ 在设置了主forkserver的kill signal后，将diff forkservers的kill
+signal设置为相同值：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731112112.png" /></p>
+<h4 id="设置fsrv.out_file">2.4 设置fsrv.out_file</h4>
+<p>​ fsrv.out_file是需要传入fuzz
+target的参数，在设置完主forkserver的参数后，将diff
+forkserver的参数设置为相同的值：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731112328.png" /></p>
+<p>​
+同时，增加了处理函数<code>setup_stdout_file_diff()</code>，其定义在diff-afl-fuzz-init.c中：</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">setup_stdout_file_diff</span><span class="token punctuation">(</span><span class="token class-name">afl_state_t</span> <span class="token operator">*</span>afl<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
      
   <span class="token comment">// 如果指定了fuzz target输出文件</span>
@@ -249,35 +259,69 @@
     <span class="token function">ck_free</span><span class="token punctuation">(</span>fn<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h4 id="2-5-shmem"><a href="#2-5-shmem" class="headerlink" title="2.5 shmem"></a>2.5 shmem</h4><p>​    在AFL中，<code>afl-&gt;shmem_testcase_mode</code>默认被置为1，setup_testcase_shmem()函数会为afl-&gt;shm_fuzz分配空间，并设置：</p>
+<h4 id="shmem">2.5 shmem</h4>
+<p>​
+在AFL中，<code>afl-&gt;shmem_testcase_mode</code>默认被置为1，setup_testcase_shmem()函数会为afl-&gt;shm_fuzz分配空间，并设置：</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c">afl<span class="token operator">-></span>fsrv<span class="token punctuation">.</span>support_shmem_fuzz <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
 afl<span class="token operator">-></span>fsrv<span class="token punctuation">.</span>shmem_fuzz_len <span class="token operator">=</span> <span class="token punctuation">(</span>u32 <span class="token operator">*</span><span class="token punctuation">)</span>map<span class="token punctuation">;</span>
 afl<span class="token operator">-></span>fsrv<span class="token punctuation">.</span>shmem_fuzz <span class="token operator">=</span> map <span class="token operator">+</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>u32<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<p>​    CompDiff在这之后会将diff forkserver的这三个参数设置为主forkserver相同的值：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731113845.png" alt=""></p>
-<p>​    然后对所有forkserver进行共享内存的初始化，配置相关环境变量：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731114400.png" alt=""></p>
-<h4 id="2-6-forkserver"><a href="#2-6-forkserver" class="headerlink" title="2.6 forkserver"></a>2.6 forkserver</h4><p>​    在AFL中，其会调用afl_fsrv_get_mapsize()函数来启动一个forkserver，这里会接着将剩下的diff forkserver也启动：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731114819.png" alt=""></p>
-<p>​    最后，将afl-&gt;virgin_diff通过memset函数置为0即可：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731144910.png" alt=""></p>
-<p>​    以上就是afl-fuzz.c主文件中的大部分改动（还有部分细节见源码）。</p>
-<h3 id="3-初始化"><a href="#3-初始化" class="headerlink" title="3. 初始化"></a>3. 初始化</h3><blockquote>
+<p>​ CompDiff在这之后会将diff
+forkserver的这三个参数设置为主forkserver相同的值：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731113845.png" /></p>
+<p>​ 然后对所有forkserver进行共享内存的初始化，配置相关环境变量：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731114400.png" /></p>
+<h4 id="forkserver">2.6 forkserver</h4>
+<p>​
+在AFL中，其会调用afl_fsrv_get_mapsize()函数来启动一个forkserver，这里会接着将剩下的diff
+forkserver也启动：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731114819.png" /></p>
+<p>​ 最后，将afl-&gt;virgin_diff通过memset函数置为0即可：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731144910.png" /></p>
+<p>​ 以上就是afl-fuzz.c主文件中的大部分改动（还有部分细节见源码）。</p>
+<h3 id="初始化">3. 初始化</h3>
+<blockquote>
 <p>afl-fuzz-init.c文件是AFL的初始化相关函数定义，这里描述了CompDiff与AFL++初始化方面的区别</p>
 </blockquote>
-<h4 id="3-1-In-afl-fuzz-init-c"><a href="#3-1-In-afl-fuzz-init-c" class="headerlink" title="3.1 In afl-fuzz-init.c"></a>3.1 In afl-fuzz-init.c</h4><h5 id="3-1-1-setup-dirs-fds"><a href="#3-1-1-setup-dirs-fds" class="headerlink" title="3.1.1 setup_dirs_fds()"></a>3.1.1 setup_dirs_fds()</h5><p>​    setup_dirs_fds()函数用于创建输出目录以及其相关子目录（例如queue、crashes、hang等），并将<code>afl-&gt;fsrv.out_dir_fd</code>，<code>afl-&gt;fsrv.dev_null_fd</code>，<code>afl-&gt;fsrv.dev_urandom_fd</code> 设置为对应的描述符。</p>
-<p>​    这里CompDiff在创建文件夹时，增加了对<code>diffs</code>文件夹的创建，其用于存储找到的discrepancy：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731153108.png" alt=""></p>
-<p>​    接下来在往afl-&gt;fsrv.plot_file中写入字符串时加入unique_diffs信息：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731153230.png" alt=""></p>
-<h5 id="3-1-2-check-binary"><a href="#3-1-2-check-binary" class="headerlink" title="3.1.2 check_binary()"></a>3.1.2 check_binary()</h5><p>​    check_binary()函数的主要作用是将fsrv.target_path设置为argv[optind]，也就是fuzz target的路径。这里增加了设置diff forkserver的相关代码：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731153815.png" alt=""></p>
-<p>​    可以看到，这里需要对比运行的二进制文件的名称必须是<code>filename</code>+<code>-</code>+<code>diff_num</code>格式，故在实验复现阶段生成的文件名称是不能随意改变的。</p>
-<h4 id="3-2-In-afl-fuzz-state-c"><a href="#3-2-In-afl-fuzz-state-c" class="headerlink" title="3.2 In afl-fuzz-state.c"></a>3.2 In afl-fuzz-state.c</h4><h5 id="3-2-1-afl-state-init"><a href="#3-2-1-afl-state-init" class="headerlink" title="3.2.1 afl_state_init()"></a>3.2.1 afl_state_init()</h5><p>​    afl_state_init()函数的定义存储于afl-fuzz-state.c，相较于AFL++，CompDiff新增了：对virgin_diff图的空间分配、对diff forkserver的相关数据结构的初始赋值：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731185057.png" alt=""></p>
-<h5 id="3-2-2-afl-state-deinit"><a href="#3-2-2-afl-state-deinit" class="headerlink" title="3.2.2 afl_state_deinit()"></a>3.2.2 afl_state_deinit()</h5><p>​    afl_state_deinit()函数用于移除并释放afl_state结构，这里增加了对diff相关数据结构的释放操作：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731185557.png" alt=""></p>
-<h3 id="4-star-DiffComp比较-核心逻辑"><a href="#4-star-DiffComp比较-核心逻辑" class="headerlink" title="4. :star:DiffComp比较-核心逻辑"></a>4. :star:DiffComp比较-核心逻辑</h3><p>​    DiffComp的核心逻辑存储在diff-afl-fuzz-init.c中，其关键比较函数存储在differential_compilers()函数中：</p>
+<h4 id="in-afl-fuzz-init.c">3.1 In afl-fuzz-init.c</h4>
+<h5 id="setup_dirs_fds">3.1.1 setup_dirs_fds()</h5>
+<p>​
+setup_dirs_fds()函数用于创建输出目录以及其相关子目录（例如queue、crashes、hang等），并将<code>afl-&gt;fsrv.out_dir_fd</code>，<code>afl-&gt;fsrv.dev_null_fd</code>，<code>afl-&gt;fsrv.dev_urandom_fd</code>
+设置为对应的描述符。</p>
+<p>​
+这里CompDiff在创建文件夹时，增加了对<code>diffs</code>文件夹的创建，其用于存储找到的discrepancy：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731153108.png" /></p>
+<p>​
+接下来在往afl-&gt;fsrv.plot_file中写入字符串时加入unique_diffs信息：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731153230.png" /></p>
+<h5 id="check_binary">3.1.2 check_binary()</h5>
+<p>​
+check_binary()函数的主要作用是将fsrv.target_path设置为argv[optind]，也就是fuzz
+target的路径。这里增加了设置diff forkserver的相关代码：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731153815.png" /></p>
+<p>​
+可以看到，这里需要对比运行的二进制文件的名称必须是<code>filename</code>+<code>-</code>+<code>diff_num</code>格式，故在实验复现阶段生成的文件名称是不能随意改变的。</p>
+<h4 id="in-afl-fuzz-state.c">3.2 In afl-fuzz-state.c</h4>
+<h5 id="afl_state_init">3.2.1 afl_state_init()</h5>
+<p>​
+afl_state_init()函数的定义存储于afl-fuzz-state.c，相较于AFL++，CompDiff新增了：对virgin_diff图的空间分配、对diff
+forkserver的相关数据结构的初始赋值：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731185057.png" /></p>
+<h5 id="afl_state_deinit">3.2.2 afl_state_deinit()</h5>
+<p>​
+afl_state_deinit()函数用于移除并释放afl_state结构，这里增加了对diff相关数据结构的释放操作：</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230731185557.png" /></p>
+<h3 id="stardiffcomp比较-核心逻辑">4. :star:DiffComp比较-核心逻辑</h3>
+<p>​
+DiffComp的核心逻辑存储在diff-afl-fuzz-init.c中，其关键比较函数存储在differential_compilers()函数中：</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">// from diff-afl-fuzz-init.c</span>
 <span class="token comment">// 比较不同输出</span>
 u8 <span class="token function">differential_compilers</span><span class="token punctuation">(</span><span class="token class-name">afl_state_t</span> <span class="token operator">*</span>afl<span class="token punctuation">,</span> <span class="token keyword">void</span> <span class="token operator">*</span>mem<span class="token punctuation">,</span> u32 len<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -403,7 +447,8 @@ u8 <span class="token function">differential_compilers</span><span class="token 
   <span class="token punctuation">&#125;</span>
   <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    differential_compilers()会在afl-fuzz-run.c中的common_fuzz_stuff()函数中被调用。</p>
+<p>​
+differential_compilers()会在afl-fuzz-run.c中的common_fuzz_stuff()函数中被调用。</p>
 
       
     </div>
@@ -450,7 +495,7 @@ u8 <span class="token function">differential_compilers</span><span class="token 
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Code-analysis"><span class="nav-number">1.</span> <span class="nav-text">Code  analysis</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%9B%B8%E5%85%B3%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%8F%98%E5%8C%96"><span class="nav-number">1.1.</span> <span class="nav-text">1. 相关数据结构变化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-struct-afl-state"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1 struct afl_state</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%B8%BB%E5%87%BD%E6%95%B0%E2%80%94%E2%80%94afl-fuzz-c"><span class="nav-number">1.2.</span> <span class="nav-text">2. 主函数——afl-fuzz.c</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-afl-fsrv-init"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 afl_fsrv_init()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E5%8F%82%E6%95%B0%E5%A4%84%E7%90%86"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 参数处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-%E8%AE%BE%E7%BD%AEkill-signal"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 设置kill-signal</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-4-%E8%AE%BE%E7%BD%AEfsrv-out-file"><span class="nav-number">1.2.4.</span> <span class="nav-text">2.4 设置fsrv.out_file</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-5-shmem"><span class="nav-number">1.2.5.</span> <span class="nav-text">2.5 shmem</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-6-forkserver"><span class="nav-number">1.2.6.</span> <span class="nav-text">2.6 forkserver</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">1.3.</span> <span class="nav-text">3. 初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-In-afl-fuzz-init-c"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 In afl-fuzz-init.c</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-1-1-setup-dirs-fds"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">3.1.1 setup_dirs_fds()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-1-2-check-binary"><span class="nav-number">1.3.1.2.</span> <span class="nav-text">3.1.2 check_binary()</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-In-afl-fuzz-state-c"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2 In afl-fuzz-state.c</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2-1-afl-state-init"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">3.2.1 afl_state_init()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2-2-afl-state-deinit"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">3.2.2 afl_state_deinit()</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-star-DiffComp%E6%AF%94%E8%BE%83-%E6%A0%B8%E5%BF%83%E9%80%BB%E8%BE%91"><span class="nav-number">1.4.</span> <span class="nav-text">4. :star:DiffComp比较-核心逻辑</span></a></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#code-analysis"><span class="nav-number">1.</span> <span class="nav-text">Code analysis</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%8F%98%E5%8C%96"><span class="nav-number">1.1.</span> <span class="nav-text">1. 相关数据结构变化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#struct-afl_state"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1 struct afl_state</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E5%87%BD%E6%95%B0afl-fuzz.c"><span class="nav-number">1.2.</span> <span class="nav-text">2. 主函数——afl-fuzz.c</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#afl_fsrv_init"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 afl_fsrv_init()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E5%A4%84%E7%90%86"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 参数处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AEkill-signal"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 设置kill-signal</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AEfsrv.out_file"><span class="nav-number">1.2.4.</span> <span class="nav-text">2.4 设置fsrv.out_file</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#shmem"><span class="nav-number">1.2.5.</span> <span class="nav-text">2.5 shmem</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#forkserver"><span class="nav-number">1.2.6.</span> <span class="nav-text">2.6 forkserver</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">1.3.</span> <span class="nav-text">3. 初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#in-afl-fuzz-init.c"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 In afl-fuzz-init.c</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#setup_dirs_fds"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">3.1.1 setup_dirs_fds()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#check_binary"><span class="nav-number">1.3.1.2.</span> <span class="nav-text">3.1.2 check_binary()</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#in-afl-fuzz-state.c"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2 In afl-fuzz-state.c</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#afl_state_init"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">3.2.1 afl_state_init()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#afl_state_deinit"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">3.2.2 afl_state_deinit()</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#stardiffcomp%E6%AF%94%E8%BE%83-%E6%A0%B8%E5%BF%83%E9%80%BB%E8%BE%91"><span class="nav-number">1.4.</span> <span class="nav-text">4. :star:DiffComp比较-核心逻辑</span></a></li></ol></li></ol>
     
     </div>
   </aside>
@@ -644,5 +689,20 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>

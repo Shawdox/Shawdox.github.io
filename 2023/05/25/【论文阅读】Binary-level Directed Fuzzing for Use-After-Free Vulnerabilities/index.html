@@ -13,15 +13,14 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="(论文阅读)Binary-level Directed Fuzzing for Use-After-Free Vulnerabilities 时间：2020 作者：Manh-Dung Nguyen（巴黎萨克雷大学CEA）、Sébastien Bardin、Richard Bonichon 会议：RAID 开源：[1]https:&#x2F;&#x2F;github.com&#x2F;strongcourage&#x2F;uafuzz ;">
+  <meta name="description" content="(论文阅读)Binary-level Directed Fuzzing for Use-After-Free Vulnerabilities  时间：2020 作者：Manh-Dung Nguyen（巴黎萨克雷大学CEA）、Sébastien Bardin、Richard Bonichon 会议：RAID 开源：[1]https:&#x2F;&#x2F;github.com&#x2F;strongcourage&#x2F;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="(论文阅读)Binary-level Directed Fuzzing for Use-After-Free Vulnerabilities">
 <meta property="og:url" content="http://example.com/2023/05/25/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Binary-level%20Directed%20Fuzzing%20for%20Use-After-Free%20Vulnerabilities/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="(论文阅读)Binary-level Directed Fuzzing for Use-After-Free Vulnerabilities 时间：2020 作者：Manh-Dung Nguyen（巴黎萨克雷大学CEA）、Sébastien Bardin、Richard Bonichon 会议：RAID 开源：[1]https:&#x2F;&#x2F;github.com&#x2F;strongcourage&#x2F;uafuzz ;">
+<meta property="og:description" content="(论文阅读)Binary-level Directed Fuzzing for Use-After-Free Vulnerabilities  时间：2020 作者：Manh-Dung Nguyen（巴黎萨克雷大学CEA）、Sébastien Bardin、Richard Bonichon 会议：RAID 开源：[1]https:&#x2F;&#x2F;github.com&#x2F;strongcourage&#x2F;">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230509225227.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230510123625.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230510164151.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230510164412.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230511142942.png">
@@ -164,95 +163,177 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="论文阅读-Binary-level-Directed-Fuzzing-for-Use-After-Free-Vulnerabilities"><a href="#论文阅读-Binary-level-Directed-Fuzzing-for-Use-After-Free-Vulnerabilities" class="headerlink" title="(论文阅读)Binary-level Directed Fuzzing for Use-After-Free Vulnerabilities"></a>(论文阅读)Binary-level Directed Fuzzing for Use-After-Free Vulnerabilities</h2><blockquote>
+        <h2
+id="论文阅读binary-level-directed-fuzzing-for-use-after-free-vulnerabilities">(论文阅读)Binary-level
+Directed Fuzzing for Use-After-Free Vulnerabilities</h2>
+<blockquote>
 <p><strong>时间：</strong>2020</p>
-<p><strong>作者：</strong>Manh-Dung Nguyen（巴黎萨克雷大学CEA）、Sébastien Bardin、Richard Bonichon</p>
+<p><strong>作者：</strong>Manh-Dung
+Nguyen（巴黎萨克雷大学CEA）、Sébastien Bardin、Richard Bonichon</p>
 <p><strong>会议：</strong>RAID</p>
-<p><strong>开源：</strong>[1]<a target="_blank" rel="noopener" href="https://github.com/strongcourage/uafuzz">https://github.com/strongcourage/uafuzz</a> ;[2]<a target="_blank" rel="noopener" href="https://github.com/strongcourage/uafbench">https://github.com/strongcourage/uafbench</a></p>
+<p><strong>开源：</strong>[1]https://github.com/strongcourage/uafuzz
+;[2]https://github.com/strongcourage/uafbench</p>
 </blockquote>
-<h2 id="ABSTRACT"><a href="#ABSTRACT" class="headerlink" title="ABSTRACT"></a>ABSTRACT</h2><p>​    Directed fuzzing聚焦于通过利用额外信息（bug stack trace、补丁或者有风险的操作）来测试代码的特定部分，其重要的应用场景包括漏洞复现、补丁测试以及对静态分析报告的验证。尽管Directed fuzzing最近受到了很多关注，但诸如UAF等难以检测的漏洞仍然没有得到很好的解决，特别是在二进制层面。</p>
-<p>​    <strong><u>我们提出了UAFUZZ，第一个针对UAF漏洞的二进制级别directed greybox fuzzer。</u></strong>该技术包括了一个针对UAF特性设计的Fuzzer，一个轻量级的代码插装（code instrumentation）工具和一个高效的bug处理步骤。</p>
-<p>​    对<u>真实案例中的bug复现进行的实验评估表明</u>，UAFUZZ在故障检测率、暴露时间和bug处理方面明显优于最先进的Directed fuzzer。<u>UAFUZZ在补丁测试中也被证明是有效的</u>，在Perl、GPAC和GNU Patch等程序中发现了30个新的错误（7个CVEs）。最后，我们为社区提供了一个专门用于UAF的大型模糊测试基准，该基准建立在真实代码和真实bug之上。</p>
+<h2 id="abstract">ABSTRACT</h2>
+<p>​ Directed fuzzing聚焦于通过利用额外信息（bug stack
+trace、补丁或者有风险的操作）来测试代码的特定部分，其重要的应用场景包括漏洞复现、补丁测试以及对静态分析报告的验证。尽管Directed
+fuzzing最近受到了很多关注，但诸如UAF等难以检测的漏洞仍然没有得到很好的解决，特别是在二进制层面。</p>
+<p>​ <strong><u>我们提出了UAFUZZ，第一个针对UAF漏洞的二进制级别directed
+greybox
+fuzzer。</u></strong>该技术包括了一个针对UAF特性设计的Fuzzer，一个轻量级的代码插装（code
+instrumentation）工具和一个高效的bug处理步骤。</p>
+<p>​
+对<u>真实案例中的bug复现进行的实验评估表明</u>，UAFUZZ在故障检测率、暴露时间和bug处理方面明显优于最先进的Directed
+fuzzer。<u>UAFUZZ在补丁测试中也被证明是有效的</u>，在Perl、GPAC和GNU
+Patch等程序中发现了30个新的错误（7个CVEs）。最后，我们为社区提供了一个专门用于UAF的大型模糊测试基准，该基准建立在真实代码和真实bug之上。</p>
 <span id="more"></span>
-<h2 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h2><blockquote>
+<h2 id="问题背景">问题背景</h2>
+<blockquote>
 <p><strong>CGF：</strong> <em>Coverage-based Greybox Fuzzing</em></p>
 <p><strong>DGF：</strong> <em>Directed Greybox Fuzzing</em></p>
 <p><strong>PUT：</strong> <em>program under test</em></p>
-<p><strong>Regression Bug：</strong> <em>When some bugs are found to be occurring as a result of the bug fix, those are known as regression bugs.</em></p>
-<p><strong>Bug stack traces：</strong> sequences of function calls at the time a bug is triggered（KASAN、ASan、VALGRIND）</p>
-<p><strong>Noninterference Bug：</strong>  原本应该隔离的部分发生了影响，例如多线程的静态条件漏洞</p>
-<p><strong>Flaky bug：</strong> 不可靠的bug，其结果难以可靠的复现，其根本原因难以分析</p>
+<p><strong>Regression Bug：</strong> <em>When some bugs are found to be
+occurring as a result of the bug fix, those are known as regression
+bugs.</em></p>
+<p><strong>Bug stack traces：</strong> sequences of function calls at
+the time a bug is triggered（KASAN、ASan、VALGRIND）</p>
+<p><strong>Noninterference Bug：</strong>
+原本应该隔离的部分发生了影响，例如多线程的静态条件漏洞</p>
+<p><strong>Flaky bug：</strong>
+不可靠的bug，其结果难以可靠的复现，其根本原因难以分析</p>
 </blockquote>
-<p>​    Directed fuzzing的应用场景：</p>
+<p>​ Directed fuzzing的应用场景：</p>
 <ul>
 <li>bug reproduction，漏洞复现[25, 28, 42, 61]</li>
 <li>patch testing，补丁测试[25, 51, 59]</li>
 <li>static analysis report verification，静态分析报告验证[31, 49]</li>
 </ul>
-<h3 id="1-触发特定漏洞的必要性"><a href="#1-触发特定漏洞的必要性" class="headerlink" title="1. 触发特定漏洞的必要性"></a>1. 触发特定漏洞的必要性</h3><p>​    基于应用场景的不同，在Directed fuzzing中目标位置会被bug stack traces、补丁文件或者静态分析报告所引导。<strong>本文聚焦于漏洞复现</strong>，由于信息缺失和用户隐私问题，通常只有54.9%的错误报告可以被重现，所以特别需要这种方法。即使错误报告中提供了PoC，开发人员在修复的过程中可能仍然需要考虑错误的所有情况，以避免regression bug或不完整的修复。在这种情况下，<u>提供更多的触发错误的输入，对促进和加快bug的修复过程非常重要</u>。</p>
-<h3 id="2-目前fuzzer的局限"><a href="#2-目前fuzzer的局限" class="headerlink" title="2. 目前fuzzer的局限"></a>2. 目前fuzzer的局限</h3><p>​    <u>目前的grey box fuzzer（无论是否directed）仍然很难找到复杂的漏洞</u>，例如UAF、Noninterference或flaky漏洞，这些漏洞需要满足非常具体的属性的漏洞触发路径。例如，OSSFUZZ 或最近的grey box fuzzer 只发现了少量的UAF。</p>
-<h3 id="3-UAF"><a href="#3-UAF" class="headerlink" title="3. UAF"></a>3. UAF</h3><p>​    UAF漏洞相比其他类型的漏洞缺乏解决的技术，并且危害十分严重，如数据损坏、信息泄露和Dos攻击。并且要检测UAF还需要面对两个问题：</p>
-<ol>
-<li><p><strong>状态空间的复杂性：</strong>一个UAF的产生需要经过<code>分配(alloc)</code>-<code>释放(free)</code>然后<code>利用(use)</code>三个顺序过程，在时间和空间上都有限制；</p>
-</li>
-<li><p><strong>隐性性状：</strong>UAF漏洞经常没有例如segmentation fault的显性表现，单纯观察崩溃行为的fuzzer就无法发现这种错误。<u>如今流行的内存检测工具：ASan、VALGRIND由于其开销过大不能在fuzzing中使用。</u></p>
-<p>（ps：如果是仅仅漏洞复现，可以利用其产生的报告信息，参考<a target="_blank" rel="noopener" href="https://shawdox.github.io/2023/04/10/[论文阅读]GREBE-Unveiling-Exploitation-Potential-for-Linux-Kernel-Bugs/">[GREBE| shawdox.github.io]</a>）</p>
-</li>
+<h3 id="触发特定漏洞的必要性">1. 触发特定漏洞的必要性</h3>
+<p>​ 基于应用场景的不同，在Directed fuzzing中目标位置会被bug stack
+traces、补丁文件或者静态分析报告所引导。<strong>本文聚焦于漏洞复现</strong>，由于信息缺失和用户隐私问题，通常只有54.9%的错误报告可以被重现，所以特别需要这种方法。即使错误报告中提供了PoC，开发人员在修复的过程中可能仍然需要考虑错误的所有情况，以避免regression
+bug或不完整的修复。在这种情况下，<u>提供更多的触发错误的输入，对促进和加快bug的修复过程非常重要</u>。</p>
+<h3 id="目前fuzzer的局限">2. 目前fuzzer的局限</h3>
+<p>​ <u>目前的grey box
+fuzzer（无论是否directed）仍然很难找到复杂的漏洞</u>，例如UAF、Noninterference或flaky漏洞，这些漏洞需要满足非常具体的属性的漏洞触发路径。例如，OSSFUZZ
+或最近的grey box fuzzer 只发现了少量的UAF。</p>
+<h3 id="uaf">3. UAF</h3>
+<p>​
+UAF漏洞相比其他类型的漏洞缺乏解决的技术，并且危害十分严重，如数据损坏、信息泄露和Dos攻击。并且要检测UAF还需要面对两个问题：</p>
+<ol type="1">
+<li><p><strong>状态空间的复杂性：</strong>一个UAF的产生需要经过<code>分配(alloc)</code>-<code>释放(free)</code>然后<code>利用(use)</code>三个顺序过程，在时间和空间上都有限制；</p></li>
+<li><p><strong>隐性性状：</strong>UAF漏洞经常没有例如segmentation
+fault的显性表现，单纯观察崩溃行为的fuzzer就无法发现这种错误。<u>如今流行的内存检测工具：ASan、VALGRIND由于其开销过大不能在fuzzing中使用。</u></p>
+<p>（ps：如果是仅仅漏洞复现，可以利用其产生的报告信息，参考<a
+target="_blank" rel="noopener" href="https://shawdox.github.io/2023/04/10/%5B论文阅读%5DGREBE-Unveiling-Exploitation-Potential-for-Linux-Kernel-Bugs/">[GREBE|
+shawdox.github.io]</a>）</p></li>
 </ol>
-<p>​    目前的state-of-the-art：AFLGO和HAWKEYE没法处理UAF并且成本过高。</p>
-<h2 id="创新点-amp-贡献"><a href="#创新点-amp-贡献" class="headerlink" title="创新点&amp;贡献"></a>创新点&amp;贡献</h2><p>​    下表是UAFUZZ与state-of-the-art的比较：</p>
+<p>​ 目前的state-of-the-art：AFLGO和HAWKEYE没法处理UAF并且成本过高。</p>
+<h2 id="创新点贡献">创新点&amp;贡献</h2>
+<p>​ 下表是UAFUZZ与state-of-the-art的比较：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230509225227.png" style="zoom:50%;" /></p>
-<p>​    创新点与贡献：<strong>针对UAF的Directed Fuzzing，比state-of-the-art的方法准确率更高，速度更快；开源发布了针对UAF漏洞的测试benchmark，包括了从公开软件中提取的30个真实的Bug</strong>。</p>
-<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230510123625.png" alt="Overview of UAFUZZ"></p>
-<h3 id="1-Bug-Trace-Flattening"><a href="#1-Bug-Trace-Flattening" class="headerlink" title="1. Bug Trace Flattening"></a>1. Bug Trace Flattening</h3><p>​    <code>Bug Trace Flattening</code>指重构从report中提取的bug trace，以下图的report为例:</p>
+<p>​ 创新点与贡献：<strong>针对UAF的Directed
+Fuzzing，比state-of-the-art的方法准确率更高，速度更快；开源发布了针对UAF漏洞的测试benchmark，包括了从公开软件中提取的30个真实的Bug</strong>。</p>
+<h2 id="方法">方法</h2>
+<figure>
+<img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230510123625.png"
+alt="Overview of UAFUZZ" />
+<figcaption aria-hidden="true">Overview of UAFUZZ</figcaption>
+</figure>
+<h3 id="bug-trace-flattening">1. Bug Trace Flattening</h3>
+<p>​ <code>Bug Trace Flattening</code>指重构从report中提取的bug
+trace，以下图的report为例:</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230510164151.png" style="zoom: 67%;" /></p>
-<p>​    将上述report生成的3个call trace合并为一个call tree，并将其按照UAF漏洞的执行顺序（i.e alloc-&gt;free-&gt;use）的顺序生成分支：</p>
+<p>​ 将上述report生成的3个call trace合并为一个call
+tree，并将其按照UAF漏洞的执行顺序（i.e
+alloc-&gt;free-&gt;use）的顺序生成分支：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230510164412.png" style="zoom:67%;" /></p>
-<p>​    如上图所示，该树状图共有三个分支，分别对应了stack trace for the Alloc、stack trace for the free和stack trace for the bad USE的调用路径。按照0到6的顺序遍历该树，就是UAF漏洞的执行过程，漏洞在6处触发。</p>
-<p>​    0 → 1 → 2 → 3(n~alloc~) → 4(n~free~) → 5 → 6(n~use~)</p>
-<h3 id="2-Seed-Selection"><a href="#2-Seed-Selection" class="headerlink" title="2. Seed Selection"></a>2. Seed Selection</h3><h4 id="2-1-Similarity-Metrics"><a href="#2-1-Similarity-Metrics" class="headerlink" title="2.1 Similarity Metrics"></a>2.1 Similarity Metrics</h4><p>​    s代表某个input，T代表report中的目标UAF bug trace，t(s, T )代表s与T的相似度。这里定义了4个测试标准：</p>
+<p>​ 如上图所示，该树状图共有三个分支，分别对应了stack trace for the
+Alloc、stack trace for the free和stack trace for the bad
+USE的调用路径。按照0到6的顺序遍历该树，就是UAF漏洞的执行过程，漏洞在6处触发。</p>
+<p>​ 0 → 1 → 2 → 3(n<sub>alloc</sub>) → 4(n<sub>free</sub>) → 5 →
+6(n<sub>use</sub>)</p>
+<h3 id="seed-selection">2. Seed Selection</h3>
+<h4 id="similarity-metrics">2.1 Similarity Metrics</h4>
+<p>​ s代表某个input，T代表report中的目标UAF bug trace，t(s, T
+)代表s与T的相似度。这里定义了4个测试标准：</p>
 <ul>
-<li><strong>Target prefix t~P~(s, T )：</strong>s与T的轨迹覆盖前缀（遇到第一个不同就停止）；</li>
-<li><strong>UAF prefix t~3TP~(s, T )：</strong>s与T的UAF轨迹覆盖前缀（只关注trace中的UAF事件）；</li>
-<li><strong>Target bag t~B~(s, T )：</strong>s与T的轨迹覆盖数；</li>
-<li><strong>UAF bag t~3TB~(s, T )：</strong>s与T的UAF轨迹覆盖数。</li>
+<li><strong>Target prefix t<sub>P</sub>(s, T
+)：</strong>s与T的轨迹覆盖前缀（遇到第一个不同就停止）；</li>
+<li><strong>UAF prefix t<sub>3TP</sub>(s, T
+)：</strong>s与T的UAF轨迹覆盖前缀（只关注trace中的UAF事件）；</li>
+<li><strong>Target bag t<sub>B</sub>(s, T
+)：</strong>s与T的轨迹覆盖数；</li>
+<li><strong>UAF bag t<sub>3TB</sub>(s, T
+)：</strong>s与T的UAF轨迹覆盖数。</li>
 </ul>
-<p>​    以下图为例，其需要在buf数组的前三个字节填充“AFU”来触发UAF漏洞，当s=’ABUA’时，上述的四个标准值分别为：t~P~(s, T ) = 2，t~3TP~(s, T ) = 1，t~B~(s, T ) = 3，t~3TB~(s, T ) = 2。</p>
+<p>​
+以下图为例，其需要在buf数组的前三个字节填充“AFU”来触发UAF漏洞，当s='ABUA'时，上述的四个标准值分别为：t<sub>P</sub>(s,
+T ) = 2，t<sub>3TP</sub>(s, T ) = 1，t<sub>B</sub>(s, T ) =
+3，t<sub>3TB</sub>(s, T ) = 2。</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230511142942.png" style="zoom:50%;" /></p>
-<p>​    将四个metrics结合，得到P-3TP-B：</p>
-<script type="math/tex; mode=display">
-t_{P-3TP-B} = <t_{P}(s,T),t_{3TP}(s,T),t_{B}(s,T)></script><p>​    上述式子代表，衡量Similarity的标准首先是轨迹前缀覆盖，若其相同则次要考虑UAF轨迹的前缀，最后考虑轨迹的整体覆盖率。这样做兼顾了精度与广度，UAFUZZ的默认种子衡量算法使用P-3TP-B。</p>
-<h4 id="2-2-Seed-Selection-Algorithm"><a href="#2-2-Seed-Selection-Algorithm" class="headerlink" title="2.2 Seed Selection Algorithm"></a>2.2 Seed Selection Algorithm</h4><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230510165352.png" alt="Seed Selection Algorithm" style="zoom: 67%;" /></p>
-<p>​    如上图所示，种子的选择策略是：要么其与report中的目标bug trace T有着更高的重合度，要么其可以提升代码覆盖率。</p>
-<h4 id="2-3-UAF-based-Seed-Distance"><a href="#2-3-UAF-based-Seed-Distance" class="headerlink" title="2.3 UAF-based Seed Distance"></a>2.3 UAF-based Seed Distance</h4><p>​    AFL使用原始CFG图，图中边的权重都是1；HAWKEYE通过修改边的权重来引导fuzzer。</p>
-<p>​    如何引导Fuzzer按某种顺序依次运行？<u>这里定义了三个集合：R~alloc,~ R~free~, 和R~use~，分别表示可以执行alloc、free、use操作的函数集合。根据函数调用关系图来判断，例如，如果fa ∈ R~alloc~并且fb ∈ R ~free~ ∩ R~use~，则从a到b的调用则可能触发UAF漏洞。</u>如下图红色的边。</p>
+<p>​ 将四个metrics结合，得到P-3TP-B： <span class="math display">\[
+t_{P-3TP-B} = &lt;t_{P}(s,T),t_{3TP}(s,T),t_{B}(s,T)&gt;
+\]</span> ​
+上述式子代表，衡量Similarity的标准首先是轨迹前缀覆盖，若其相同则次要考虑UAF轨迹的前缀，最后考虑轨迹的整体覆盖率。这样做兼顾了精度与广度，UAFUZZ的默认种子衡量算法使用P-3TP-B。</p>
+<h4 id="seed-selection-algorithm">2.2 Seed Selection Algorithm</h4>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230510165352.png" alt="Seed Selection Algorithm" style="zoom: 67%;" /></p>
+<p>​ 如上图所示，种子的选择策略是：要么其与report中的目标bug trace
+T有着更高的重合度，要么其可以提升代码覆盖率。</p>
+<h4 id="uaf-based-seed-distance">2.3 UAF-based Seed Distance</h4>
+<p>​
+AFL使用原始CFG图，图中边的权重都是1；HAWKEYE通过修改边的权重来引导fuzzer。</p>
+<p>​
+如何引导Fuzzer按某种顺序依次运行？<u>这里定义了三个集合：R<sub>alloc,</sub>
+R<sub>free</sub>,
+和R<sub>use</sub>，分别表示可以执行alloc、free、use操作的函数集合。根据函数调用关系图来判断，例如，如果fa
+∈ R<sub>alloc</sub>并且fb ∈ R <sub>free</sub> ∩
+R<sub>use</sub>，则从a到b的调用则可能触发UAF漏洞。</u>如下图红色的边。</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230511163739.png" style="zoom:50%;" /></p>
-<p>​    确定了f~a~-&gt;f~b~的调用边，通过减少其边的权重来让fuzzer更容易执行它，在本工作的实验中，使用如下权重（β=0.25）：</p>
+<p>​
+确定了f<sub>a</sub>-&gt;f<sub>b</sub>的调用边，通过减少其边的权重来让fuzzer更容易执行它，在本工作的实验中，使用如下权重（β=0.25）：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230511163709.png" style="zoom:50%;" /></p>
-<h4 id="2-4-Cut-edge-Coverage-Metric"><a href="#2-4-Cut-edge-Coverage-Metric" class="headerlink" title="2.4 Cut-edge Coverage Metric"></a>2.4 Cut-edge Coverage Metric</h4><p>​    <u>由于对基本块插装的成本过高，HAWKEYE使用对函数插装的方式来跟踪某个种子的运行轨迹（function level）。</u></p>
-<p>​    本工作提出cut-edge coverage metric，在<strong>edge level</strong>上衡量<strong>关键节点</strong>的程序运行轨迹，该方法是basic block level和function level的平衡。</p>
+<h4 id="cut-edge-coverage-metric">2.4 Cut-edge Coverage Metric</h4>
+<p>​
+<u>由于对基本块插装的成本过高，HAWKEYE使用对函数插装的方式来跟踪某个种子的运行轨迹（function
+level）。</u></p>
+<p>​ 本工作提出cut-edge coverage metric，在<strong>edge
+level</strong>上衡量<strong>关键节点</strong>的程序运行轨迹，该方法是basic
+block level和function level的平衡。</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230525104634.png" style="zoom: 67%;" /></p>
-<p> ps：</p>
+<p>ps：</p>
 <ul>
-<li><p>cut-edge：两个basic block（source和sink）之间的cut edge就是存在一条通过这条edge的路径，可以从source到达sink；</p>
-</li>
-<li><p>algorithm：算法3、4说明了如何在函数间/函数内部计算识别cut edge；</p>
-</li>
-<li>想法：遍历更多cut-edge，更少non-cut edge更容易达到目标轨迹。</li>
+<li><p>cut-edge：两个basic block（source和sink）之间的cut
+edge就是存在一条通过这条edge的路径，可以从source到达sink；</p></li>
+<li><p>algorithm：算法3、4说明了如何在函数间/函数内部计算识别cut
+edge；</p></li>
+<li><p>想法：遍历更多cut-edge，更少non-cut
+edge更容易达到目标轨迹。</p></li>
 </ul>
-<h4 id="2-5-Power-Schedule"><a href="#2-5-Power-Schedule" class="headerlink" title="2.5 Power Schedule"></a>2.5 Power Schedule</h4><p>​    Power Schedule结合了上述三种方法（<strong>target similarity metric t~P~(s, T )</strong>、<strong>UAF-based seed distance d(s, T )</strong>和<strong>cut-edge coverage metric e~s~(s, T )</strong>）。</p>
+<h4 id="power-schedule">2.5 Power Schedule</h4>
+<p>​ Power Schedule结合了上述三种方法（<strong>target similarity metric
+t<sub>P</sub>(s, T )</strong>、<strong>UAF-based seed distance d(s, T
+)</strong>和<strong>cut-edge coverage metric e<sub>s</sub>(s, T
+)</strong>）。</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230525110851.png" style="zoom:50%;" /></p>
-<p>​    </p>
-<h4 id="2-6-Postprocess-and-Bug-Triage"><a href="#2-6-Postprocess-and-Bug-Triage" class="headerlink" title="2.6 Postprocess and Bug Triage"></a>2.6 Postprocess and Bug Triage</h4><p>​    UAF漏洞发生时一般并不会伴随显式的崩溃，故要检测某个种子是否触发了UAF，需要将其送入bug triager中（例如VALGRIND）检测。因此，当fuzzer生成了大量的种子时，这么做成本很高。</p>
-<p>​    但由于本工作的<strong>target similarity metric</strong>可以检测种子的指令路径是否包含了三个UAF关键事件，故bug triager只需要检测包含这些事件的种子即可。</p>
+<p>​</p>
+<h4 id="postprocess-and-bug-triage">2.6 Postprocess and Bug Triage</h4>
+<p>​
+UAF漏洞发生时一般并不会伴随显式的崩溃，故要检测某个种子是否触发了UAF，需要将其送入bug
+triager中（例如VALGRIND）检测。因此，当fuzzer生成了大量的种子时，这么做成本很高。</p>
+<p>​ 但由于本工作的<strong>target similarity
+metric</strong>可以检测种子的指令路径是否包含了三个UAF关键事件，故bug
+triager只需要检测包含这些事件的种子即可。</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230525145138.png" style="zoom:50%;" /></p>
-<p>​    代码实现基于AFL和QEMU。</p>
-<h2 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h2><blockquote>
+<p>​ 代码实现基于AFL和QEMU。</p>
+<h2 id="测试结果">测试结果</h2>
+<blockquote>
 <p>baseline：AFL-QEMU</p>
 <p>compare：AFLGO、HAWKEYE</p>
 <p>benchmark：自行构建</p>
 </blockquote>
-<h2 id="REFERENCE"><a href="#REFERENCE" class="headerlink" title="REFERENCE"></a>REFERENCE</h2>
+<h2 id="reference">REFERENCE</h2>
+
       
     </div>
     <footer class="entry-meta entry-footer">
@@ -298,7 +379,8 @@ t_{P-3TP-B} = <t_{P}(s,T),t_{3TP}(s,T),t_{B}(s,T)></script><p>​    上述式�
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB-Binary-level-Directed-Fuzzing-for-Use-After-Free-Vulnerabilities"><span class="nav-number">1.</span> <span class="nav-text">(论文阅读)Binary-level Directed Fuzzing for Use-After-Free Vulnerabilities</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ABSTRACT"><span class="nav-number">2.</span> <span class="nav-text">ABSTRACT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E8%83%8C%E6%99%AF"><span class="nav-number">3.</span> <span class="nav-text">问题背景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E8%A7%A6%E5%8F%91%E7%89%B9%E5%AE%9A%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%BF%85%E8%A6%81%E6%80%A7"><span class="nav-number">3.1.</span> <span class="nav-text">1. 触发特定漏洞的必要性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%9B%AE%E5%89%8Dfuzzer%E7%9A%84%E5%B1%80%E9%99%90"><span class="nav-number">3.2.</span> <span class="nav-text">2. 目前fuzzer的局限</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-UAF"><span class="nav-number">3.3.</span> <span class="nav-text">3. UAF</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E6%96%B0%E7%82%B9-amp-%E8%B4%A1%E7%8C%AE"><span class="nav-number">4.</span> <span class="nav-text">创新点&amp;贡献</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E6%B3%95"><span class="nav-number">5.</span> <span class="nav-text">方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Bug-Trace-Flattening"><span class="nav-number">5.1.</span> <span class="nav-text">1. Bug Trace Flattening</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Seed-Selection"><span class="nav-number">5.2.</span> <span class="nav-text">2. Seed Selection</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-Similarity-Metrics"><span class="nav-number">5.2.1.</span> <span class="nav-text">2.1 Similarity Metrics</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-Seed-Selection-Algorithm"><span class="nav-number">5.2.2.</span> <span class="nav-text">2.2 Seed Selection Algorithm</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-UAF-based-Seed-Distance"><span class="nav-number">5.2.3.</span> <span class="nav-text">2.3 UAF-based Seed Distance</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-4-Cut-edge-Coverage-Metric"><span class="nav-number">5.2.4.</span> <span class="nav-text">2.4 Cut-edge Coverage Metric</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-5-Power-Schedule"><span class="nav-number">5.2.5.</span> <span class="nav-text">2.5 Power Schedule</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-6-Postprocess-and-Bug-Triage"><span class="nav-number">5.2.6.</span> <span class="nav-text">2.6 Postprocess and Bug Triage</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="nav-number">6.</span> <span class="nav-text">测试结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#REFERENCE"><span class="nav-number">7.</span> <span class="nav-text">REFERENCE</span></a></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BBbinary-level-directed-fuzzing-for-use-after-free-vulnerabilities"><span class="nav-number">1.</span> <span class="nav-text">(论文阅读)Binary-level
+Directed Fuzzing for Use-After-Free Vulnerabilities</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#abstract"><span class="nav-number">2.</span> <span class="nav-text">ABSTRACT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E8%83%8C%E6%99%AF"><span class="nav-number">3.</span> <span class="nav-text">问题背景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A6%E5%8F%91%E7%89%B9%E5%AE%9A%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%BF%85%E8%A6%81%E6%80%A7"><span class="nav-number">3.1.</span> <span class="nav-text">1. 触发特定漏洞的必要性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%AE%E5%89%8Dfuzzer%E7%9A%84%E5%B1%80%E9%99%90"><span class="nav-number">3.2.</span> <span class="nav-text">2. 目前fuzzer的局限</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#uaf"><span class="nav-number">3.3.</span> <span class="nav-text">3. UAF</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E6%96%B0%E7%82%B9%E8%B4%A1%E7%8C%AE"><span class="nav-number">4.</span> <span class="nav-text">创新点&amp;贡献</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E6%B3%95"><span class="nav-number">5.</span> <span class="nav-text">方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#bug-trace-flattening"><span class="nav-number">5.1.</span> <span class="nav-text">1. Bug Trace Flattening</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#seed-selection"><span class="nav-number">5.2.</span> <span class="nav-text">2. Seed Selection</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#similarity-metrics"><span class="nav-number">5.2.1.</span> <span class="nav-text">2.1 Similarity Metrics</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#seed-selection-algorithm"><span class="nav-number">5.2.2.</span> <span class="nav-text">2.2 Seed Selection Algorithm</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#uaf-based-seed-distance"><span class="nav-number">5.2.3.</span> <span class="nav-text">2.3 UAF-based Seed Distance</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cut-edge-coverage-metric"><span class="nav-number">5.2.4.</span> <span class="nav-text">2.4 Cut-edge Coverage Metric</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#power-schedule"><span class="nav-number">5.2.5.</span> <span class="nav-text">2.5 Power Schedule</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#postprocess-and-bug-triage"><span class="nav-number">5.2.6.</span> <span class="nav-text">2.6 Postprocess and Bug Triage</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="nav-number">6.</span> <span class="nav-text">测试结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">7.</span> <span class="nav-text">REFERENCE</span></a></li></ol>
     
     </div>
   </aside>
@@ -492,5 +574,20 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>

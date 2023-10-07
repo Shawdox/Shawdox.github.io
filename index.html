@@ -158,6 +158,80 @@
 <!-- Table of Contents -->
 
   
+    <article id="post-【论文阅读】Go or No Go Differential Fuzzing of Native and C Libraries"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2023/10/07/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Go%20or%20No%20Go%20Differential%20Fuzzing%20of%20Native%20and%20C%20Libraries/">论文阅读</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/10/07/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Go%20or%20No%20Go%20Differential%20Fuzzing%20of%20Native%20and%20C%20Libraries/" class="article-date">
+	  <time datetime="2023-10-07T08:19:00.000Z" itemprop="datePublished">十月 7, 2023</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Go-or-No-Go-Differential-Fuzzing-of-Native-and-C-Libraries"><a href="#Go-or-No-Go-Differential-Fuzzing-of-Native-and-C-Libraries" class="headerlink" title="Go or No Go: Differential Fuzzing of Native and C Libraries"></a>Go or No Go: Differential Fuzzing of Native and C Libraries</h1><blockquote>
+<p><strong>时间：</strong>2023.5</p>
+<p><strong>作者：</strong>Alessandro Sorniotti（IBM）、Michael Weissbacher、Anil Kurmus</p>
+<p><strong>会议：</strong>S&amp;P‘2023</p>
+</blockquote>
+<h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>​    十多年来，Go 已经成为当今最流行的编程语言之一。Go 是一种静态类型的编译语言，通过强类型、自动插入的边界检查和标记-清扫垃圾收集器，实现了空间和时间上的内存安全性。Go 开发人员可以即时使用大量的本地库，这些库可以作为运行时的一部分提供，也可以从社区代码中导入；或者，Go 开发人员可以直接链接到 C/C++ 库，这些库可以通过cgo功能从GO源码中调用。做出支持以上功能的这一决定的原因包括稳定性、性能和可用性。因此，<strong><u>开发人员可以在 Go 本地库或非本地代码之间做出选择</u></strong>。然而，如今人们对如何在这一决策中考虑安全问题还知之甚少。</p>
+<p>​    <u>我们的研究首次探讨了 Go 程序在本地库和非本地库之间做出选择的安全影响。</u>我们首先调查了流行的 GitHub 项目在多大程度上使用了 cgo，结果发现这种选择实际上相当流行。然后，我们设计并构建了一个differential fuzzer，它可以比较相同功能的本地和 C/C++ 实现。我们实现了该fuzzer，并在四个流行软件包（libcrypto、libpng、libssl 和 libz）上测试了其有效性，描述了结果并强调了它们的安全影响。最后，我们介绍了两个真实世界的案例研究（anti-virus evasion，包括 Gmail 中包含的反病毒扫描仪和证书透明度案例研究），并讨论了我们的differential fuzzer是如何发现具有安全影响的实现差异的。我们的工作促使 Golang zlib 发生了变化，这些变化已经发布。</p>
+<h2 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h2><p>​    Go 是一种编程语言，因其安全优势和并发性而广受赞誉。该语言默认情况下是内存安全的，并克服了 C/C++ 等语言数十年来的安全问题。然而，在使用库来利用常用功能时，开发人员面临着一个艰难的选择： 使用本地 Go 库或非本地 C/C++（使用编译器/运行时的 cgo 功能）。目前，影响这一决定的因素包括可用性、性能和稳定性。</p>
+<p>​    尽管 Go 提供了大量库，但并非所有库都能在 Go 中使用，开发人员可能需要按照规范重新实现功能。这不仅成本高昂，而且容易出错。在决定使用本地库还是非本地库时，性能也是一个考虑因素，因为使用 C/C++ 库可以为大量使用此类功能的程序带来性能优势。稳定性是另一个因素，因为库的成熟度各不相同。Go 库是从零开始实现的，但可能缺少大量的测试，而 C/C++ 库可能有陈旧的代码，但经过了数十年的测试。</p>
+<p>​    除了可用性、性能、稳定性等因素外，在做出这一决定时还应考虑安全问题，因为无论哪种方案都会涉及安全问题。如果开发人员重用现有的 C 代码，就有可能引入 C 库中可能存在的内存安全问题。如果重新实现 Go，则可能在规范或实现层面引入 C 库版本中不存在的新缺陷。更广义地说，不同设计和实现的库可能会在输出结果上产生偏差。从语言理论的角度来看，我们可以将其视为解析树差异攻击的一个实例[38]、[30]、[37]：相同协议/语言存在两种不同的解析器，它们之间的差异可能会导致安全问题。遗憾的是，对于无上下文语言来说，正式验证两个解析器是否等价是无法判定的[29]，这就促使人们采用灰盒模糊（greybox fuzzing）等实用但不完整的方法。</p>
+<h2 id="Contribution"><a href="#Contribution" class="headerlink" title="Contribution"></a>Contribution</h2><p>​    在本文中，我们提出并实现了一种方法，用于研究在 Go 编程语言中使用本地库与非本地库所产生的问题。特别是，我们通过使用差分模糊（differential fuzzing）来寻找这两类库之间的差异，重点关注差异可能导致广泛安全影响的常用库。</p>
+<p>​    我们采用了一种有效的差异模糊方法，利用现有的fuzzer，针对两个库版本中的任何一个生成输入语料库和harness。对于每个输入，我们都会比较两个库的输出（可能还有其他副作用）。例如，就解析库而言，如果相同的输入导致两种不同的解析输出，则可能存在潜在缺陷。仅根据解析结果，并不能立即看出两个解析器中哪个偏离了规范（如果有的话）。具体来说，安全漏洞可能仅仅来自于差异，而不是一个解析器误解了输入。</p>
+<p>​    我们还介绍了两个案例研究：在第一个案例研究中，我们展示了如何破坏 libz 压缩数据的标头，从而导致 19 种反病毒（AV）产品和 Gmail 中包含的 AV 扫描仪出现漏洞。在附录提供的第二部分中，我们展示了解析器错配如何影响证书透明度基础设施。对于所有受影响的产品，我们都启动了负责任的披露程序。</p>
+<p>​    我们的研究结果表明<strong>(i)</strong> 从安全角度来看，Go 开发人员在 Go 实现库和 C/C++ 库之间的选择并不简单；<strong>(ii)</strong> 差异模糊是发现库实现之间解析器差异的有效方法，应在 C 库的 Go 再实现中系统地使用；<strong>(iii)</strong> 解析器差异可能导致重要的安全问题。</p>
+<p>​    <strong>我们的主要贡献有：</strong></p>
+<ol>
+<li>我们设计了一种定制的differential fuzzer，以发现 Go 程序所用库中与安全相关的解析差异；</li>
+<li>我们实现了设计原型，支持广泛使用的 libcrypto、libpng、libssl 和 libz 库；</li>
+<li>我们对fuzzer的独特差异进行了广泛评估，并分析了根本原因和其潜在影响；</li>
+<li>我们介绍了两个case-study，其中发现的解析器差异导致了安全问题。一项研究影响了证书透明度，一项研究绕过了在 Virus Total 和 Gmail 上测试的 19 个防病毒系统。</li>
+</ol>
+<p>​    </p>
+<h2 id="Some-Questions"><a href="#Some-Questions" class="headerlink" title="Some Questions"></a>Some Questions</h2><h3 id="1-How-to-choose-generate-Fuzz-target-for-C-C-library"><a href="#1-How-to-choose-generate-Fuzz-target-for-C-C-library" class="headerlink" title="1. How to choose/generate Fuzz target for C/C++ library?"></a>1. How to choose/generate Fuzz target for C/C++ library?</h3><p>​    作者选用的待测试库（asn1,libpng,libcrypto,libzip）在go中都有现成的fuzz harness，然后将其转化为等价的C/C++ api，生成C的fuzz harness.</p>
+<h3 id="2-How-to-locate-the-root-cause-of-discrepancy"><a href="#2-How-to-locate-the-root-cause-of-discrepancy" class="headerlink" title="2. How to locate the root cause of discrepancy?"></a>2. How to locate the root cause of discrepancy?</h3><p>​    没说，大概率是手动分析。</p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Differential-fuzzing/" rel="tag">Differential fuzzing</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
     <article id="post-【论文阅读】Security-Risks-of-Porting-C-Programs-to-WebAssembly"  class="article article-type-post" itemscope itemprop="blogPost" >
   <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
     
@@ -194,13 +268,21 @@
             </div>
           
           <div class="entry-summary">
-          (论文阅读)Security Risks of Porting C Programs to WebAssembly
-时间: 2022
-作者：Quentin Stiévenart、Coen De Roover、Mohammad Ghafari
-会议：Proceedings of the 37th ACM/SIGAPP Symposium on Applied Computing
+          (论文阅读)Security
+Risks of Porting C Programs to WebAssembly
 
-Abstract​    WebAssembly是一种用于跨平台应用程序的编译目标，目前正被越来越多地使用。在本文中，我们研究了能否将 C 程序不需要大量修改直接编译到 WebAssembly 中，如果不能，移植会对其安全性产生什么影响。我们将表现出常见漏洞的17802个程序编译成64位的x86和WebAssembly二进制文件，并观察到在这些平台上执行4911个二进制文件会产生不同的结果。
-​    通过人工检查，我们找出了造成这种差异的三类根本原因：
+时间: 2022
+作者：Quentin Stiévenart、Coen De Roover、Mohammad
+Ghafari
+会议：Proceedings of the 37th ACM/SIGAPP Symposium
+on Applied Computing
+
+Abstract
+​
+WebAssembly是一种用于跨平台应用程序的编译目标，目前正被越来越多地使用。在本文中，我们研究了能否将
+C 程序不需要大量修改直接编译到 WebAssembly
+中，如果不能，移植会对其安全性产生什么影响。我们将表现出常见漏洞的17802个程序编译成64位的x86和WebAssembly二进制文件，并观察到在这些平台上执行4911个二进制文件会产生不同的结果。
+​ 通过人工检查，我们找出了造成这种差异的三类根本原因：
 
 
 使用了不同的标准库实现；
@@ -208,7 +290,11 @@ WebAssembly 缺乏安全措施；
 执行环境的语义不同。
 
 
-​    我们描述了我们的观察结果，并讨论了从安全角度来看至关重要、最需要开发人员关注的问题。我们的结论是，将现有的 C 程序编译成 WebAssembly 进行跨平台发布可能需要对源代码进行调整；否则，WebAssembly 应用程序的安全性可能会受到威胁。
+​
+我们描述了我们的观察结果，并讨论了从安全角度来看至关重要、最需要开发人员关注的问题。我们的结论是，将现有的
+C 程序编译成 WebAssembly
+进行跨平台发布可能需要对源代码进行调整；否则，WebAssembly
+应用程序的安全性可能会受到威胁。
 
         
           <p class="article-more-link">
@@ -268,11 +354,12 @@ WebAssembly 缺乏安全措施；
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/08/15/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91FuzzBuilder%E5%A4%8D%E7%8E%B0/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/08/15/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91FuzzBuilder%E5%A4%8D%E7%8E%B0/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          FuzzBuilder复现Use of FuzzBuilder and some technical analysis.
+          FuzzBuilder复现
+Use of FuzzBuilder and some technical analysis.
 
         
           <p class="article-more-link">
@@ -332,11 +419,13 @@ WebAssembly 缺乏安全措施；
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/08/03/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91AFL++-Instrumention-for-WAVM/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/08/03/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91AFL++-Instrumention-for-WAVM/"><img src="http://lorempixel.com/750/450/city/7" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          (技术积累)AFL++ Instrumention for WAVM​    利用AFL++自带的compiler warpper对WAVM插桩，一些Bug的记录分析。
+          (技术积累)AFL++
+Instrumention for WAVM
+​ 利用AFL++自带的compiler warpper对WAVM插桩，一些Bug的记录分析。
 
         
           <p class="article-more-link">
@@ -396,11 +485,11 @@ WebAssembly 缺乏安全措施；
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/07/31/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91CompDiff(%E4%BA%8C)-%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/07/31/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91CompDiff(%E4%BA%8C)-%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          ​    CompDiff与AFL++源码对比分析。
+          ​ CompDiff与AFL++源码对比分析。
 
         
           <p class="article-more-link">
@@ -460,11 +549,14 @@ WebAssembly 缺乏安全措施；
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/07/28/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91Finding-Unstable-Code-via-Compiler-Driven-Differential-Testing/"><img src="http://lorempixel.com/750/450/city/4" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/07/28/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91Finding-Unstable-Code-via-Compiler-Driven-Differential-Testing/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          (论文复现)Finding Unstable Code via Compiler-Driven Differential Testing​    对论文《Finding Unstable Code via Compiler-Driven Differential Testing》的过程复现+代码分析。
+          (论文复现)Finding
+Unstable Code via Compiler-Driven Differential Testing
+​ 对论文《Finding Unstable Code via Compiler-Driven Differential
+Testing》的过程复现+代码分析。
 
         
           <p class="article-more-link">
@@ -524,19 +616,26 @@ WebAssembly 缺乏安全措施；
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/07/27/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Finding-Unstable-Code-via-Compiler-Driven-Differential-Testing/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/07/27/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Finding-Unstable-Code-via-Compiler-Driven-Differential-Testing/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          Finding Unstable Code via Compiler-Driven Differential Testing
+          Finding
+Unstable Code via Compiler-Driven Differential Testing
+
 时间：2023
 作者：Shaohua Li、Zhendong Su（苏黎世联邦理工）
 会议：ASPLOS（CCF-A）
-开源：shao-hua-li/compdiff (github.com)
+开源：shao-hua-li/compdiff
+(github.com)
 
-Abstract​    不稳定的代码是指由于程序中存在未定义行为（UB），导致运行时语义不一致或不稳定的代码。编译器通过假设未定义行为永远不会发生来利用UB，从而生成高效但潜在语义不一致的二进制文件。实践者们在设计动态工具（例如sanitizers）来处理常见的UB问题时已付出了大量研究和工程努力。然而，目前的技术仍面临一个重大挑战，即如何检测那些超出当前技术范围的UB问题。
-​    在本文中，我们介绍了一种名为Compiler-driven differential testing（CompDiff）的简单而有效的方法，用于发现C/C++程序中的不稳定代码。CompDiff利用了一个事实，即当编译不稳定代码时，不同的编译器实现可能会生成语义上不一致的二进制文件。我们的主要方法是检查相同输入上不同二进制文件的输出。输出的差异可能表明存在不稳定的代码。为了在实际程序中检测不稳定代码，我们还将CompDiff集成到AFL++中，这是最常用且积极维护的通用模糊测试工具。
-​    尽管CompDiff的方法简单，但实践中非常有效：在Juliet基准程序上，相比于sanitizers，CompDiff独特地检测到1,409个错误；在23个流行的开源C/C++项目中，CompDiff-AFL++发现了78个新错误，其中52个已经被开发人员修复，而36个无法通过sanitizers检测出来。我们的评估还揭示了一个事实，即CompDiff的设计并不是为了取代当前的UB检测工具，而是为它们提供补充。
+Abstract
+​
+不稳定的代码是指由于程序中存在未定义行为（UB），导致运行时语义不一致或不稳定的代码。编译器通过假设未定义行为永远不会发生来利用UB，从而生成高效但潜在语义不一致的二进制文件。实践者们在设计动态工具（例如sanitizers）来处理常见的UB问题时已付出了大量研究和工程努力。然而，目前的技术仍面临一个重大挑战，即如何检测那些超出当前技术范围的UB问题。
+​ 在本文中，我们介绍了一种名为Compiler-driven differential
+testing（CompDiff）的简单而有效的方法，用于发现C/C++程序中的不稳定代码。CompDiff利用了一个事实，即当编译不稳定代码时，不同的编译器实现可能会生成语义上不一致的二进制文件。我们的主要方法是检查相同输入上不同二进制文件的输出。输出的差异可能表明存在不稳定的代码。为了在实际程序中检测不稳定代码，我们还将CompDiff集成到AFL++中，这是最常用且积极维护的通用模糊测试工具。
+​
+尽管CompDiff的方法简单，但实践中非常有效：在Juliet基准程序上，相比于sanitizers，CompDiff独特地检测到1,409个错误；在23个流行的开源C/C++项目中，CompDiff-AFL++发现了78个新错误，其中52个已经被开发人员修复，而36个无法通过sanitizers检测出来。我们的评估还揭示了一个事实，即CompDiff的设计并不是为了取代当前的UB检测工具，而是为它们提供补充。
 
         
           <p class="article-more-link">
@@ -596,18 +695,38 @@ Abstract​    不稳定的代码是指由于程序中存在未定义行为（UB
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/07/24/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91UTOPIA-Automatic-Generation-of-Fuzz-Driver-using-Unit-Tests/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/07/24/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91UTOPIA-Automatic-Generation-of-Fuzz-Driver-using-Unit-Tests/"><img src="http://lorempixel.com/750/450/city/3" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          UTOPIA: Automatic Generation of Fuzz Driver using Unit Tests
+          UTOPIA:
+Automatic Generation of Fuzz Driver using Unit Tests
+
 时间：2022
-作者：Bokdeuk Jeong、Joonun Jang（Samsung Research）、Taesoo Kim（佐治亚理工）
-会议：S&amp;P’2023
+作者：Bokdeuk Jeong、Joonun Jang（Samsung
+Research）、Taesoo Kim（佐治亚理工）
+会议：S&amp;P'2023
 开源：https://github.com/Samsung/UTopia
 
-Abstract​    Fuzzing可以说是检测软件安全漏洞的最实用方法，但采用这种方法需要付出不小的努力。要想取得成效，高质量的fuzz driver程序应首先应当包含适当的 API 序列，以便详尽地探索程序状态。为减轻这一负担，现有解决方案试图通过从用户代码（即 API 的实际使用）中推断出有效的 API 序列，或直接从样本执行中提取 API 序列来生成fuzz driver程序。遗憾的是，所有现有方法都存在一个共同问题：观察到的 API 序列（无论是静态推断还是动态监控）都与自定义应用程序逻辑混杂在一起。然而，我们观察到，单元测试是由应用程序接口的实际设计者精心制作的，以验证其正确使用，而且重要的是，在开发过程中编写单元测试是一种常见做法（例如，超过 70% 的流行 GitHub 项目）。
-​    在本文中，我们提出了一种开源工具和分析算法—UTOPIA，它可以从现有的单元测试中自动合成有效的fuzz driver程序，几乎不需要人工参与。为了证明其有效性，我们将 UTOPIA 应用于 55 个开源项目库，包括 Tizen 和 Node.js，并从 8K 个合格的单元测试中自动生成了 5K 个fuzz driver程序。此外，我们在每个内核上执行了约 500 万小时生成的fuzzer，发现了 123 个错误。更重要的是，2.4K 个生成的fuzz driver程序被Tizen项目的持续集成流程采用，这表明了合成fuzz driver程序的质量。为了让研究人员和从业人员更广泛地采用，我们公开并维护了所提出的工具和结果。
+Abstract
+​
+Fuzzing可以说是检测软件安全漏洞的最实用方法，但采用这种方法需要付出不小的努力。要想取得成效，高质量的fuzz
+driver程序应首先应当包含适当的 API
+序列，以便详尽地探索程序状态。为减轻这一负担，现有解决方案试图通过从用户代码（即
+API 的实际使用）中推断出有效的 API 序列，或直接从样本执行中提取 API
+序列来生成fuzz
+driver程序。遗憾的是，所有现有方法都存在一个共同问题：观察到的 API
+序列（无论是静态推断还是动态监控）都与自定义应用程序逻辑混杂在一起。然而，我们观察到，单元测试是由应用程序接口的实际设计者精心制作的，以验证其正确使用，而且重要的是，在开发过程中编写单元测试是一种常见做法（例如，超过
+70% 的流行 GitHub 项目）。
+​
+在本文中，我们提出了一种开源工具和分析算法--UTOPIA，它可以从现有的单元测试中自动合成有效的fuzz
+driver程序，几乎不需要人工参与。为了证明其有效性，我们将 UTOPIA
+应用于 55 个开源项目库，包括 Tizen 和 Node.js，并从 8K
+个合格的单元测试中自动生成了 5K 个fuzz
+driver程序。此外，我们在每个内核上执行了约 500
+万小时生成的fuzzer，发现了 123 个错误。更重要的是，2.4K 个生成的fuzz
+driver程序被Tizen项目的持续集成流程采用，这表明了合成fuzz
+driver程序的质量。为了让研究人员和从业人员更广泛地采用，我们公开并维护了所提出的工具和结果。
 
         
           <p class="article-more-link">
@@ -667,18 +786,20 @@ Abstract​    Fuzzing可以说是检测软件安全漏洞的最实用方法，�
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/07/23/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91How%20does%20AFL++%20run%20a%20program/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/07/23/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91How%20does%20AFL++%20run%20a%20program/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          (技术积累)How does AFL++ run a program?
+          (技术积累)How does AFL++ run
+a program?
+
 前提：使用AFL++对开源程序fuzzing。
 
-​    当对目标程序插桩完毕后，在一次运行中AFL++：
+​ 当对目标程序插桩完毕后，在一次运行中AFL++：
 
 
 如何准备运行的环境？
-如何获得程序的输入\输出？
+如何获得程序的输入？
 如何判断程序是否崩溃/对应sanitizer是否触发？
 如何获取这一次的代码覆盖率并记录结果？
 
@@ -687,78 +808,6 @@ Abstract​    Fuzzing可以说是检测软件安全漏洞的最实用方法，�
         
           <p class="article-more-link">
             <a href="/2023/07/23/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91How%20does%20AFL++%20run%20a%20program/#more">阅读全文</a>
-          </p>
-        </div>
-      
-    </div>
-    <footer class="entry-meta entry-footer">
-      
-	<span class="ico-folder"></span>
-    <a class="article-category-link" href="/categories/Paper/">Paper</a>
-
-      
-  <span class="ico-tags"></span>
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a></li></ul>
-
-      
-    </footer>
-    <hr class="entry-footer-hr">
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
-    <article id="post-【论文阅读】FuzzBuilder--Automated-building-greybox-fuzzing-environment-for-CC++-library"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2023/07/23/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91FuzzBuilder--Automated-building-greybox-fuzzing-environment-for-CC++-library/">(论文阅读)FuzzBuilder- Automated building greybox fuzzing environment for C/C++ library</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2023/07/23/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91FuzzBuilder--Automated-building-greybox-fuzzing-environment-for-CC++-library/" class="article-date">
-	  <time datetime="2023-07-23T06:07:38.000Z" itemprop="datePublished">七月 23, 2023</time>
-	</a>
-
-      
-	<span class="ico-folder"></span>
-    <a class="article-category-link" href="/categories/Paper/">Paper</a>
- 
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-
-          
-            <div class="entry-thumbnail">
-              <a href="/2023/07/23/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91FuzzBuilder--Automated-building-greybox-fuzzing-environment-for-CC++-library/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
-            </div>
-          
-          <div class="entry-summary">
-          FuzzBuilder: Automated building greybox fuzzing environment for C/C++ library
-时间：2019
-作者：Joonun Jang、Huy Kang Kim（三星研究院、首尔大学）
-会议：ACSAC
-开源：https://github.com/hksecurity/FuzzBuilder
-
-Abstract​    Fuzzing是发现软件漏洞的一种有效方法，由于fuzzing发现的大多数错误都与安全漏洞有关，因此许多安全社区都对模糊测试这种验证软件安全性的自动化方法很感兴趣。然而，并非所有软件都能通过模糊测试进行测试，因为模糊测试需要运行环境，特别是可执行文件，值得注意的是，就库而言，大多数库实际上都没有相关的可执行文件。
-​    因此，最先进的fuzzer在测试任意库方面存在局限性，为了克服这个问题，我们提出了 FuzzBuilder，为库提供自动fuzzing environment。FuzzBuilder生成的可执行文件会调用库的 API 函数，从而实现库模糊测试，此外，FuzzBuilder 生成的任何可执行文件都与 AFL 等现有模糊器兼容。
-​    我们通过测试开源库来评估 FuzzBuilder 的整体性能。因此，我们在实现高代码覆盖率的同时发现了库中的未知错误。我们相信，FuzzBuilder 可以帮助安全研究人员节省库模糊测试的设置成本和学习成本。
-
-        
-          <p class="article-more-link">
-            <a href="/2023/07/23/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91FuzzBuilder--Automated-building-greybox-fuzzing-environment-for-CC++-library/#more">阅读全文</a>
           </p>
         </div>
       
@@ -891,6 +940,18 @@ Abstract​    Fuzzing是发现软件漏洞的一种有效方法，由于fuzzing
               <div class="widget-entry-summary" style="margin: 0;">
             
 
+              <h6 style="margin: 0;"><a href="/2023/10/07/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Go%20or%20No%20Go%20Differential%20Fuzzing%20of%20Native%20and%20C%20Libraries/">论文阅读</a></h6>
+              <span>十月 7, 2023</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
               <h6 style="margin: 0;"><a href="/2023/09/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Security-Risks-of-Porting-C-Programs-to-WebAssembly/">(论文阅读)Security Risks of Porting C Programs to WebAssembly</a></h6>
               <span>九月 4, 2023</span>
             </div>
@@ -945,18 +1006,6 @@ Abstract​    Fuzzing是发现软件漏洞的一种有效方法，由于fuzzing
 
           </li>
         
-          <li class="clearfix">
-
-            
-              <div class="widget-entry-summary" style="margin: 0;">
-            
-
-              <h6 style="margin: 0;"><a href="/2023/07/27/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Finding-Unstable-Code-via-Compiler-Driven-Differential-Testing/">(论文阅读)★Finding Unstable Code via Compiler-Driven Differential Testing</a></h6>
-              <span>七月 27, 2023</span>
-            </div>
-
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -966,7 +1015,7 @@ Abstract​    Fuzzing是发现软件漏洞的一种有效方法，由于fuzzing
   <div class="widget-wrap">
     <h3 class="widget-title">分类</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Book/">Book</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Code/">Code</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kaggle/">Kaggle</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Paper/">Paper</a><span class="category-list-count">46</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Project/">Project</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Reproduce/">Reproduce</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Something/">Something</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/paper/">paper</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Book/">Book</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Code/">Code</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kaggle/">Kaggle</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Paper/">Paper</a><span class="category-list-count">47</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Project/">Project</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Reproduce/">Reproduce</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Something/">Something</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/paper/">paper</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -976,7 +1025,7 @@ Abstract​    Fuzzing是发现软件漏洞的一种有效方法，由于fuzzing
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD/" rel="tag">AD</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD-training/" rel="tag">AD training</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AEG/" rel="tag">AEG</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BCSA/" rel="tag">BCSA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary/" rel="tag">Binary</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Botnet/" rel="tag">Botnet</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CV/" rel="tag">CV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cloud/" rel="tag">Cloud</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNN/" rel="tag">DNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a><span class="tag-list-count">16</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDS/" rel="tag">IDS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Klee/" rel="tag">Klee</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LLVM/" rel="tag">LLVM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ML/" rel="tag">ML</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Malware-Classifiers/" rel="tag">Malware Classifiers</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Math/" rel="tag">Math</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mutiagent/" rel="tag">Mutiagent</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/" rel="tag">NLP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDF/" rel="tag">PDF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RL/" rel="tag">RL</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RNN/" rel="tag">RNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Symbolic-Execution/" rel="tag">Symbolic Execution</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UAF/" rel="tag">UAF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vulnerability/" rel="tag">Vulnerability</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WASM/" rel="tag">WASM</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/" rel="tag">Windows</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/obfuscation/" rel="tag">obfuscation</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD/" rel="tag">AD</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD-training/" rel="tag">AD training</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AEG/" rel="tag">AEG</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BCSA/" rel="tag">BCSA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary/" rel="tag">Binary</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Botnet/" rel="tag">Botnet</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CV/" rel="tag">CV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cloud/" rel="tag">Cloud</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNN/" rel="tag">DNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Differential-fuzzing/" rel="tag">Differential fuzzing</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a><span class="tag-list-count">16</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDS/" rel="tag">IDS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Klee/" rel="tag">Klee</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LLVM/" rel="tag">LLVM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ML/" rel="tag">ML</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Malware-Classifiers/" rel="tag">Malware Classifiers</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Math/" rel="tag">Math</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mutiagent/" rel="tag">Mutiagent</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/" rel="tag">NLP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDF/" rel="tag">PDF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RL/" rel="tag">RL</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RNN/" rel="tag">RNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Symbolic-Execution/" rel="tag">Symbolic Execution</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UAF/" rel="tag">UAF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vulnerability/" rel="tag">Vulnerability</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WASM/" rel="tag">WASM</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/" rel="tag">Windows</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/obfuscation/" rel="tag">obfuscation</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -986,7 +1035,7 @@ Abstract​    Fuzzing是发现软件漏洞的一种有效方法，由于fuzzing
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/AD/" style="font-size: 18.57px;">AD</a> <a href="/tags/AD-training/" style="font-size: 10px;">AD training</a> <a href="/tags/AEG/" style="font-size: 15.71px;">AEG</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/BCSA/" style="font-size: 10px;">BCSA</a> <a href="/tags/Binary/" style="font-size: 12.86px;">Binary</a> <a href="/tags/Botnet/" style="font-size: 10px;">Botnet</a> <a href="/tags/CV/" style="font-size: 10px;">CV</a> <a href="/tags/Cloud/" style="font-size: 10px;">Cloud</a> <a href="/tags/DDoS/" style="font-size: 10px;">DDoS</a> <a href="/tags/DNN/" style="font-size: 10px;">DNN</a> <a href="/tags/Fuzzing/" style="font-size: 20px;">Fuzzing</a> <a href="/tags/IDS/" style="font-size: 11.43px;">IDS</a> <a href="/tags/Klee/" style="font-size: 10px;">Klee</a> <a href="/tags/LLVM/" style="font-size: 10px;">LLVM</a> <a href="/tags/ML/" style="font-size: 12.86px;">ML</a> <a href="/tags/Machine-Learning/" style="font-size: 11.43px;">Machine Learning</a> <a href="/tags/Malware-Classifiers/" style="font-size: 15.71px;">Malware Classifiers</a> <a href="/tags/Math/" style="font-size: 10px;">Math</a> <a href="/tags/Mutiagent/" style="font-size: 10px;">Mutiagent</a> <a href="/tags/NLP/" style="font-size: 12.86px;">NLP</a> <a href="/tags/PDF/" style="font-size: 10px;">PDF</a> <a href="/tags/Pytorch/" style="font-size: 11.43px;">Pytorch</a> <a href="/tags/RL/" style="font-size: 14.29px;">RL</a> <a href="/tags/RNN/" style="font-size: 10px;">RNN</a> <a href="/tags/Symbolic-Execution/" style="font-size: 14.29px;">Symbolic Execution</a> <a href="/tags/UAF/" style="font-size: 10px;">UAF</a> <a href="/tags/Vulnerability/" style="font-size: 17.14px;">Vulnerability</a> <a href="/tags/WASM/" style="font-size: 17.14px;">WASM</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/obfuscation/" style="font-size: 10px;">obfuscation</a>
+      <a href="/tags/AD/" style="font-size: 18.57px;">AD</a> <a href="/tags/AD-training/" style="font-size: 10px;">AD training</a> <a href="/tags/AEG/" style="font-size: 15.71px;">AEG</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/BCSA/" style="font-size: 10px;">BCSA</a> <a href="/tags/Binary/" style="font-size: 12.86px;">Binary</a> <a href="/tags/Botnet/" style="font-size: 10px;">Botnet</a> <a href="/tags/CV/" style="font-size: 10px;">CV</a> <a href="/tags/Cloud/" style="font-size: 10px;">Cloud</a> <a href="/tags/DDoS/" style="font-size: 10px;">DDoS</a> <a href="/tags/DNN/" style="font-size: 10px;">DNN</a> <a href="/tags/Differential-fuzzing/" style="font-size: 10px;">Differential fuzzing</a> <a href="/tags/Fuzzing/" style="font-size: 20px;">Fuzzing</a> <a href="/tags/IDS/" style="font-size: 11.43px;">IDS</a> <a href="/tags/Klee/" style="font-size: 10px;">Klee</a> <a href="/tags/LLVM/" style="font-size: 10px;">LLVM</a> <a href="/tags/ML/" style="font-size: 12.86px;">ML</a> <a href="/tags/Machine-Learning/" style="font-size: 11.43px;">Machine Learning</a> <a href="/tags/Malware-Classifiers/" style="font-size: 15.71px;">Malware Classifiers</a> <a href="/tags/Math/" style="font-size: 10px;">Math</a> <a href="/tags/Mutiagent/" style="font-size: 10px;">Mutiagent</a> <a href="/tags/NLP/" style="font-size: 12.86px;">NLP</a> <a href="/tags/PDF/" style="font-size: 10px;">PDF</a> <a href="/tags/Pytorch/" style="font-size: 11.43px;">Pytorch</a> <a href="/tags/RL/" style="font-size: 14.29px;">RL</a> <a href="/tags/RNN/" style="font-size: 10px;">RNN</a> <a href="/tags/Symbolic-Execution/" style="font-size: 14.29px;">Symbolic Execution</a> <a href="/tags/UAF/" style="font-size: 10px;">UAF</a> <a href="/tags/Vulnerability/" style="font-size: 17.14px;">Vulnerability</a> <a href="/tags/WASM/" style="font-size: 17.14px;">WASM</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/obfuscation/" style="font-size: 10px;">obfuscation</a>
     </div>
   </div>
 
@@ -996,7 +1045,7 @@ Abstract​    Fuzzing是发现软件漏洞的一种有效方法，由于fuzzing
     <h3 class="widget-title">归档</h3>
 
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/09/">九月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/07/">七月 2023</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">14</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">十月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/09/">九月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/07/">七月 2023</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">14</span></li></ul>
     </div>
   </div>
 
@@ -1192,5 +1241,20 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>

@@ -13,17 +13,15 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="FuzzBuilder复现Use of FuzzBuilder and some technical analysis.">
+  <meta name="description" content="FuzzBuilder复现 Use of FuzzBuilder and some technical analysis.">
 <meta property="og:type" content="article">
 <meta property="og:title" content="(技术积累)FuzzBuilder复现">
 <meta property="og:url" content="http://example.com/2023/08/15/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91FuzzBuilder%E5%A4%8D%E7%8E%B0/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="FuzzBuilder复现Use of FuzzBuilder and some technical analysis.">
+<meta property="og:description" content="FuzzBuilder复现 Use of FuzzBuilder and some technical analysis.">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230818190723.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230819095110.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230821142419.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230821143411.png">
 <meta property="article:published_time" content="2023-08-15T08:11:35.000Z">
 <meta property="article:modified_time" content="2023-09-04T07:12:46.000Z">
 <meta property="article:author" content="Shaw">
@@ -156,37 +154,47 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="FuzzBuilder复现"><a href="#FuzzBuilder复现" class="headerlink" title="FuzzBuilder复现"></a>FuzzBuilder复现</h1><p>Use of FuzzBuilder and some technical analysis.</p>
+        <h1 id="fuzzbuilder复现">FuzzBuilder复现</h1>
+<p>Use of FuzzBuilder and some technical analysis.</p>
 <span id="more"></span>
-<h2 id="1-Tutorial"><a href="#1-Tutorial" class="headerlink" title="1. Tutorial"></a>1. Tutorial</h2><p>​    由于国内科学上网等原因（可能），<a target="_blank" rel="noopener" href="https://github.com/hksecurity/FuzzBuilder">hksecurity/FuzzBuilder (github.com)</a>给的dockerfile使用一直有问题，故这里直接使用ubuntu18.04镜像新建docker：</p>
-<p>​    Due to domestic Internet access in China and other reasons (probably), the dockerfile given by <a target="_blank" rel="noopener" href="https://github.com/hksecurity/FuzzBuilder">hksecurity/FuzzBuilder (github.com)</a> has been problematic to use, so here is the direct use of the ubuntu18.04 image to create a new docker:</p>
+<h2 id="tutorial">1. Tutorial</h2>
+<p>​ 由于国内科学上网等原因（可能），<a
+target="_blank" rel="noopener" href="https://github.com/hksecurity/FuzzBuilder">hksecurity/FuzzBuilder
+(github.com)</a>给的dockerfile使用一直有问题，故这里直接使用ubuntu18.04镜像新建docker：</p>
+<p>​ Due to domestic Internet access in China and other reasons
+(probably), the dockerfile given by <a
+target="_blank" rel="noopener" href="https://github.com/hksecurity/FuzzBuilder">hksecurity/FuzzBuilder
+(github.com)</a> has been problematic to use, so here is the direct use
+of the ubuntu18.04 image to create a new docker:</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker pull homebrew/ubuntu18.04<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>​    然后根据仓库给出的指令安装相关包：</p>
-<p>​    Then follow the instructions given by the repository to install the relevant packages:</p>
+<p>​ 然后根据仓库给出的指令安装相关包：</p>
+<p>​ Then follow the instructions given by the repository to install the
+relevant packages:</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">apt-get</span> <span class="token function">install</span> clang-6.0 clang-6.0-dev llvm-6.0 llvm-6.0-dev
 <span class="token function">ln</span> -s /usr/bin/clang-6.0 /usr/bin/clang
 <span class="token function">apt-get</span> <span class="token function">install</span> <span class="token function">git</span> <span class="token function">wget</span> build-essential cmake gcc-multilib g++-multilib gnupg <span class="token function">zip</span> autoconf automake libtool docbook2x zlib1g-dev rapidjson-dev<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<p>​    注意，这里只安装了clang没有安装clang++，故再补一个：</p>
-<p>​    Note that only clang is installed here but not clang++, so another one is added:</p>
+<p>​ 注意，这里只安装了clang没有安装clang++，故再补一个：</p>
+<p>​ Note that only clang is installed here but not clang++, so another
+one is added:</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">apt-get</span> <span class="token function">install</span> clang++-6.0 clang++-6.0-dev
 <span class="token function">ln</span> -s /usr/bin/clang++-6.0 /usr/bin/clang++<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<p>​    安装AFL（后期可替换为AFL++）：</p>
-<p>​    Install AFL (which can be replaced with AFL++ at a later stage):</p>
+<p>​ 安装AFL（后期可替换为AFL++）：</p>
+<p>​ Install AFL (which can be replaced with AFL++ at a later stage):</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> clone https://github.com/google/AFL.git
 <span class="token builtin class-name">cd</span> AFL
 <span class="token function">make</span>
 <span class="token builtin class-name">export</span> <span class="token assign-left variable">AFL_PATH</span><span class="token operator">=</span><span class="token environment constant">$PWD</span>
 <span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span><span class="token environment constant">$PATH</span><span class="token builtin class-name">:</span><span class="token environment constant">$PWD</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    编译FuzzBuilder：</p>
-<p>​    Compile FuzzBuilder:</p>
+<p>​ 编译FuzzBuilder：</p>
+<p>​ Compile FuzzBuilder:</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> clone https://github.com/hksecurity/FuzzBuilder.git
 <span class="token builtin class-name">cd</span> FuzzBuilder
 <span class="token builtin class-name">export</span> <span class="token assign-left variable">FuzzBuilder</span><span class="token operator">=</span><span class="token environment constant">$PWD</span>
 <span class="token function">mkdir</span> -p <span class="token variable">$FuzzBuilder</span>/build <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> <span class="token variable">$FuzzBuilder</span>/build
 cmake build <span class="token punctuation">..</span>/src
 <span class="token function">make</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    安装emscripten:</p>
-<p>​    Install emscripten:</p>
+<p>​ 安装emscripten:</p>
+<p>​ Install emscripten:</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># Get the emsdk repo</span>
 <span class="token function">git</span> clone https://github.com/emscripten-core/emsdk.git
 <span class="token comment"># Enter that directory</span>
@@ -199,12 +207,17 @@ cmake build <span class="token punctuation">..</span>/src
 ./emsdk activate latest
 <span class="token comment"># Activate PATH and other environment variables in the current terminal</span>
 <span class="token builtin class-name">source</span> ./emsdk_env.sh<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    至此所需软件安装编译完成。</p>
-<p>​    This completes the installation and compilation of the required software.</p>
-<h2 id="2-Example-expat"><a href="#2-Example-expat" class="headerlink" title="2. Example: expat"></a>2. Example: expat</h2><p>​    这里利用XML解析器库expat来举例说明FuzzBuilder的使用方法。</p>
-<p>​    The XML parser library expat is used here as an example to illustrate the use of FuzzBuilder.</p>
-<h3 id="2-1-Seed-generation"><a href="#2-1-Seed-generation" class="headerlink" title="2.1 Seed generation"></a>2.1 Seed generation</h3><ul>
-<li><strong>下载源码，并切换到指定版本（Download the source code and switch to the specified version）</strong></li>
+<p>​ 至此所需软件安装编译完成。</p>
+<p>​ This completes the installation and compilation of the required
+software.</p>
+<h2 id="example-expat">2. Example: expat</h2>
+<p>​ 这里利用XML解析器库expat来举例说明FuzzBuilder的使用方法。</p>
+<p>​ The XML parser library expat is used here as an example to
+illustrate the use of FuzzBuilder.</p>
+<h3 id="seed-generation">2.1 Seed generation</h3>
+<ul>
+<li><strong>下载源码，并切换到指定版本（Download the source code and
+switch to the specified version）</strong></li>
 </ul>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">mkdir</span> -p <span class="token variable">$FuzzBuilder</span>/exp/expat/source <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/source
 <span class="token function">git</span> clone <span class="token punctuation">[</span>https://github.com/libexpat/libexpat<span class="token punctuation">]</span><span class="token punctuation">(</span>https://github.com/libexpat/libexpat<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> libexpat
@@ -214,8 +227,11 @@ cmake build <span class="token punctuation">..</span>/src
 </ul>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">cp</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/fuzzer_main.cc ./expat
 <span class="token function">cp</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/build.sh ./expat<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<p>​    <code>build.sh</code>是expat项目的编译脚本，这里将其中的CC和CXX换成了对应的afl-clang和afl-clang++。</p>
-<p>​    <code>build.sh</code>is the compilation script for the expat project, where CC and CXX have been replaced with the corresponding afl-clang and afl-clang++.</p>
+<p>​
+<code>build.sh</code>是expat项目的编译脚本，这里将其中的CC和CXX换成了对应的afl-clang和afl-clang++。</p>
+<p>​ <code>build.sh</code>is the compilation script for the expat
+project, where CC and CXX have been replaced with the corresponding
+afl-clang and afl-clang++.</p>
 <ul>
 <li><strong>编译项目(Compile)：</strong></li>
 </ul>
@@ -223,49 +239,85 @@ cmake build <span class="token punctuation">..</span>/src
 <span class="token comment"># edit CC, CXX variable with correct path</span>
 <span class="token function">vi</span> ./build.sh
 ./build.sh seed<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    如果在运行build.sh脚本时指定了cov或者seed，则会直接执行make，否则会使用AFL_USE_ASAN=1。</p>
-<p>​    编译好的项目会在build文件夹下生成一个<code>fuzzbuilder</code>可执行文件。</p>
-<p>​    If <code>cov</code>or <code>seed</code>is specified when running the build.sh script, make will be executed directly, otherwise AFL_USE_ASAN=1 will be used.</p>
-<p>​    The compiled project generates a fuzzbuilder executable in the build folder.</p>
+<p>​
+如果在运行build.sh脚本时指定了cov或者seed，则会直接执行make，否则会使用AFL_USE_ASAN=1。</p>
+<p>​
+编译好的项目会在build文件夹下生成一个<code>fuzzbuilder</code>可执行文件。</p>
+<p>​ If <code>cov</code>or <code>seed</code>is specified when running the
+build.sh script, make will be executed directly, otherwise
+AFL_USE_ASAN=1 will be used.</p>
+<p>​ The compiled project generates a fuzzbuilder executable in the build
+folder.</p>
 <ul>
 <li><strong>生成种子(Seed generation)：</strong></li>
 </ul>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">afl-clang -emit-llvm -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -c lib/xmlparse.c -fPIC -DPIC
 
 <span class="token variable">$FuzzBuilder</span>/build/fuzzbuilder seed <span class="token variable">$FuzzBuilder</span>/exp/expat/seed.conf<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<p>​    上述命令将目标库lib/xmlparse.c编译为bitcode：xmlparse.bc，<code>-m32</code>表明32位。然后使用fuzzbuilder命令从seed.conf中读取配置文件并生成种子。</p>
-<p>​    The above command compiles the target library lib/xmlparse.c to bitcode: xmlparse.bc, with <code>-m32</code> indicating 32-bit. Then use the fuzzbuilder command to read the configuration file from seed.conf and generate the seed.</p>
-<p>​    seed.conf是FuzzBuilder自带的文件，其指明了：</p>
-<p>​    seed.conf is the file that comes with FuzzBuilder that specifies:</p>
+<p>​
+上述命令将目标库lib/xmlparse.c编译为bitcode：xmlparse.bc，<code>-m32</code>表明32位。然后使用fuzzbuilder命令从seed.conf中读取配置文件并生成种子。</p>
+<p>​ The above command compiles the target library lib/xmlparse.c to
+bitcode: xmlparse.bc, with <code>-m32</code> indicating 32-bit. Then use
+the fuzzbuilder command to read the configuration file from seed.conf
+and generate the seed.</p>
+<p>​ seed.conf是FuzzBuilder自带的文件，其指明了：</p>
+<p>​ seed.conf is the file that comes with FuzzBuilder that
+specifies:</p>
 <pre class="line-numbers language-conf" data-language="conf"><code class="language-conf">&#123;
     &quot;targets&quot; : [ [ &quot;XML_Parse&quot;, 2, 3 ]],
     &quot;files&quot; : [ &quot;xmlparse.bc&quot; ]
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    <code>target</code>表明了需要分析的函数<code>XML_Parse()</code>和fuzzer需要给该函数传递的参数，2,3代表了第二个参数用于传递input，第三个用于表示input的大小。</p>
-<p>​    <code>files</code>表明了需要分析的文件，其以bitcode的形式输入。</p>
-<p>​    <code>target</code>indicates the function <code>XML_Parse</code>() to be analyzed and the parameters that fuzzer needs to pass to this function, 2,3 represents the second parameter used to pass the input, and the third is used to indicate the size of the input.<br>​    <code>files</code>indicates the file to be analyzed, which is input in the form of a bitcode.</p>
-<p>​    以上命令运行结果如下：</p>
-<p>​    The result of running the above command is as follows:</p>
+<p>​
+<code>target</code>表明了需要分析的函数<code>XML_Parse()</code>和fuzzer需要给该函数传递的参数，2,3代表了第二个参数用于传递input，第三个用于表示input的大小。</p>
+<p>​ <code>files</code>表明了需要分析的文件，其以bitcode的形式输入。</p>
+<p>​ <code>target</code>indicates the function <code>XML_Parse</code>()
+to be analyzed and the parameters that fuzzer needs to pass to this
+function, 2,3 represents the second parameter used to pass the input,
+and the third is used to indicate the size of the input. ​
+<code>files</code>indicates the file to be analyzed, which is input in
+the form of a bitcode.</p>
+<p>​ 以上命令运行结果如下：</p>
+<p>​ The result of running the above command is as follows:</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230818190723.png" style="zoom:67%;" /></p>
-<p>​    可以看到，插桩后的文件以<code>xmlparse.bc.mod.bc</code>存在。接下来编译这个插桩后的bc文件：</p>
-<p>​    As you can see, the instrumented file exists as <code>xmlparse.bc.mod.bc</code>. Next, compile this instrumented bc file:</p>
+<p>​
+可以看到，插桩后的文件以<code>xmlparse.bc.mod.bc</code>存在。接下来编译这个插桩后的bc文件：</p>
+<p>​ As you can see, the instrumented file exists as
+<code>xmlparse.bc.mod.bc</code>. Next, compile this instrumented bc
+file:</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">afl-clang -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -c xmlparse.bc.mod.bc -fPIC -DPIC -o xmlparse.o
 ar r lib/.libs/libexpat.a xmlparse.o
 <span class="token function">rm</span> -f tests/runtests
 <span class="token function">make</span> check<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    以上命令将插桩后的bc文件编译为了<code>xmlparse.o</code>，并使用ar命令将 “xmlparse.o” 文件添加到名为 “libexpat.a” 的归档文件中，以便构建完整的静态库。这样在链接时，可以使用这个静态库来提供 “xmlparse.o” 中定义的函数和符号。</p>
-<p>​    The above command compiles the staked bc file to <code>xmlparse.o</code>  and uses the ar command to add the “xmlparse.o” file to an archive named “libexpat.a” in order to build the complete static library. This static library can then be used to provide the functions and symbols defined in “xmlparse.o” at link time.</p>
-<p>​    接下来运行seed_maker.py脚本从已经生成的种子中提取（其中这里的<code>fuzzbuilder.collect</code>就是上一步中make check运行插桩后的单元测试时生成的种子文件）：</p>
-<p>​    Next run the seed_maker.py script to extract from the seeds that have been generated (where <code>fuzzbuilder.collect</code> here is the seed file that was generated when make check ran the unit tests after instrumenting in the previous step):</p>
+<p>​
+以上命令将插桩后的bc文件编译为了<code>xmlparse.o</code>，并使用ar命令将
+"xmlparse.o" 文件添加到名为 "libexpat.a"
+的归档文件中，以便构建完整的静态库。这样在链接时，可以使用这个静态库来提供
+"xmlparse.o" 中定义的函数和符号。</p>
+<p>​ The above command compiles the staked bc file to
+<code>xmlparse.o</code> and uses the ar command to add the "xmlparse.o"
+file to an archive named "libexpat.a" in order to build the complete
+static library. This static library can then be used to provide the
+functions and symbols defined in "xmlparse.o" at link time.</p>
+<p>​
+接下来运行seed_maker.py脚本从已经生成的种子中提取（其中这里的<code>fuzzbuilder.collect</code>就是上一步中make
+check运行插桩后的单元测试时生成的种子文件）：</p>
+<p>​ Next run the seed_maker.py script to extract from the seeds that
+have been generated (where <code>fuzzbuilder.collect</code> here is the
+seed file that was generated when make check ran the unit tests after
+instrumenting in the previous step):</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">mv</span> /tmp/fuzzbuilder.collect <span class="token builtin class-name">.</span>
 python <span class="token variable">$FuzzBuilder</span>/script/seed_maker.py fuzzbuilder.collect seed_fb
 <span class="token function">mkdir</span> -p <span class="token variable">$FuzzBuilder</span>/exp/expat/seed/fuzzbuilder
 <span class="token function">mv</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/source/libexpat/expat/seed_fb <span class="token variable">$FuzzBuilder</span>/exp/expat/seed/fuzzbuilder/org<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    可以看到生成的种子库：</p>
-<p>​    You can see the generated seeds:</p>
+<p>​ 可以看到生成的种子库：</p>
+<p>​ You can see the generated seeds:</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230819095110.png" style="zoom:80%;" /></p>
-<h3 id="2-2-executable-file-generation"><a href="#2-2-executable-file-generation" class="headerlink" title="2.2 executable file generation"></a>2.2 executable file generation</h3><p>​    这里根据作者给出的两个配置文件<code>XML_Parse.conf</code>和<code>bug.conf</code>对runtest.c做插桩，生成了两个可执行文件。</p>
-<p>​    Here two executables are generated by instrumenting runtest.c according to the two configuration files <code>XML_Parse.conf</code> and <code>bug.conf</code> given by the author.</p>
+<h3 id="executable-file-generation">2.2 executable file generation</h3>
+<p>​
+这里根据作者给出的两个配置文件<code>XML_Parse.conf</code>和<code>bug.conf</code>对runtest.c做插桩，生成了两个可执行文件。</p>
+<p>​ Here two executables are generated by instrumenting runtest.c
+according to the two configuration files <code>XML_Parse.conf</code> and
+<code>bug.conf</code> given by the author.</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#进入其自带的文件夹</span>
 <span class="token builtin class-name">cd</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/source/libexpat/expat/tests
 <span class="token comment">#将runtest.c编译为bitcode</span>
@@ -283,8 +335,8 @@ afl-clang -emit-llvm -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</s
 afl-clang -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -I./<span class="token punctuation">..</span>/lib -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -o runtests.o -c runtests.bc.mod.bc
 afl-clang -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -fno-strict-aliasing -o XML_Parse_fuzzer runtests.o libruntests.a <span class="token punctuation">..</span>/lib/.libs/libexpat.a
 <span class="token function">mv</span> XML_Parse_fuzzer <span class="token variable">$FuzzBuilder</span>/exp/expat/bin/fuzz/fuzzbuilder/bug_fuzzer<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    如果要成带有代码覆盖率的可执行文件：</p>
-<p>​    If it is to be an executable with code coverage:</p>
+<p>​ 如果要成带有代码覆盖率的可执行文件：</p>
+<p>​ If it is to be an executable with code coverage:</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">cd</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/source/libexpat/expat/tests
 afl-clang -emit-llvm -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -I./<span class="token punctuation">..</span>/lib -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -c runtests.c
 <span class="token variable">$FuzzBuilder</span>/build/fuzzbuilder <span class="token builtin class-name">exec</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/XML_Parse.conf
@@ -292,23 +344,35 @@ afl-clang -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -I./<s
 afl-clang -fprofile-arcs -ftest-coverage -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -m32 -g -fno-strict-aliasing -o XML_Parse_fuzzer runtests.o  libruntests.a <span class="token punctuation">..</span>/lib/.libs/libexpat.a
 <span class="token function">mkdir</span> -p <span class="token variable">$FuzzBuilder</span>/exp/expat/bin/cov/fuzzbuilder
 <span class="token function">mv</span> XML_Parse_fuzzer <span class="token variable">$FuzzBuilder</span>/exp/expat/bin/cov/fuzzbuilder<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="2-3-种子优化"><a href="#2-3-种子优化" class="headerlink" title="2.3 种子优化"></a>2.3 种子优化</h3><p>​    使用AFL自带的afl-cmin对种子库做优化：</p>
-<p>​    Use afl-cmin that comes with AFL to optimize the seed library:</p>
+<h3 id="种子优化">2.3 种子优化</h3>
+<p>​ 使用AFL自带的afl-cmin对种子库做优化：</p>
+<p>​ Use afl-cmin that comes with AFL to optimize the seed library:</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">cd</span> <span class="token variable">$FuzzBuilder</span>/exp/expat
 <span class="token variable">$AFL_PATH</span>/afl-cmin -m <span class="token number">1024</span> -i seed/fuzzbuilder/org/XML_Parse -o seed/eval/XML_Parse_fuzzer/fuzzbuilder bin/fuzz/fuzzbuilder/XML_Parse_fuzzer @@<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<p>​    下面就可以直接用生成的可执行文件和种子进行fuzzing了。</p>
-<p>​    The following can be used directly for fuzzing with the generated executable and seed.</p>
-<h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem:"></a>Problem:</h2><p>When I try to compile expat’s test file <code>runtests.c</code> to wasm binary:</p>
-<ol>
+<p>​ 下面就可以直接用生成的可执行文件和种子进行fuzzing了。</p>
+<p>​ The following can be used directly for fuzzing with the generated
+executable and seed.</p>
+<h2 id="problem">Problem:</h2>
+<p>When I try to compile expat's test file <code>runtests.c</code> to
+wasm binary:</p>
+<ol type="1">
 <li><p><strong>Build the expat with emscripten.</strong></p>
-<p>Since the target file needs to use many of expat’s library files when linking, I think I should recompile the expat project first with emcc.So I modified the build.sh for expat:</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230821142419.png" alt="Modified build.sh for expat project"></p>
+<p>Since the target file needs to use many of expat's library files when
+linking, I think I should recompile the expat project first with emcc.So
+I modified the build.sh for expat:</p>
+<figure>
+<img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230821142419.png"
+alt="Modified build.sh for expat project" />
+<figcaption aria-hidden="true">Modified build.sh for expat
+project</figcaption>
+</figure>
 <p>As you can see, I used emcc to build the project.</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">cd</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/source/libexpat/expat
-./build.sh wasm<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-</li>
+./build.sh wasm<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></li>
 <li><p><strong>Generate seed files</strong></p>
-<p>This step is the same process as described above, the only difference is that it is compiled with emcc.</p>
+<p>This step is the same process as described above, the only difference
+is that it is compiled with emcc.</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">emcc -emit-llvm -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -c lib/xmlparse.c -fPIC -DPIC
 
 <span class="token variable">$FuzzBuilder</span>/build/fuzzbuilder seed <span class="token variable">$FuzzBuilder</span>/exp/expat/seed.conf
@@ -316,26 +380,103 @@ afl-clang -fprofile-arcs -ftest-coverage -m32 -g -Wall -Wmissing-prototypes -Wst
 emcc -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -c xmlparse.bc.mod.bc -fPIC -DPIC -o xmlparse.o
 ar r lib/.libs/libexpat.a xmlparse.o
 <span class="token function">rm</span> -f tests/runtests
-<span class="token function">make</span> check<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-</li>
+<span class="token function">make</span> check<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
 <li><p><strong>Generate executable file</strong></p>
-<p>Because fuzzbuilder can only analyze the bitcode of LLVM 6.0 version, so this step can’t use emcc to compile runtests.c to bc file directly, so I choose to use clang6.0 to compile:</p>
+<p>Because fuzzbuilder can only analyze the bitcode of LLVM 6.0 version,
+so this step can't use emcc to compile runtests.c to bc file directly,
+so I choose to use clang6.0 to compile:</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">clang -emit-llvm -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -I./<span class="token punctuation">..</span>/lib -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -c runtests.c<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>Then use fuzzerbuild to instrument and generate:</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token variable">$FuzzBuilder</span>/build/fuzzbuilder <span class="token builtin class-name">exec</span> <span class="token variable">$FuzzBuilder</span>/exp/expat/XML_Parse.conf<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>The instrumented code is called <code>runtests.bc.mod.bc</code>, and this code is compiled into an executable file which is the fuzz target we need.</p>
+<p>The instrumented code is called <code>runtests.bc.mod.bc</code>, and
+this code is compiled into an executable file which is the fuzz target
+we need.</p>
 <p>Here it is compiled using emcc:</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">emcc -DHAVE_CONFIG_H -I. -I<span class="token punctuation">..</span> -I./<span class="token punctuation">..</span>/lib -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -o runtests.o -c runtests.bc.mod.bc
 emcc -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -fno-strict-aliasing -o XML_Parse_fuzzer runtests.o libruntests.a <span class="token punctuation">..</span>/lib/.libs/libexpat.a<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>But something went wrong:</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230821143411.png" alt=""></p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230821143411.png" /></p>
 <blockquote>
 <p><strong>Error Messages:</strong></p>
-<p>[linuxbrew@708fe4a082ee:tests]$ emcc -DHAVE_CONFIG_H -I. -I.. -I./../lib -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -o runtests.o -c runtests.bc.mod.bc<br>clang++: warning: argument unused during compilation: ‘-I .’ [-Wunused-command-line-argument]<br>clang++: warning: argument unused during compilation: ‘-I ..’ [-Wunused-command-line-argument]<br>clang++: warning: argument unused during compilation: ‘-I ./../lib’ [-Wunused-command-line-argument]<br>warning: overriding the module target triple with wasm32-unknown-emscripten [-Woverride-module]<br>‘pentium4’ is not a recognized processor for this target (ignoring processor)<br>‘+fxsr’ is not a recognized feature for this target (ignoring feature)<br>‘+mmx’ is not a recognized feature for this target (ignoring feature)<br>‘+sse’ is not a recognized feature for this target (ignoring feature)<br>‘+sse2’ is not a recognized feature for this target (ignoring feature)<br>‘+x87’ is not a recognized feature for this target (ignoring feature)<br>‘pentium4’ is not a recognized processor for this target (ignoring processor)<br>‘pentium4’ is not a recognized processor for this target (ignoring processor)<br>‘+fxsr’ is not a recognized feature for this target (ignoring feature)<br>‘+mmx’ is not a recognized feature for this target (ignoring feature)<br>‘+sse’ is not a recognized feature for this target (ignoring feature)<br>‘+sse2’ is not a recognized feature for this target (ignoring feature)<br>‘+x87’ is not a recognized feature for this target (ignoring feature)<br>‘pentium4’ is not a recognized processor for this target (ignoring processor)<br>1 warning generated.<br>[linuxbrew@708fe4a082ee:tests]$ emcc -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-strict-aliasing -fno-strict-aliasing -o XML_Parse_fuzzer runtests.o libruntests.a ../lib/.libs/libexpat.a<br>wasm-ld: error: runtests.o: undefined symbol: fuzzbuilder_buffer<br>wasm-ld: error: runtests.o: undefined symbol: fuzzbuilder_size<br>wasm-ld: error: runtests.o: undefined symbol: fuzzbuilder_size<br>wasm-ld: error: runtests.o: undefined symbol: fuzzbuilder_size<br>wasm-ld: error: runtests.o: undefined symbol: fuzzbuilder_buffer<br>wasm-ld: error: runtests.o: undefined symbol: fuzzbuilder_buffer<br>wasm-ld: error: runtests.o: undefined symbol: fuzzbuilder_size<br>wasm-ld: error: runtests.o: undefined symbol: fuzzbuilder_size<br>wasm-ld: error: runtests.o: undefined symbol: fuzzbuilder_buffer<br>wasm-ld: error: runtests.o: undefined symbol: fuzzbuilder_size<br>wasm-ld: error: runtests.o: undefined symbol: fuzzbuilder_buffer<br>wasm-ld: error: runtests.o: undefined symbol: fuzzbuilder_size<br>wasm-ld: error: runtests.o: undefined symbol: fuzzbuilder_buffer<br>wasm-ld: error: runtests.o: undefined symbol: fuzzbuilder_size<br>wasm-ld: error: runtests.o: undefined symbol: fuzzbuilder_buffer<br>wasm-ld: error: runtests.o: undefined symbol: fuzzbuilder_size<br>wasm-ld: error: runtests.o: undefined symbol: fuzzbuilder_buffer<br>wasm-ld: error: runtests.o: undefined symbol: fuzzbuilder_size<br>wasm-ld: error: runtests.o: undefined symbol: fuzzbuilder_buffer<br>wasm-ld: error: runtests.o: undefined symbol: fuzzbuilder_size<br>wasm-ld: error: too many errors emitted, stopping now (use -error-limit=0 to see all errors)<br>emcc: error: ‘/home/linuxbrew/emsdk/upstream/bin/wasm-ld -o XML_Parse_fuzzer.wasm runtests.o libruntests.a ../lib/.libs/libexpat.a -L/home/linuxbrew/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten -lGL -lal -lhtml5 -lstubs-debug -lnoexit -lc-debug -ldlmalloc -lcompiler_rt -lc++ -lc++abi-debug -lsockets -mllvm -combiner-global-alias-analysis=false -mllvm -enable-emscripten-cxx-exceptions -mllvm -enable-emscripten-sjlj -mllvm -disable-lsr /tmp/tmppqspurs4libemscripten_js_symbols.so —export-if-defined=main —export-if-defined=<strong>get_exception_message —export-if-defined=free —export-if-defined=</strong>start_em_asm —export-if-defined=<strong>stop_em_asm —export-if-defined=</strong>start_em_lib_deps —export-if-defined=<strong>stop_em_lib_deps —export-if-defined=</strong>start_em_js —export-if-defined=<strong>stop_em_js —export-if-defined=</strong>main_argc_argv —export-if-defined=fflush —export=emscripten_stack_get_end —export=emscripten_stack_get_free —export=emscripten_stack_get_base —export=emscripten_stack_get_current —export=emscripten_stack_init —export=stackSave —export=stackRestore —export=stackAlloc —export=<strong>errno_location —export=</strong>get_temp_ret —export=<strong>set_temp_ret —export=</strong>cxa_is_pointer_type —export=<strong>cxa_can_catch —export=</strong>cxa_increment_exception_refcount —export=<strong>cxa_decrement_exception_refcount —export=setThrew —export=</strong>cxa_free_exception —export=<strong>wasm_call_ctors —export=</strong>get_exception_message —export=free —export-table -z stack-size=65536 —initial-memory=16777216 —no-entry —max-memory=16777216 —stack-first’ failed (returned 1)</p>
-</blockquote>
-</li>
+<p>[linuxbrew@708fe4a082ee:tests]$ emcc -DHAVE_CONFIG_H -I. -I..
+-I./../lib -DHAVE_EXPAT_CONFIG_H -m32 -g -Wall -Wmissing-prototypes
+-Wstrict-prototypes -fexceptions -fno-strict-aliasing -o runtests.o -c
+runtests.bc.mod.bc clang++: warning: argument unused during compilation:
+'-I .' [-Wunused-command-line-argument] clang++: warning: argument
+unused during compilation: '-I ..' [-Wunused-command-line-argument]
+clang++: warning: argument unused during compilation: '-I ./../lib'
+[-Wunused-command-line-argument] warning: overriding the module target
+triple with wasm32-unknown-emscripten [-Woverride-module] 'pentium4' is
+not a recognized processor for this target (ignoring processor) '+fxsr'
+is not a recognized feature for this target (ignoring feature) '+mmx' is
+not a recognized feature for this target (ignoring feature) '+sse' is
+not a recognized feature for this target (ignoring feature) '+sse2' is
+not a recognized feature for this target (ignoring feature) '+x87' is
+not a recognized feature for this target (ignoring feature) 'pentium4'
+is not a recognized processor for this target (ignoring processor)
+'pentium4' is not a recognized processor for this target (ignoring
+processor) '+fxsr' is not a recognized feature for this target (ignoring
+feature) '+mmx' is not a recognized feature for this target (ignoring
+feature) '+sse' is not a recognized feature for this target (ignoring
+feature) '+sse2' is not a recognized feature for this target (ignoring
+feature) '+x87' is not a recognized feature for this target (ignoring
+feature) 'pentium4' is not a recognized processor for this target
+(ignoring processor) 1 warning generated.
+[linuxbrew@708fe4a082ee:tests]$ emcc -m32 -g -Wall -Wmissing-prototypes
+-Wstrict-prototypes -fexceptions -fno-strict-aliasing
+-fno-strict-aliasing -o XML_Parse_fuzzer runtests.o libruntests.a
+../lib/.libs/libexpat.a wasm-ld: error: runtests.o: undefined symbol:
+fuzzbuilder_buffer wasm-ld: error: runtests.o: undefined symbol:
+fuzzbuilder_size wasm-ld: error: runtests.o: undefined symbol:
+fuzzbuilder_size wasm-ld: error: runtests.o: undefined symbol:
+fuzzbuilder_size wasm-ld: error: runtests.o: undefined symbol:
+fuzzbuilder_buffer wasm-ld: error: runtests.o: undefined symbol:
+fuzzbuilder_buffer wasm-ld: error: runtests.o: undefined symbol:
+fuzzbuilder_size wasm-ld: error: runtests.o: undefined symbol:
+fuzzbuilder_size wasm-ld: error: runtests.o: undefined symbol:
+fuzzbuilder_buffer wasm-ld: error: runtests.o: undefined symbol:
+fuzzbuilder_size wasm-ld: error: runtests.o: undefined symbol:
+fuzzbuilder_buffer wasm-ld: error: runtests.o: undefined symbol:
+fuzzbuilder_size wasm-ld: error: runtests.o: undefined symbol:
+fuzzbuilder_buffer wasm-ld: error: runtests.o: undefined symbol:
+fuzzbuilder_size wasm-ld: error: runtests.o: undefined symbol:
+fuzzbuilder_buffer wasm-ld: error: runtests.o: undefined symbol:
+fuzzbuilder_size wasm-ld: error: runtests.o: undefined symbol:
+fuzzbuilder_buffer wasm-ld: error: runtests.o: undefined symbol:
+fuzzbuilder_size wasm-ld: error: runtests.o: undefined symbol:
+fuzzbuilder_buffer wasm-ld: error: runtests.o: undefined symbol:
+fuzzbuilder_size wasm-ld: error: too many errors emitted, stopping now
+(use -error-limit=0 to see all errors) emcc: error:
+'/home/linuxbrew/emsdk/upstream/bin/wasm-ld -o XML_Parse_fuzzer.wasm
+runtests.o libruntests.a ../lib/.libs/libexpat.a
+-L/home/linuxbrew/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten
+-lGL -lal -lhtml5 -lstubs-debug -lnoexit -lc-debug -ldlmalloc
+-lcompiler_rt -lc++ -lc++abi-debug -lsockets -mllvm
+-combiner-global-alias-analysis=false -mllvm
+-enable-emscripten-cxx-exceptions -mllvm -enable-emscripten-sjlj -mllvm
+-disable-lsr /tmp/tmppqspurs4libemscripten_js_symbols.so
+--export-if-defined=main --export-if-defined=__get_exception_message
+--export-if-defined=free --export-if-defined=__start_em_asm
+--export-if-defined=__stop_em_asm
+--export-if-defined=__start_em_lib_deps
+--export-if-defined=__stop_em_lib_deps --export-if-defined=__start_em_js
+--export-if-defined=__stop_em_js --export-if-defined=__main_argc_argv
+--export-if-defined=fflush --export=emscripten_stack_get_end
+--export=emscripten_stack_get_free --export=emscripten_stack_get_base
+--export=emscripten_stack_get_current --export=emscripten_stack_init
+--export=stackSave --export=stackRestore --export=stackAlloc
+--export=__errno_location --export=__get_temp_ret
+--export=__set_temp_ret --export=__cxa_is_pointer_type
+--export=__cxa_can_catch --export=__cxa_increment_exception_refcount
+--export=__cxa_decrement_exception_refcount --export=setThrew
+--export=__cxa_free_exception --export=__wasm_call_ctors
+--export=__get_exception_message --export=free --export-table -z
+stack-size=65536 --initial-memory=16777216 --no-entry
+--max-memory=16777216 --stack-first' failed (returned 1)</p>
+</blockquote></li>
 </ol>
-<p>​        </p>
+<p>​</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">/home/linuxbrew/myAFLpp/afl-clang++  -m32 -Werror -Wformat<span class="token operator">=</span><span class="token number">2</span> -Wsign-compare -Wwrite-strings -Wvla -Wshadow -Wtype-limits -ggdb -Wall -fvisibility<span class="token operator">=</span>hidden -fno-common -Wnewline-eof -fcolor-diagnostics -Wimplicit-fallthrough -Wmissing-declarations -Wmissing-prototypes  -m32 CMakeFiles/crypto_test_data.dir/crypto_test_data.cc.o CMakeFiles/crypto_test.dir/crypto/abi_self_test.cc.o CMakeFiles/crypto_test.dir/crypto/asn1/asn1_test.cc.o CMakeFiles/crypto_test.dir/crypto/base64/base64_test.cc.o CMakeFiles/crypto_test.dir/crypto/bio/bio_test.cc.o CMakeFiles/crypto_test.dir/crypto/blake2/blake2_test.cc.o CMakeFiles/crypto_test.dir/crypto/buf/buf_test.cc.o CMakeFiles/crypto_test.dir/crypto/bytestring/bytestring_test.cc.o CMakeFiles/crypto_test.dir/crypto/chacha/chacha_test.cc.o CMakeFiles/crypto_test.dir/crypto/cipher_extra/aead_test.cc.o CMakeFiles/crypto_test.dir/crypto/cipher_extra/cipher_test.cc.o CMakeFiles/crypto_test.dir/crypto/compiler_test.cc.o CMakeFiles/crypto_test.dir/crypto/conf/conf_test.cc.o CMakeFiles/crypto_test.dir/crypto/constant_time_test.cc.o CMakeFiles/crypto_test.dir/crypto/cpu_arm_linux_test.cc.o CMakeFiles/crypto_test.dir/crypto/crypto_test.cc.o CMakeFiles/crypto_test.dir/crypto/curve25519/ed25519_test.cc.o CMakeFiles/crypto_test.dir/crypto/curve25519/spake25519_test.cc.o CMakeFiles/crypto_test.dir/crypto/curve25519/x25519_test.cc.o CMakeFiles/crypto_test.dir/crypto/ecdh_extra/ecdh_test.cc.o CMakeFiles/crypto_test.dir/crypto/dh_extra/dh_test.cc.o CMakeFiles/crypto_test.dir/crypto/digest_extra/digest_test.cc.o CMakeFiles/crypto_test.dir/crypto/dsa/dsa_test.cc.o CMakeFiles/crypto_test.dir/crypto/err/err_test.cc.o CMakeFiles/crypto_test.dir/crypto/evp/evp_extra_test.cc.o CMakeFiles/crypto_test.dir/crypto/evp/evp_test.cc.o CMakeFiles/crypto_test.dir/crypto/evp/pbkdf_test.cc.o CMakeFiles/crypto_test.dir/crypto/evp/scrypt_test.cc.o CMakeFiles/crypto_test.dir/crypto/fipsmodule/aes/aes_test.cc.o CMakeFiles/crypto_test.dir/crypto/fipsmodule/bn/bn_test.cc.o CMakeFiles/crypto_test.dir/crypto/fipsmodule/cmac/cmac_test.cc.o CMakeFiles/crypto_test.dir/crypto/fipsmodule/ec/ec_test.cc.o CMakeFiles/crypto_test.dir/crypto/fipsmodule/ec/p256-nistz_test.cc.o CMakeFiles/crypto_test.dir/crypto/fipsmodule/ecdsa/ecdsa_test.cc.o CMakeFiles/crypto_test.dir/crypto/fipsmodule/hkdf/hkdf_test.cc.o CMakeFiles/crypto_test.dir/crypto/fipsmodule/md5/md5_test.cc.o CMakeFiles/crypto_test.dir/crypto/fipsmodule/modes/gcm_test.cc.o CMakeFiles/crypto_test.dir/crypto/fipsmodule/rand/ctrdrbg_test.cc.o CMakeFiles/crypto_test.dir/crypto/fipsmodule/rand/fork_detect_test.cc.o CMakeFiles/crypto_test.dir/crypto/fipsmodule/service_indicator/service_indicator_test.cc.o CMakeFiles/crypto_test.dir/crypto/fipsmodule/sha/sha_test.cc.o CMakeFiles/crypto_test.dir/crypto/hpke/hpke_test.cc.o CMakeFiles/crypto_test.dir/crypto/hmac_extra/hmac_test.cc.o CMakeFiles/crypto_test.dir/crypto/hrss/hrss_test.cc.o CMakeFiles/crypto_test.dir/crypto/impl_dispatch_test.cc.o CMakeFiles/crypto_test.dir/crypto/kyber/kyber_test.cc.o CMakeFiles/crypto_test.dir/crypto/lhash/lhash_test.cc.o CMakeFiles/crypto_test.dir/crypto/obj/obj_test.cc.o CMakeFiles/crypto_test.dir/crypto/pem/pem_test.cc.o CMakeFiles/crypto_test.dir/crypto/pkcs7/pkcs7_test.cc.o CMakeFiles/crypto_test.dir/crypto/pkcs8/pkcs8_test.cc.o CMakeFiles/crypto_test.dir/crypto/pkcs8/pkcs12_test.cc.o CMakeFiles/crypto_test.dir/crypto/poly1305/poly1305_test.cc.o CMakeFiles/crypto_test.dir/crypto/pool/pool_test.cc.o CMakeFiles/crypto_test.dir/crypto/rand_extra/rand_test.cc.o CMakeFiles/crypto_test.dir/crypto/rand_extra/getentropy_test.cc.o CMakeFiles/crypto_test.dir/crypto/refcount_test.cc.o CMakeFiles/crypto_test.dir/crypto/rsa_extra/rsa_test.cc.o CMakeFiles/crypto_test.dir/crypto/self_test.cc.o CMakeFiles/crypto_test.dir/crypto/stack/stack_test.cc.o CMakeFiles/crypto_test.dir/crypto/siphash/siphash_test.cc.o CMakeFiles/crypto_test.dir/crypto/thread_test.cc.o CMakeFiles/crypto_test.dir/crypto/test/file_test_gtest.cc.o CMakeFiles/crypto_test.dir/crypto/test/gtest_main.cc.o CMakeFiles/crypto_test.dir/crypto/trust_token/trust_token_test.cc.o CMakeFiles/crypto_test.dir/crypto/x509/x509_test.cc.o CMakeFiles/crypto_test.dir/crypto/x509/x509_time_test.cc.o CMakeFiles/crypto_test.dir/crypto/x509v3/tab_test.cc.o <span class="token operator">|</span> libtest_support_lib.a libboringssl_gtest.a crypto/libcrypto.a <span class="token operator">||</span> crypto/libcrypto.a crypto_test_data libboringssl_gtest.a libtest_support_lib.a  -o crypto_test  libtest_support_lib.a libboringssl_gtest.a crypto/libcrypto.a -lpthread
 <span class="token builtin class-name">cd</span> /home/linuxbrew/FuzzBuilder/exp/boringssl/source/boringssl
 /usr/bin/cmake -E make_directory /home/linuxbrew/FuzzBuilder/exp/boringssl/source/boringssl/crypto
@@ -386,7 +527,7 @@ emcc -m32 -g -Wall -Wmissing-prototypes -Wstrict-prototypes -fexceptions -fno-st
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#FuzzBuilder%E5%A4%8D%E7%8E%B0"><span class="nav-number">1.</span> <span class="nav-text">FuzzBuilder复现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Tutorial"><span class="nav-number">1.1.</span> <span class="nav-text">1. Tutorial</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Example-expat"><span class="nav-number">1.2.</span> <span class="nav-text">2. Example: expat</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-Seed-generation"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 Seed generation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-executable-file-generation"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 executable file generation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-%E7%A7%8D%E5%AD%90%E4%BC%98%E5%8C%96"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 种子优化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Problem"><span class="nav-number">1.3.</span> <span class="nav-text">Problem:</span></a></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#fuzzbuilder%E5%A4%8D%E7%8E%B0"><span class="nav-number">1.</span> <span class="nav-text">FuzzBuilder复现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#tutorial"><span class="nav-number">1.1.</span> <span class="nav-text">1. Tutorial</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#example-expat"><span class="nav-number">1.2.</span> <span class="nav-text">2. Example: expat</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#seed-generation"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 Seed generation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#executable-file-generation"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 executable file generation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A7%8D%E5%AD%90%E4%BC%98%E5%8C%96"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 种子优化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#problem"><span class="nav-number">1.3.</span> <span class="nav-text">Problem:</span></a></li></ol></li></ol>
     
     </div>
   </aside>
@@ -580,5 +721,20 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>

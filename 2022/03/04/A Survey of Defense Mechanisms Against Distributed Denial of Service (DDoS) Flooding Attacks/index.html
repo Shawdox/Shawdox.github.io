@@ -13,16 +13,14 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="A Survey of Defense Mechanisms Against Distributed Denial of Service (DDoS) Flooding Attacks 时间：2013 作者：Saman Taghavi Zargar，James Joshi， David Tipper 期刊：IEEE COMMUNICATIONS SURVEYS &amp; TUTORIALS（中科">
+  <meta name="description" content="A Survey of Defense Mechanisms Against Distributed Denial of Service (DDoS) Flooding Attacks  时间：2013 作者：Saman Taghavi Zargar，James Joshi， David Tipper 期刊：IEEE COMMUNICATIONS SURVEYS &amp; TUT">
 <meta property="og:type" content="article">
 <meta property="og:title" content="A Survey of Defense Mechanisms Against Distributed Denial of Service (DDoS) Flooding Attacks">
 <meta property="og:url" content="http://example.com/2022/03/04/A%20Survey%20of%20Defense%20Mechanisms%20Against%20Distributed%20Denial%20of%20Service%20(DDoS)%20Flooding%20Attacks/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="A Survey of Defense Mechanisms Against Distributed Denial of Service (DDoS) Flooding Attacks 时间：2013 作者：Saman Taghavi Zargar，James Joshi， David Tipper 期刊：IEEE COMMUNICATIONS SURVEYS &amp; TUTORIALS（中科">
+<meta property="og:description" content="A Survey of Defense Mechanisms Against Distributed Denial of Service (DDoS) Flooding Attacks  时间：2013 作者：Saman Taghavi Zargar，James Joshi， David Tipper 期刊：IEEE COMMUNICATIONS SURVEYS &amp; TUT">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220304101014.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220304110412.png">
-<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220304150015.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220304111902.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220304153451.png">
 <meta property="article:published_time" content="2022-03-04T08:24:55.000Z">
@@ -158,210 +156,333 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="A-Survey-of-Defense-Mechanisms-Against-Distributed-Denial-of-Service-DDoS-Flooding-Attacks"><a href="#A-Survey-of-Defense-Mechanisms-Against-Distributed-Denial-of-Service-DDoS-Flooding-Attacks" class="headerlink" title="A Survey of Defense Mechanisms Against Distributed Denial of Service (DDoS) Flooding Attacks"></a>A Survey of Defense Mechanisms Against Distributed Denial of Service (DDoS) Flooding Attacks</h1><blockquote>
+        <h1
+id="a-survey-of-defense-mechanisms-against-distributed-denial-of-service-ddos-flooding-attacks">A
+Survey of Defense Mechanisms Against Distributed Denial of Service
+(DDoS) Flooding Attacks</h1>
+<blockquote>
 <p><strong>时间：2013</strong></p>
-<p><strong>作者：Saman Taghavi Zargar，James Joshi， David Tipper</strong></p>
-<p><strong>期刊：IEEE COMMUNICATIONS SURVEYS &amp; TUTORIALS（中科院一区）</strong></p>
+<p><strong>作者：Saman Taghavi Zargar，James Joshi， David
+Tipper</strong></p>
+<p><strong>期刊：IEEE COMMUNICATIONS SURVEYS &amp;
+TUTORIALS（中科院一区）</strong></p>
 </blockquote>
-<h3 id="ABSTRACT"><a href="#ABSTRACT" class="headerlink" title="ABSTRACT"></a>ABSTRACT</h3><p>​    DDoS攻击是安全专业人员最关心的问题之一，其通常是为了扰乱合法用户对服务的访问而进行的显式尝试。攻击者通常通过攻击漏洞来获取到一大批电脑，以此来组建一个网络攻击军队（也就是僵尸网络），一旦组建了攻击部队，攻击者就可以对一个或多个目标发起协调一致、大规模的攻击。开发针对已识别和预期的DDoS泛洪攻击的综合防御机制，是入侵检测和预防研究界所期望的目标。然而，这种机制的发展需要对问题和迄今为止在预防、检测和应对各种DDoS洪泛攻击方面所采用的技术有一个全面的了解。</p>
-<p>​    在本文，我们对DDoS洪泛攻击进行分类，并根据它们在何时何地预防、检测和应对DDoS洪泛攻击对现有的对策进行分类。</p>
-<p>​    此外，我们强调需要一种全面的分布式协同防御方法。我们的主要目的是激发研究人员开发出创造性的、有效的、高效的、综合的预防、检测和响应机制来解决实际攻击前、中和后的DDoS泛洪问题。</p>
-<hr>
+<h3 id="abstract">ABSTRACT</h3>
+<p>​
+DDoS攻击是安全专业人员最关心的问题之一，其通常是为了扰乱合法用户对服务的访问而进行的显式尝试。攻击者通常通过攻击漏洞来获取到一大批电脑，以此来组建一个网络攻击军队（也就是僵尸网络），一旦组建了攻击部队，攻击者就可以对一个或多个目标发起协调一致、大规模的攻击。开发针对已识别和预期的DDoS泛洪攻击的综合防御机制，是入侵检测和预防研究界所期望的目标。然而，这种机制的发展需要对问题和迄今为止在预防、检测和应对各种DDoS洪泛攻击方面所采用的技术有一个全面的了解。</p>
+<p>​
+在本文，我们对DDoS洪泛攻击进行分类，并根据它们在何时何地预防、检测和应对DDoS洪泛攻击对现有的对策进行分类。</p>
+<p>​
+此外，我们强调需要一种全面的分布式协同防御方法。我们的主要目的是激发研究人员开发出创造性的、有效的、高效的、综合的预防、检测和响应机制来解决实际攻击前、中和后的DDoS泛洪问题。</p>
+<hr />
 <span id="more"></span>
-<h3 id="INTRODUCTION"><a href="#INTRODUCTION" class="headerlink" title="INTRODUCTION"></a>INTRODUCTION</h3><p>​    DDoS攻击，旨在尝试组织合法使用者访问一个特定的网站，早在20世纪80年代就被网络研究团体知晓。1999年夏天，Computer Incident Advisory Capability (<strong><em>CIAC</em></strong>)报告了第一起DDoS攻击事件。</p>
-<p>​    目前，有两种主要的在互联网上制造DDoS攻击的方法：①第一种方法是攻击者向受害者发送一些格式错误的数据包，以混淆在其上运行的协议或应用程序( <strong><em>vulnerability attack</em></strong>);②另一种方法是最常见的方法，它涉及攻击者试图执行下列一项或两项：</p>
-<pre><code>      1. 通过消耗带宽、路由器处理能力或网络资源，破坏合法用户的连通性；这些本质上是网络/传输级的泛洪    攻击；
-      2. 通过耗尽服务器资源(如套接字、CPU、内存、磁盘/数据库带宽和I/O带宽 )来破坏合法用户的服务；这些攻击本质上包括应用级的泛洪攻击；
-</code></pre><p>​    如今，DDoS攻击往往是由远程控制、组织良好、分布广泛的Zombies1或Botnet计算机组成的网络发起的，这些计算机同时和不断地向目标系统发送大量的流量和/或服务请求，目标系统因此变得要么反应如此缓慢，以至于无法使用，要么完全崩溃。僵尸网络中的僵尸或计算机通常通过使用蠕虫、木马或后门来招募。此外，由于在攻击者控制下的僵尸使用伪造的IP地址，使得防御机制识别原始攻击者变得更加复杂。</p>
-<p>​    从1999年的夏天开始，许许多多的DDoS攻击被制造出来用以对抗不同的组织。迄今为止，大多数的DDoS洪泛攻击都试图使受害者的服务不可用，从而收入损失，增加了减轻攻击和恢复服务的成本。</p>
-<p>​    举个例子，2000年2月，雅虎经历了最早的一次重大DDoS泛洪攻击，使得该公司的服务在互联网上持续了约2小时，从而造成广告收入的显著损失；</p>
-<p>​    2002年10月，13个DNS服务器中的9个因为DDoS洪泛攻击关闭了一小时；</p>
-<p>​    2004年2月，由于遭受DDoS攻击，正常用户无法使用SCO Group网站，这种攻击是通过使用以前感染Mydoom病毒的系统发起的。</p>
-<p>​    2009年7月，Mydoom病毒被再次使用以发起DDoS攻击韩国和美国主要政府新闻媒体和经济网站；</p>
-<p>​    2010年12月，一个自称为“Anonymous”的组织策划了针对一些组织诸如Mastercard.com, PayPal, Visa.com 和 PostFinance的DDoS攻击；</p>
-<p>​    2012年9月，美国银行( <strong><em>Bank of America</em></strong> )、花旗集团( <strong><em>Citigroup</em></strong> )、富国银行( <strong><em>Wells Fargo</em></strong> )、美国银行( <strong><em>Bancorp</em></strong> )、PNC、Capital One、Fifth Third Bank、BB &amp; T、BB &amp; T、汇丰银行( <strong><em>HSBC</em></strong> )等9家主要银行的网上银行成为国外黑客攻击集团” Izz ad-Din al-Qassam Cyber Fighters “发起的一系列强力DDoS泛洪攻击的目标。因此，几家网上银行网站在几分钟后恢复之前已经放缓或停业。</p>
-<p>​    <u>最近DDoS防御机制的进步已经结束了“脚本小子”可以下载工具并对几乎任何网站发起攻击的时代。</u>（2013）在如今的DDoS攻击中，攻击者使用了更复杂的方法来发起攻击。尽管尽了一切努力减少DDoS攻击事件的数量，但它们在目标网络和计算机的频率和规模上迅速扩大。在VeriSign委托的最近一项调查中发现，在2008年7月至2009年7月期间，75 %的受访者经历过一次或多次攻击。此外，最近来自Arbor Networks的一份报告也表明了类似的数据。在调查结果中，他们显示，69 %的受访者从2009年10月至2010年9月至少经历过一次DDoS攻击，25 %的受访者每月遭受10次此类攻击。ProlexicTechnology公司提供的防御DDoS攻击的服务显示，每天有7000个DDoS攻击被观测到，并且认为这个数量正在迅速增长。</p>
-<p>​    DDoS攻击的规模也在不断增大，使得防御起来更加困难。Arbor Network发现，2010年攻击规模已经增长了100 %左右，攻击首次突破了100Gbps的壁垒。因此，保护资源免受这些频繁而庞大的DDoS攻击，就需要研究界致力于开发一种能够在实际攻击之前、期间和之后对DDoS攻击做出适当反应的全面的DDoS防御机制。</p>
-<p>​    <strong><u>本文重点研究有线网络系统中DDoS泛洪攻击和防御机制。</u></strong>【19】专注于描述无线自组织网络的DDos攻击；【20】专注于无线传感器网络特有的DDoS攻击的特点。</p>
-<p>​    在这里，我们的目标是对现有的DDoS洪泛攻击进行分类，并提供根据它们在何处和何时检测和响应DDoS洪泛攻击而分类的防御机制的全面调查。对DDoS洪泛攻击的研究和所做的调查对于了解与这一重要网络安全问题有关的关键问题，从而对建立更全面有效的防御机制具有重要意义。</p>
-<p>​    </p>
-<hr>
-<h3 id="DDOS-ATTACKERS’-INCENTIVES"><a href="#DDOS-ATTACKERS’-INCENTIVES" class="headerlink" title="DDOS: ATTACKERS’ INCENTIVES"></a>DDOS: ATTACKERS’ INCENTIVES</h3><p>​    DDoS攻击者的动机有以下几类：</p>
-<p>​    <strong>1. 获取经济收入：</strong>这些攻击是企业关注的重大问题，由于其激励的性质，这一类的攻击者通常是技术含量最高、经验丰富的攻击者。为获取经济利益而发动的攻击往往是最危险、最难以阻止的攻击。</p>
-<p>​    <strong>2. 复仇者：</strong>这一类的攻击者一般都是沮丧的个体，可能具有较低的技术技能，他们通常将攻击作为对遭受到的不公正的待遇的报复。</p>
-<p>​    <strong>3. 受思想信念驱动：</strong>属于这一类的攻击者是出于其思想信念的动机来攻击目标的。该类别目前是攻击者发起DDoS攻击的主要诱因之一。</p>
-<p>​    <strong>4. 智力挑战者：</strong>这类攻击者攻击目标系统，以实验和学习如何发起各种攻击。他们通常都是年轻的黑客爱好者，想要炫耀自己的能力。如今，存在着各种易于使用的攻击工具和僵尸网络来租用，即便是一个计算机业馀者也可以利用其发起起成功的DDoS攻击。</p>
-<p>​    <strong>5. 网络战争：</strong>这一类的袭击者通常属于一国的军事或恐怖组织，他们有政治动机攻击另一国广泛的关键部门</p>
-<p>​    有一些文章专注于分析攻击者的动机以及如何利用这些攻击动机建模，以此使决策模型可以组织并对这些攻击进行反馈。</p>
-<hr>
-<h3 id="DDOS-ATTACK-SCOPE-AND-CLASSIFICATION"><a href="#DDOS-ATTACK-SCOPE-AND-CLASSIFICATION" class="headerlink" title="DDOS ATTACK: SCOPE AND CLASSIFICATION"></a>DDOS ATTACK: SCOPE AND CLASSIFICATION</h3><p>​    DDoS攻击的分布式特性使得它们极难对抗或追踪，而且攻击者通常使用假IP以此来隐藏他们的真实身份，这使得对于DDoS攻击的追踪回溯更加困难。此外，许多因特网主机中存在入侵者可以利用的安全漏洞，针对应用层的攻击事件正在迅速增加。</p>
-<p>​    在这里，我们针对DDoS的协议等级对DDoS攻击进行分类，并且我们仅仅专注于最常见的DDoS洪泛攻击，漏洞攻击，攻击者利用某个服务的软件实现中的某些漏洞或实现bug将其带下来，并不是本文的重点。</p>
-<p>​    基于协议等级，DDoS攻击可以被分类为两类：</p>
-<ol>
-<li><p><strong>Network/transport-level DDoS flflooding attacks</strong>:</p>
-<p>1.1 <strong><em>Flooding attacks：</em></strong>攻击者通过消耗受害者网络带宽(如欺骗/非欺骗UDP 流、ICMP流、DNS流、VoIP流等)来破坏合法用户的连通性。 </p>
-<p>1.2 <strong><em>Protocol exploitation flooding attacks</em></strong>:攻击者利用受害者某些协议的特定特性或实现漏洞，以消耗受害者的过量资源（例如，TCP SYN流，TCP SYN-ACK流，ACK &amp; PUSH ACK 流，RST/FIN flood流等）。</p>
-<p>1.3 <strong><em>Reflflection-based flflooding attacks</em></strong>：攻击者通常向reflectors发送伪造请求( 例如 , ICMP请求 )而不是直接请求；因此，这些反射器向受害者发送答复并耗尽受害者的资源.</p>
-<p>1.4  <strong><em>Amplifification-based flflooding attacks</em></strong>：攻击者利用服务为接收到的每个消息生成大消息或多个消息来放大对受害者的流量。僵尸网络被不断地用于反射和放大两种目的。反射和放大技术通常是串联使用的，如Smurf攻击时，攻击者利用数据包的IP广播特性( Amplification ) ，向大量的反射器发送带有伪造源IP地址的请求。</p>
-<p>以上攻击的具体细节见【2】，【32】，【35】，【36】。</p>
-</li>
+<h3 id="introduction">INTRODUCTION</h3>
+<p>​
+DDoS攻击，旨在尝试组织合法使用者访问一个特定的网站，早在20世纪80年代就被网络研究团体知晓。1999年夏天，Computer
+Incident Advisory Capability
+(<strong><em>CIAC</em></strong>)报告了第一起DDoS攻击事件。</p>
+<p>​
+目前，有两种主要的在互联网上制造DDoS攻击的方法：①第一种方法是攻击者向受害者发送一些格式错误的数据包，以混淆在其上运行的协议或应用程序(
+<strong><em>vulnerability
+attack</em></strong>);②另一种方法是最常见的方法，它涉及攻击者试图执行下列一项或两项：</p>
+<pre><code>    1. 通过消耗带宽、路由器处理能力或网络资源，破坏合法用户的连通性；这些本质上是网络/传输级的泛洪   攻击；
+    2. 通过耗尽服务器资源(如套接字、CPU、内存、磁盘/数据库带宽和I/O带宽 )来破坏合法用户的服务；这些攻击本质上包括应用级的泛洪攻击；</code></pre>
+<p>​
+如今，DDoS攻击往往是由远程控制、组织良好、分布广泛的Zombies1或Botnet计算机组成的网络发起的，这些计算机同时和不断地向目标系统发送大量的流量和/或服务请求，目标系统因此变得要么反应如此缓慢，以至于无法使用，要么完全崩溃。僵尸网络中的僵尸或计算机通常通过使用蠕虫、木马或后门来招募。此外，由于在攻击者控制下的僵尸使用伪造的IP地址，使得防御机制识别原始攻击者变得更加复杂。</p>
+<p>​
+从1999年的夏天开始，许许多多的DDoS攻击被制造出来用以对抗不同的组织。迄今为止，大多数的DDoS洪泛攻击都试图使受害者的服务不可用，从而收入损失，增加了减轻攻击和恢复服务的成本。</p>
+<p>​
+举个例子，2000年2月，雅虎经历了最早的一次重大DDoS泛洪攻击，使得该公司的服务在互联网上持续了约2小时，从而造成广告收入的显著损失；</p>
+<p>​ 2002年10月，13个DNS服务器中的9个因为DDoS洪泛攻击关闭了一小时；</p>
+<p>​ 2004年2月，由于遭受DDoS攻击，正常用户无法使用SCO
+Group网站，这种攻击是通过使用以前感染Mydoom病毒的系统发起的。</p>
+<p>​
+2009年7月，Mydoom病毒被再次使用以发起DDoS攻击韩国和美国主要政府新闻媒体和经济网站；</p>
+<p>​
+2010年12月，一个自称为“Anonymous”的组织策划了针对一些组织诸如Mastercard.com,
+PayPal, Visa.com 和 PostFinance的DDoS攻击；</p>
+<p>​ 2012年9月，美国银行( <strong><em>Bank of America</em></strong>
+)、花旗集团( <strong><em>Citigroup</em></strong> )、富国银行(
+<strong><em>Wells Fargo</em></strong> )、美国银行(
+<strong><em>Bancorp</em></strong> )、PNC、Capital One、Fifth Third
+Bank、BB &amp; T、BB &amp; T、汇丰银行( <strong><em>HSBC</em></strong>
+)等9家主要银行的网上银行成为国外黑客攻击集团" Izz ad-Din al-Qassam Cyber
+Fighters
+"发起的一系列强力DDoS泛洪攻击的目标。因此，几家网上银行网站在几分钟后恢复之前已经放缓或停业。</p>
+<p>​
+<u>最近DDoS防御机制的进步已经结束了“脚本小子”可以下载工具并对几乎任何网站发起攻击的时代。</u>（2013）在如今的DDoS攻击中，攻击者使用了更复杂的方法来发起攻击。尽管尽了一切努力减少DDoS攻击事件的数量，但它们在目标网络和计算机的频率和规模上迅速扩大。在VeriSign委托的最近一项调查中发现，在2008年7月至2009年7月期间，75
+%的受访者经历过一次或多次攻击。此外，最近来自Arbor
+Networks的一份报告也表明了类似的数据。在调查结果中，他们显示，69
+%的受访者从2009年10月至2010年9月至少经历过一次DDoS攻击，25
+%的受访者每月遭受10次此类攻击。ProlexicTechnology公司提供的防御DDoS攻击的服务显示，每天有7000个DDoS攻击被观测到，并且认为这个数量正在迅速增长。</p>
+<p>​ DDoS攻击的规模也在不断增大，使得防御起来更加困难。Arbor
+Network发现，2010年攻击规模已经增长了100
+%左右，攻击首次突破了100Gbps的壁垒。因此，保护资源免受这些频繁而庞大的DDoS攻击，就需要研究界致力于开发一种能够在实际攻击之前、期间和之后对DDoS攻击做出适当反应的全面的DDoS防御机制。</p>
+<p>​
+<strong><u>本文重点研究有线网络系统中DDoS泛洪攻击和防御机制。</u></strong>【19】专注于描述无线自组织网络的DDos攻击；【20】专注于无线传感器网络特有的DDoS攻击的特点。</p>
+<p>​
+在这里，我们的目标是对现有的DDoS洪泛攻击进行分类，并提供根据它们在何处和何时检测和响应DDoS洪泛攻击而分类的防御机制的全面调查。对DDoS洪泛攻击的研究和所做的调查对于了解与这一重要网络安全问题有关的关键问题，从而对建立更全面有效的防御机制具有重要意义。</p>
+<p>​</p>
+<hr />
+<h3 id="ddos-attackers-incentives">DDOS: ATTACKERS’ INCENTIVES</h3>
+<p>​ DDoS攻击者的动机有以下几类：</p>
+<p>​ <strong>1.
+获取经济收入：</strong>这些攻击是企业关注的重大问题，由于其激励的性质，这一类的攻击者通常是技术含量最高、经验丰富的攻击者。为获取经济利益而发动的攻击往往是最危险、最难以阻止的攻击。</p>
+<p>​ <strong>2.
+复仇者：</strong>这一类的攻击者一般都是沮丧的个体，可能具有较低的技术技能，他们通常将攻击作为对遭受到的不公正的待遇的报复。</p>
+<p>​ <strong>3.
+受思想信念驱动：</strong>属于这一类的攻击者是出于其思想信念的动机来攻击目标的。该类别目前是攻击者发起DDoS攻击的主要诱因之一。</p>
+<p>​ <strong>4.
+智力挑战者：</strong>这类攻击者攻击目标系统，以实验和学习如何发起各种攻击。他们通常都是年轻的黑客爱好者，想要炫耀自己的能力。如今，存在着各种易于使用的攻击工具和僵尸网络来租用，即便是一个计算机业馀者也可以利用其发起起成功的DDoS攻击。</p>
+<p>​ <strong>5.
+网络战争：</strong>这一类的袭击者通常属于一国的军事或恐怖组织，他们有政治动机攻击另一国广泛的关键部门</p>
+<p>​
+有一些文章专注于分析攻击者的动机以及如何利用这些攻击动机建模，以此使决策模型可以组织并对这些攻击进行反馈。</p>
+<hr />
+<h3 id="ddos-attack-scope-and-classification">DDOS ATTACK: SCOPE AND
+CLASSIFICATION</h3>
+<p>​
+DDoS攻击的分布式特性使得它们极难对抗或追踪，而且攻击者通常使用假IP以此来隐藏他们的真实身份，这使得对于DDoS攻击的追踪回溯更加困难。此外，许多因特网主机中存在入侵者可以利用的安全漏洞，针对应用层的攻击事件正在迅速增加。</p>
+<p>​
+在这里，我们针对DDoS的协议等级对DDoS攻击进行分类，并且我们仅仅专注于最常见的DDoS洪泛攻击，漏洞攻击，攻击者利用某个服务的软件实现中的某些漏洞或实现bug将其带下来，并不是本文的重点。</p>
+<p>​ 基于协议等级，DDoS攻击可以被分类为两类：</p>
+<ol type="1">
+<li><p><strong>Network/transport-level DDoS flflooding
+attacks</strong>:</p>
+<p>1.1 <strong><em>Flooding
+attacks：</em></strong>攻击者通过消耗受害者网络带宽(如欺骗/非欺骗UDP
+流、ICMP流、DNS流、VoIP流等)来破坏合法用户的连通性。</p>
+<p>1.2 <strong><em>Protocol exploitation flooding
+attacks</em></strong>:攻击者利用受害者某些协议的特定特性或实现漏洞，以消耗受害者的过量资源（例如，TCP
+SYN流，TCP SYN-ACK流，ACK &amp; PUSH ACK 流，RST/FIN flood流等）。</p>
+<p>1.3 <strong><em>Reflflection-based flflooding
+attacks</em></strong>：攻击者通常向reflectors发送伪造请求( 例如 ,
+ICMP请求
+)而不是直接请求；因此，这些反射器向受害者发送答复并耗尽受害者的资源.</p>
+<p>1.4 <strong><em>Amplifification-based flflooding
+attacks</em></strong>：攻击者利用服务为接收到的每个消息生成大消息或多个消息来放大对受害者的流量。僵尸网络被不断地用于反射和放大两种目的。反射和放大技术通常是串联使用的，如Smurf攻击时，攻击者利用数据包的IP广播特性(
+Amplification ) ，向大量的反射器发送带有伪造源IP地址的请求。</p>
+<p>以上攻击的具体细节见【2】，【32】，【35】，【36】。</p></li>
 <li><p><strong>Application-level DDoS flflooding attacks</strong>:</p>
-<p><u>应用级别的DDoS攻击通过耗尽服务器资源(如套接字、CPU、内存、磁盘/数据库带宽和I/O带宽 )来破坏合法用户的服务，其通常消耗更少的宽带，更加隐蔽，其与良性流量非常相似。</u>但是，应用级别的DDoS攻击通常具有相同的影响力。</p>
-<p>2.1 <strong><em>Reflflection/amplifification based flflooding attacks</em></strong>：这种攻击利用了与1.4同样的技术，只不过发送的是应用层数据包。</p>
-<p>举个例子，DNS amplification 攻击使用肉机生成一小股伪造IP的DNS请求，因为DNS响应的数量可能远远超过DNS请求的数量，其可以生成大量网络流量包直指目标系统，使其瘫痪。</p>
-<p>再举一个，<strong><em>VOIP flooding</em></strong>，攻击者通常通过SIP以非常高的包率和非常大的源IP范围发送被欺骗的VoIP数据包。受害者VoIP服务器必须区分正确的VoIP连接和消耗大量资源的伪造的VoIP连接。VoIP泛洪可以压倒具有随机或固定源IP地址的数据包的网络。如果源IP地址没有被改变，那么VoIP泛洪攻击就会模仿来自大型VoIP服务器的流量，并且由于类似于良好的流量，很难识别。</p>
+<p><u>应用级别的DDoS攻击通过耗尽服务器资源(如套接字、CPU、内存、磁盘/数据库带宽和I/O带宽
+)来破坏合法用户的服务，其通常消耗更少的宽带，更加隐蔽，其与良性流量非常相似。</u>但是，应用级别的DDoS攻击通常具有相同的影响力。</p>
+<p>2.1 <strong><em>Reflflection/amplifification based flflooding
+attacks</em></strong>：这种攻击利用了与1.4同样的技术，只不过发送的是应用层数据包。</p>
+<p>举个例子，DNS amplification
+攻击使用肉机生成一小股伪造IP的DNS请求，因为DNS响应的数量可能远远超过DNS请求的数量，其可以生成大量网络流量包直指目标系统，使其瘫痪。</p>
+<p>再举一个，<strong><em>VOIP
+flooding</em></strong>，攻击者通常通过SIP以非常高的包率和非常大的源IP范围发送被欺骗的VoIP数据包。受害者VoIP服务器必须区分正确的VoIP连接和消耗大量资源的伪造的VoIP连接。VoIP泛洪可以压倒具有随机或固定源IP地址的数据包的网络。如果源IP地址没有被改变，那么VoIP泛洪攻击就会模仿来自大型VoIP服务器的流量，并且由于类似于良好的流量，很难识别。</p>
 <p>2.2 <strong><em>HTTP flooding attacks</em></strong>：</p>
-<p>2.2.1  <u><em>Session flooding attacks</em></u>，在这种类型的攻击中，攻击者的会话连接请求率高于合法用户的请求率，因此消耗了服务器的资源并导致DDoS攻击服务器。</p>
-<p>​    其中的典型就是<strong><u><em>HTTP get/post flooding attack</em></u></strong>，其中攻击者向受害者Web服务器生成大量有效的HTTP请求( get / post )。攻击者通常使用僵尸网络来发起这些攻击。由于每个bot都可以产生大量的有效请求(通常每秒10个以上的请求)，所以不需要大量的bot发起成功的攻击。HTTP get / post泛洪攻击属于非欺骗性攻击。</p>
-</li>
+<p>2.2.1 <u><em>Session flooding
+attacks</em></u>，在这种类型的攻击中，攻击者的会话连接请求率高于合法用户的请求率，因此消耗了服务器的资源并导致DDoS攻击服务器。</p>
+<p>​ 其中的典型就是<strong><u><em>HTTP get/post flooding
+attack</em></u></strong>，其中攻击者向受害者Web服务器生成大量有效的HTTP请求(
+get / post
+)。攻击者通常使用僵尸网络来发起这些攻击。由于每个bot都可以产生大量的有效请求(通常每秒10个以上的请求)，所以不需要大量的bot发起成功的攻击。HTTP
+get / post泛洪攻击属于非欺骗性攻击。</p>
+<p>2.2.2 <u><em>Request flooding
+attacks</em></u>，在这种类型的攻击中，攻击者发送的会话包含比通常更多的请求，并导致服务器遭受DDoS泛滥攻击。</p>
+<p>​ 其中的典型就是 single-session HTTP get/post flflooding，该攻击是HTTP
+get/post flflooding attack的一种变种，它利用HTTP
+1.1的特性，允许单个HTTP会话中的多个请求。因此，攻击者可以限制HTTP攻击的会话速率，并绕过许多安全系统的会话速率限制防御机制。</p></li>
 </ol>
-<pre><code>2.2.2 &lt;u&gt;*Request flooding attacks*&lt;/u&gt;，在这种类型的攻击中，攻击者发送的会话包含比通常更多的请求，并导致服务器遭受DDoS泛滥攻击。
-
-​    其中的典型就是 single-session HTTP get/post flflooding，该攻击是HTTP get/post flflooding attack的一种变种，它利用HTTP 1.1的特性，允许单个HTTP会话中的多个请求。因此，攻击者可以限制HTTP攻击的会话速率，并绕过许多安全系统的会话速率限制防御机制。
-</code></pre><p>​        2.2.3 <u><em>Asymmetric attacks</em></u>，在这种攻击类型中，攻击者发送包含高工作负载请求的会话。这里，我们列举了这一类中的一些著名攻击：</p>
+<p>​ 2.2.3 <u><em>Asymmetric
+attacks</em></u>，在这种攻击类型中，攻击者发送包含高工作负载请求的会话。这里，我们列举了这一类中的一些著名攻击：</p>
 <ul>
-<li><p>​        <strong><em>Multiple HTTP get/post flflood</em></strong>，该攻击是HTTP get/post flflooding attack的一种变种，在这里，攻击者通过形成一个嵌入多个请求的单个数据包，而不在单个HTTP会话中逐一发出多个HTTP请求，从而创建多个HTTP请求。</p>
-<p>​    这样，攻击者仍然可以以较低的攻击包率在受害服务器上保持较高的负载，使得攻击者几乎看不到网络流量异常检测技术。此外，攻击者如果仔细选择HTTPVERB，就可以轻松绕过深度包检查技术。</p>
-</li>
-<li><p>​        <strong><em>Faulty Application</em></strong>，在这种攻击中，攻击者利用设计不良或与数据库集成不当的网站进行攻击。例如，它们可以使用类似SQL的注入来生成请求来锁定数据库查询。这些攻击非常具体和有效，因为它们消耗服务器资源( 内存、 CPU等)。</p>
-</li>
+<li><p>​ <strong><em>Multiple HTTP get/post
+flflood</em></strong>，该攻击是HTTP get/post flflooding
+attack的一种变种，在这里，攻击者通过形成一个嵌入多个请求的单个数据包，而不在单个HTTP会话中逐一发出多个HTTP请求，从而创建多个HTTP请求。</p>
+<p>​
+这样，攻击者仍然可以以较低的攻击包率在受害服务器上保持较高的负载，使得攻击者几乎看不到网络流量异常检测技术。此外，攻击者如果仔细选择HTTPVERB，就可以轻松绕过深度包检查技术。</p></li>
+<li><p>​ <strong><em>Faulty
+Application</em></strong>，在这种攻击中，攻击者利用设计不良或与数据库集成不当的网站进行攻击。例如，它们可以使用类似SQL的注入来生成请求来锁定数据库查询。这些攻击非常具体和有效，因为它们消耗服务器资源(
+内存、 CPU等)。</p></li>
 </ul>
-<p>​        2.2.4 <u><em>Slow request/response attacks</em></u>，在这种攻击类型中，攻击者发送包含高负载请求的会话。</p>
+<p>​ 2.2.4 <u><em>Slow request/response
+attacks</em></u>，在这种攻击类型中，攻击者发送包含高负载请求的会话。</p>
 <ul>
-<li><p>​       <strong><em>Slowloris attack (a.k.a, slow headers attack)</em></strong>，Slowloris（懒猴）是一种基于HTTP get的攻击，可以使用有限数量的机器甚至单个机器来降低Web服务器。</p>
-<p>​    攻击者发送部分HTTP请求( 不是一个完整的request头部）这些请求持续快速地增长，缓慢地更新，永远不会关闭。攻击一直持续到所有可用的套接字被这些请求占用，Web服务器变得不可访问。<strong><u>攻击者的源地址通常不是伪造的。</u></strong></p>
-</li>
+<li><p>​ <strong><em>Slowloris attack (a.k.a, slow headers
+attack)</em></strong>，Slowloris（懒猴）是一种基于HTTP
+get的攻击，可以使用有限数量的机器甚至单个机器来降低Web服务器。</p>
+<p>​ 攻击者发送部分HTTP请求(
+不是一个完整的request头部）这些请求持续快速地增长，缓慢地更新，永远不会关闭。攻击一直持续到所有可用的套接字被这些请求占用，Web服务器变得不可访问。<strong><u>攻击者的源地址通常不是伪造的。</u></strong></p></li>
+<li><p>​ <strong><em>HTTP fragmentation
+attack</em></strong>，与懒猴类似，这种攻击的目标是通过长时间保持HTTP连接而不引发任何警报来降低Web服务器。</p>
+<p>​ 攻击者( bot )
+与Web服务器建立有效的HTTP连接。然后，它们将合法的HTTP数据包分解成微小的片段，并按照服务器超时允许的速度发送每个片段。使用这种方法，通过在每个bot上打开多个会话，攻击者可以只使用少数肉机就悄悄地让一个Web服务器崩溃。</p></li>
+<li><p>​ <strong><em>Slowpost
+attack</em></strong>，【42】<strong><em>wong</em></strong>等人提出了一个跟懒猴攻击非常相似的攻击，其通过缓慢发送HTTP_post请求来击溃Web服务器。</p>
+<p>​
+攻击者发送一个完整的HTTP头，它定义了消息体的‘内容-长度’字段，作为发送此请求的良性流量。然后它以每两分钟一个字节的速率发送数据来填充消息体。因此，服务器等待每个消息体完成，而Slowpost攻击迅速增长，导致Web服务器上的DDoS泛洪攻击。</p></li>
+<li><p>​ <strong><em>Slowreading
+attack</em></strong>，【43】<strong><em>Shekyan</em></strong>等人提出了另一种通过缓慢读取response来发起攻击的方式，而不是通过缓慢发送。</p>
+<p>​
+此攻击通过设置比目标服务器的发送缓冲区更小的接收窗口大小来达到目的。即使没有数据通信，TCP协议仍然保持开放的连接；因此，攻击者可以迫使服务器保持大量连接的开放，最终对服务器造成DDoS泛洪攻击。</p></li>
 </ul>
-<ul>
-<li><p>​       <strong><em>HTTP fragmentation attack</em></strong>，与懒猴类似，这种攻击的目标是通过长时间保持HTTP连接而不引发任何警报来降低Web服务器。</p>
-<p>​    攻击者( bot ) 与Web服务器建立有效的HTTP连接。然后，它们将合法的HTTP数据包分解成微小的片段，并按照服务器超时允许的速度发送每个片段。使用这种方法，通过在每个bot上打开多个会话，攻击者可以只使用少数肉机就悄悄地让一个Web服务器崩溃。</p>
-</li>
-<li><p>​       <strong><em>Slowpost attack</em></strong>，【42】<strong><em>wong</em></strong>等人提出了一个跟懒猴攻击非常相似的攻击，其通过缓慢发送HTTP_post请求来击溃Web服务器。</p>
-<p>​    攻击者发送一个完整的HTTP头，它定义了消息体的‘内容-长度’字段，作为发送此请求的良性流量。然后它以每两分钟一个字节的速率发送数据来填充消息体。因此，服务器等待每个消息体完成，而Slowpost攻击迅速增长，导致Web服务器上的DDoS泛洪攻击。</p>
-</li>
-<li><p>​        <strong><em>Slowreading attack</em></strong>，【43】<strong><em>Shekyan</em></strong>等人提出了另一种通过缓慢读取response来发起攻击的方式，而不是通过缓慢发送。</p>
-<p>​    此攻击通过设置比目标服务器的发送缓冲区更小的接收窗口大小来达到目的。即使没有数据通信，TCP协议仍然保持开放的连接；因此，攻击者可以迫使服务器保持大量连接的开放，最终对服务器造成DDoS泛洪攻击。</p>
-</li>
-</ul>
-<hr>
-<h3 id="BOTNET-BASED-DDOS-ATTACKS"><a href="#BOTNET-BASED-DDOS-ATTACKS" class="headerlink" title="BOTNET-BASED DDOS ATTACKS"></a>BOTNET-BASED DDOS ATTACKS</h3><p>​    如前所述，僵尸网络是促使DDoS洪范攻击计算机网络或应用程序的主导机制。最近最令人头大的应用层DDoS泛洪攻击大多使用僵尸网络。在本节中，我们对当前僵尸网络架构以及已经用于发起DDoS泛洪攻击的工具进行了全面的研究</p>
-<p>​    根据【32】<strong><em>Peng</em></strong>等人所述，当攻击者使用僵尸网络来制造DDoS攻击时，使得做出更有效的防御机制更困难的原因有二：一是大量的僵尸肉机可使得攻击者制造出的攻击流量规模更大，更具破坏性；二是肉机的IP一般是伪造的，很难回溯追踪。</p>
-<p>​    僵尸网络包括master，handler和bots，如下图所示：</p>
+<hr />
+<h3 id="botnet-based-ddos-attacks">BOTNET-BASED DDOS ATTACKS</h3>
+<p>​
+如前所述，僵尸网络是促使DDoS洪范攻击计算机网络或应用程序的主导机制。最近最令人头大的应用层DDoS泛洪攻击大多使用僵尸网络。在本节中，我们对当前僵尸网络架构以及已经用于发起DDoS泛洪攻击的工具进行了全面的研究</p>
+<p>​
+根据【32】<strong><em>Peng</em></strong>等人所述，当攻击者使用僵尸网络来制造DDoS攻击时，使得做出更有效的防御机制更困难的原因有二：一是大量的僵尸肉机可使得攻击者制造出的攻击流量规模更大，更具破坏性；二是肉机的IP一般是伪造的，很难回溯追踪。</p>
+<p>​ 僵尸网络包括master，handler和bots，如下图所示：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220304101014.png"  style="zoom: 33%;" /></p>
-<p>​    handlers是攻击者( 即master )用来与自己的肉机（即bots）间接通信的通信手段。例如，handlers可以安装在攻击者通信发送命令的一组折衷设备( 例如 ,网络服务器 )上。</p>
-<p>​    然而，大多数安装的程序都留下了当前杀毒软件可以检测到的独特足迹。因此，当前攻击者使用其他方法( 如互联网中继聊天 IRC )与bot进行通信，以发送命令并控制它们。</p>
-<p>​    Bots就是被控制的肉机，其生成可以有成百上千种方法，根据其如何被攻击者控制，可以分类为：</p>
+<p>​ handlers是攻击者( 即master
+)用来与自己的肉机（即bots）间接通信的通信手段。例如，handlers可以安装在攻击者通信发送命令的一组折衷设备(
+例如 ,网络服务器 )上。</p>
+<p>​
+然而，大多数安装的程序都留下了当前杀毒软件可以检测到的独特足迹。因此，当前攻击者使用其他方法(
+如互联网中继聊天 IRC )与bot进行通信，以发送命令并控制它们。</p>
+<p>​
+Bots就是被控制的肉机，其生成可以有成百上千种方法，根据其如何被攻击者控制，可以分类为：</p>
 <ul>
-<li><p>​    <strong>IRC-bacsed:</strong></p>
-<p>​    <strong><em>IRC</em></strong>是一个互联网在线文本信息协议，其采用c-s架构，具有默认的通道，可以实现服务器间的通信。IRC可以通过多个服务器连接数百个客户端。利用IRC通道作为处理程序，攻击者可以利用合法的IRC端口向bot发送命令，使得对DDoS命令和控制结构的跟踪变得更加困难。</p>
-<p>​    由于IRC服务通常具有庞大的数据量，攻击者因此可以轻易的隐藏自己。</p>
-<p>​    另外，攻击者可以通过将恶意代码分片发送而轻松地分享文件。</p>
-<p>​    此外，攻击者可以简单地登录到IRC服务器并查看所有可用bot的列表，而不是在其站点本地维护其列表。具有集中指挥和控制( C &amp; C )基础设施的僵尸网络(如基于IRC的僵尸网络)的主要局限性在于服务器是潜在的故障中枢。也就是说，如果防御者捕获了C &amp; C服务器，整个僵尸网络可能会关闭。一些基于IRC的著名僵尸网络工具多年来被开发并用于发起DDoS攻击如：</p>
-<p>​    【43】Trinity v3（UDP,TCP SYN, TCP ACK, and TCP NULflflood attacks）</p>
-<p>​    【47】Kaiten（UDP, TCP, SYN, and PUSH+ACH flflood attacks）</p>
-</li>
+<li><p>​ <strong>IRC-bacsed:</strong></p>
+<p>​
+<strong><em>IRC</em></strong>是一个互联网在线文本信息协议，其采用c-s架构，具有默认的通道，可以实现服务器间的通信。IRC可以通过多个服务器连接数百个客户端。利用IRC通道作为处理程序，攻击者可以利用合法的IRC端口向bot发送命令，使得对DDoS命令和控制结构的跟踪变得更加困难。</p>
+<p>​ 由于IRC服务通常具有庞大的数据量，攻击者因此可以轻易的隐藏自己。</p>
+<p>​ 另外，攻击者可以通过将恶意代码分片发送而轻松地分享文件。</p>
+<p>​
+此外，攻击者可以简单地登录到IRC服务器并查看所有可用bot的列表，而不是在其站点本地维护其列表。具有集中指挥和控制(
+C &amp; C
+)基础设施的僵尸网络(如基于IRC的僵尸网络)的主要局限性在于服务器是潜在的故障中枢。也就是说，如果防御者捕获了C
+&amp;
+C服务器，整个僵尸网络可能会关闭。一些基于IRC的著名僵尸网络工具多年来被开发并用于发起DDoS攻击如：</p>
+<p>​ 【43】Trinity v3（UDP,TCP SYN, TCP ACK, and TCP NULflflood
+attacks）</p>
+<p>​ 【47】Kaiten（UDP, TCP, SYN, and PUSH+ACH flflood attacks）</p></li>
+<li><p>​ <strong>Web-based (a.k.a., HTTP-based)：</strong></p>
+<p>​
+最近，僵尸网络开始使用HTTP作为通信协议向僵尸网络发送命令，使得追踪DDoS命令和控制结构变得困难得多。基于Web的僵尸网络不像基于IRC的僵尸网络那样与C
+&amp;
+C服务器保持连接。相反，每个Web机器人定期使用Web请求下载指令。基于Web的僵尸网络更隐蔽，因为它们隐藏在合法的HTTP流量中。</p>
+<p>​
+Bots通过复杂的PHP脚本进行配置和控制，它们通过HTTP或者HTTPS加密通信。</p>
+<p>​ 三个著名的Web-based 僵尸网络：</p>
+<p>​ 【49】 BlackEnergy</p>
+<p>​ 【50】 Ion Cannon (LOIC)</p>
+<p>​ 【52】 Aldi</p></li>
 </ul>
+<hr />
+<h3 id="ddos-defense-scope-and-classification">DDOS DEFENSE: SCOPE AND
+CLASSIFICATION</h3>
+<p>​
+通常在检测到DDoS泛洪攻击时，除了断开受害者与网络并手动修复问题之外，没有什么可以做的。任何DDoS防御机制的最终目标都是尽快检测到它们，并尽可能地将它们阻止到源端。</p>
+<p>​ <img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220304110412.png" /></p>
+<p>​</p>
+<p>​
+上图显示了对DDoS检测和回应可以实施的阶段，如图所示，DDoS泛洪攻击类似于一个漏斗，在该漏斗中攻击流产生于一个分散区(即源)，形成漏斗的顶部。</p>
+<p>​
+可以看出，在漏斗底部检测DDoS攻击时相对容易的，所有网络流都可以在底部被观察到。相反地，相反，从攻击的单个源网络很难检测到攻击，除非从该源发起大量攻击流。</p>
+<p>​
+但是在检测的准确性和如何接近攻击源之间总是存在权衡的问题，预防和响应机制能够阻止或响应攻击。</p>
+<p>​ 此外，当响应机制( 例如 ,包过滤
+)将攻击数据包更靠近攻击源时，当受害者受到DDoS攻击(即在DDoS攻击的中间)，到达受害者的正常数据包数量也会增加。否则，随着攻击流越接近受害者，数据包过滤机制就会丢弃更多受害者的合法数据包。</p>
+<p>​
+在本节中，我们利用两个判据对我们在第III节中提出的两类DDoS洪泛攻击的防御机制进行了分类。我们认为，这些分类标准对于设计稳健的防御解决方案非常重要。</p>
+<p>​
+<strong><u>分类的第一个准则是防御机制在攻击过程的哪里实现（Deployment
+location）：</u></strong></p>
 <ul>
-<li><p>​    <strong>Web-based (a.k.a., HTTP-based)：</strong></p>
-<p>​    最近，僵尸网络开始使用HTTP作为通信协议向僵尸网络发送命令，使得追踪DDoS命令和控制结构变得困难得多。基于Web的僵尸网络不像基于IRC的僵尸网络那样与C &amp; C服务器保持连接。相反，每个Web机器人定期使用Web请求下载指令。基于Web的僵尸网络更隐蔽，因为它们隐藏在合法的HTTP流量中。</p>
-<p>​    Bots通过复杂的PHP脚本进行配置和控制，它们通过HTTP或者HTTPS加密通信。</p>
-<p>​    三个著名的Web-based 僵尸网络：</p>
-<p>​    【49】 BlackEnergy </p>
-<p>​    【50】  Ion Cannon (LOIC)</p>
-<p>​    【52】  Aldi</p>
-</li>
+<li>​ 我们将针对传输层级的DDoS攻击的防御方法分为四类（见Fig.3.）：</li>
 </ul>
-<hr>
-<h3 id="DDOS-DEFENSE-SCOPE-AND-CLASSIFICATION"><a href="#DDOS-DEFENSE-SCOPE-AND-CLASSIFICATION" class="headerlink" title="DDOS DEFENSE: SCOPE AND CLASSIFICATION"></a>DDOS DEFENSE: SCOPE AND CLASSIFICATION</h3><p>​    通常在检测到DDoS泛洪攻击时，除了断开受害者与网络并手动修复问题之外，没有什么可以做的。任何DDoS防御机制的最终目标都是尽快检测到它们，并尽可能地将它们阻止到源端。</p>
-<p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220304110412.png" alt=""></p>
-<p>​    </p>
-<p>​    上图显示了对DDoS检测和回应可以实施的阶段，如图所示，DDoS泛洪攻击类似于一个漏斗，在该漏斗中攻击流产生于一个分散区(即源)，形成漏斗的顶部。</p>
-<p>​    可以看出，在漏斗底部检测DDoS攻击时相对容易的，所有网络流都可以在底部被观察到。相反地，相反，从攻击的单个源网络很难检测到攻击，除非从该源发起大量攻击流。</p>
-<p>​    但是在检测的准确性和如何接近攻击源之间总是存在权衡的问题，预防和响应机制能够阻止或响应攻击。</p>
-<p>​    此外，当响应机制( 例如 ,包过滤 )将攻击数据包更靠近攻击源时，当受害者受到DDoS攻击(即在DDoS攻击的中间)，到达受害者的正常数据包数量也会增加。否则，随着攻击流越接近受害者，数据包过滤机制就会丢弃更多受害者的合法数据包。</p>
-<p>​    在本节中，我们利用两个判据对我们在第III节中提出的两类DDoS洪泛攻击的防御机制进行了分类。我们认为，这些分类标准对于设计稳健的防御解决方案非常重要。</p>
-<p>​    <strong><u>分类的第一个准则是防御机制在攻击过程的哪里实现（Deployment location）：</u></strong></p>
+<p>​ <em>source-based</em>,
+<em>destination-based</em>,<em>network-based</em>, and <em>hybrid
+(a.k.a. distributed)</em></p>
 <ul>
-<li>​    我们将针对传输层级的DDoS攻击的防御方法分为四类（见Fig.3.）：</li>
+<li>​ 我们将针对应用级DDoS攻击的防御方法分为两类：</li>
 </ul>
-<p>​    <em>source-based</em>, <em>destination-based</em>,<em>network-based</em>, and <em>hybrid (a.k.a. distributed)</em></p>
-<ul>
-<li>​    我们将针对应用级DDoS攻击的防御方法分为两类：</li>
-</ul>
-<p>​    <em>destination-based</em>, and <em>hybrid (a.k.a. distributed)</em></p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220304150015.png" alt=""></p>
-<p>​    由于应用层DDoS攻击的流量在第2层(交换机)和第3层(路由器)设备上不可访问，因此没有network-based的防御机制来抵御应用层DDoS攻击。</p>
+<p>​ <em>destination-based</em>, and <em>hybrid (a.k.a.
+distributed)</em></p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220304150015.png" /></p>
+<p>​
+由于应用层DDoS攻击的流量在第2层(交换机)和第3层(路由器)设备上不可访问，因此没有network-based的防御机制来抵御应用层DDoS攻击。</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220304111902.png"  style="zoom: 50%;" /></p>
-<p>​    <strong><u>分类的第二个准则是DDoS防御机制面对可能的DDoS攻击响应的时间点：</u></strong></p>
-<p>​    基于以上准则我们将基于传输层和基于应用层的的DDoS防御机制分为三类：</p>
-<p>​    <em>before the attack（attack prevention），during the attack（attack detection），after the attack(attack source identifification and response)</em></p>
-<p>​    因为对于DDoS攻击并没有一个“一刀切”的办法，一个综合的DDoS防御机制应该包括以上三个防御方法。</p>
+<p>​
+<strong><u>分类的第二个准则是DDoS防御机制面对可能的DDoS攻击响应的时间点：</u></strong></p>
+<p>​
+基于以上准则我们将基于传输层和基于应用层的的DDoS防御机制分为三类：</p>
+<p>​ <em>before the attack（attack prevention），during the
+attack（attack detection），after the attack(attack source
+identifification and response)</em></p>
+<p>​
+因为对于DDoS攻击并没有一个“一刀切”的办法，一个综合的DDoS防御机制应该包括以上三个防御方法。</p>
 <p>ps<u>：由于本次调研重点在于探索对基于AI方法的DDoS防御机制，这里不做过深入探索，具体传统方法见原文。</u></p>
-<hr>
-<h3 id="DDOS-DEFENSE-PERFORMANCE-MEASUREMENT-METRICS"><a href="#DDOS-DEFENSE-PERFORMANCE-MEASUREMENT-METRICS" class="headerlink" title="DDOS DEFENSE: PERFORMANCE MEASUREMENT METRICS"></a>DDOS DEFENSE: PERFORMANCE MEASUREMENT METRICS</h3><p>​    在这一部分，我们回顾和讨论了文献中发现的一些可以用来比较评估DDoS防御技术的度量和属性。</p>
-<p>​    然后，在表III和表IV中，我们使用 <strong><em>defense strength</em></strong> (accuracy)、 <strong><em>scalability</em></strong>（可扩展性）、 <strong><em>delay</em></strong>（延迟）、 <strong><em>system performance degradation</em></strong>（系统性能退化）、<strong><em>implementation complexity</em></strong>（实现复杂度）等性能度量指标，基于deployment location定性地比较了传输层级DDoS攻击的防御机制和应用层级DDoS防御机制，以及这些防御机制是否被视为整体防御机制。</p>
-<p>​    度量防御机制的标准如下：</p>
-<ol>
+<hr />
+<h3 id="ddos-defense-performance-measurement-metrics">DDOS DEFENSE:
+PERFORMANCE MEASUREMENT METRICS</h3>
+<p>​
+在这一部分，我们回顾和讨论了文献中发现的一些可以用来比较评估DDoS防御技术的度量和属性。</p>
+<p>​ 然后，在表III和表IV中，我们使用 <strong><em>defense
+strength</em></strong> (accuracy)、
+<strong><em>scalability</em></strong>（可扩展性）、
+<strong><em>delay</em></strong>（延迟）、 <strong><em>system performance
+degradation</em></strong>（系统性能退化）、<strong><em>implementation
+complexity</em></strong>（实现复杂度）等性能度量指标，基于deployment
+location定性地比较了传输层级DDoS攻击的防御机制和应用层级DDoS防御机制，以及这些防御机制是否被视为整体防御机制。</p>
+<p>​ 度量防御机制的标准如下：</p>
+<ol type="1">
 <li><p><strong><em>Defense Strength:</em></strong></p>
 <p>防御机制的强度可以通过各种度量来衡量，这取决于它能多好地预防、检测和阻止攻击。这些度量可以根据每个防御机制做出的决策或预测来定义。防御机制要么探测并应对攻击，要么错过攻击。根据他们的反应，有四个可能的结果如表II所示。</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20220304153451.png"  style="zoom: 67%;" /></p>
-<p>​    如表II所示，A，B，C，D分别表示为<strong>true negative</strong>，<strong>false negative</strong>，<strong>false positive</strong>，<strong>true positive</strong>，其实就是常见的<u><strong>混淆矩阵</strong></u>。</p>
+<p>​ 如表II所示，A，B，C，D分别表示为<strong>true
+negative</strong>，<strong>false negative</strong>，<strong>false
+positive</strong>，<strong>true
+positive</strong>，其实就是常见的<u><strong>混淆矩阵</strong></u>。</p>
 <ul>
-<li><p><strong><em>Accuracy</em></strong>是对检测结果的综合评价，是预测正确的比例占全部的比例。</p>
-<script type="math/tex; mode=display">
-Accuracy=\frac{TP+TN}{P+N}=\frac{TP+TN}{TN+TP+FP+FN}</script></li>
-<li><p><strong><em>Sensitivity</em></strong>是阳性样本中预测正确的比例：</p>
-<script type="math/tex; mode=display">
-Sensitivity=\frac{TP}{P}=\frac{TP}{TP+FP}</script></li>
-<li><p><strong><em>Specificity</em></strong>是阴性样本中预测正确的比例：</p>
-<script type="math/tex; mode=display">
-Specificity=\frac{TN}{N}=\frac{TN}{TN+FN}</script></li>
-<li><p><strong><em>Precision</em></strong>是预测为阳性的样本中预测正确的比例：</p>
-<script type="math/tex; mode=display">
-Precision=\frac{TP}{FP+TP}</script></li>
-</ul>
-</li>
+<li><p><strong><em>Accuracy</em></strong>是对检测结果的综合评价，是预测正确的比例占全部的比例。
+<span class="math display">\[
+  Accuracy=\frac{TP+TN}{P+N}=\frac{TP+TN}{TN+TP+FP+FN}
+  \]</span></p></li>
+<li><p><strong><em>Sensitivity</em></strong>是阳性样本中预测正确的比例：
+<span class="math display">\[
+  Sensitivity=\frac{TP}{P}=\frac{TP}{TP+FP}
+  \]</span></p></li>
+<li><p><strong><em>Specificity</em></strong>是阴性样本中预测正确的比例：
+<span class="math display">\[
+  Specificity=\frac{TN}{N}=\frac{TN}{TN+FN}
+  \]</span></p></li>
+<li><p><strong><em>Precision</em></strong>是预测为阳性的样本中预测正确的比例：
+<span class="math display">\[
+Precision=\frac{TP}{FP+TP}
+\]</span></p></li>
+</ul></li>
 </ol>
 <ul>
-<li><p><strong><em>Reliability or False positive rate</em></strong>是预测为阳性的样本中错误的比例：</p>
-<pre><code>$$
-Reliability(False.positive.rate)=\frac&#123;FP&#125;&#123;FP+TP&#125;
-$$
-</code></pre></li>
-<li><p><strong><em>False negative rate</em></strong>是预测为阴性的样本中错误的比例：</p>
-<pre><code>$$
-False\,negative\,rate=\frac&#123;FP&#125;&#123;FP+TP&#125;
-$$
-</code></pre></li>
+<li><p><strong><em>Reliability or False positive
+rate</em></strong>是预测为阳性的样本中错误的比例： <span
+class="math display">\[
+    Reliability(False.positive.rate)=\frac{FP}{FP+TP}
+    \]</span></p></li>
+<li><p><strong><em>False negative
+rate</em></strong>是预测为阴性的样本中错误的比例： <span
+class="math display">\[
+    False\,negative\,rate=\frac{FP}{FP+TP}
+    \]</span></p></li>
 </ul>
-<ol>
-<li><p><strong><em>Compromise-ability:</em></strong></p>
-<p>攻击者能否利用防御机制，以便对整个系统发起攻击( 例如 , DDoS )?</p>
-</li>
+<ol start="2" type="1">
+<li><strong><em>Compromise-ability:</em></strong></li>
+</ol>
+<pre><code>攻击者能否利用防御机制，以便对整个系统发起攻击( 例如 , DDoS )?</code></pre>
+<ol start="3" type="1">
 <li><p><strong><em>Delay in detection/response:</em></strong></p>
-<p>检测到/对攻击做出反应的时间。</p>
-</li>
+<p>检测到/对攻击做出反应的时间。</p></li>
 <li><p><strong><em>System performance degradation:</em></strong></p>
-<p>一个防御机制是否会造成系统的功能性问题（例如内存短缺，CPU时间片短缺等），或者其是否需要额外的要求以完美运行。</p>
-</li>
+<p>一个防御机制是否会造成系统的功能性问题（例如内存短缺，CPU时间片短缺等），或者其是否需要额外的要求以完美运行。</p></li>
 <li><p><strong><em>Passive, reactive or proactive:</em></strong></p>
-<p>防御机制通过主动阻止攻击的发生来防御攻击，它是只对现有攻击作出反应，还是只在DDoS攻击发起后才采取行动。</p>
-</li>
+<p>防御机制通过主动阻止攻击的发生来防御攻击，它是只对现有攻击作出反应，还是只在DDoS攻击发起后才采取行动。</p></li>
 <li><p><strong><em>Holistic defense:</em></strong></p>
-<p>一种整体防御机制，通过考虑所有需要的任务，以阻止DDoS攻击( 即既检测又响应 )。</p>
-</li>
+<p>一种整体防御机制，通过考虑所有需要的任务，以阻止DDoS攻击(
+即既检测又响应 )。</p></li>
 <li><p><strong><em>Implementation complexity:</em></strong></p>
-<p>实现复杂性。</p>
-</li>
+<p>实现复杂性。</p></li>
 <li><p><strong><em>Usability:</em></strong></p>
-<p>是否user-friendly。</p>
-</li>
+<p>是否user-friendly。</p></li>
 <li><p><strong><em>Deployment location:</em></strong></p>
-<p>正如我们前面提到的，部署位置是比较各种防御机制的另一个度量。每个位置都有各自的优缺点，使得一种机制优于另一种机制。</p>
-</li>
+<p>正如我们前面提到的，部署位置是比较各种防御机制的另一个度量。每个位置都有各自的优缺点，使得一种机制优于另一种机制。</p></li>
 <li><p><strong><em>Scalability:</em></strong></p>
-<p>可扩展性，一个可扩展的防御机制可以有效地处理其攻击检测和响应职责，即使攻击者的数量和攻击流量都增加了。</p>
-</li>
+<p>可扩展性，一个可扩展的防御机制可以有效地处理其攻击检测和响应职责，即使攻击者的数量和攻击流量都增加了。</p></li>
 </ol>
 
       
@@ -409,7 +530,12 @@ $$
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#A-Survey-of-Defense-Mechanisms-Against-Distributed-Denial-of-Service-DDoS-Flooding-Attacks"><span class="nav-number">1.</span> <span class="nav-text">A Survey of Defense Mechanisms Against Distributed Denial of Service (DDoS) Flooding Attacks</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ABSTRACT"><span class="nav-number">1.0.1.</span> <span class="nav-text">ABSTRACT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#INTRODUCTION"><span class="nav-number">1.0.2.</span> <span class="nav-text">INTRODUCTION</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DDOS-ATTACKERS%E2%80%99-INCENTIVES"><span class="nav-number">1.0.3.</span> <span class="nav-text">DDOS: ATTACKERS’ INCENTIVES</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DDOS-ATTACK-SCOPE-AND-CLASSIFICATION"><span class="nav-number">1.0.4.</span> <span class="nav-text">DDOS ATTACK: SCOPE AND CLASSIFICATION</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BOTNET-BASED-DDOS-ATTACKS"><span class="nav-number">1.0.5.</span> <span class="nav-text">BOTNET-BASED DDOS ATTACKS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DDOS-DEFENSE-SCOPE-AND-CLASSIFICATION"><span class="nav-number">1.0.6.</span> <span class="nav-text">DDOS DEFENSE: SCOPE AND CLASSIFICATION</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DDOS-DEFENSE-PERFORMANCE-MEASUREMENT-METRICS"><span class="nav-number">1.0.7.</span> <span class="nav-text">DDOS DEFENSE: PERFORMANCE MEASUREMENT METRICS</span></a></li></ol></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#a-survey-of-defense-mechanisms-against-distributed-denial-of-service-ddos-flooding-attacks"><span class="nav-number">1.</span> <span class="nav-text">A
+Survey of Defense Mechanisms Against Distributed Denial of Service
+(DDoS) Flooding Attacks</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#abstract"><span class="nav-number">1.0.1.</span> <span class="nav-text">ABSTRACT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#introduction"><span class="nav-number">1.0.2.</span> <span class="nav-text">INTRODUCTION</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ddos-attackers-incentives"><span class="nav-number">1.0.3.</span> <span class="nav-text">DDOS: ATTACKERS’ INCENTIVES</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ddos-attack-scope-and-classification"><span class="nav-number">1.0.4.</span> <span class="nav-text">DDOS ATTACK: SCOPE AND
+CLASSIFICATION</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#botnet-based-ddos-attacks"><span class="nav-number">1.0.5.</span> <span class="nav-text">BOTNET-BASED DDOS ATTACKS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ddos-defense-scope-and-classification"><span class="nav-number">1.0.6.</span> <span class="nav-text">DDOS DEFENSE: SCOPE AND
+CLASSIFICATION</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ddos-defense-performance-measurement-metrics"><span class="nav-number">1.0.7.</span> <span class="nav-text">DDOS DEFENSE:
+PERFORMANCE MEASUREMENT METRICS</span></a></li></ol></li></ol></li></ol>
     
     </div>
   </aside>
@@ -603,5 +729,20 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>
