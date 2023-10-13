@@ -7,28 +7,9 @@
 ]]></content>
   </entry>
   <entry>
-    <title></title>
+    <title>(技术积累)How to debug wasm compiled by wasi-sdk?</title>
     <url>/2023/10/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91How%20to%20debug%20wasm%20compiled%20by%20wasi-sdk/</url>
-    <content><![CDATA[<table>
-<tbody>
-<tr class="odd">
-<td>date:2023/10/11 21:30</td>
-</tr>
-<tr class="even">
-<td>title:[技术积累]How to debug wasm compiled by wasi-sdk?</td>
-</tr>
-<tr class="odd">
-<td>author:Shaw</td>
-</tr>
-<tr class="even">
-<td>categories:Paper</td>
-</tr>
-<tr class="odd">
-<td>tags:["WebAssembly","WASI"]</td>
-</tr>
-</tbody>
-</table>
-<h1 id="how-to-debug-wasm-compiled-by-wasi-sdk">How to debug wasm
+    <content><![CDATA[<h1 id="how-to-debug-wasm-compiled-by-wasi-sdk">How to debug wasm
 compiled by wasi-sdk?</h1>
 <blockquote>
 <p>如何调试支持wasi的wasm binary？</p>
@@ -208,9 +189,16 @@ Emscripten 3.1.47-git (dev) documentation</a></li>
 </ul></li>
 </ul>
 ]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>WebAssembly</tag>
+        <tag>WASI</tag>
+      </tags>
   </entry>
   <entry>
-    <title>Go or No Go-Differential Fuzzing of Native and C Libraries</title>
+    <title>(论文阅读)Go or No Go-Differential Fuzzing of Native and C Libraries</title>
     <url>/2023/10/07/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Go%20or%20No%20Go%20Differential%20Fuzzing%20of%20Native%20and%20C%20Libraries/</url>
     <content><![CDATA[<h1 id="go-or-no-go-differential-fuzzing-of-native-and-c-libraries">Go
 or No Go: Differential Fuzzing of Native and C Libraries</h1>
