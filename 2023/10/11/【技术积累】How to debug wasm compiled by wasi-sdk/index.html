@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  
+  
+    <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
+  
+  
+  <meta name="description" content="date:2023&#x2F;10&#x2F;11 21:30   title:[技术积累]How to debug wasm compiled by wasi-sdk?   author:Shaw   categories:Paper   tags:[&quot;WebAssembly&quot;,&quot;WASI&quot;]    How to debug wasm compiled by wasi-">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Shaw">
+<meta property="og:url" content="http://example.com/2023/10/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91How%20to%20debug%20wasm%20compiled%20by%20wasi-sdk/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="date:2023&#x2F;10&#x2F;11 21:30   title:[技术积累]How to debug wasm compiled by wasi-sdk?   author:Shaw   categories:Paper   tags:[&quot;WebAssembly&quot;,&quot;WASI&quot;]    How to debug wasm compiled by wasi-">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20231013191549217.png">
+<meta property="article:published_time" content="2023-10-11T13:25:39.082Z">
+<meta property="article:modified_time" content="2023-10-13T12:11:19.724Z">
+<meta property="article:author" content="Shaw">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20231013191549217.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-【技术积累】How to debug wasm compiled by wasi-sdk" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+    <div class="article-meta">
+      
+	<a href="/2023/10/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91How%20to%20debug%20wasm%20compiled%20by%20wasi-sdk/" class="article-date">
+	  <time datetime="2023-10-11T13:25:39.082Z" itemprop="datePublished">十月 11, 2023</time>
+	</a>
+
+       
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <table>
+<tbody>
+<tr class="odd">
+<td>date:2023/10/11 21:30</td>
+</tr>
+<tr class="even">
+<td>title:[技术积累]How to debug wasm compiled by wasi-sdk?</td>
+</tr>
+<tr class="odd">
+<td>author:Shaw</td>
+</tr>
+<tr class="even">
+<td>categories:Paper</td>
+</tr>
+<tr class="odd">
+<td>tags:["WebAssembly","WASI"]</td>
+</tr>
+</tbody>
+</table>
+<h1 id="how-to-debug-wasm-compiled-by-wasi-sdk">How to debug wasm
+compiled by wasi-sdk?</h1>
+<blockquote>
+<p>如何调试支持wasi的wasm binary？</p>
+</blockquote>
+<span id="more"></span>
+<h3 id="wasminspect">1. wasminspect</h3>
+<h4 id="wasm-dwarf-debug-information">1.1 Wasm DWARF debug
+information</h4>
+<p>Before using wasminspect debug your wasm binary, you need to verify
+that your binary contains DWARF debug information.</p>
+<p>The DWARF debug info for a WebAssembly file is either embedded in the
+WebAssembly file itself, or it is in a separate, external file. A
+WebAssembly file should not have both embedded DWARF and external DWARF;
+if this is the case, a DWARF consumer may use either DWARF debug info or
+it may consider the WebAssembly to lack DWARF debug info.</p>
+<ul>
+<li><strong>Embedding DWARF info:</strong></li>
+</ul>
+<p>The DWARF sections are embedded in Wasm binary files as
+<code>custom</code>sections. Each <code>custom</code> section’s name
+matches the DWARF section name as defined in the DWARF standard, e.g.
+<code>.debug_info</code> or <code>.debug_line</code>.</p>
+<p>You can use <code>wasm-objdump</code> from <code>wabt</code> to
+verify whether your wasm binary contains debug info:</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20231013095007868.png" /></p>
+<ul>
+<li><strong>External DWARF info</strong>:</li>
+</ul>
+<p>A WebAssembly file that has external DWARF contains a custom section
+named "external_debug_info". The contents of the custom section contain
+a UTF-8 encoded URL string that points to the external DWARF file.</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20231013095358164.png" /></p>
+<blockquote>
+<p>If the "external_debug_info" section is present, any DWARF debug info
+WebAssembly sections are ignored. A DWARF producer needs to remove such
+sections to reduce the size of the WebAssembly file. If more than one
+valid "external_debug_info" section is present, consumers will use the
+last one.</p>
+</blockquote>
+<p>I made some attempts on <code>Juliet test suite</code> to get the
+wasm binary to contain DWARF information:</p>
+<ul>
+<li>The wasm compiled using Emscripten, although containing DWARF
+information, is not well recognized by wasminspect (it can't be mapped
+back to the source, and can only be single-step debugged on wat);</li>
+<li>The binary compiled with Wasi-sdk can be successfully debugged;</li>
+</ul>
+<blockquote>
+<p>BTW, you mat need to modify the Makefile in Juliet test suite and
+remove the pthread related files for using wasi-sdk.</p>
+</blockquote>
+<h4 id="example">1.2 Example</h4>
+<blockquote>
+<p>Locate the root cause of the discrepancy in
+CWE124_Buffer_Underwrite__char_alloca_loop_01_bad() between x86 and
+wasm.</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token operator">></span><span class="token keyword">void</span> <span class="token function">CWE124_Buffer_Underwrite__char_alloca_loop_01_bad</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token operator">></span><span class="token punctuation">&#123;</span>
+   <span class="token keyword">char</span> <span class="token operator">*</span> data<span class="token punctuation">;</span>
+   <span class="token keyword">char</span> <span class="token operator">*</span> dataBuffer <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">ALLOCA</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token operator">*</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">char</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token function">memset</span><span class="token punctuation">(</span>dataBuffer<span class="token punctuation">,</span> <span class="token string">'A'</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   dataBuffer<span class="token punctuation">[</span><span class="token number">100</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">'\0'</span><span class="token punctuation">;</span>
+   <span class="token comment">/* FLAW: Set data pointer to before the allocated memory buffer */</span>
+   data <span class="token operator">=</span> dataBuffer <span class="token operator">-</span> <span class="token number">8</span><span class="token punctuation">;</span>
+   <span class="token punctuation">&#123;</span>
+       <span class="token class-name">size_t</span> i<span class="token punctuation">;</span>
+       <span class="token keyword">char</span> source<span class="token punctuation">[</span><span class="token number">100</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+       <span class="token function">memset</span><span class="token punctuation">(</span>source<span class="token punctuation">,</span> <span class="token string">'C'</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">/* fill with 'C's */</span>
+       source<span class="token punctuation">[</span><span class="token number">100</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">'\0'</span><span class="token punctuation">;</span> <span class="token comment">/* null terminate */</span>
+       <span class="token comment">/* POTENTIAL FLAW: Possibly copying data to memory before the destination buffer */</span>
+       <span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">100</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>
+       <span class="token punctuation">&#123;</span>
+           data<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> source<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+       <span class="token punctuation">&#125;</span>
+       <span class="token comment">/* Ensure the destination buffer is null terminated */</span>
+       data<span class="token punctuation">[</span><span class="token number">100</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">'\0'</span><span class="token punctuation">;</span>
+       <span class="token function">printLine</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token punctuation">&#125;</span>
+<span class="token operator">></span><span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Discrepancy:</p>
+<p><strong>X86 output:</strong> �R[UUU</p>
+<p><strong>WASM output:</strong> CCCCX</p>
+</blockquote>
+<ol type="1">
+<li><strong>Build wasminspect</strong>:</li>
+</ol>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> clone https://github.com/kateinoigakukun/wasminspect.git
+cargo build
+<span class="token comment">#target tool is in ./target/debug/wasminspect</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<ol start="2" type="1">
+<li><p><strong>Build func
+<code>CWE124_Buffer_Underwrite__char_alloca_loop_01_bad()</code> using
+wasi-sdk;</strong></p></li>
+<li><p><strong>Debug and check the target function:</strong></p>
+<p>The main difference between the above functions is that they print
+different characters for the same memory operation, so here you need to
+locate the value of data before and after it is copied.</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">wasminspect CWE124_Buffer_Underwrite__char_alloca_loop_01_bad-1.wasm
+breakpoint <span class="token builtin class-name">set</span> -n CWE124_Buffer_Underwrite__char_alloca_loop_01_bad
+run<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20231013190434251.png" /></p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">list<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20231013190501679.png" /></p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># Repeat several times</span>
+thread step-over<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>When the in line 30:</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20231013190702874.png" /></p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">local</span> <span class="token builtin class-name">read</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20231013191549217.png" style="zoom:67%;" /></p>
+<p>Noting that Local11 is smaller than Local9 by 8, the content of
+<code>data</code>:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">memory <span class="token builtin class-name">read</span> <span class="token number">71768</span> --count <span class="token number">112</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20231013191741830.png" /></p>
+<p>The content of <code>source</code>:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">memory <span class="token builtin class-name">read</span> <span class="token number">71888</span> --count <span class="token number">112</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20231013192106758.png" /></p>
+<p>When in line42:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">breakpoint <span class="token builtin class-name">set</span> -a  0x00000195
+process <span class="token builtin class-name">continue</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20231013193417828.png" /></p>
+<p>But when the program ran into the <code>printLine()</code>，the
+<code>data</code> changed:</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20231013194546628.png" /></p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20231013194735949.png" /></p>
+<p><strong>At the same address, the fifth byte of data changes to the
+letter 'X' and the 6th-8th bytes change to zero.</strong></p>
+<blockquote>
+<p>This may involve some manipulation during the passing of the
+<code>data</code>pointer as an argument of printLine().</p>
+</blockquote></li>
+</ol>
+<h2 id="reference">Reference</h2>
+<ul>
+<li>Blog:
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://www.kitware.com/how-to-debug-wasi-pipelines-with-itk-wasm/">kitware.com/how-to-debug-wasi-pipelines-with-itk-wasm/</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://shopify.engineering/debugging-server-side-webassembly">Four
+Approaches to Debugging Server-side WebAssembly (2023)
+(shopify.engineering)</a></li>
+<li><a target="_blank" rel="noopener" href="https://lucumr.pocoo.org/2020/11/30/how-to-wasm-dwarf/">How
+to WASM DWARF | Armin Ronacher's Thoughts and Writings
+(pocoo.org)</a></li>
+</ul></li>
+<li>Documentation:
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/bytecodealliance/wasmtime/blob/main/docs/examples-debugging-native-debugger.md">wasmtime/docs/examples-debugging-native-debugger.md
+at main · bytecodealliance/wasmtime (github.com)</a>
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://docs.wasmtime.dev/examples-debugging-native-debugger.html">Debugging
+with gdb and lldb - Wasmtime</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://docs.wasmtime.dev/examples-debugging-core-dumps.html">Debugging
+with Core Dumps - Wasmtime</a></li>
+</ul></li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/kateinoigakukun/wasminspect">kateinoigakukun/wasminspect:
+An interactive debugger for WebAssembly (github.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://yurydelendik.github.io/webassembly-dwarf/">DWARF
+for WebAssembly (yurydelendik.github.io)</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://emscripten.org/docs/porting/Debugging.html?">Debugging —
+Emscripten 3.1.47-git (dev) documentation</a></li>
+</ul></li>
+</ul>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+      
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2023/10/07/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Go%20or%20No%20Go%20Differential%20Fuzzing%20of%20Native%20and%20C%20Libraries/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Go or No Go-Differential Fuzzing of Native and C Libraries</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#how-to-debug-wasm-compiled-by-wasi-sdk"><span class="nav-number">1.</span> <span class="nav-text">How to debug wasm
+compiled by wasi-sdk?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#wasminspect"><span class="nav-number">1.0.1.</span> <span class="nav-text">1. wasminspect</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#wasm-dwarf-debug-information"><span class="nav-number">1.0.1.1.</span> <span class="nav-text">1.1 Wasm DWARF debug
+information</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#example"><span class="nav-number">1.0.1.2.</span> <span class="nav-text">1.2 Example</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">1.1.</span> <span class="nav-text">Reference</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+<footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2023 Shaw All Rights Reserved.
+        
+          <span id="busuanzi_container_site_pv">
+            本站总访问量<span id="busuanzi_value_site_pv"></span>次
+          </span>
+          <span class="post-meta-divider">|</span>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            本站访客数<span id="busuanzi_value_site_uv"></span>人
+          </span>
+          <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+
+  
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'true', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+<!-- Gaug.es Analytics -->
+<script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', 'true');
+    t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+    t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+<!-- End Gaug.es Analytics -->
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+	<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2439014eb270056ee1808a49956fe114";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<!-- Tencent Analytics -->
+	<script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId={{ theme.tencent_analytics }}";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+<!-- End Tencent Analytics -->
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>
