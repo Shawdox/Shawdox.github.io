@@ -7,6 +7,166 @@
 ]]></content>
   </entry>
   <entry>
+    <title>(技术积累)Latex正式入门</title>
+    <url>/2023/10/20/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Latex%E6%AD%A3%E5%BC%8F%E5%85%A5%E9%97%A8/</url>
+    <content><![CDATA[<h1 id="技术积累latex正式入门">[技术积累]Latex正式入门</h1>
+<p>本科云计算课程粗浅地使用过Latex，这次算一次Latex的正式入门，学习+摘录整理。</p>
+<span id="more"></span>
+<p>LaTeX是一种“非所见即所得”的排版系统，用户需要输入特定的代码，<u>保存在后缀为.tex的文件中</u>，通过编译得到所需的pdf文件。对于以下的例子：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\documentclass</span><span class="token punctuation">&#123;</span><span class="token keyword">article</span><span class="token punctuation">&#125;</span>
+<span class="token function selector">\usepackage</span><span class="token punctuation">&#123;</span><span class="token keyword">graphicx</span><span class="token punctuation">&#125;</span> <span class="token comment">% Required for inserting images</span>
+
+<span class="token function selector">\title</span><span class="token punctuation">&#123;</span>Latex Learning<span class="token punctuation">&#125;</span>
+<span class="token function selector">\author</span><span class="token punctuation">&#123;</span>shaw wu<span class="token punctuation">&#125;</span>
+<span class="token function selector">\date</span><span class="token punctuation">&#123;</span>October 2023<span class="token punctuation">&#125;</span>
+
+<span class="token function selector">\begin</span><span class="token punctuation">&#123;</span><span class="token keyword">document</span><span class="token punctuation">&#125;</span>
+
+<span class="token function selector">\maketitle</span>
+
+<span class="token function selector">\section</span><span class="token punctuation">&#123;</span><span class="token headline class-name">Introduction</span><span class="token punctuation">&#125;</span>
+Hello, world
+<span class="token function selector">\end</span><span class="token punctuation">&#123;</span><span class="token keyword">document</span><span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>编译结果为：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20231020165015846.png" style="zoom:50%;" /></p>
+<p>其中：</p>
+<ol type="1">
+<li>\documentclass:</li>
+</ol>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\documentclass</span><span class="token punctuation">&#123;</span><span class="token keyword">article</span><span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>表示文件类型，<u>不同的文件类型，编写的过程中也会有一定的差异</u>，如果直接修改文件类型的话，甚至会报错。</p>
+<p>TeX有多种文档类型可选，笔者较常用的有如下几种类型：</p>
+<ul>
+<li>对于英文，可以用<code>book</code>、<code>article</code>和<code>beamer</code>；</li>
+<li>对于中文，可以用<code>ctexbook</code>、<code>ctexart</code>和<code>ctexbeamer</code>，这些类型自带了对中文的支持。</li>
+</ul>
+<p>如果要设置默认字体大小、纸张大小、打印方式等，都可以通过：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token comment">% 设置默认字体大小为12pt，纸张大小为A4，单面打印</span>
+<span class="token function selector">\documentclass</span><span class="token punctuation">[</span>12pt, a4paper, oneside<span class="token punctuation">]</span><span class="token punctuation">&#123;</span><span class="token keyword">ctexart</span><span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<ol start="2" type="1">
+<li>:</li>
+</ol>
+<p>文件的正文部分需要放入document环境中，在document环境外的部分不会出现在文件中。</p>
+<ol start="3" type="1">
+<li>:</li>
+</ol>
+<p>为了完成一些功能（如定理环境），还需要在导言区，也即document环境之前加载宏包。加载宏包的代码是<code>\usepackage&#123;&#125;</code>。与数学公式与定理环境相关的宏包为<code>amsmath</code>、<code>amsthm</code>、<code>amssymb</code>，用于插入图片的宏包为<code>graphicx</code>，代码如下：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\usepackage</span><span class="token punctuation">&#123;</span><span class="token keyword">amsmath, amsthm, amssymb, graphicx</span><span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>另外，在加载宏包时还可以设置基本参数，如使用超链接宏包<code>hyperref</code>，可以设置引用的颜色为黑色等，代码如下：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\usepackage</span><span class="token punctuation">[</span>bookmarks=true, colorlinks, citecolor=blue, linkcolor=black<span class="token punctuation">]</span><span class="token punctuation">&#123;</span><span class="token keyword">hyperref</span><span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ol start="4" type="1">
+<li>\title、\author：</li>
+</ol>
+<p>标题可以用<code>\title&#123;&#125;</code>设置，作者可以用<code>\author</code>设置，日期可以用<code>\date&#123;&#125;</code>设置，这些都需要放在导言区。为了在文档中显示标题信息，需要使用<code>\maketitle</code>。</p>
+<hr />
+<p>在正文中，Latex默认段落首行缩进，相邻的两行在编译时仍然会视为同一段,
+另起一段的方式是使用一行相隔，例如：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\begin</span><span class="token punctuation">&#123;</span><span class="token keyword">document</span><span class="token punctuation">&#125;</span>
+
+<span class="token function selector">\maketitle</span>
+
+<span class="token function selector">\section</span><span class="token punctuation">&#123;</span><span class="token headline class-name">Introduction</span><span class="token punctuation">&#125;</span>
+Hello, world
+Hello, world
+
+Hello, world
+
+Hello, world
+<span class="token function selector">\end</span><span class="token punctuation">&#123;</span><span class="token keyword">document</span><span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>编译结果：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20231020170112758.png" style="zoom:80%;" /></p>
+<p>​ 另起一页的方式是：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\newpage</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>​ 字体的特殊形式：</p>
+<table>
+<thead>
+<tr class="header">
+<th>字体</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>直立</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>意大利</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>倾斜</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>小型大写</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>加宽加粗</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>插入图片：</p>
+<pre class="line-numbers language-latex" data-language="latex"><code class="language-latex"><span class="token function selector">\begin</span><span class="token punctuation">&#123;</span><span class="token keyword">figure</span><span class="token punctuation">&#125;</span><span class="token punctuation">[</span>htbp<span class="token punctuation">]</span>
+    <span class="token function selector">\centering</span>
+    <span class="token function selector">\includegraphics</span><span class="token punctuation">[</span>width=8cm<span class="token punctuation">]</span><span class="token punctuation">&#123;</span>图片.jpg<span class="token punctuation">&#125;</span>
+    <span class="token function selector">\caption</span><span class="token punctuation">&#123;</span>图片标题<span class="token punctuation">&#125;</span>
+<span class="token function selector">\end</span><span class="token punctuation">&#123;</span><span class="token keyword">figure</span><span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>其中，<code>[htbp]</code>的作用是自动选择插入图片的最优位置，<code>\centering</code>设置让图片居中，<code>[width=8cm]</code>设置了图片的宽度为8cm，<code>\caption&#123;&#125;</code>用于设置图片的标题。</p>
+<p>LaTeX中表格的插入较为麻烦，可以直接使用<a
+href="https://link.zhihu.com/?target=https%3A//www.tablesgenerator.com/%23">Create
+LaTeX tables online –
+TablesGenerator.com</a>来生成。建议使用如下方式：</p>
+<pre class="line-numbers language-tex" data-language="tex"><code class="language-tex"><span class="token function selector">\begin</span><span class="token punctuation">&#123;</span><span class="token keyword">table</span><span class="token punctuation">&#125;</span><span class="token punctuation">[</span>htbp<span class="token punctuation">]</span>
+    <span class="token function selector">\centering</span>
+    <span class="token function selector">\caption</span><span class="token punctuation">&#123;</span>表格标题<span class="token punctuation">&#125;</span>
+    <span class="token function selector">\begin</span><span class="token punctuation">&#123;</span><span class="token keyword">tabular</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#123;</span>ccc<span class="token punctuation">&#125;</span>
+        1 <span class="token punctuation">&amp;</span> 2 <span class="token punctuation">&amp;</span> 3 <span class="token function selector">\\</span>
+        4 <span class="token punctuation">&amp;</span> 5 <span class="token punctuation">&amp;</span> 6 <span class="token function selector">\\</span>
+        7 <span class="token punctuation">&amp;</span> 8 <span class="token punctuation">&amp;</span> 9
+    <span class="token function selector">\end</span><span class="token punctuation">&#123;</span><span class="token keyword">tabular</span><span class="token punctuation">&#125;</span>
+<span class="token function selector">\end</span><span class="token punctuation">&#123;</span><span class="token keyword">table</span><span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>LaTeX中的列表环境包含无序列表<code>itemize</code>、有序列表<code>enumerate</code>和描述<code>description</code>，以<code>enumerate</code>为例，用法如下：</p>
+<pre class="line-numbers language-tex" data-language="tex"><code class="language-tex"><span class="token function selector">\begin</span><span class="token punctuation">&#123;</span><span class="token keyword">enumerate</span><span class="token punctuation">&#125;</span>
+    <span class="token function selector">\item</span> 这是第一点; 
+    <span class="token function selector">\item</span> 这是第二点;
+    <span class="token function selector">\item</span> 这是第三点. 
+<span class="token function selector">\end</span><span class="token punctuation">&#123;</span><span class="token keyword">enumerate</span><span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>另外，也可以自定义<code>\item</code>的样式：</p>
+<pre class="line-numbers language-tex" data-language="tex"><code class="language-tex"><span class="token function selector">\begin</span><span class="token punctuation">&#123;</span><span class="token keyword">enumerate</span><span class="token punctuation">&#125;</span>
+    <span class="token function selector">\item</span><span class="token punctuation">[</span>(1)<span class="token punctuation">]</span> 这是第一点; 
+    <span class="token function selector">\item</span><span class="token punctuation">[</span>(2)<span class="token punctuation">]</span> 这是第二点;
+    <span class="token function selector">\item</span><span class="token punctuation">[</span>(3)<span class="token punctuation">]</span> 这是第三点. 
+<span class="token function selector">\end</span><span class="token punctuation">&#123;</span><span class="token keyword">enumerate</span><span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>设置行间距，可以使用如下代码：</p>
+<pre class="line-numbers language-tex" data-language="tex"><code class="language-tex"><span class="token function selector">\linespread</span><span class="token punctuation">&#123;</span>1.5<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>默认的页码编码方式是阿拉伯数字，用户也可以自己设置为小写罗马数字：</p>
+<pre class="line-numbers language-tex" data-language="tex"><code class="language-tex"><span class="token function selector">\pagenumbering</span><span class="token punctuation">&#123;</span>roman<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="reference">Reference</h2>
+<ul>
+<li>Blogs:
+<ul>
+<li><a
+href="https://zhuanlan.zhihu.com/p/456055339">【LaTeX】新手教程：从入门到日常使用
+- 知乎 (zhihu.com)</a></li>
+</ul></li>
+<li>Overleaf:
+<ul>
+<li><a href="https://ri0016.github.io/Overleaf-zh/basic.html">第 2 章
+基本功能 | Overleaf功能介绍 (ri0016.github.io)</a></li>
+</ul></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>Latex</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>(技术积累)How to debug wasm compiled by wasi-sdk?</title>
     <url>/2023/10/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91How%20to%20debug%20wasm%20compiled%20by%20wasi-sdk/</url>
     <content><![CDATA[<h1 id="how-to-debug-wasm-compiled-by-wasi-sdk">How to debug wasm
