@@ -311,6 +311,21 @@ letter 'X' and the 6th-8th bytes change to zero.</strong></p>
 <code>data</code>pointer as an argument of printLine().</p>
 </blockquote></li>
 </ol>
+<blockquote>
+<p>wasminspect does not support command parameters, which means u can't
+debug the program requiring file input.(./program -i inputfile)</p>
+</blockquote>
+<h3 id="lldbgdb">2. LLDB/GDB</h3>
+<p>With llbd/gdb and wasmtime(newest version), you can debug wasi binary
+just like native one:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">lldb -- wasmtime run -D debug-info foo.wasm
+<span class="token comment"># lldb -- wasmtime --dir /input/::./input/ -D debug-info ./tiff2pdf.wasm /input/2.1.3</span>
+gdb --args wasmtime run -D debug-info foo.wasm<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>With LLDB, call <code>__vmctx.set()</code> to set the current context
+before calling any dereference operators (<a
+href="https://github.com/bytecodealliance/wasmtime/issues/1482">#1482</a>):</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">(</span>lldb<span class="token punctuation">)</span> p __vmctx-<span class="token operator">></span>set<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">(</span>lldb<span class="token punctuation">)</span> p *foo<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <h2 id="reference">Reference</h2>
 <ul>
 <li>Blog:
@@ -346,6 +361,15 @@ for WebAssembly (yurydelendik.github.io)</a></li>
 <li><a
 href="https://emscripten.org/docs/porting/Debugging.html?">Debugging —
 Emscripten 3.1.47-git (dev) documentation</a></li>
+</ul></li>
+<li>LLDB:
+<ul>
+<li><a href="https://www.youtube.com/watch?v=PevI_Mn-UUE">Debugging
+WebAssembly with LLDB - YouTube</a></li>
+<li><a
+href="https://hacks.mozilla.org/2019/09/debugging-webassembly-outside-of-the-browser/">Debugging
+WebAssembly Outside of the Browser - Mozilla Hacks - the Web developer
+blog</a></li>
 </ul></li>
 </ul>
 ]]></content>

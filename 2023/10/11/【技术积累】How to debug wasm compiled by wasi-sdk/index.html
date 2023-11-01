@@ -22,7 +22,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20231013191549217.png">
 <meta property="article:published_time" content="2023-10-11T13:30:00.000Z">
-<meta property="article:modified_time" content="2023-10-13T12:12:29.290Z">
+<meta property="article:modified_time" content="2023-10-26T06:45:10.129Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="WebAssembly">
 <meta property="article:tag" content="WASI">
@@ -296,6 +296,21 @@ letter 'X' and the 6th-8th bytes change to zero.</strong></p>
 <code>data</code>pointer as an argument of printLine().</p>
 </blockquote></li>
 </ol>
+<blockquote>
+<p>wasminspect does not support command parameters, which means u can't
+debug the program requiring file input.(./program -i inputfile)</p>
+</blockquote>
+<h3 id="lldbgdb">2. LLDB/GDB</h3>
+<p>With llbd/gdb and wasmtime(newest version), you can debug wasi binary
+just like native one:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">lldb -- wasmtime run -D debug-info foo.wasm
+<span class="token comment"># lldb -- wasmtime --dir /input/::./input/ -D debug-info ./tiff2pdf.wasm /input/2.1.3</span>
+gdb --args wasmtime run -D debug-info foo.wasm<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>With LLDB, call <code>__vmctx.set()</code> to set the current context
+before calling any dereference operators (<a
+target="_blank" rel="noopener" href="https://github.com/bytecodealliance/wasmtime/issues/1482">#1482</a>):</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">(</span>lldb<span class="token punctuation">)</span> p __vmctx-<span class="token operator">></span>set<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">(</span>lldb<span class="token punctuation">)</span> p *foo<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <h2 id="reference">Reference</h2>
 <ul>
 <li>Blog:
@@ -331,6 +346,15 @@ for WebAssembly (yurydelendik.github.io)</a></li>
 <li><a
 target="_blank" rel="noopener" href="https://emscripten.org/docs/porting/Debugging.html?">Debugging —
 Emscripten 3.1.47-git (dev) documentation</a></li>
+</ul></li>
+<li>LLDB:
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=PevI_Mn-UUE">Debugging
+WebAssembly with LLDB - YouTube</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://hacks.mozilla.org/2019/09/debugging-webassembly-outside-of-the-browser/">Debugging
+WebAssembly Outside of the Browser - Mozilla Hacks - the Web developer
+blog</a></li>
 </ul></li>
 </ul>
 
@@ -381,7 +405,7 @@ Emscripten 3.1.47-git (dev) documentation</a></li>
     
       <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#how-to-debug-wasm-compiled-by-wasi-sdk"><span class="nav-number">1.</span> <span class="nav-text">How to debug wasm
 compiled by wasi-sdk?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#wasminspect"><span class="nav-number">1.0.1.</span> <span class="nav-text">1. wasminspect</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#wasm-dwarf-debug-information"><span class="nav-number">1.0.1.1.</span> <span class="nav-text">1.1 Wasm DWARF debug
-information</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#example"><span class="nav-number">1.0.1.2.</span> <span class="nav-text">1.2 Example</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">1.1.</span> <span class="nav-text">Reference</span></a></li></ol></li></ol>
+information</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#example"><span class="nav-number">1.0.1.2.</span> <span class="nav-text">1.2 Example</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lldbgdb"><span class="nav-number">1.0.2.</span> <span class="nav-text">2. LLDB&#x2F;GDB</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">1.1.</span> <span class="nav-text">Reference</span></a></li></ol></li></ol>
     
     </div>
   </aside>
@@ -575,5 +599,20 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>
