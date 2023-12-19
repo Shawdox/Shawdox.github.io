@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>(论文阅读)On Learning Meaningful Assert Statements for Unit Test Cases | Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Software Testing" />
+  
+  
+  
+    <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
+  
+  
+  <meta name="description" content="[技术积累]On Learning Meaningful Assert Statements for Unit Test Cases  会议：ICSE’2020 作者：Cody Watson（Washington and Lee University），Michele Tufano（Microsoft）  ABSTRACT Software testing是软件生命周期的重要组成">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(论文阅读)On Learning Meaningful Assert Statements for Unit Test Cases">
+<meta property="og:url" content="http://example.com/2023/12/17/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91On-Learning-Meaningful-Assert-Statements-for-Unit-Test-Cases/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="[技术积累]On Learning Meaningful Assert Statements for Unit Test Cases  会议：ICSE’2020 作者：Cody Watson（Washington and Lee University），Michele Tufano（Microsoft）  ABSTRACT Software testing是软件生命周期的重要组成">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-12-16T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-12-18T15:31:44.000Z">
+<meta property="article:author" content="Shaw">
+<meta property="article:tag" content="Software Testing">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-【论文阅读】On-Learning-Meaningful-Assert-Statements-for-Unit-Test-Cases" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      (论文阅读)On Learning Meaningful Assert Statements for Unit Test Cases
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/12/17/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91On-Learning-Meaningful-Assert-Statements-for-Unit-Test-Cases/" class="article-date">
+	  <time datetime="2023-12-16T16:00:00.000Z" itemprop="datePublished">十二月 17, 2023</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2
+id="技术积累on-learning-meaningful-assert-statements-for-unit-test-cases">[技术积累]On
+Learning Meaningful Assert Statements for Unit Test Cases</h2>
+<blockquote>
+<p>会议：ICSE’2020</p>
+<p>作者：Cody Watson（Washington and Lee University），Michele
+Tufano（Microsoft）</p>
+</blockquote>
+<h2 id="abstract">ABSTRACT</h2>
+<p>Software
+testing是软件生命周期的重要组成部分，其需要花费大量的时间和精力。据估计，软件开发人员将近
+50%
+的时间用于测试他们编写的代码。因此，学术界的一个长期目标就是实现软件测试的（部分）自动化。虽然已经提出了几种自动生成测试方法的技术和工具，但最近的研究对其生成的断言语句的质量和实用性提出了批评。因此，我们采用了一种基于神经机器翻译（NMT）的方法叫ATLAS（<u>A</u>u<u>T</u>omatic
+<u>L</u>earning of <u>A</u>ssert
+<u>S</u>tatements）来自动化地为测试方法生成有意义的断言语句。给定一个test
+method和一个focal method（即被测试的方法），ATLAS
+就能预测有意义的断言语句，以评估focal method的正确性。我们将 ATLAS
+应用于 GitHub 项目中的数千个测试方法，当只考虑top1的预测断言时，它能在
+31%
+的情况下准确预测开发人员手动编写的断言语句。当考虑到top5的预测断言语句时，ATLAS
+能够在 50%
+的情况下预测出精确匹配的断言语句。这些令人鼓舞的结果表明，我们的方法具有以下潜在用途：(i)
+作为自动测试案例生成技术的补充；(ii)
+为开发人员提供代码完成支持，他们可以在编写测试代码时从推荐的断言语句中获益。</p>
+<h2 id="background">Background</h2>
+<p>编写高质量的软件测试是一项艰巨而耗时的任务。为了帮助控制测试的复杂性，理想情况下，开发团队应遵循测试自动化金字塔的规定[8]，该金字塔建议首先编写单元测试，对代码中功能离散的小部分进行评估，以发现特定的实现问题，并在软件演进过程中快速识别regression。尽管单元测试非常有用，但先前的工作表明，一旦项目达到一定的复杂度，要加入单元测试就需要在traceability方面付出巨大努力，从而降低了增加单元测试的可能性[16]。在软件演进和维护过程中，更新现有单元测试还面临更多挑战[16]。</p>
+<p>为了帮助解决这些问题，软件测试学术界开展了大量研究，旨在通过自动生成测试来帮助开发人员[9,
+24]。然而，最近的研究指出了这些自动化工具的一些局限性，并质疑它们能否充分满足工业开发人员的软件测试需求
+[5，31]。例如，人们发现最先进的方法生成的<u>断言语句</u>往往不完整或缺乏必要的复杂性，无法捕捉到指定的故障。<strong>生成有意义的断言语句是自动生成测试用例的关键挑战之一。</strong>断言语句在测试用例中提供关键的逻辑检查，以确保程序正常运行并产生预期结果。然而，编写或生成有效的断言语句是一个复杂的问题，需要了解特定单元测试的目的和相关生产代码的功能。因此，生成有效断言语句的技术需要预测所需检查的类型和逻辑性质，并使用源代码和测试代码作为预测的上下文线索。</p>
+<h2 id="methodology">Methodology</h2>
+<p>基于以上背景，作者提出了ATLAS，一个使用Neural Machine
+Translation（NMT）自动生成语法和语义正确的单元测试断言语句的方法。据我们所知，这是评估基于
+NMT
+的断言语句自动生成方法的第一个经验性步骤。由于我们的模型只需要测试方法和焦点方法，因此即使项目缺乏初始测试基础设施，我们也能帮助开发人员自动生成断言。<u>请注意，我们的方法不是自动测试案例生成技术
+[9, 24]
+的替代品，而是一种补充技术</u>，可与这些技术相结合以提高其有效性。换句话说，自动测试案例生成工具可用于创建测试方法，而我们的方法可帮助为其设计有意义的断言语句。</p>
+<p>为了训练 ATLAS，我们在 GitHub 上挖掘了所有使用 JUnit assert 类的 Java
+项目。我们总共分析了 9k 多个项目，提取了 2,502,623
+个开发人员编写的断言语句用于测试方法的示例。我们利用这些数据使 NMT
+模型能够生成与开发人员创建的断言语句非常相似的断言语句。因此，我们不仅能提高软件测试阶段的效率，还能通过学习人工编写的断言语句来提高准确性和自然性。我们从
+Java 项目中提取出包含断言语句的相关测试方法后，根据 Qusef
+等人[29]的直觉，自动识别出每个断言语句的重点方法。我们假设，将测试方法和焦点方法结合起来，就能为模型提供足够的上下文，从而自动生成有意义的断言。</p>
+<h2 id="evaluation">Evaluation</h2>
+<p>我们对 NMT 模型进行了定量和定性评估，以验证其对开发人员的实用性。</p>
+<p>在定量分析中，我们将模型生成的断言语句与开发人员手动编写的 Oracle
+断言语句进行了比较。如果模型能够预测出与开发人员编写的断言语句完全相同的断言语句，我们就认为该模型是成功的。
+如果考虑排名前 5 位的建议，这一比例将上升到 49.69%（7857 条）。</p>
+<p>在定性分析中，我们分析了
+"不完善的预测"（即与开发人员手动编写的断言相比，在语义或语法上可能存在差异的预测），以了解它们是否可被视为原始断言的可接受替代方案。在我们分析的
+10%
+案例中，我们发现情况确实如此。最后，我们计算了不完善预测与原始断言之间的Edit
+distance，以评估开发人员将推荐的断言语句调整为自己会使用的断言语句所需的努力。我们的研究表明，对
+"不完美 "的断言稍作改动，就能轻松地将其转换为有用的建议。</p>
+<h2 id="contributions">Contributions</h2>
+<ul>
+<li>我们首次引入ATLAS，一种基于NMT的自动生成断言语句的方法。我们将详细介绍挖掘、合成和预处理技术，以便从野生方法中提取测试方法，并训练和测试
+ALTAS；</li>
+<li>对 ATLAS及其使用NMT为给定test
+method准确生成语义和语法正确的断言语句的能力进行实证分析；</li>
+<li>对模型进行定量评估，并对建模原始方法和抽象测试方法进行详细比较;</li>
+<li>公开可用的复制软件包[4]，包含本文讨论的源代码、模型、工具和数据集.</li>
+</ul>
+<h2 id="related-work">Related Work</h2>
+<h4 id="automatically-generate-test-methods-for-java">1. Automatically
+Generate Test Methods For Java</h4>
+<ul>
+<li>Evosuite:
+是最流行的自动测试生成工具之一，它使用基于突变的系统来生成适当的断言语句。</li>
+<li>Randoop:
+是另一种通过智能猜测创建断言的自动测试生成工具。这种技术通过分析所创建语句的执行轨迹，应用反馈导向的随机测试。</li>
+<li>Agitar: http://www.agitar.com/</li>
+</ul>
+<h4
+id="evaluate-the-ability-of-state-of-the-art-automated-techniques">2.
+Evaluate the ability of state-of-the-art automated techniques</h4>
+<ul>
+<li>An Industrial Evaluation of Unit Test Generation: Finding Real
+Faults in a Financial Application. ICSE'17</li>
+<li>Automated Unit Test Generation for Evolving Software. FSE'15</li>
+</ul>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Software-Testing/" rel="tag">Software Testing</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2023/10/20/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Latex%E6%AD%A3%E5%BC%8F%E5%85%A5%E9%97%A8/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">(技术积累)Latex正式入门</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AFon-learning-meaningful-assert-statements-for-unit-test-cases"><span class="nav-number">1.</span> <span class="nav-text">[技术积累]On
+Learning Meaningful Assert Statements for Unit Test Cases</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#abstract"><span class="nav-number">2.</span> <span class="nav-text">ABSTRACT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#background"><span class="nav-number">3.</span> <span class="nav-text">Background</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#methodology"><span class="nav-number">4.</span> <span class="nav-text">Methodology</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#evaluation"><span class="nav-number">5.</span> <span class="nav-text">Evaluation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#contributions"><span class="nav-number">6.</span> <span class="nav-text">Contributions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#related-work"><span class="nav-number">7.</span> <span class="nav-text">Related Work</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#automatically-generate-test-methods-for-java"><span class="nav-number">7.0.1.</span> <span class="nav-text">1. Automatically
+Generate Test Methods For Java</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#evaluate-the-ability-of-state-of-the-art-automated-techniques"><span class="nav-number">7.0.2.</span> <span class="nav-text">2.
+Evaluate the ability of state-of-the-art automated techniques</span></a></li></ol></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+<footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2023 Shaw All Rights Reserved.
+        
+          <span id="busuanzi_container_site_pv">
+            本站总访问量<span id="busuanzi_value_site_pv"></span>次
+          </span>
+          <span class="post-meta-divider">|</span>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            本站访客数<span id="busuanzi_value_site_uv"></span>人
+          </span>
+          <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+
+  
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'true', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+<!-- Gaug.es Analytics -->
+<script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', 'true');
+    t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+    t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+<!-- End Gaug.es Analytics -->
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+	<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2439014eb270056ee1808a49956fe114";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<!-- Tencent Analytics -->
+	<script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId={{ theme.tencent_analytics }}";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+<!-- End Tencent Analytics -->
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>
