@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>(论文阅读)An orchestrated survey of methodologies for automated software test case generation | Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Software Testing" />
+  
+  
+  
+    <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
+  
+  
+  <meta name="description" content="An orchestrated survey of methodologies for automated software test case generation 时间：2013 作者：Saswat Anand（Stanford） 期刊：The Journal of Systems and Software（JSS，软工B）  ABSTRACTTest Case Generation是Soft">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(论文阅读)An orchestrated survey of methodologies for automated software test case generation">
+<meta property="og:url" content="http://example.com/2023/12/19/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91An-orchestrated-survey-of-methodologies-for-automated-software-test-case-generation/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="An orchestrated survey of methodologies for automated software test case generation 时间：2013 作者：Saswat Anand（Stanford） 期刊：The Journal of Systems and Software（JSS，软工B）  ABSTRACTTest Case Generation是Soft">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20231219183841322.png">
+<meta property="article:published_time" content="2023-12-18T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-12-19T11:44:54.045Z">
+<meta property="article:author" content="Shaw">
+<meta property="article:tag" content="Software Testing">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20231219183841322.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-【论文阅读】An-orchestrated-survey-of-methodologies-for-automated-software-test-case-generation" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      (论文阅读)An orchestrated survey of methodologies for automated software test case generation
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/12/19/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91An-orchestrated-survey-of-methodologies-for-automated-software-test-case-generation/" class="article-date">
+	  <time datetime="2023-12-18T16:00:00.000Z" itemprop="datePublished">十二月 19, 2023</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="An-orchestrated-survey-of-methodologies-for-automated-software-test-case-generation"><a href="#An-orchestrated-survey-of-methodologies-for-automated-software-test-case-generation" class="headerlink" title="An orchestrated survey of methodologies for automated software test case generation"></a>An orchestrated survey of methodologies for automated software test case generation</h1><blockquote>
+<p>时间：2013</p>
+<p>作者：Saswat Anand（Stanford）</p>
+<p>期刊：The Journal of Systems and Software（JSS，软工B）</p>
+</blockquote>
+<h2 id="ABSTRACT"><a href="#ABSTRACT" class="headerlink" title="ABSTRACT"></a>ABSTRACT</h2><p>Test Case Generation是Software Testing中最耗费人力的工作之一，它对软件测试的效果和效率也有很大影响。因此，几十年来，它一直是软件测试领域最活跃的研究课题之一，并产生了许多不同的方法和工具。本文对自动生成软件测试案例的最重要技术进行了系统分析，并在独立章节中进行了回顾。介绍的技术包括 ：</p>
+<blockquote>
+<ol>
+<li>structural testing using symbolic execution</li>
+<li>model-based testing</li>
+<li>combinatorial testing</li>
+<li>random testing及其自适应随机测试变体</li>
+<li>search-based testing。</li>
+</ol>
+</blockquote>
+<p>每一部分都由该技术领域的世界知名研究人员撰写，简要介绍了该方法的基本思想、技术现状、未决研究问题讨论以及该方法的未来发展前景。总体而言，本文旨在对自动生成测试用例的研究做一个介绍性的、最新的和（相对）简短的概述，同时确保处理的全面性和权威性。</p>
+<span id="more"></span>
+<blockquote>
+<p>值得注意的是，还有许多其他自动或半自动测试用例生成技术本文没有涉及，例如mutation-based testing、fuzzing和data mutation testing、specification-based testing和metamorphic testing。为了使本文篇幅适中，我们只选取了以上五种最著名的方法；未来的工作可以通过更多的评论来补充这套方法：事实上，协调的调查可以很容易地增加更多的部分。</p>
+</blockquote>
+<h2 id="Technique-1-Test-data-generation-by-symbolic-execution"><a href="#Technique-1-Test-data-generation-by-symbolic-execution" class="headerlink" title="Technique 1: Test data generation by symbolic execution"></a>Technique 1: Test data generation by symbolic execution</h2><blockquote>
+<p>By <strong><em>Saswat Anand</em></strong> and <strong><em>Mary Jean Harrold</em></strong></p>
+</blockquote>
+<p>已有大量工作证明了Symbolic Execution在广泛的软件工程问题（包括test data generation）中的实用性。然而，该技术至少存在三个基本问题，限制了其在现实世界软件中的有效性。本节将简要介绍符号执行，描述三个基本问题，并总结解决这些问题的现有知名技术。</p>
+<h3 id="1-Symbolic-Execution"><a href="#1-Symbolic-Execution" class="headerlink" title="1. Symbolic Execution"></a>1. Symbolic Execution</h3><p>略，见符号执行blog。</p>
+<h3 id="2-Fundamental-open-problems"><a href="#2-Fundamental-open-problems" class="headerlink" title="2. Fundamental open problems"></a>2. Fundamental open problems</h3><p>如果一个符号执行系统至少具备以下两个特征，那么它就能有效地应用于大型的现实世界程序： (1) 高效和 (2) 自动化。首先，在大多数基于符号执行的test data generation应用中（例如，提高代码覆盖率或暴露错误），理想的目标是发现所有可行的程序路径。例如，要有效地暴露程序错误，就必须发现所有可行路径中的一个大子集，并证明这些路径中的每一条都不存在错误，或者其中很多都暴露了错误。因此，系统必须能够在可用时限内发现尽可能多的不同可行程序路径。其次，对任何程序进行符号执行所需的人工操作应该是用户可以接受的。要建立一个既高效又自动的符号执行系统，必须解决该技术的三个基本问题。在符号执行的具体应用中还会出现其他问题 ，但这些问题并非符号执行技术的根本问题。尽管之前已有大量关于符号执行的研究9，但这三个问题只得到了部分解决。</p>
+<h4 id="2-1-Path-explosion"><a href="#2-1-Path-explosion" class="headerlink" title="2.1 Path explosion"></a>2.1 Path explosion</h4><p>要符号化执行所有程序路径的一个很大的子集是很困难的，这是因为：(1) 现实世界中的大多数软件都有极多的路径；(2) 符号化执行每个程序路径都会产生很高的计算开销。因此，在合理的时间内，只能符号化执行所有路径中的一小部分。由于不可行路径数比可行路径数量更多，发现大量可行程序路径的目标进一步受到损害（Ngo 和 Tan，2007 年）。要提高符号执行系统的效率，就必须解决这个问题。</p>
+<h4 id="2-2-Path-divergence（符号建模问题）"><a href="#2-2-Path-divergence（符号建模问题）" class="headerlink" title="2.2 Path divergence（符号建模问题）"></a>2.2 Path divergence（符号建模问题）</h4><p>现实世界中的程序经常使用多种编程语言，或者部分程序可能只有二进制形式。<u>要计算这些程序的精确约束条件，要么需要花费大量精力来实施和设计庞大而复杂的符号建模，要么需要用户自己为有问题的部分提供模型</u>。无法计算精确的路径约束会导致路径发散：程序生成测试数据的路径与生成测试数据的路径发散。由于路径发散问题，符号执行系统可能无法发现大量可行的程序路径，或者，如果要求用户提供模型，则自动化程度较低。</p>
+<h4 id="2-3-Complex-constraints"><a href="#2-3-Complex-constraints" class="headerlink" title="2.3 Complex constraints"></a>2.3 Complex constraints</h4><p>由于求解一般类型的约束条件是不可判定的，<u>因此不一定总能求解路径约束条件</u>。因此，计算出的路径约束有可能变得过于复杂（例如，涉及乘除等非线性运算以及 sin 和 log 等数学函数的约束），从而无法使用现有的约束求解器求解。无法解决路径约束会减少符号执行系统可发现的不同可行路径的数量。</p>
+<h3 id="3-Existing-solutions"><a href="#3-Existing-solutions" class="headerlink" title="3. Existing solutions"></a>3. Existing solutions</h3><h4 id="3-1-Techniques-for-path-explosion-problem"><a href="#3-1-Techniques-for-path-explosion-problem" class="headerlink" title="3.1 Techniques for path explosion problem"></a>3.1 Techniques for path explosion problem</h4><ol>
+<li>第一类技术通过说明程序的某些部分对符号执行的影响，<u>避免探索通过这些部分的路径</u>；</li>
+<li>第二类技术以目标为导向：避免探索大量与生成测试数据以覆盖特定程序实体（如程序语句）的目标无关的路径；</li>
+<li>第三类技术是针对程序构造或某类程序的特征而专门开发的。第一类中的一些技术侧重于以更智能的方式分析程序中的循环，因为循环会导致路径数量急剧增加。这一类中的其他技术旨在通过利用程序的输入语法，为接受高结构化输入的程序（如解析器）高效生成测试数据。这一类技术的局限性在于其专业性；</li>
+<li>第四类技术使用特定的<u>启发式方法从所有路径中选择一个子集进行符号执行</u>，但仍能满足使用符号执行的目的（如获得高代码覆盖率）；</li>
+<li>第五类技术与上述所有旨在减少符号执行的程序路径数量的技术不同，<u>该技术旨在减少符号执行每条路径时产生的开销</u>。该技术利用静态分析，只识别程序中影响路径约束计算的部分。根据这些信息，该技术会对程序进行调整，使程序的其他部分不会产生符号执行的开销。</li>
+</ol>
+<h4 id="3-2-Techniques-for-path-divergence-problem"><a href="#3-2-Techniques-for-path-divergence-problem" class="headerlink" title="3.2 Techniques for path divergence problem"></a>3.2 Techniques for path divergence problem</h4><p>在符号执行中，某些人工操作是不可或缺的。<u>不可能设计出一种技术，可以完全消除实施符号执行系统所需的手工劳动，从而计算出大型真实世界程序的精确路径约束。</u>不过，现有的两种技术旨在减少人工操作。</p>
+<p>Godefroid 和 Taly（2012 年）提出了一种技术，它能自动合成与每条需要符号化执行的指令相对应的函数，使这些函数能根据相应指令的语义更新程序的符号状态。</p>
+<p>Anand 和 Harrold（2011 年）提出了一种技术，可减少对程序中无法符号化执行的部分（如 Java 中的本地方法）进行建模所需的人工。他们的技术不是要求用户为程序中所有有问题的部分提供模型，而是只自动识别那些在符号执行过程中实际上会引入不精确的部分，然后只要求用户为这些部分指定模型。</p>
+<h4 id="3-3-Techniques-for-complex-constraints-problem"><a href="#3-3-Techniques-for-complex-constraints-problem" class="headerlink" title="3.3 Techniques for complex constraints problem"></a>3.3 Techniques for complex constraints problem</h4><p>解决复杂约束问题的技术可分为两类。</p>
+<ol>
+<li>第一类包括两种技术。第一种技术被称为动态符号执行（<u>Concolic execution</u>）（Godefroid et al. 使用这种技术时，程序会沿着要计算路径约束的路径正常执行，而一些程序输入会导致程序走这条路径。如果路径约束变得过于复杂而难以解决，则用正常执行中的具体值取代符号值，从而简化路径约束。在第二种技术中，Pasareanu 等人（2011 年）也提出使用具体值来简化复杂的约束。不过，与动态符号执行不同的是，他们并不使用从正常执行中获得的具体值，而是确定复杂约束中可求解的部分，并使用可求解部分的具体解来简化复杂约束。</li>
+<li>第二类技术将寻找 N 个变量的约束解的问题建模为 N 维空间中的搜索问题。搜索的目标是在 N 维空间中找到一个点，使该点的坐标代表一个约束解。这些技术使用元启发式搜索方法（Glover 和 Kochenberger，2003 年）来解决此类搜索问题。使用元启发式方法的优势在于，这些方法可以自然地处理浮点变量的约束条件以及涉及任意数学函数（如 sin 和 log）的约束条件。这类技术的局限性在于元启发式搜索方法的不完整性，即使约束条件是可满足的，也可能找不到解决方案。</li>
+</ol>
+<h2 id="Technique-2-Test-data-generation-in-model-based-testing"><a href="#Technique-2-Test-data-generation-in-model-based-testing" class="headerlink" title="Technique 2: Test data generation in model-based testing"></a>Technique 2: Test data generation in model-based testing</h2><blockquote>
+<p>By Wolfgang Grieskamp</p>
+</blockquote>
+<p>Model-based testing（MBT）是一种轻量级的形式化方法，它使用软件系统的模型来推导测试套件。与旨在根据形式模型验证程序的传统形式方法不同，MBT 的目的是利用通常不完整的测试方法收集程序正确性方面的见解。大约从 2000 年初开始，这项技术就在实践中得到了应用。在 2011 年撰写本文时，已经有了大量的行业应用和商业级工具，并有许多文章提交给各种会议和研讨会。这一领域多种多样，难以驾驭。</p>
+<p>本节试图概述 MBT 的基础、工具和应用。其目的是为读者提供进一步阅读的灵感。本节的重点是行为测试（behavioral），有时也称为功能测试、黑盒测试，即根据可观察到的输入/输出行为对程序进行测试。虽然还有许多其他方法可称为 MBT（随机、结构/架构、白盒等），但包括这些方法不在本调查范围之内。我们尽量保留历史背景：即使存在较新的研究成果，我们也会首先引用较早的研究成果。</p>
+<h3 id="1-Introduction-to-model-based-testing"><a href="#1-Introduction-to-model-based-testing" class="headerlink" title="1.  Introduction to model-based testing"></a>1.  Introduction to model-based testing</h3><p>我们可以确定 MBT 的三大流派：公理化方法、有限状态机（FSM）方法和标记转换系统（LTS）方法。在深入探讨这些方法之前，先介绍一些一般的独立概念。</p>
+<p>在行为 MBT 中，被测系统（SUT）是一个接受输入并产生输出的black-box。SUT有一个内部状态，在处理输入和产生输出时会发生变化。这里的Model描述了所选抽象层次上可能的输入/输出序列，并通过”<em>conformance relation</em>“与实现相联系。<u>Test selection</u>算法通过从模型指定的可能是无限的序列集合中选择有限的子集，并使用基于<u>test hypothesis</u>的<u>testing criterion</u>来证明选择的适当性，从而从模型中获取test cases。</p>
+<p><u>Test selection</u>可以在测试执行之前用合适的语言生成测试套件（称为offline test selection），也可以在测试执行时进行干预（称为online test selection）。</p>
+<blockquote>
+<p>这一章目前不完全懂，参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/2069155">高效率、重覆盖的测试用例自动生成之法 - Model Based Testing-腾讯云开发者社区-腾讯云 (tencent.com)</a></li>
+</ul>
+</blockquote>
+<p>2011 年 10 月在柏林举行的 ETSI MBT 用户大会13 上，来自 40 家不同公司的 100 多名与会者齐聚一堂，讨论应用经验和工具支持。许多发表一般测试自动化工作的学术会议（如 ICST、ICTSS（前身为 TestCom/FATES）、ASE、ISSTA、ISSRE、AST 等）都会定期发表大量有关 MBT 的论文。自 2004 年以来，围绕该主题已举办了两届达格施图尔研讨会（Brinksma 等人，2005 年；Grieskamp 等人，2011 年）；上一届研讨会的报告列出了该领域的一些未决问题。所有这些都记录了一个活跃的研究团体和极具前景的应用领域。</p>
+<h2 id="Technique-3-Test-data-generation-in-combinatorial-testing"><a href="#Technique-3-Test-data-generation-in-combinatorial-testing" class="headerlink" title="Technique 3: Test data generation in combinatorial testing"></a>Technique 3: Test data generation in combinatorial testing</h2><blockquote>
+<p>By Myra B. Cohen</p>
+</blockquote>
+<p>组合测试已成为软件测试人员工具箱中的一项常用技术。在组合测试中，重点是选择输入参数（或配置设置）的样本，这些参数涵盖了待测元素组合的规定子集。这种抽样最常见的表现形式是组合交互测试（CIT），样本中包含参数值（或配置设置）的所有 t 路组合。在过去几年中，有关这一测试领域的文献显著增加，包括生成 CIT 样本的新技术和在新领域中的应用。在本节中，我们将从组合测试的起源讲起，概述组合测试，并总结组合测试研究的两个主要方向—样本生成及其在软件系统不同领域的应用。</p>
+<blockquote>
+<p>目前也看不太懂，参考：</p>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://jiangliheng.github.io/2020/10/21/Pairwise-OATS/">组合测试术语：Pairwise/All-Pairs、OATS（Orthogonal Array Testing Strategy） (jiangliheng.github.io)</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_30430169/article/details/95738501">组合测试(Combinatorial Test)/配对测试 (pairwise)-CSDN博客</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/leeboke/p/5035892.html">组合测试方法：配对测试实践 - leo博客 - 博客园 (cnblogs.com)</a></p>
+</li>
+</ul>
+</blockquote>
+<h2 id="Technique-4-Test-data-generation-by-adaptive-random-testing"><a href="#Technique-4-Test-data-generation-by-adaptive-random-testing" class="headerlink" title="Technique 4: Test data generation by adaptive random testing"></a>Technique 4: Test data generation by adaptive random testing</h2><blockquote>
+<p>By Tsong Yueh Chen</p>
+</blockquote>
+<p>经验研究表明，导致故障的输入往往会形成连续的故障区域：因此，非导致故障的输入也应形成连续的非故障区域。所以如果之前执行的测试用例没有出现故障，新的测试用例就应远离已执行的非致故障测试用例，因此，测试用例应均匀分布在输入域中。正是这种在输入域中均匀分布测试用例的概念，构成了adaptive random testing的基本直觉。自适应随机测试是一系列测试用例选择方法，<u>旨在通过在输入域中均匀分布随机生成的测试用例，提高随机测试的故障检测效率</u>。</p>
+<p>Random Testing（RT）是最基本、最流行的测试方法之一。它概念简单，易于实施，既可单独使用，也可作为许多其他测试方法的组成部分。如果规定不完整，源代码不可用，它可能是唯一实际可行的技术，此外，它也是少数几种可以从理论上分析其故障检测能力的测试技术之一。Adaptive Random Testing（ART）已被提出作为 RT 的增强技术。一些经验研究表明，导致故障的输入往往会形成连续的故障区域，因此非导致故障的输入也应形成连续的非故障区域（White 和 Cohen，1980 年）。因此，如果之前的测试用例没有发现故障，新的测试用例应远离已执行的非故障引起的测试用例。因此，测试用例应均匀分布在输入域中。正是这种在输入域中均匀分布测试用例的概念，构成了 ART 的基本直觉。Anti-random Testing（Malaiya，1995 年）的目标也是在输入域中均匀分布测试用例。然而，两者的根本区别在于，ART 是一种非确定性方法，而反随机测试本质上是一种确定性方法，只是第一个测试用例是随机选择的。另一个区别是，反随机测试要求测试人员指定测试用例的数量 。</p>
+<p>为便于讨论，首先有必要定义一些术语。所谓<strong>failure rate</strong>，是指导致故障的输入的数量（或大小）与所有可能输入集合（以下简称输入域）的数量（或大小）之比。<strong>Failure patterns</strong>是指导致故障的输入的分布和几何形状。所谓<strong>efficiency</strong>，是指所需的计算时间，计算时间越短，效率越高。严格来说，efficiency还应包括内存，但由于篇幅有限，且缺乏实施细节（如使用的数据结构），本节将不考虑内存。我们所说的efficiency指的是故障检测能力，可以用有效性指标来衡量，包括 P-measure、E-measure、F-measure 等。<strong>F-measure</strong> 定义为检测到第一个故障所需的预期测试用例数；<strong>P-measure</strong> 定义为检测到至少一个故障的概率；<strong>E-measure</strong> 定义为检测到的预期故障数。使用 P-measure 或 E-measure 时，假定有一组测试用例。</p>
+<p>RT 是一种流行的测试方法，而 ART 最初是作为 RT 的增强型替代方法提出的。本节将从以 RT 为基线的角度重点介绍 ART 的最新技术。我们只将 ART 与 RT 进行比较，而不将 ART 与其他测试方法进行比较。我们感兴趣的问题是，当 RT 已被选为一种可行的系统测试方法时，是否值得使用 ART 来替代？</p>
+<p>为避免混淆和误解，本节中的<strong>cost-effectiveness</strong>指的是所花费的资源达到的故障检测能力。一些研究人员（如 Arcuri 和 Briand，2011 年）使用了 “effective”一词，而我们使用的是 “cost-effectiveness”，因此，在比较不同论文时，应注意含义上的差异。我们决定在本节中将effectiveness和efficiency分开处理，因为这样做可以让我们更好地了解应从哪个方面或哪个方向进行改进。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20231219183841322.png" style="zoom: 50%;" /></p>
+<blockquote>
+<p>参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/584511074">鉴源论坛 · 观模丨浅谈随机测试 - 知乎 (zhihu.com)</a></li>
+<li>与Fuzzing的区别：<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/48834097/relation-between-random-testing-and-fuzz-testing">difference - relation between random testing and fuzz testing - Stack Overflow</a></li>
+<li><a target="_blank" rel="noopener" href="https://software-lab.org/teaching_until_052018/fileadmin/user_upload/Group_SOLA/Teaching/Winter_2016/PTA/lecture_random_testing2.pdf">lecture_random_testing2.pdf (software-lab.org)</a></li>
+<li>SBST Workshop：<a target="_blank" rel="noopener" href="https://sbst19.github.io/">Search-Based Software Testing (sbst19.github.io)</a></li>
+</ul>
+</blockquote>
+<h2 id="Technique-5-Test-data-generation-in-search-based-software-testing"><a href="#Technique-5-Test-data-generation-in-search-based-software-testing" class="headerlink" title="Technique 5: Test data generation in search-based software testing"></a>Technique 5: Test data generation in search-based software testing</h2><blockquote>
+<p>By Mark Harman, Phil McMinn, John Clark and Edmund K. Burke</p>
+</blockquote>
+<p>Search based software testing (SBST)是基于搜索的软件工程（SBSE）的一个分支，它使用搜索算法自动寻找测试数据，以最大限度地实现测试目标，同时最大限度地降低测试成本。SBST 备受关注，最近开展了多项调查。本文介绍了这一激动人心的研究议程在发展过程中面临的一些新挑战和未决问题。这些问题包括 SBST 和 DSE（动态符号执行）的混合；优化以最好地处理甲骨文的需求；测试和软件同时共同进化；”超启发式”，其中 SBST 可集成到 SBSE 的其他方面，如需求优先级；以及优化故障以方便调试。</p>
+<p>正如本文所述，自动生成测试输入是一个难题。例如，即使是最基本的活动，如寻求覆盖代码中的一个分支，也涉及到已知一般无法判定的可达性问题。因此，测试界将重点放在寻求在合理时间内确定测试集的技术上，<u>这些测试集可以覆盖近乎最优的分支集</u>。本文的其他章节将介绍其中的许多技术。</p>
+<p>在所有的 SBST 方法中，最主要的问题是定义一个能捕捉测试目标的fitness函数（或一组fitness函数）。fitness函数用于指导算法，该算法会在测试输入空间中搜索符合测试目标的输入。由于任何测试目标原则上都可以重新铸造为适应度函数，因此这种方法具有很强的通用性，适用范围也很广（如上述测试应用列表所示）。有许多不同的基于搜索的算法可供选择，不过大部分文献都倾向于关注进化算法（Harman，2011 年）。</p>
+<blockquote>
+<p>这不就是Fuzzing中的Seed Scheduling嘛？</p>
+</blockquote>
+<h3 id="1-Hybrids-of-SBST-and-DSE（Dynamic-Symbolic-Execution）"><a href="#1-Hybrids-of-SBST-and-DSE（Dynamic-Symbolic-Execution）" class="headerlink" title="1. Hybrids of SBST and DSE（Dynamic Symbolic Execution）"></a>1. Hybrids of SBST and DSE（Dynamic Symbolic Execution）</h3><p>动态符号执行（DSE）方法（Godefroid 等人，2005 年）被证明非常有效，因此 Lakhotia 等人（2008 年）将 DSE 方法纳入了 SBST。相反，SBST可以很好地处理浮点计算，而DSE则受限于现有约束求解器的能力（通常无法高效地求解浮点约束）。因此，我们自然会想到，将这两种技术结合起来的好处是，其中一种技术的优点可以克服另一种技术的缺点。</p>
+<p>这促使多位学者开发出基于搜索的方法来增强 DSE，以解决浮点计算问题。Lakhotia 等人（2010 年）使用局部搜索增强了微软公司基于 DSE 的 Pex 测试工具，而 Souza 和 Borges（2011 年）使用粒子群优化器增强了 “标准 “约束求解，从而提高了符号寻路器的性能。</p>
+<p>Baars 等人（2011 年）开发了一种新的 SBST 方法，通过增强用于指导 SBST 的fitness函数，将符号执行集成到搜索中。在某种程度上，这项工作 “为 SBST 做了 DSE 为基于约束的测试所做的事情”。然而，SBST 和 DSE 之间的差异意味着，为使其具有可扩展性，对符号执行所做的修改也是不同的。也就是说，DSE 使用具体值执行完整的符号执行，而 Baars 等人则使用不含具体值的纯符号执行，但只将其应用于代码的局部区域，以改进适应度函数。</p>
+<p>Harman 等人（2011 年）还将 DSE 和 SBST 结合起来，首次提出了强突变测试（及更高阶突变测试）的测试数据生成方法。他们使用 DSE 来实现弱突变充分性，沿用了 Liu 等人（2006 年）和 Papadakis 与 Malevris（2010 年）的变体方法。这种方法会产生约束条件，满足这些约束条件就能获得弱突变充分性。为了将这一方法扩展到强突变充分性，Harman 等人搜索了约束条件的附加连接空间，以增强那些将弱突变充分性扩展到强突变充分性的约束条件。适配函数寻求最大的控制流干扰，以提高强突变充分性的可能性。</p>
+<p>正如最近的工作所表明的，在 SBST 和 DSE 之间有许多活动，这两种方法正在进行某种形式的 “交叉和变异”。由于这两种方法具有互补性，我们可以期待看到更多关于这两种有前途的测试数据生成技术结合的工作。支持这两种方法及其混合方法的公开可用工具的激增，为未来的研究提供了丰富的基础架构。</p>
+<blockquote>
+<ul>
+<li>这里有篇最新的关于LLM与SBST结合的工作，其使用LLM来帮助SBST调整搜索方向：<a target="_blank" rel="noopener" href="https://www.carolemieux.com/codamosa_icse23.pdf">codamosa_icse23.pdf (carolemieux.com)</a></li>
+<li>STBT近几年的工作还蛮多的</li>
+</ul>
+<p>参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/588636165">鉴源论坛 · 观模丨基于搜索的测试生成 - 知乎 (zhihu.com)</a></li>
+</ul>
+</blockquote>
+<h3 id="2-Handling-the-oracle"><a href="#2-Handling-the-oracle" class="headerlink" title="2. Handling the oracle"></a>2. Handling the oracle</h3><p>测试包括检查系统的行为，以发现潜在的故障。为给定输入确定所需的正确行为被称为Oracle Problem。人工测试既费钱又费时，特别是因为需要人工解决 Oracle 问题，这就是人工 Oracle 成本。我们需要开发能自动生成测试输入的 SBST 算法和方法，以降低人工 Oracle 成本，从而显著降低测试的总体成本。我们还需要基于搜索的技术，帮助生成测试oracle和测试用例（Fraser 和 Zeller，2010 年）。</p>
+<p>以前的大多数工作都集中在寻找好的测试输入的问题上，但并没有解决同样重要的问题，即降低检查根据所生成的输入而产生的输出的成本。因此，目前的 SBST 技术只解决了测试问题的一半：即生成符合测试标准的输入。它未能解决问题的另一半：检查所产生的输出的成本。</p>
+<p>这对许多测试应用来说根本不现实；它假定测试人员所关心的就是不惜一切代价实现尽可能高的覆盖率。例如，测试人员可能更喜欢用 30 个测试用例达到 85% 覆盖率的方法，而不是用 1000 个测试用例达到 90% 覆盖率的方法。或者，测试人员可能更喜欢通过尽量减少测试用例的冗长程度（Fraser 和 Zeller，2011 年）和尽量提高可读性来降低单个测试用例理解成本的测试套件。</p>
+<p>幸运的是，SBST 范式可以自然而然地推广到多目标优化公式中，从而使我们能够开发出平衡成本和收益等多重目标的技术。如果我们能测量oracle成本，那么我们就能在 SBST 测试数据生成方法中将其作为最小化目标。这将意味着，所有测试数据生成方法都将是自然的多目标方法（Harman 等人，2007 年），因为它们需要平衡成本和收益。这对于 SBST 来说是自然而然的进步，因为测试就是平衡成本与收益。我们知道不可能进行详尽无遗的测试，因此我们希望以最小的成本（最终是货币成本，通过精力和时间等代用指标来衡量）获得最大的效益（最终找到故障）。</p>
+<h3 id="3-Opportunities-for-co-evolution"><a href="#3-Opportunities-for-co-evolution" class="headerlink" title="3. Opportunities for co-evolution"></a>3. Opportunities for co-evolution</h3><p>在共同进化计算中，两个或多个种群同时进化，可能使用不同的fitness函数。竞争性共同进化的理念是捕捉捕食者-猎物的进化模型，在该模型中，两个进化种群都会受到刺激，进化出更好的解决方案。在合作式共同进化中，我们的想法是让多个种群共生共同进化，每个种群作为包含它们的更大系统的一部分，依靠另一个种群协同工作。</p>
+<p>Adamopoulos 等人（2004 年）首先建议将共同进化应用于 SBST，认为这可以用于进化突变体集和测试用例集，其中测试用例作为捕食者，突变体作为猎物。对于测试来说，竞争模型迄今为止被证明是最合适的，因为测试用例是天然的捕食者。</p>
+<h3 id="4-Hyper-Heuristic-Software-Engineering"><a href="#4-Hyper-Heuristic-Software-Engineering" class="headerlink" title="4. Hyper-Heuristic Software Engineering"></a>4. Hyper-Heuristic Software Engineering</h3><p>SBSE/SBST 研究议程的一个关键问题是：”我们能否通过将 SBST 与其他形式的 SBSE 相结合，从根本上提高自动化程度？</p>
+<h3 id="5-Optimising-and-understanding-failures"><a href="#5-Optimising-and-understanding-failures" class="headerlink" title="5. Optimising and understanding failures"></a>5. Optimising and understanding failures</h3><p>有些故障是由异常冗长和复杂的动作和事件序列造成的。因此，从理论上讲，很难（有时甚至实际上不可能）找到导致故障的一个或多个故障。因此，一个自然而又具有挑战性的重要问题是：我们能否简化故障，使其更容易调试？</p>
+<p>在某些方面，这个问题与第 7.3 节中描述的oracle成本问题有关。也就是说，如果我们能降低理解测试输出的成本，那么我们就能降低人工oracle成本。另一方面，理解测试的输入也需要人工付出代价。如果在开发人员的现场复制故障需要一长串（和/或复杂的）操作，工程师可能会发现这太复杂了，无法理解故障的原因，因此也就很难找到导致故障的故障点。</p>
+<p>假设我们可以用断言（或类似机制）来捕捉失败行为。现在，我们可以有一个fitness函数来衡量测试用例在多大程度上导致了失败的发生。这就是一个潜在的fitenss函数。如果我们还能测量测试用例的复杂性，那么我们就能设法将复杂性降至最低，同时最大限度地提高与所关注故障的相似度；这是测试数据生成的另一种多目标表述。</p>
+<p>故障的一个自然起点是 “变量中的错误值”，因为这很容易在现有的 SBST 框架中捕获：适配性计算与分支覆盖的计算并无不同。我们可以使用简单的可测试性转换（Harman，2008 年；McMinn 等人，2009 年）来插入一个能捕捉失败行为的分支，并设法覆盖该分支。测试复杂性的起点是揭示故障所需的输入序列长度。我们面临的挑战将是如何找到支持性的适配函数和方法，以平滑原本相当 “尖锐 “的图形，从而为更短的测试输入提供指导，以显示所需的故障。</p>
+<h3 id="6-Conclusion"><a href="#6-Conclusion" class="headerlink" title="6. Conclusion"></a>6. Conclusion</h3><p>基于搜索的软件测试（SBST）是基于搜索的软件工程（SBSE）的一个分支，它将测试目标重新表述为fitness函数，以指导自动搜索程序。这为许多不同形式的测试提供了一种自动生成测试的方法。这种方法具有极强的通用性和惊人的广泛适用性，因为任何可以测量的测试目标都可以转化为fitness函数。肯定还有许多令人兴奋、重要和富有成效的测试目标尚未使用这种 SBSE 重构方法来解决，从而为未来的工作提供了许多富有成果的途径。</p>
+<blockquote>
+<p>参考：</p>
+<ul>
+<li>SBST与fuzzing的关系：<a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/3573074.3573102#:~:text=In reality%2C what differs Fuzzing,terms adopted by both communities.">https://dl.acm.org/doi/pdf/10.1145/3573074.3573102</a></li>
+</ul>
+</blockquote>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Software-Testing/" rel="tag">Software Testing</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2023/12/17/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91On-Learning-Meaningful-Assert-Statements-for-Unit-Test-Cases/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">(论文阅读)On Learning Meaningful Assert Statements for Unit Test Cases</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#An-orchestrated-survey-of-methodologies-for-automated-software-test-case-generation"><span class="nav-number">1.</span> <span class="nav-text">An orchestrated survey of methodologies for automated software test case generation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ABSTRACT"><span class="nav-number">1.1.</span> <span class="nav-text">ABSTRACT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Technique-1-Test-data-generation-by-symbolic-execution"><span class="nav-number">1.2.</span> <span class="nav-text">Technique 1: Test data generation by symbolic execution</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Symbolic-Execution"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. Symbolic Execution</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Fundamental-open-problems"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. Fundamental open problems</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-Path-explosion"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">2.1 Path explosion</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-Path-divergence%EF%BC%88%E7%AC%A6%E5%8F%B7%E5%BB%BA%E6%A8%A1%E9%97%AE%E9%A2%98%EF%BC%89"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">2.2 Path divergence（符号建模问题）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-Complex-constraints"><span class="nav-number">1.2.2.3.</span> <span class="nav-text">2.3 Complex constraints</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Existing-solutions"><span class="nav-number">1.2.3.</span> <span class="nav-text">3. Existing solutions</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-Techniques-for-path-explosion-problem"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">3.1 Techniques for path explosion problem</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-Techniques-for-path-divergence-problem"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">3.2 Techniques for path divergence problem</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-Techniques-for-complex-constraints-problem"><span class="nav-number">1.2.3.3.</span> <span class="nav-text">3.3 Techniques for complex constraints problem</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Technique-2-Test-data-generation-in-model-based-testing"><span class="nav-number">1.3.</span> <span class="nav-text">Technique 2: Test data generation in model-based testing</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Introduction-to-model-based-testing"><span class="nav-number">1.3.1.</span> <span class="nav-text">1.  Introduction to model-based testing</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Technique-3-Test-data-generation-in-combinatorial-testing"><span class="nav-number">1.4.</span> <span class="nav-text">Technique 3: Test data generation in combinatorial testing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Technique-4-Test-data-generation-by-adaptive-random-testing"><span class="nav-number">1.5.</span> <span class="nav-text">Technique 4: Test data generation by adaptive random testing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Technique-5-Test-data-generation-in-search-based-software-testing"><span class="nav-number">1.6.</span> <span class="nav-text">Technique 5: Test data generation in search-based software testing</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Hybrids-of-SBST-and-DSE%EF%BC%88Dynamic-Symbolic-Execution%EF%BC%89"><span class="nav-number">1.6.1.</span> <span class="nav-text">1. Hybrids of SBST and DSE（Dynamic Symbolic Execution）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Handling-the-oracle"><span class="nav-number">1.6.2.</span> <span class="nav-text">2. Handling the oracle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Opportunities-for-co-evolution"><span class="nav-number">1.6.3.</span> <span class="nav-text">3. Opportunities for co-evolution</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Hyper-Heuristic-Software-Engineering"><span class="nav-number">1.6.4.</span> <span class="nav-text">4. Hyper-Heuristic Software Engineering</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Optimising-and-understanding-failures"><span class="nav-number">1.6.5.</span> <span class="nav-text">5. Optimising and understanding failures</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-Conclusion"><span class="nav-number">1.6.6.</span> <span class="nav-text">6. Conclusion</span></a></li></ol></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+<footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2023 Shaw All Rights Reserved.
+        
+          <span id="busuanzi_container_site_pv">
+            本站总访问量<span id="busuanzi_value_site_pv"></span>次
+          </span>
+          <span class="post-meta-divider">|</span>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            本站访客数<span id="busuanzi_value_site_uv"></span>人
+          </span>
+          <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+
+  
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'true', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+<!-- Gaug.es Analytics -->
+<script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', 'true');
+    t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+    t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+<!-- End Gaug.es Analytics -->
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+	<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2439014eb270056ee1808a49956fe114";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<!-- Tencent Analytics -->
+	<script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId={{ theme.tencent_analytics }}";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+<!-- End Tencent Analytics -->
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+</body>
+</html>
