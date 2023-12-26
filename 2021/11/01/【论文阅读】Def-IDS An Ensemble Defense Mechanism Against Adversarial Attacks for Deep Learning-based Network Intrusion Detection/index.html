@@ -13,18 +13,26 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="Def-IDS: An Ensemble Defense Mechanism Against Adversarial Attacks for Deep Learning-based Network Intrusion Detection  作者：Jianyu Wang，Jianli Pan，Ismail AlQerm，（密苏里大学圣路易斯分校，重庆大学） 时间：2021 ICCCN，">
+  <meta name="description" content="Def-IDS: An Ensemble Defense Mechanism Against Adversarial Attacks for Deep Learning-based Network Intrusion Detection 作者：Jianyu Wang，Jianli Pan，Ismail AlQerm，（密苏里大学圣路易斯分校，重庆大学） 时间：2021 ICCCN，ccf—C类">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Def-IDS An Ensemble Defense Mechanism Against Adversarial Attacks for Deep Learning-based Network Intrusion Detection">
 <meta property="og:url" content="http://example.com/2021/11/01/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Def-IDS%20An%20Ensemble%20Defense%20Mechanism%20Against%20Adversarial%20Attacks%20for%20Deep%20Learning-based%20Network%20Intrusion%20Detection/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="Def-IDS: An Ensemble Defense Mechanism Against Adversarial Attacks for Deep Learning-based Network Intrusion Detection  作者：Jianyu Wang，Jianli Pan，Ismail AlQerm，（密苏里大学圣路易斯分校，重庆大学） 时间：2021 ICCCN，">
+<meta property="og:description" content="Def-IDS: An Ensemble Defense Mechanism Against Adversarial Attacks for Deep Learning-based Network Intrusion Detection 作者：Jianyu Wang，Jianli Pan，Ismail AlQerm，（密苏里大学圣路易斯分校，重庆大学） 时间：2021 ICCCN，ccf—C类">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102215521.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102220240.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102213923.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102214213.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102215325.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102215346.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102215401.png">
 <meta property="article:published_time" content="2021-11-01T13:16:57.000Z">
 <meta property="article:modified_time" content="2023-09-04T07:12:48.000Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="AD">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102215521.png">
   
     <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
   
@@ -151,131 +159,64 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1
-id="def-ids-an-ensemble-defense-mechanism-against-adversarial-attacks-for-deep-learning-based-network-intrusion-detection">Def-IDS:
-An Ensemble Defense Mechanism Against Adversarial Attacks for Deep
-Learning-based Network Intrusion Detection</h1>
-<blockquote>
-<p><strong>作者：Jianyu Wang，Jianli Pan，Ismail
-AlQerm，（密苏里大学圣路易斯分校，重庆大学）</strong></p>
+        <h1 id="Def-IDS-An-Ensemble-Defense-Mechanism-Against-Adversarial-Attacks-for-Deep-Learning-based-Network-Intrusion-Detection"><a href="#Def-IDS-An-Ensemble-Defense-Mechanism-Against-Adversarial-Attacks-for-Deep-Learning-based-Network-Intrusion-Detection" class="headerlink" title="Def-IDS: An Ensemble Defense Mechanism Against Adversarial Attacks for Deep Learning-based Network Intrusion Detection"></a>Def-IDS: An Ensemble Defense Mechanism Against Adversarial Attacks for Deep Learning-based Network Intrusion Detection</h1><blockquote>
+<p><strong>作者：Jianyu Wang，Jianli Pan，Ismail AlQerm，（密苏里大学圣路易斯分校，重庆大学）</strong></p>
 <p><strong>时间：2021</strong></p>
-<p>ICCCN，ccf--C类</p>
+<p>ICCCN，ccf—C类</p>
 </blockquote>
-<h3 id="abstract">ABSTRACT</h3>
-<p>​
-提出了<strong>Def-IDS</strong>，一个为NIDS准备的组合防御机制。它是一个由两个模块组成的训练框架，组合了multi-class
-generative adversarial networks<strong>（MGANs）</strong>和multi-soutce
-adversarial retraining（<strong>MAT</strong>）。</p>
-<p>​
-在CSE-CIC-IDS2018数据集上测试了该机制，并与3个其它方法进行了比较。结果表明Def-IDS可以以更高的<strong>precision,
-recall, F1 score, and accuracy</strong>来识别对抗样本。</p>
-<table style="width:10%;">
-<colgroup>
-<col style="width: 9%" />
-</colgroup>
-<tbody>
-<tr class="odd">
-<td><span id="more"></span> ### INTRODUCTION</td>
-</tr>
-<tr class="even">
-<td>​ <strong>Internet of Things(IoT):</strong>物联网</td>
-</tr>
-<tr class="odd">
-<td>​ <strong>intrusion detection systems (NIDS)</strong></td>
-</tr>
-<tr class="even">
-<td>​ 提出了一个整合基于对抗训练的防御机制，用于提升DL-based的intrusion
-detectors的鲁棒性。</td>
-</tr>
-<tr class="odd">
-<td>​ 4个贡献：</td>
-</tr>
-<tr class="even">
-<td>1. 模型由两个模块组成，组合了multi-class generative adversarial
-networks<strong>（MGANs）</strong>和multi-soutce adversarial
-retraining（<strong>MAT</strong>），可以在保证准确率的前提下对抗攻击；
-2.
-<strong>MGANs</strong>可以通过同时过采样多类入侵来增强原始训练数据集，以减少训练与真实数据分布之间的差距。通过使用提升过的数据进行训练，detector的对已知和未知攻击的鲁棒性更强；
-3.
-<strong>MAT</strong>通过投喂多种不同的对抗样本来retraining，MAT不仅对抗某种特定的攻击，并且可以一定程度抵御对样样本的转移性；
-4.
-我们进行了一些state-of-the-art攻击并且在CSE-CIC-IDS2018数据集上测试了该机制，结果很好。</td>
-</tr>
-</tbody>
-</table>
-<h3 id="related-work">RELATED WORK</h3>
-<hr />
-<h3 id="adversarial-attack-threat-models">ADVERSARIAL ATTACK THREAT
-MODELS</h3>
-<ul>
+<h3 id="ABSTRACT"><a href="#ABSTRACT" class="headerlink" title="ABSTRACT"></a>ABSTRACT</h3><p>​    提出了<strong>Def-IDS</strong>，一个为NIDS准备的组合防御机制。它是一个由两个模块组成的训练框架，组合了multi-class generative adversarial networks<strong>（MGANs）</strong>和multi-soutce adversarial retraining（<strong>MAT</strong>）。</p>
+<p>​    在CSE-CIC-IDS2018数据集上测试了该机制，并与3个其它方法进行了比较。结果表明Def-IDS可以以更高的<strong>precision, recall, F1 score, and accuracy</strong>来识别对抗样本。</p>
+<hr>
+<span id="more"></span>
+<h3 id="INTRODUCTION"><a href="#INTRODUCTION" class="headerlink" title="INTRODUCTION"></a>INTRODUCTION</h3><p>​    <strong>Internet of Things(IoT):</strong>物联网</p>
+<p>​    <strong>intrusion  detection systems (NIDS)</strong></p>
+<p>​    提出了一个整合基于对抗训练的防御机制，用于提升DL-based的intrusion detectors的鲁棒性。</p>
+<p>​    4个贡献：</p>
+<ol>
+<li>模型由两个模块组成，组合了multi-class generative adversarial networks<strong>（MGANs）</strong>和multi-soutce adversarial retraining（<strong>MAT</strong>），可以在保证准确率的前提下对抗攻击；</li>
+<li><strong>MGANs</strong>可以通过同时过采样多类入侵来增强原始训练数据集，以减少训练与真实数据分布之间的差距。通过使用提升过的数据进行训练，detector的对已知和未知攻击的鲁棒性更强；</li>
+<li><strong>MAT</strong>通过投喂多种不同的对抗样本来retraining，MAT不仅对抗某种特定的攻击，并且可以一定程度抵御对样样本的转移性；</li>
+<li>我们进行了一些state-of-the-art攻击并且在CSE-CIC-IDS2018数据集上测试了该机制，结果很好。</li>
+</ol>
+<hr>
+<h3 id="RELATED-WORK"><a href="#RELATED-WORK" class="headerlink" title="RELATED WORK"></a>RELATED WORK</h3><hr>
+<h3 id="ADVERSARIAL-ATTACK-THREAT-MODELS"><a href="#ADVERSARIAL-ATTACK-THREAT-MODELS" class="headerlink" title="ADVERSARIAL ATTACK THREAT MODELS"></a>ADVERSARIAL ATTACK THREAT MODELS</h3><ul>
 <li>采用的攻击方法：FGSM，BIM，DeepFool，JSMA</li>
 </ul>
-<hr />
-<h3 id="proposed-def-ids-defense-mechanism">PROPOSED DEF-IDS DEFENSE
-MECHANISM</h3>
-<h4 id="mechanism-overview">1. <em>Mechanism Overview</em></h4>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102215521.png" /></p>
-<h4 id="module-1-multi-class-gan-based-retraining">2. <em>Module 1:
-Multi-class GAN-based Retraining</em></h4>
-<h4 id="module-2-multi-source-adversarial-retraining">3. <em>Module 2:
-Multi-source Adversarial Retraining</em></h4>
-<h4 id="ensemble-adversarial-retraining">4. <em>Ensemble Adversarial
-Retraining</em></h4>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102220240.png" /></p>
-<hr />
-<h3 id="evaluation">EVALUATION</h3>
-<h4 id="dataset-and-metrics">1. <em>Dataset and Metrics</em></h4>
-<p>​ <strong>数据集</strong>：CSE-CIC-IDS2018（CIC出版）（通用）</p>
-<p>​ 与其他过时的数据集相比，其含有综合性的攻击方法和更平衡的数据。</p>
-<p>​ 其含有Brute-force, Heartbleed,Botnet, DoS, DDoS, Web attacks 和
-infifiltration of the network共7种恶意流量。</p>
-<p>​ <strong>数据处理：</strong></p>
-<ol type="1">
-<li><p>使用Min-Max standardization将所有特征的值映射入[0,1]；</p></li>
-<li><p>有四个特征有太多空值或者无限值（dstport, protocol, flflow byts/s,
-flflow
-pkts/s），有一个特征（timestamp）与流量无关，将这5个特征剔除；还剩下76个特征。</p></li>
-<li><p>training,validation,test = 8:1:1，随机划分。</p></li>
+<hr>
+<h3 id="PROPOSED-DEF-IDS-DEFENSE-MECHANISM"><a href="#PROPOSED-DEF-IDS-DEFENSE-MECHANISM" class="headerlink" title="PROPOSED DEF-IDS DEFENSE MECHANISM"></a>PROPOSED DEF-IDS DEFENSE MECHANISM</h3><h4 id="1-Mechanism-Overview"><a href="#1-Mechanism-Overview" class="headerlink" title="1. Mechanism Overview"></a>1. <em>Mechanism Overview</em></h4><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102215521.png" alt=""></p>
+<h4 id="2-Module-1-Multi-class-GAN-based-Retraining"><a href="#2-Module-1-Multi-class-GAN-based-Retraining" class="headerlink" title="2. Module 1: Multi-class GAN-based Retraining"></a>2. <em>Module 1: Multi-class GAN-based Retraining</em></h4><h4 id="3-Module-2-Multi-source-Adversarial-Retraining"><a href="#3-Module-2-Multi-source-Adversarial-Retraining" class="headerlink" title="3. Module 2: Multi-source Adversarial Retraining"></a>3. <em>Module 2: Multi-source Adversarial Retraining</em></h4><h4 id="4-Ensemble-Adversarial-Retraining"><a href="#4-Ensemble-Adversarial-Retraining" class="headerlink" title="4. Ensemble Adversarial Retraining"></a>4. <em>Ensemble Adversarial Retraining</em></h4><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102220240.png" alt=""></p>
+<hr>
+<h3 id="EVALUATION"><a href="#EVALUATION" class="headerlink" title="EVALUATION"></a>EVALUATION</h3><h4 id="1-Dataset-and-Metrics"><a href="#1-Dataset-and-Metrics" class="headerlink" title="1.  Dataset and Metrics"></a>1.  <em>Dataset and Metrics</em></h4><p>​    <strong>数据集</strong>：CSE-CIC-IDS2018（CIC出版）（通用）</p>
+<p>​    与其他过时的数据集相比，其含有综合性的攻击方法和更平衡的数据。</p>
+<p>​    其含有Brute-force, Heartbleed,Botnet, DoS, DDoS, Web attacks 和  infifiltration of the network共7种恶意流量。</p>
+<p>​    <strong>数据处理：</strong></p>
+<ol>
+<li><p>使用Min-Max standardization将所有特征的值映射入[0,1]；</p>
+</li>
+<li><p>有四个特征有太多空值或者无限值（dstport, protocol, flflow byts/s, flflow pkts/s），有一个特征（timestamp）与流量无关，将这5个特征剔除；还剩下76个特征。</p>
+</li>
+<li><p>training,validation,test = 8:1:1，随机划分。</p>
+</li>
 </ol>
-<p>​ <strong>Detector的评价方法：</strong></p>
-<p>​ 混淆矩阵。</p>
-<h4 id="baseline-detector-implementation">2. <em>Baseline Detector
-Implementation</em></h4>
-<h5 id="detector-implementation">2.1 <em>Detector
-Implementation</em></h5>
-<p>​ 选取baseline detector
-C<sub>base</sub>。其由一个输入层，两个隐藏层和一个输出层组成（76-128-64-8）。</p>
-<p>​ 隐藏层都是全连接层+ReLU。</p>
-<p>​ 输出层使用Softmax。</p>
-<p>​ 代码用keras写的，系统Ubuntu 18.04,3.6GHz CPU和16GB内存。</p>
-<p>​ 优化器用Adam，学习率0.001,20个epoch。</p>
-<p>​ 在训练过程中，进行十次交叉验证并计算平均度量值。</p>
-<p>​ 训练结束后，利用测试数据集对Cbase进行评估。</p>
-<h5 id="adversarial-attacks-against-baseline-classififier">2.2
-<em>Adversarial Attacks against Baseline Classififier</em></h5>
-<p>​ 使用python库<strong>foolbox</strong>来生成对抗样本；</p>
-<p>​
-FGSM，BIM，DeepFool，JSMA四种攻击方法都使用，具体效果如下图所示：</p>
-<p>​ <img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102213923.png" /></p>
-<h4 id="def-ids-defense-evaluation">3. <em>Def-IDS Defense
-Evaluation</em></h4>
-<p>C<sub>gan</sub>是使用GAN生成的样本再训练的detector;</p>
-<p>C<sub>at</sub>是使用9:1的纯净数据：恶意数据再训练出的detector;</p>
-<p>C<sub>ensem</sub>是二者的结合.</p>
-<h5 id="section"><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102214213.png" /></h5>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102215325.png" /></p>
-<h4 id="comparison-with-other-works">4. <em>Comparison with Other
-Works</em></h4>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102215346.png" /></p>
-<h4 id="cost-estimation">5. <em>Cost Estimation</em></h4>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102215401.png" /></p>
+<p>​    <strong>Detector的评价方法：</strong></p>
+<p>​    混淆矩阵。</p>
+<h4 id="2-Baseline-Detector-Implementation"><a href="#2-Baseline-Detector-Implementation" class="headerlink" title="2. Baseline Detector Implementation"></a>2. <em>Baseline Detector Implementation</em></h4><h5 id="2-1-Detector-Implementation"><a href="#2-1-Detector-Implementation" class="headerlink" title="2.1 Detector Implementation"></a>2.1 <em>Detector Implementation</em></h5><p>​    选取baseline detector C~base~。其由一个输入层，两个隐藏层和一个输出层组成（76-128-64-8）。</p>
+<p>​    隐藏层都是全连接层+ReLU。</p>
+<p>​    输出层使用Softmax。</p>
+<p>​    代码用keras写的，系统Ubuntu 18.04,3.6GHz CPU和16GB内存。</p>
+<p>​    优化器用Adam，学习率0.001,20个epoch。</p>
+<p>​    在训练过程中，进行十次交叉验证并计算平均度量值。</p>
+<p>​    训练结束后，利用测试数据集对Cbase进行评估。</p>
+<h5 id="2-2-Adversarial-Attacks-against-Baseline-Classififier"><a href="#2-2-Adversarial-Attacks-against-Baseline-Classififier" class="headerlink" title="2.2  Adversarial Attacks against Baseline Classififier"></a>2.2  <em>Adversarial Attacks against Baseline Classififier</em></h5><p>​    使用python库<strong>foolbox</strong>来生成对抗样本；</p>
+<p>​    FGSM，BIM，DeepFool，JSMA四种攻击方法都使用，具体效果如下图所示：</p>
+<p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102213923.png" alt=""></p>
+<h4 id="3-Def-IDS-Defense-Evaluation"><a href="#3-Def-IDS-Defense-Evaluation" class="headerlink" title="3.  Def-IDS Defense Evaluation"></a>3.  <em>Def-IDS Defense Evaluation</em></h4><p>C~gan~是使用GAN生成的样本再训练的detector;</p>
+<p>C~at~是使用9:1的纯净数据：恶意数据再训练出的detector;</p>
+<p>C~ensem~是二者的结合.</p>
+<h5 id=""><a href="#" class="headerlink" title=""></a><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102214213.png" alt=""></h5><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102215325.png" alt=""></p>
+<h4 id="4-Comparison-with-Other-Works"><a href="#4-Comparison-with-Other-Works" class="headerlink" title="4.  Comparison with Other Works"></a>4.  <em>Comparison with Other Works</em></h4><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102215346.png" alt=""></p>
+<h4 id="5-Cost-Estimation"><a href="#5-Cost-Estimation" class="headerlink" title="5.  Cost Estimation"></a>5.  <em>Cost Estimation</em></h4><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102215401.png" alt=""></p>
 
       
     </div>
@@ -322,19 +263,7 @@ src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20211102215401.png" /></p>
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#def-ids-an-ensemble-defense-mechanism-against-adversarial-attacks-for-deep-learning-based-network-intrusion-detection"><span class="nav-number">1.</span> <span class="nav-text">Def-IDS:
-An Ensemble Defense Mechanism Against Adversarial Attacks for Deep
-Learning-based Network Intrusion Detection</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#abstract"><span class="nav-number">1.0.1.</span> <span class="nav-text">ABSTRACT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#related-work"><span class="nav-number">1.0.2.</span> <span class="nav-text">RELATED WORK</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#adversarial-attack-threat-models"><span class="nav-number">1.0.3.</span> <span class="nav-text">ADVERSARIAL ATTACK THREAT
-MODELS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#proposed-def-ids-defense-mechanism"><span class="nav-number">1.0.4.</span> <span class="nav-text">PROPOSED DEF-IDS DEFENSE
-MECHANISM</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#mechanism-overview"><span class="nav-number">1.0.4.1.</span> <span class="nav-text">1. Mechanism Overview</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#module-1-multi-class-gan-based-retraining"><span class="nav-number">1.0.4.2.</span> <span class="nav-text">2. Module 1:
-Multi-class GAN-based Retraining</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#module-2-multi-source-adversarial-retraining"><span class="nav-number">1.0.4.3.</span> <span class="nav-text">3. Module 2:
-Multi-source Adversarial Retraining</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ensemble-adversarial-retraining"><span class="nav-number">1.0.4.4.</span> <span class="nav-text">4. Ensemble Adversarial
-Retraining</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#evaluation"><span class="nav-number">1.0.5.</span> <span class="nav-text">EVALUATION</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#dataset-and-metrics"><span class="nav-number">1.0.5.1.</span> <span class="nav-text">1. Dataset and Metrics</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#baseline-detector-implementation"><span class="nav-number">1.0.5.2.</span> <span class="nav-text">2. Baseline Detector
-Implementation</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#detector-implementation"><span class="nav-number">1.0.5.2.1.</span> <span class="nav-text">2.1 Detector
-Implementation</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#adversarial-attacks-against-baseline-classififier"><span class="nav-number">1.0.5.2.2.</span> <span class="nav-text">2.2
-Adversarial Attacks against Baseline Classififier</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#def-ids-defense-evaluation"><span class="nav-number">1.0.5.3.</span> <span class="nav-text">3. Def-IDS Defense
-Evaluation</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#section"><span class="nav-number">1.0.5.3.1.</span> <span class="nav-text"></span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#comparison-with-other-works"><span class="nav-number">1.0.5.4.</span> <span class="nav-text">4. Comparison with Other
-Works</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cost-estimation"><span class="nav-number">1.0.5.5.</span> <span class="nav-text">5. Cost Estimation</span></a></li></ol></li></ol></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Def-IDS-An-Ensemble-Defense-Mechanism-Against-Adversarial-Attacks-for-Deep-Learning-based-Network-Intrusion-Detection"><span class="nav-number">1.</span> <span class="nav-text">Def-IDS: An Ensemble Defense Mechanism Against Adversarial Attacks for Deep Learning-based Network Intrusion Detection</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ABSTRACT"><span class="nav-number">1.0.1.</span> <span class="nav-text">ABSTRACT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#INTRODUCTION"><span class="nav-number">1.0.2.</span> <span class="nav-text">INTRODUCTION</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RELATED-WORK"><span class="nav-number">1.0.3.</span> <span class="nav-text">RELATED WORK</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ADVERSARIAL-ATTACK-THREAT-MODELS"><span class="nav-number">1.0.4.</span> <span class="nav-text">ADVERSARIAL ATTACK THREAT MODELS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PROPOSED-DEF-IDS-DEFENSE-MECHANISM"><span class="nav-number">1.0.5.</span> <span class="nav-text">PROPOSED DEF-IDS DEFENSE MECHANISM</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-Mechanism-Overview"><span class="nav-number">1.0.5.1.</span> <span class="nav-text">1. Mechanism Overview</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-Module-1-Multi-class-GAN-based-Retraining"><span class="nav-number">1.0.5.2.</span> <span class="nav-text">2. Module 1: Multi-class GAN-based Retraining</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-Module-2-Multi-source-Adversarial-Retraining"><span class="nav-number">1.0.5.3.</span> <span class="nav-text">3. Module 2: Multi-source Adversarial Retraining</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-Ensemble-Adversarial-Retraining"><span class="nav-number">1.0.5.4.</span> <span class="nav-text">4. Ensemble Adversarial Retraining</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EVALUATION"><span class="nav-number">1.0.6.</span> <span class="nav-text">EVALUATION</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-Dataset-and-Metrics"><span class="nav-number">1.0.6.1.</span> <span class="nav-text">1.  Dataset and Metrics</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-Baseline-Detector-Implementation"><span class="nav-number">1.0.6.2.</span> <span class="nav-text">2. Baseline Detector Implementation</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-1-Detector-Implementation"><span class="nav-number">1.0.6.2.1.</span> <span class="nav-text">2.1 Detector Implementation</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-2-Adversarial-Attacks-against-Baseline-Classififier"><span class="nav-number">1.0.6.2.2.</span> <span class="nav-text">2.2  Adversarial Attacks against Baseline Classififier</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-Def-IDS-Defense-Evaluation"><span class="nav-number">1.0.6.3.</span> <span class="nav-text">3.  Def-IDS Defense Evaluation</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link"><span class="nav-number">1.0.6.3.1.</span> <span class="nav-text"></span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-Comparison-with-Other-Works"><span class="nav-number">1.0.6.4.</span> <span class="nav-text">4.  Comparison with Other Works</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-Cost-Estimation"><span class="nav-number">1.0.6.5.</span> <span class="nav-text">5.  Cost Estimation</span></a></li></ol></li></ol></li></ol></li></ol>
     
     </div>
   </aside>
@@ -528,5 +457,20 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>

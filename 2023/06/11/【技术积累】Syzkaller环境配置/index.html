@@ -13,21 +13,23 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="Syzkaller环境配置  Syzkaller内核模糊测试工具环境搭建，简单测试 项目地址：google&#x2F;syzkaller: syzkaller is an unsupervised coverage-guided kernel fuzzer (github.com)">
+  <meta name="description" content="Syzkaller环境配置 Syzkaller内核模糊测试工具环境搭建，简单测试 项目地址：google&#x2F;syzkaller: syzkaller is an unsupervised coverage-guided kernel fuzzer (github.com)">
 <meta property="og:type" content="article">
 <meta property="og:title" content="(技术积累)Syzkaller环境配置">
 <meta property="og:url" content="http://example.com/2023/06/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Syzkaller%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="Syzkaller环境配置  Syzkaller内核模糊测试工具环境搭建，简单测试 项目地址：google&#x2F;syzkaller: syzkaller is an unsupervised coverage-guided kernel fuzzer (github.com)">
+<meta property="og:description" content="Syzkaller环境配置 Syzkaller内核模糊测试工具环境搭建，简单测试 项目地址：google&#x2F;syzkaller: syzkaller is an unsupervised coverage-guided kernel fuzzer (github.com)">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415160954894.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415170223601.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210618032.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210718938.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210814372.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210930515.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416211532552.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415200044323.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415200148895.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415202522042.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415211857811.png">
 <meta property="article:published_time" content="2023-06-11T07:19:53.000Z">
 <meta property="article:modified_time" content="2023-09-04T07:12:46.000Z">
@@ -162,31 +164,28 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="syzkaller环境配置">Syzkaller环境配置</h1>
-<blockquote>
+        <h1 id="Syzkaller环境配置"><a href="#Syzkaller环境配置" class="headerlink" title="Syzkaller环境配置"></a>Syzkaller环境配置</h1><blockquote>
 <p>Syzkaller内核模糊测试工具环境搭建，简单测试</p>
-<p>项目地址：<a
-target="_blank" rel="noopener" href="https://github.com/google/syzkaller">google/syzkaller: syzkaller
-is an unsupervised coverage-guided kernel fuzzer (github.com)</a></p>
+<p>项目地址：<a target="_blank" rel="noopener" href="https://github.com/google/syzkaller">google/syzkaller: syzkaller is an unsupervised coverage-guided kernel fuzzer (github.com)</a></p>
 </blockquote>
 <span id="more"></span>
-<h1 id="install">Install</h1>
-<blockquote>
+<h1 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h1><blockquote>
 <p>gcc 6.10 or later;</p>
 <p>go 1.20 or later;</p>
 </blockquote>
 <ul>
-<li><p>C compiler with coverage support</p></li>
-<li><p>Linux kernel with coverage additions</p></li>
-<li><p>Virtual machine or a physical device</p></li>
+<li>C compiler with coverage support</li>
+<li>Linux kernel with coverage additions</li>
+<li>Virtual machine or a physical device</li>
 <li><p>syzkaller itself</p>
-<p>更新apt并安装相关编译器：</p></li>
+<p> 更新apt并安装相关编译器：</p>
+</li>
 </ul>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">apt</span> update
 <span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> <span class="token function">make</span> gcc flex bison libncurses-dev libelf-dev libssl-dev<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<p>​ 下载内核源码：</p>
+<p>​    下载内核源码：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> clone --branch v6.2 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git <span class="token variable">$KERNEL</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>​ 内核编译常用的配置参数：</p>
+<p>​    内核编译常用的配置参数：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#文本对话式，基于命令行的一种配置,其会在命令行一个个询问具体配置选择</span>
 <span class="token function">make</span> config
 <span class="token comment">#基于图形界面配置</span>
@@ -205,9 +204,9 @@ is an unsupervised coverage-guided kernel fuzzer (github.com)</a></p>
 <span class="token function">make</span> gconfig
 <span class="token comment">#为kvm客户内核支持启用其他选项</span>
 <span class="token function">make</span> kvm_guest.config<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​ 进入源码目录：</p>
+<p>​    进入源码目录：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">make</span> olddefconfig<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>​ 手动在.config文件中添加编译选项（一定去掉原来的注释）：</p>
+<p>​    手动在.config文件中添加编译选项（一定去掉原来的注释）：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># Coverage collection.</span>
 <span class="token assign-left variable">CONFIG_KCOV</span><span class="token operator">=</span>y
 
@@ -225,15 +224,14 @@ is an unsupervised coverage-guided kernel fuzzer (github.com)</a></p>
 <span class="token comment">#这个一定要加上</span>
 <span class="token assign-left variable">CONFIG_CMDLINE_BOOL</span><span class="token operator">=</span>y
 <span class="token assign-left variable">CONFIG_CMDLINE</span><span class="token operator">=</span><span class="token string">"net.ifnames=0"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​ 再次make：</p>
+<p>​    再次make：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">make</span> olddefconfig<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>​ 编译：</p>
+<p>​    编译：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">make</span> -j<span class="token variable"><span class="token variable">`</span>nproc<span class="token variable">`</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>​ 编译好的内核文件夹内应出现：</p>
+<p>​    编译好的内核文件夹内应出现：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415160954894.png" style="zoom:80%;" /></p>
-<p>​
-<code>debootstrap</code>是debian/ubuntu下的一个工具，用来构建一套基本的系统(根文件系统)。生成的目录符合Linux文件系统标准(FHS)，即包含了/boot、/etc、/bin、/usr等等目录，但它比发行版本的Linux体积小很多，当然功能也没那么强大，因此，只能说是“基本的系统”。</p>
-<p>​ 这里以创建一个Debian Bullseye版本的Linux镜像为例：</p>
+<p>​    <code>debootstrap</code>是debian/ubuntu下的一个工具，用来构建一套基本的系统(根文件系统)。生成的目录符合Linux文件系统标准(FHS)，即包含了/boot、/etc、/bin、/usr等等目录，但它比发行版本的Linux体积小很多，当然功能也没那么强大，因此，只能说是“基本的系统”。</p>
+<p>​    这里以创建一个Debian Bullseye版本的Linux镜像为例：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> <span class="token function">debootstrap</span>
 
 <span class="token function">mkdir</span> <span class="token variable">$IMAGE</span>
@@ -241,11 +239,10 @@ is an unsupervised coverage-guided kernel fuzzer (github.com)</a></p>
 <span class="token function">wget</span> https://raw.githubusercontent.com/google/syzkaller/master/tools/create-image.sh -O create-image.sh
 <span class="token function">chmod</span> +x create-image.sh
 ./create-image.sh<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​ 创建好后对应文件夹下应该有一个<code>bullseye.img</code>文件。</p>
-<p>​
-如果Host使用的是虚拟机，需要在设置处开启虚拟化引擎（若是物理机则需要在BIOS上开启）：</p>
+<p>​    创建好后对应文件夹下应该有一个<code>bullseye.img</code>文件。</p>
+<p>​    如果Host使用的是虚拟机，需要在设置处开启虚拟化引擎（若是物理机则需要在BIOS上开启）：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415170223601.png" style="zoom:80%;" /></p>
-<p>​ 测试qemu：</p>
+<p>​    测试qemu：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">qemu-system-x86_64 <span class="token punctuation">\</span>
   -m 2G <span class="token punctuation">\</span>
   -smp <span class="token number">2</span> <span class="token punctuation">\</span>
@@ -258,11 +255,10 @@ is an unsupervised coverage-guided kernel fuzzer (github.com)</a></p>
   -nographic <span class="token punctuation">\</span>
   -pidfile vm.pid <span class="token punctuation">\</span>
   <span class="token operator"><span class="token file-descriptor important">2</span>></span><span class="token file-descriptor important">&amp;1</span> <span class="token operator">|</span> <span class="token function">tee</span> vm.log<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​ 另开一个终端，测试ssh连接：</p>
+<p>​    另开一个终端，测试ssh连接：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">ssh</span> -i <span class="token variable">$IMAGE</span>/bullseye.id_rsa -p <span class="token number">10021</span> -o <span class="token string">"StrictHostKeyChecking no"</span> root@localhost<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>​
-测试完成后就可以关闭qemu（直接poweroff），下面进行syzkaller安装：</p>
-<p>​ 安装go：</p>
+<p>​    测试完成后就可以关闭qemu（直接poweroff），下面进行syzkaller安装：</p>
+<p>​    安装go：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#如果显示地址不可达</span>
 <span class="token comment">#在站长工具处查询dl.google.com</span>
 <span class="token comment">#找到可以Ping的IP</span>
@@ -276,20 +272,18 @@ is an unsupervised coverage-guided kernel fuzzer (github.com)</a></p>
 <span class="token comment">#测试</span>
 go version
 <span class="token comment">#-> go version go1.20.3 linux/amd64</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​ 安装syzkaller:</p>
+<p>​    安装syzkaller:</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> clone https://github.com/google/syzkaller
 <span class="token builtin class-name">cd</span> syzkaller
 <span class="token comment">#安装之前一定要保证gcc和go的版本正确</span>
 <span class="token function">make</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<h1 id="crash-test">Crash Test</h1>
-<p>​
-在$linux/fs/open.c文件中的chmod_common（）添加一段代码，使得当连续两次<code>chmod</code>调用的<code>mode</code>参数值为0时会产生空指针解引用异常：</p>
+<h1 id="Crash-Test"><a href="#Crash-Test" class="headerlink" title="Crash Test"></a>Crash Test</h1><p>​    在$linux/fs/open.c文件中的chmod_common（）添加一段代码，使得当连续两次<code>chmod</code>调用的<code>mode</code>参数值为0时会产生空指针解引用异常：</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">static</span> <span class="token class-name">umode_t</span> old_mode <span class="token operator">=</span> <span class="token number">0xffff</span><span class="token punctuation">;</span>
     <span class="token keyword">if</span> <span class="token punctuation">(</span>old_mode <span class="token operator">==</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> mode <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
         path <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
     <span class="token punctuation">&#125;</span>
 old_mode <span class="token operator">=</span> mode<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​ 重新编译Linux内核，设置Syzkaller配置文件如下：</p>
+<p>​    重新编译Linux内核，设置Syzkaller配置文件如下：</p>
 <pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
 	<span class="token property">"target"</span><span class="token operator">:</span> <span class="token string">"linux/amd64"</span><span class="token punctuation">,</span>
 	<span class="token property">"http"</span><span class="token operator">:</span> <span class="token string">"127.0.0.1:56741"</span><span class="token punctuation">,</span>
@@ -312,85 +306,57 @@ old_mode <span class="token operator">=</span> mode<span class="token punctuatio
 <li><code>enable_syscalls</code>选项表明了仅对其中的系统调用做fuzzing，如果其中的某个系统调用依赖其他调用，syzkaller会提醒你。</li>
 <li>同理，<code>disable_syscalls</code>选项表明了不对哪些系统调用fuzzing。</li>
 </ul>
-<p>​ 执行：</p>
+<p>​    执行：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">syz-manager --config config.json<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210618032.png" style="zoom:80%;" /></p>
-<p>​
-在对应的web<code>127.0.0.1:56741</code>上就可以看到当前fuzzing的情况：</p>
+<p>​    在对应的web<code>127.0.0.1:56741</code>上就可以看到当前fuzzing的情况：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210718938.png" style="zoom:67%;" /></p>
-<p>​ 可以看到已经抓到了一个内核Crash：</p>
+<p>​    可以看到已经抓到了一个内核Crash：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210814372.png" style="zoom: 67%;" /></p>
-<p>​ <a
-target="_blank" rel="noopener" href="https://www.collabora.com/news-and-blog/blog/2020/04/17/using-syzkaller-to-detect-programming-bugs-in-linux/">Using
-syzkaller, part 2: Detecting programming bugs in the Linux kernel
-(collabora.com)</a>这个Blog详细说明了网站里各个模块的作用。</p>
-<p>​ 查看报告：</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210930515.png" /></p>
-<p>​ 打开目录workdir/carsh/···/log0：</p>
+<p>​    <a target="_blank" rel="noopener" href="https://www.collabora.com/news-and-blog/blog/2020/04/17/using-syzkaller-to-detect-programming-bugs-in-linux/">Using syzkaller, part 2: Detecting programming bugs in the Linux kernel (collabora.com)</a>这个Blog详细说明了网站里各个模块的作用。</p>
+<p>​    查看报告：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416210930515.png" alt=""></p>
+<p>​    打开目录workdir/carsh/···/log0：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230416211532552.png" style="zoom:80%;" /></p>
-<h1 id="problem-summary">Problem Summary</h1>
-<ul>
+<h1 id="Problem-Summary"><a href="#Problem-Summary" class="headerlink" title="Problem Summary"></a>Problem Summary</h1><ul>
 <li><p><strong>问题1：在使用ssh连接qemu时无法连接，报错：</strong></p>
-<p><strong>“ssh_exchange_identification: Connection closed by remote
-host”</strong></p></li>
+<p><strong>“ssh_exchange_identification: Connection closed by remote host”</strong></p>
+</li>
 </ul>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415200044323.png" style="zoom:80%;" /></p>
-<p>​ <strong>解决方法：</strong></p>
-<p>​ 查看QEMU虚拟机内sshd服务状态，发现其服务没有开启：</p>
+<p>​    <strong>解决方法：</strong></p>
+<p>​    查看QEMU虚拟机内sshd服务状态，发现其服务没有开启：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415200148895.png" style="zoom:80%;" /></p>
-<p>​ 尝试使用命令<code>service sshd start</code>，无效。</p>
-<p>​ 尝试google，发现如下帖子：<a
-target="_blank" rel="noopener" href="https://groups.google.com/g/syzkaller/c/n8BDOc5cXds">ssh : Why
-sshd does not start on qemu booting (google.com)</a></p>
-<figure>
-<img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415202522042.png"
-alt="这也能遇到自己老师hh" />
-<figcaption aria-hidden="true">这也能遇到自己老师hh</figcaption>
-</figure>
-<p>​
-故重新检查linux源码的config后发现，由于手动修改后没有删除原来对应的“xxx
-not
-set”注释，导致当时的修改在后续<code>make olddefconfig</code>时又被改回去了。</p>
-<p>​ 重新修改.config文件，重新编译，创建qemu虚拟机，再次尝试登陆：</p>
+<p>​    尝试使用命令<code>service sshd start</code>，无效。</p>
+<p>​    尝试google，发现如下帖子：<a target="_blank" rel="noopener" href="https://groups.google.com/g/syzkaller/c/n8BDOc5cXds">ssh : Why sshd does not start on qemu booting (google.com)</a></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415202522042.png" alt="这也能遇到自己老师hh"></p>
+<p>​    故重新检查linux源码的config后发现，由于手动修改后没有删除原来对应的“xxx not set”注释，导致当时的修改在后续<code>make olddefconfig</code>时又被改回去了。</p>
+<p>​    重新修改.config文件，重新编译，创建qemu虚拟机，再次尝试登陆：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230415211857811.png" style="zoom:80%;" /></p>
-<p>​
-<u>这里的问题其实就出现在没有去掉注释，在.config文件中注释也会被扫描分析。</u></p>
+<p>​    <u>这里的问题其实就出现在没有去掉注释，在.config文件中注释也会被扫描分析。</u></p>
 <ul>
 <li><p><strong>问题二：sshd服务错误定位</strong></p>
 <p><strong>解决方法：</strong></p>
-<ol type="1">
+<ol>
 <li><code>/usr/bin/sshd -T</code>命令可以显示出sshd配置文件的错误之处；</li>
 <li>在ssh连接时使用命令-v/-vv可以查看调试信息</li>
-</ol></li>
-<li><p><strong>问题三：开启syzkaller后一直没有虚拟机连接</strong></p>
-<p><strong>解决方法：</strong>在使用命令<code>./bin/syz-manager -config=my.cfg</code>后面加上<code>-debug</code>，查看调试信息后发现qemu虚拟机显示<strong>”Failed
-to start Raise network
-interfaces“</strong>，查找官方文档后发现需要在内核config上加上：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token assign-left variable">CONFIG_CMDLINE_BOOL</span><span class="token operator">=</span>y
-<span class="token assign-left variable">CONFIG_CMDLINE</span><span class="token operator">=</span><span class="token string">"net.ifnames=0"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></li>
+</ol>
+</li>
 </ul>
-<h1 id="reference">Reference</h1>
 <ul>
-<li><a target="_blank" rel="noopener" href="https://github.com/google/syzkaller">google/syzkaller:
-syzkaller is an unsupervised coverage-guided kernel fuzzer
-(github.com)</a></li>
-<li><a
-target="_blank" rel="noopener" href="https://github.com/google/syzkaller/blob/master/docs/setup.md">syzkaller/setup.md
-at master · google/syzkaller (github.com)</a></li>
-<li><a
-target="_blank" rel="noopener" href="https://fuchsia.googlesource.com/third_party/syzkaller/+/usb-fuzzer/docs/linux/setup.md">How
-to set up syzkaller (googlesource.com)</a></li>
-<li><a target="_blank" rel="noopener" href="https://groups.google.com/g/syzkaller/c/n8BDOc5cXds">ssh :
-Why sshd does not start on qemu booting (google.com)</a></li>
-<li><a
-target="_blank" rel="noopener" href="https://github.com/hardenedlinux/Debian-GNU-Linux-Profiles/blob/master/docs/harbian_qa/fuzz_testing/test.c">Debian-GNU-Linux-Profiles/test.c
-at master · hardenedlinux/Debian-GNU-Linux-Profiles
-(github.com)</a></li>
-<li><a
-target="_blank" rel="noopener" href="http://pwn4.fun/2019/10/29/Syzkaller-Fuzz-Android-Kernel/">Syzkaller
-Fuzz Android Kernel | BruceFan's Blog (pwn4.fun)</a></li>
+<li><p><strong>问题三：开启syzkaller后一直没有虚拟机连接</strong></p>
+<p><strong>解决方法：</strong>在使用命令<code>./bin/syz-manager -config=my.cfg</code>后面加上<code>-debug</code>，查看调试信息后发现qemu虚拟机显示<strong>”Failed to start Raise network interfaces“</strong>，查找官方文档后发现需要在内核config上加上：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token assign-left variable">CONFIG_CMDLINE_BOOL</span><span class="token operator">=</span>y
+<span class="token assign-left variable">CONFIG_CMDLINE</span><span class="token operator">=</span><span class="token string">"net.ifnames=0"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+</li>
+</ul>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/google/syzkaller">google/syzkaller: syzkaller is an unsupervised coverage-guided kernel fuzzer (github.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/google/syzkaller/blob/master/docs/setup.md">syzkaller/setup.md at master · google/syzkaller (github.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://fuchsia.googlesource.com/third_party/syzkaller/+/usb-fuzzer/docs/linux/setup.md">How to set up syzkaller (googlesource.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://groups.google.com/g/syzkaller/c/n8BDOc5cXds">ssh : Why sshd does not start on qemu booting (google.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/hardenedlinux/Debian-GNU-Linux-Profiles/blob/master/docs/harbian_qa/fuzz_testing/test.c">Debian-GNU-Linux-Profiles/test.c at master · hardenedlinux/Debian-GNU-Linux-Profiles (github.com)</a></li>
+<li><a target="_blank" rel="noopener" href="http://pwn4.fun/2019/10/29/Syzkaller-Fuzz-Android-Kernel/">Syzkaller Fuzz Android Kernel | BruceFan’s Blog (pwn4.fun)</a></li>
 </ul>
 
       
@@ -438,7 +404,7 @@ Fuzz Android Kernel | BruceFan's Blog (pwn4.fun)</a></li>
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#syzkaller%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">Syzkaller环境配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#install"><span class="nav-number">2.</span> <span class="nav-text">Install</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#crash-test"><span class="nav-number">3.</span> <span class="nav-text">Crash Test</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#problem-summary"><span class="nav-number">4.</span> <span class="nav-text">Problem Summary</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reference"><span class="nav-number">5.</span> <span class="nav-text">Reference</span></a></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Syzkaller%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">Syzkaller环境配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Install"><span class="nav-number">2.</span> <span class="nav-text">Install</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Crash-Test"><span class="nav-number">3.</span> <span class="nav-text">Crash Test</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Problem-Summary"><span class="nav-number">4.</span> <span class="nav-text">Problem Summary</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">5.</span> <span class="nav-text">Reference</span></a></li></ol>
     
     </div>
   </aside>
@@ -632,5 +598,20 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>

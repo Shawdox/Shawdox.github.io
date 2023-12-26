@@ -13,12 +13,12 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="Klee安装使用  Linux系统下著名符号执行工具Klee的安装使用">
+  <meta name="description" content="Klee安装使用 Linux系统下著名符号执行工具Klee的安装使用">
 <meta property="og:type" content="article">
 <meta property="og:title" content="(技术积累)Klee安装使用">
 <meta property="og:url" content="http://example.com/2023/05/30/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Klee%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="Klee安装使用  Linux系统下著名符号执行工具Klee的安装使用">
+<meta property="og:description" content="Klee安装使用 Linux系统下著名符号执行工具Klee的安装使用">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530145106.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530150453.png">
@@ -27,6 +27,7 @@
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530154911.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530155115.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530155831.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230601145325.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230601162143.png">
 <meta property="article:published_time" content="2023-05-30T09:09:53.000Z">
 <meta property="article:modified_time" content="2023-09-04T07:12:46.000Z">
@@ -161,16 +162,14 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="klee安装使用">Klee安装使用</h1>
-<blockquote>
-<p>Linux系统下著名符号执行工具Klee的安装使用 <span id="more"></span></p>
+        <h1 id="Klee安装使用"><a href="#Klee安装使用" class="headerlink" title="Klee安装使用"></a>Klee安装使用</h1><blockquote>
+<p>Linux系统下著名符号执行工具Klee的安装使用<br><span id="more"></span></p>
 </blockquote>
-<h2 id="prerequisites">Prerequisites</h2>
-<ol type="1">
+<h2 id="Prerequisites"><a href="#Prerequisites" class="headerlink" title="Prerequisites"></a>Prerequisites</h2><ol>
 <li>删除旧版本（非官方发行版的Docker）</li>
 </ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token keyword">for</span> <span class="token for-or-select variable">pkg</span> <span class="token keyword">in</span> docker.io docker-doc docker-compose podman-docker containerd runc<span class="token punctuation">;</span> <span class="token keyword">do</span> <span class="token function">sudo</span> <span class="token function">apt-get</span> remove <span class="token variable">$pkg</span><span class="token punctuation">;</span> <span class="token keyword">done</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<ol start="2" type="1">
+<ol>
 <li>设置GPG key和仓库，确保下载源</li>
 </ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#Update the apt package index and install packages to allow apt to use a repository over HTTPS:</span>
@@ -187,29 +186,25 @@
   <span class="token string">"deb [arch="</span><span class="token variable"><span class="token variable">$(</span>dpkg --print-architecture<span class="token variable">)</span></span><span class="token string">" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
   "</span><span class="token variable"><span class="token variable">$(</span><span class="token builtin class-name">.</span> /etc/os-release <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">echo</span> <span class="token string">"<span class="token variable">$VERSION_CODENAME</span>"</span><span class="token variable">)</span></span><span class="token string">" stable"</span> <span class="token operator">|</span> <span class="token punctuation">\</span>
   <span class="token function">sudo</span> <span class="token function">tee</span> /etc/apt/sources.list.d/docker.list <span class="token operator">></span> /dev/null<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<ol start="3" type="1">
+<ol>
 <li>安装Docker：</li>
 </ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#install</span>
 <span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 <span class="token comment">#test</span>
 <span class="token function">sudo</span> docker run hello-world<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="install">Install</h2>
-<p>​ 这里使用现成的Docker环境，直接pull即可：</p>
+<h2 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h2><p>​    这里使用现成的Docker环境，直接pull即可：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> docker pull klee/klee<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530145106.png" style="zoom:50%;" /></p>
-<p>​ 运行：</p>
+<p>​    运行：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">docker run --rm -ti --ulimit<span class="token operator">=</span><span class="token string">'stack=-1:-1'</span> klee/klee<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>​
-其中，<code>--rm</code>表明容器停止，即使用命令<code>docker stop</code>后直接删除容器；<code>-ti</code>表明为容器重新分配一个伪输入终端（-t）并且以交互模式运行容器(-i)；<code>--ulimit</code>表明将栈设置为无限大。</p>
-<p>​ 进入容器后检查Klee：</p>
+<p>​    其中，<code>--rm</code>表明容器停止，即使用命令<code>docker stop</code>后直接删除容器；<code>-ti</code>表明为容器重新分配一个伪输入终端（-t）并且以交互模式运行容器(-i)；<code>--ulimit</code>表明将栈设置为无限大。</p>
+<p>​    进入容器后检查Klee：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530150453.png" style="zoom: 67%;" /></p>
-<h2 id="klee">Klee</h2>
-<h3 id="small-function">1. Small Function</h3>
-<blockquote>
+<h2 id="Klee"><a href="#Klee" class="headerlink" title="Klee"></a>Klee</h2><h3 id="1-Small-Function"><a href="#1-Small-Function" class="headerlink" title="1. Small Function"></a>1. Small Function</h3><blockquote>
 <p>测试一个简单函数get_sign()</p>
 </blockquote>
-<p>​ 以<code>get_sign</code>函数为例：</p>
+<p>​    以<code>get_sign</code>函数为例：</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">//First KLEE tutorial: testing a small function</span>
 
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">"klee/klee.h"</span></span>
@@ -228,39 +223,32 @@
   <span class="token function">klee_make_symbolic</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>a<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"a"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token keyword">return</span> <span class="token function">get_sign</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span> <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​ 首先将其编译为bc文件：</p>
+<p>​    首先将其编译为bc文件：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">clang -I <span class="token punctuation">..</span>/<span class="token punctuation">..</span>/include -emit-llvm -c -g -O0 -Xclang -disable-O0-optnone get_sign.c<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>​
-其中，<code>-I+&lt;dir&gt;</code>表明添加搜索路径，用于引入头文件klee/klee.h；<code>-c</code>表明只进行预处理、编译和汇编；<code>-Xclang+&lt;arg&gt;</code>用于给clang编译器传递参数，这里禁止了优化。</p>
-<p>​ 运行klee：</p>
+<p>​    其中，<code>-I+&lt;dir&gt;</code>表明添加搜索路径，用于引入头文件klee/klee.h；<code>-c</code>表明只进行预处理、编译和汇编；<code>-Xclang+&lt;arg&gt;</code>用于给clang编译器传递参数，这里禁止了优化。</p>
+<p>​    运行klee：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">klee get_sign.bc<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530154204.png" style="zoom: 67%;" /></p>
-<p>​
-由上图可见klee探索了程序中的3条路径并生成了3个测试样例，并生成了两个目录：</p>
+<p>​    由上图可见klee探索了程序中的3条路径并生成了3个测试样例，并生成了两个目录：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530154657.png" style="zoom: 67%;" /></p>
-<p>​
-其中<code>klee-out-0</code>是输出结果目录，<code>klee-last</code>是其符号链接，每次都链接到最新的测试输出中，其包含：</p>
+<p>​    其中<code>klee-out-0</code>是输出结果目录，<code>klee-last</code>是其符号链接，每次都链接到最新的测试输出中，其包含：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530154911.png" style="zoom:67%;" /></p>
-<p>​
-klee生成的测试样例都以<code>.ktest</code>结尾，借助<code>ktest-tool</code>工具来查看：</p>
+<p>​    klee生成的测试样例都以<code>.ktest</code>结尾，借助<code>ktest-tool</code>工具来查看：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530155115.png" style="zoom:67%;" /></p>
-<p>​ 使用libkleeRuntest工具手动复现测试样例：</p>
+<p>​    使用libkleeRuntest工具手动复现测试样例：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">export</span> <span class="token assign-left variable">LD_LIBRARY_PATH</span><span class="token operator">=</span>path-to-klee-build-dir/lib/:<span class="token variable">$LD_LIBRARY_PATH</span>
 gcc -I <span class="token punctuation">..</span>/<span class="token punctuation">..</span>/include -L path-to-klee-build-dir/lib/ get_sign.c -lkleeRuntest
 <span class="token assign-left variable">KTEST_FILE</span><span class="token operator">=</span>klee-last/test000001.ktest ./a.out
 <span class="token builtin class-name">echo</span> <span class="token variable">$?</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230530155831.png" style="zoom:67%;" /></p>
-<p>​
-如图所示，最后一个测试样例返回255（-1）的原因是-1转换为0-255范围内的有效退出代码值。</p>
-<p>​ 可见，klee通过对C代码插装，并接受bc输入的方式进行符号执行测试。</p>
-<h3 id="test-gnu-coreutils">2. Test GNU coreutils</h3>
-<h4 id="安装coreutils-wllvm">2.1 安装coreutils &amp; WLLVM</h4>
-<p>​ 下载GNU coreutils源码，这里选用6.11版本（可以用其他版本）：</p>
+<p>​    如图所示，最后一个测试样例返回255（-1）的原因是-1转换为0-255范围内的有效退出代码值。</p>
+<p>​    可见，klee通过对C代码插装，并接受bc输入的方式进行符号执行测试。</p>
+<h3 id="2-Test-GNU-coreutils"><a href="#2-Test-GNU-coreutils" class="headerlink" title="2. Test GNU coreutils"></a>2. Test GNU coreutils</h3><h4 id="2-1-安装coreutils-amp-WLLVM"><a href="#2-1-安装coreutils-amp-WLLVM" class="headerlink" title="2.1 安装coreutils &amp; WLLVM"></a>2.1 安装coreutils &amp; WLLVM</h4><p>​    下载GNU coreutils源码，这里选用6.11版本（可以用其他版本）：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#下载</span>
 <span class="token function">wget</span> https://ftp.gnu.org/gnu/coreutils/coreutils-6.11.tar.gz
 <span class="token comment">#解压</span>
 <span class="token function">tar</span> -zxvf coreutils-6.11.tar.gz <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​ 配置并编译coreutils：</p>
+<p>​    配置并编译coreutils：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#如果该版本的coreutils有Bug,就使用如下补丁</span>
 <span class="token function">wget</span> http://web.cs.ucla.edu/classes/winter16/cs35L/assign/coreutils.diff
 patch -p0 <span class="token operator">&lt;</span> coreutils.diff
@@ -269,8 +257,7 @@ patch -p0 <span class="token operator">&lt;</span> coreutils.diff
 <span class="token builtin class-name">cd</span> obj-gcov
 <span class="token punctuation">..</span>/configure --disable-nls <span class="token assign-left variable">CFLAGS</span><span class="token operator">=</span><span class="token string">"-g -fprofile-arcs -ftest-coverage"</span>
 <span class="token function">make</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​
-编译好的文件位于coreutils/src目录下。通过编译加上<code>CFLAGS="-g -fprofile-arcs -ftest-coverage"</code>配置选项，使其支持gcov，每次你运行它时其就会生成一个.gcda文件表明其运行覆盖率如何，例如：</p>
+<p>​    编译好的文件位于coreutils/src目录下。通过编译加上<code>CFLAGS=&quot;-g -fprofile-arcs -ftest-coverage&quot;</code>配置选项，使其支持gcov，每次你运行它时其就会生成一个.gcda文件表明其运行覆盖率如何，例如：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">rm</span> -f *.gcda <span class="token comment"># Get rid of any stale gcov files</span>
 ./echo**
 
@@ -288,66 +275,52 @@ File '</span><span class="token punctuation">..</span>/<span class="token punctu
 Lines executed:0.00% of 3
 Creating '</span>system.h.gcov<span class="token string">'
 '</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​ 安装WLLVM：</p>
+<p>​    安装WLLVM：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">pip3 <span class="token function">install</span> --upgrade wllvm
 <span class="token builtin class-name">export</span> <span class="token assign-left variable">LLVM_COMPILER</span><span class="token operator">=</span>clang<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<p>​ 使用WLLVM编译coreutils：</p>
+<p>​    使用WLLVM编译coreutils：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">mkdir</span> obj-llvm
 <span class="token builtin class-name">cd</span> obj-llvm
 <span class="token assign-left variable">CC</span><span class="token operator">=</span>wllvm <span class="token punctuation">..</span>/configure --disable-nls <span class="token assign-left variable">CFLAGS</span><span class="token operator">=</span><span class="token string">"-g -O1 -Xclang -disable-llvm-passes -D__NO_STRING_INLINES  -D_FORTIFY_SOURCE=0 -U__OPTIMIZE__"</span>
 <span class="token function">make</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​ 这里：</p>
+<p>​    这里：</p>
 <ul>
 <li><code>-fprofile-arcs -ftest-coverage</code>表明使用gcov对即将用klee测试的文件插桩，这里舍弃了这个flag；</li>
-<li><code>-O1 -Xclang -disable-llvm-passes</code>表明不使用优化，由于LLVM5.0以上版本的O0优化会影响Klee本身的优化措施，故这里使用O1优化并禁止所有LLVM
-Pass运行；</li>
-<li><code>D__NO_STRING_INLINES</code>表明不使用内联字符串；<code>-D_FORTIFY_SOURCE=0</code>表明不使用fortify安全技术，<u>因为其可能会替换现有的函数（fprintf
--&gt;
-__fprintf_chk）导致Klee无法对其建模而将其视为外部函数</u>；<code>-U__OPTIMIZE__</code>取消
-<code>__OPTIMIZE__</code> 的宏定义，禁用编译器所有优化。</li>
+<li><code>-O1 -Xclang -disable-llvm-passes</code>表明不使用优化，由于LLVM5.0以上版本的O0优化会影响Klee本身的优化措施，故这里使用O1优化并禁止所有LLVM Pass运行；</li>
+<li><code>D__NO_STRING_INLINES</code>表明不使用内联字符串；<code>-D_FORTIFY_SOURCE=0</code>表明不使用fortify安全技术，<u>因为其可能会替换现有的函数（fprintf -&gt; __fprintf_chk）导致Klee无法对其建模而将其视为外部函数</u>；<code>-U__OPTIMIZE__</code>取消 <code>__OPTIMIZE__</code> 的宏定义，禁用编译器所有优化。</li>
 </ul>
-<p>​
-可以通过<code>extract-bc</code>命令从生成的可执行文件中提取bitcode：</p>
+<p>​    可以通过<code>extract-bc</code>命令从生成的可执行文件中提取bitcode：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">find</span> <span class="token builtin class-name">.</span> -executable -type f <span class="token operator">|</span> <span class="token function">xargs</span> -I <span class="token string">'&#123;&#125;'</span> extract-bc <span class="token string">'&#123;&#125;'</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<h4 id="使用klee测试文件">2.2 使用Klee测试文件</h4>
-<p>​ 接下来就可以使用klee运行bc文件：</p>
+<h4 id="2-2-使用Klee测试文件"><a href="#2-2-使用Klee测试文件" class="headerlink" title="2.2 使用Klee测试文件"></a>2.2 使用Klee测试文件</h4><p>​    接下来就可以使用klee运行bc文件：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">klee --libc<span class="token operator">=</span>uclibc --posix-runtime ./cat.bc --version<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <ul>
 <li><code>--libc=uclibc</code>指定了Klee外部函数库，其中定义了程序可能调用的外部函数；</li>
-<li><code>--posix-runtime</code>指定 KLEE 使用 POSIX
-标准库作为程序的运行时环境；</li>
+<li><code>--posix-runtime</code>指定 KLEE 使用 POSIX 标准库作为程序的运行时环境；</li>
 <li><code>--version</code>是传递给cat命令的参数。</li>
 </ul>
-<p>​
-当Klee指定了uclibc和POSIX，它就会替换程序的main()函数为库中的klee_init_env()函数，这个函数用于支持符号参数的构建。</p>
-<figure>
-<img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230601145325.png"
-alt="运行结果" />
-<figcaption aria-hidden="true">运行结果</figcaption>
-</figure>
-<p>​ 分析以上WARNING：</p>
+<p>​    当Klee指定了uclibc和POSIX，它就会替换程序的main()函数为库中的klee_init_env()函数，这个函数用于支持符号参数的构建。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230601145325.png" alt="运行结果"></p>
+<p>​    分析以上WARNING：</p>
 <ul>
 <li><code>*undefined reference to function: ___ctype_b_loc*</code>表明<code>__ctype_b_loc</code>函数未定义；</li>
 <li><code>*executable has module level assembly (ignoring)*</code>表明一些被编译进应用程序的文件有内嵌汇编语句，Klee无法分析，故跳过（来自uClibc，这里安全）；</li>
 <li><code>*calling external: getpagesize()*</code>表明调用的函数未定义。在这种情况下，Klee尝试调用该函数的本地版本，如果它存在的话。这有时是安全的，只要该函数不写入任何程序内存或试图处理符号值。例如，getpagesize()只是返回一个常数。</li>
 </ul>
-<p>​ 下面尝试用符号化输入测试echo：</p>
+<p>​    下面尝试用符号化输入测试echo：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">klee --optimize --libc<span class="token operator">=</span>uclibc --posix-runtime ./echo.bc --sym-arg <span class="token number">3</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>​ 使用如下命令查看统计结果：</p>
+<p>​    使用如下命令查看统计结果：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">klee-stats klee-last
 ------------------------------------------------------------------------
 <span class="token operator">|</span>  Path   <span class="token operator">|</span>  Instrs<span class="token operator">|</span>  Time<span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token operator">|</span>  ICov<span class="token punctuation">(</span>%<span class="token punctuation">)</span><span class="token operator">|</span>  BCov<span class="token punctuation">(</span>%<span class="token punctuation">)</span><span class="token operator">|</span>  ICount<span class="token operator">|</span>  TSolver<span class="token punctuation">(</span>%<span class="token punctuation">)</span><span class="token operator">|</span>
 ------------------------------------------------------------------------
 <span class="token operator">|</span>klee-last<span class="token operator">|</span>   <span class="token number">64546</span><span class="token operator">|</span>     <span class="token number">0.15</span><span class="token operator">|</span>    <span class="token number">22.07</span><span class="token operator">|</span>    <span class="token number">14.14</span><span class="token operator">|</span>   <span class="token number">19943</span><span class="token operator">|</span>       <span class="token number">62.97</span><span class="token operator">|</span>
 ------------------------------------------------------------------------<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​ 其中：</p>
+<p>​    其中：</p>
 <ul>
 <li><strong>ICov</strong>为LLVM指令覆盖率；</li>
 <li><strong>BCov</strong>为分支覆盖率；</li>
 </ul>
-<p>​
-可以看到覆盖率并不高，其中一个原因是由于这些数字是用比特码文件中的所有指令或分支来计算的，包括很多可能是不可执行的库代码。故对于这种情况使用–optimize优化去除死代码会更好：</p>
+<p>​    可以看到覆盖率并不高，其中一个原因是由于这些数字是用比特码文件中的所有指令或分支来计算的，包括很多可能是不可执行的库代码。故对于这种情况使用–optimize优化去除死代码会更好：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">klee --optimize --libc<span class="token operator">=</span>uclibc --posix-runtime ./echo.bc --sym-arg <span class="token number">3</span>
 klee-stats klee-last
 ------------------------------------------------------------------------
@@ -355,23 +328,15 @@ klee-stats klee-last
 ------------------------------------------------------------------------
 <span class="token operator">|</span>klee-last<span class="token operator">|</span>   <span class="token number">33991</span><span class="token operator">|</span>     <span class="token number">0.13</span><span class="token operator">|</span>    <span class="token number">30.16</span><span class="token operator">|</span>    <span class="token number">21.91</span><span class="token operator">|</span>    <span class="token number">8339</span><span class="token operator">|</span>       <span class="token number">80.66</span><span class="token operator">|</span>
 ------------------------------------------------------------------------<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​
-可以看到各项覆盖率都高了一些，klee执行的更快，执行的代码指令更少。</p>
-<h4 id="可视化klee进程">2.3 可视化klee进程</h4>
-<p>​
-<code>KCachegrind</code>是一个优秀的可视化工具，可以直接用apt安装。</p>
-<p>​
-<img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230601162143.png" style="zoom:67%;" /></p>
+<p>​    可以看到各项覆盖率都高了一些，klee执行的更快，执行的代码指令更少。</p>
+<h4 id="2-3-可视化klee进程"><a href="#2-3-可视化klee进程" class="headerlink" title="2.3 可视化klee进程"></a>2.3 可视化klee进程</h4><p>​    <code>KCachegrind</code>是一个优秀的可视化工具，可以直接用apt安装。</p>
+<p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230601162143.png" style="zoom:67%;" /></p>
 <blockquote>
 <p>PS:</p>
-<p>​
-Kcachegrind是一个图形化工具，如果是通过windows使用ssh服务连接Linux系统，则需要在windows端安装X11服务并在Linux端修改ssh配置使其可以允许X11服务。</p>
-<p>相关参考：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/66075449">X11
-forwarding，Windows与Linux结合的最佳开发环境【编程环境优化篇】 - 知乎
-(zhihu.com)</a></p>
+<p>​    Kcachegrind是一个图形化工具，如果是通过windows使用ssh服务连接Linux系统，则需要在windows端安装X11服务并在Linux端修改ssh配置使其可以允许X11服务。</p>
+<p>相关参考：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/66075449">X11 forwarding，Windows与Linux结合的最佳开发环境【编程环境优化篇】 - 知乎 (zhihu.com)</a></p>
 </blockquote>
-<h4 id="结果分析">2.4 结果分析</h4>
-<p>​ 可以通过<code>ktest-tool</code>工具查看每个单独的测试样例：</p>
+<h4 id="2-4-结果分析"><a href="#2-4-结果分析" class="headerlink" title="2.4 结果分析"></a>2.4 结果分析</h4><p>​    可以通过<code>ktest-tool</code>工具查看每个单独的测试样例：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ ktest-tool klee-last/test000001.ktest
 ktest <span class="token function">file</span> <span class="token builtin class-name">:</span> <span class="token string">'klee-last/test000001.ktest'</span>
 args       <span class="token builtin class-name">:</span> <span class="token punctuation">[</span><span class="token string">'./echo.bc'</span>, <span class="token string">'--sym-arg'</span>, <span class="token string">'3'</span><span class="token punctuation">]</span>
@@ -382,35 +347,24 @@ object    <span class="token number">0</span>: data: <span class="token string">
 object    <span class="token number">1</span>: name: <span class="token string">'model_version'</span>
 object    <span class="token number">1</span>: size: <span class="token number">4</span>
 object    <span class="token number">1</span>: data: <span class="token string">'<span class="token entity" title="\x01">\x01</span><span class="token entity" title="\x00">\x00</span><span class="token entity" title="\x00">\x00</span><span class="token entity" title="\x00">\x00</span>'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​ 可以使用<code>ktest-reply</code>工具来复现：</p>
+<p>​    可以使用<code>ktest-reply</code>工具来复现：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">klee-replay ./echo <span class="token punctuation">..</span>/<span class="token punctuation">..</span>/obj-llvm/src/klee-last/*.ktest<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<h3 id="binary">3. Binary</h3>
-<p>​</p>
-<h2 id="reference">Reference</h2>
-<ul>
-<li>Install:
-<ul>
-<li><a
-target="_blank" rel="noopener" href="https://docs.docker.com/engine/install/ubuntu/#prerequisites">Prerequisites
-| Docker Documentation</a></li>
-<li><a target="_blank" rel="noopener" href="https://docs.docker.com/engine/install/ubuntu/">Install
-Docker Engine on Ubuntu | Docker Documentation</a></li>
+<h3 id="3-Binary"><a href="#3-Binary" class="headerlink" title="3. Binary"></a>3. Binary</h3><p>​    </p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul>
+<li>Install:<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.docker.com/engine/install/ubuntu/#prerequisites">Prerequisites | Docker Documentation</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.docker.com/engine/install/ubuntu/">Install Docker Engine on Ubuntu | Docker Documentation</a></li>
 <li><a target="_blank" rel="noopener" href="http://klee.github.io/docker/">Docker · KLEE</a></li>
-<li><a
-target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_39998006/article/details/99680522">docker
-run 参数详解_-CSDN博客</a></li>
-<li><a
-target="_blank" rel="noopener" href="https://github.com/travitch/whole-program-llvm">travitch/whole-program-llvm:
-A wrapper script to build whole-program LLVM bitcode files
-(github.com)</a></li>
-</ul></li>
-<li>Tutorial:
-<ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_39998006/article/details/99680522">docker run 参数详解_-CSDN博客</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/travitch/whole-program-llvm">travitch/whole-program-llvm: A wrapper script to build whole-program LLVM bitcode files (github.com)</a></li>
+</ul>
+</li>
+<li>Tutorial:<ul>
 <li><a target="_blank" rel="noopener" href="http://klee.github.io/docs/files/">Files · KLEE</a></li>
 <li><a target="_blank" rel="noopener" href="http://klee.github.io/tutorials/">Tutorials · KLEE</a></li>
-<li><a target="_blank" rel="noopener" href="http://klee.github.io/tutorials/testing-coreutils/">Testing
-Coreutils · KLEE</a></li>
-</ul></li>
+<li><a target="_blank" rel="noopener" href="http://klee.github.io/tutorials/testing-coreutils/">Testing Coreutils · KLEE</a></li>
+</ul>
+</li>
 </ul>
 
       
@@ -458,7 +412,7 @@ Coreutils · KLEE</a></li>
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#klee%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">Klee安装使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#prerequisites"><span class="nav-number">1.1.</span> <span class="nav-text">Prerequisites</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#install"><span class="nav-number">1.2.</span> <span class="nav-text">Install</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#klee"><span class="nav-number">1.3.</span> <span class="nav-text">Klee</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#small-function"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. Small Function</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#test-gnu-coreutils"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. Test GNU coreutils</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85coreutils-wllvm"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">2.1 安装coreutils &amp; WLLVM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8klee%E6%B5%8B%E8%AF%95%E6%96%87%E4%BB%B6"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">2.2 使用Klee测试文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96klee%E8%BF%9B%E7%A8%8B"><span class="nav-number">1.3.2.3.</span> <span class="nav-text">2.3 可视化klee进程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90"><span class="nav-number">1.3.2.4.</span> <span class="nav-text">2.4 结果分析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#binary"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. Binary</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">1.4.</span> <span class="nav-text">Reference</span></a></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Klee%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">Klee安装使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Prerequisites"><span class="nav-number">1.1.</span> <span class="nav-text">Prerequisites</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Install"><span class="nav-number">1.2.</span> <span class="nav-text">Install</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Klee"><span class="nav-number">1.3.</span> <span class="nav-text">Klee</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Small-Function"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. Small Function</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Test-GNU-coreutils"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. Test GNU coreutils</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E5%AE%89%E8%A3%85coreutils-amp-WLLVM"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">2.1 安装coreutils &amp; WLLVM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E4%BD%BF%E7%94%A8Klee%E6%B5%8B%E8%AF%95%E6%96%87%E4%BB%B6"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">2.2 使用Klee测试文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-%E5%8F%AF%E8%A7%86%E5%8C%96klee%E8%BF%9B%E7%A8%8B"><span class="nav-number">1.3.2.3.</span> <span class="nav-text">2.3 可视化klee进程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-4-%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90"><span class="nav-number">1.3.2.4.</span> <span class="nav-text">2.4 结果分析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Binary"><span class="nav-number">1.3.3.</span> <span class="nav-text">3. Binary</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-number">1.4.</span> <span class="nav-text">Reference</span></a></li></ol></li></ol>
     
     </div>
   </aside>
@@ -652,5 +606,20 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>

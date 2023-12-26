@@ -13,12 +13,12 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="Automated WebAssembly Function Purpose Identification With Semantics-Aware Analysis  会议：WWW&#39;23（International World Wide Web Conference，CCF-A） 作者：Alan Romano、Weihang Wang（USC） 时间：2023.4  ABSTR">
+  <meta name="description" content="Automated WebAssembly Function Purpose Identification With Semantics-Aware Analysis 会议：WWW’23（International World Wide Web Conference，CCF-A） 作者：Alan Romano、Weihang Wang（USC） 时间：2023.4  ABSTRACT​    We">
 <meta property="og:type" content="article">
 <meta property="og:title" content="(论文阅读)Automated WebAssembly Function Purpose Identification With Semantics-Aware Analysis">
 <meta property="og:url" content="http://example.com/2023/05/29/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Automated-WebAssembly-Function-Purpose-Identification-With-Semantics-Aware-Analysis/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="Automated WebAssembly Function Purpose Identification With Semantics-Aware Analysis  会议：WWW&#39;23（International World Wide Web Conference，CCF-A） 作者：Alan Romano、Weihang Wang（USC） 时间：2023.4  ABSTR">
+<meta property="og:description" content="Automated WebAssembly Function Purpose Identification With Semantics-Aware Analysis 会议：WWW’23（International World Wide Web Conference，CCF-A） 作者：Alan Romano、Weihang Wang（USC） 时间：2023.4  ABSTRACT​    We">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230526213539080.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230528195748.png">
@@ -26,6 +26,8 @@
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230529111145.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230529111746.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230529112849.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230529113357.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230529114040.png">
 <meta property="article:published_time" content="2023-05-29T04:03:21.000Z">
 <meta property="article:modified_time" content="2023-09-04T07:12:48.000Z">
 <meta property="article:author" content="Shaw">
@@ -158,132 +160,116 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1
-id="automated-webassembly-function-purpose-identification-with-semantics-aware-analysis">Automated
-WebAssembly Function Purpose Identification With Semantics-Aware
-Analysis</h1>
-<blockquote>
-<p><strong>会议：</strong>WWW'23（International World Wide Web
-Conference，CCF-A）</p>
+        <h1 id="Automated-WebAssembly-Function-Purpose-Identification-With-Semantics-Aware-Analysis"><a href="#Automated-WebAssembly-Function-Purpose-Identification-With-Semantics-Aware-Analysis" class="headerlink" title="Automated WebAssembly Function Purpose Identification With Semantics-Aware Analysis"></a>Automated WebAssembly Function Purpose Identification With Semantics-Aware Analysis</h1><blockquote>
+<p><strong>会议：</strong>WWW’23（International World Wide Web Conference，CCF-A）</p>
 <p><strong>作者：</strong>Alan Romano、Weihang Wang（USC）</p>
 <p><strong>时间：</strong>2023.4</p>
 </blockquote>
-<h1 id="abstract">ABSTRACT</h1>
-<p>​
-WebAssembly是最近建立的一个网络标准，用于提高网络应用的性能。该标准定义了一种二进制代码格式，作为各种语言的编译目标，如C、C++和Rust。该标准还定义了一种可读性的文本表示法，不过，WebAssembly模块很难被人类读者解释，无论他们的经验水平如何。这使得理解和维护任何现有的WebAssembly代码变得困难。因此，第三方WebAssembly模块需要被开发者隐含地信任，因为验证功能本身可能是不可行的。</p>
-<p>​
-为此，我们构建了<strong>WASPur</strong>，一个自动识别WebAssembly函数功能的工具。为了构建这个工具，我们首先构建了一个广泛的WebAssembly样本集，代表了WebAssembly的状态。其次，我们分析数据集，并确定所收集的WebAssembly模块的不同使用情况。我们利用WebAssembly模块的数据集来构建模块中功能的语义感知的中间表示（IR）。我们对函数IR进行编码，用于机器学习分类器，我们发现这个分类器可以预测一个给定函数与已知命名函数的相似性，其准确率为88.07%。我们希望我们的工具能够检查优化和减化的WebAssembly模块，这些模块去除了函数名称和大多数其他语义标识符。</p>
+<h1 id="ABSTRACT"><a href="#ABSTRACT" class="headerlink" title="ABSTRACT"></a>ABSTRACT</h1><p>​    WebAssembly是最近建立的一个网络标准，用于提高网络应用的性能。该标准定义了一种二进制代码格式，作为各种语言的编译目标，如C、C++和Rust。该标准还定义了一种可读性的文本表示法，不过，WebAssembly模块很难被人类读者解释，无论他们的经验水平如何。这使得理解和维护任何现有的WebAssembly代码变得困难。因此，第三方WebAssembly模块需要被开发者隐含地信任，因为验证功能本身可能是不可行的。</p>
+<p>​    为此，我们构建了<strong>WASPur</strong>，一个自动识别WebAssembly函数功能的工具。为了构建这个工具，我们首先构建了一个广泛的WebAssembly样本集，代表了WebAssembly的状态。其次，我们分析数据集，并确定所收集的WebAssembly模块的不同使用情况。我们利用WebAssembly模块的数据集来构建模块中功能的语义感知的中间表示（IR）。我们对函数IR进行编码，用于机器学习分类器，我们发现这个分类器可以预测一个给定函数与已知命名函数的相似性，其准确率为88.07%。我们希望我们的工具能够检查优化和减化的WebAssembly模块，这些模块去除了函数名称和大多数其他语义标识符。</p>
 <span id="more"></span>
-<h1 id="知识背景">知识背景</h1>
-<p>​ <strong>WebAssembly阅读困难的原因：</strong></p>
-<ol type="1">
+<h1 id="知识背景"><a href="#知识背景" class="headerlink" title="知识背景"></a>知识背景</h1><p>​    <strong>WebAssembly阅读困难的原因：</strong></p>
+<ol>
 <li>WebAssembly只有四种数字数据类型，i32、i64、f32和f64，这使得例如字符串操作和加密散列等操作的指令序列变得十分相似，难以阅读;</li>
 <li>其次，它的堆栈机设计使得在某个位置推导出一个变量的值很困难。必须从一个给定的位置追踪堆栈，以确定特定代码位置的计算值。</li>
 </ol>
-<p>​
-由于许多第三方模块交付时并没有源码，故确定该WASM模块的功能就需要手工验证。有以前的工作研究了WASM样本本身的目的，但是没有工作帮助开发者理解WASM模块的函数功能。</p>
+<p>​    由于许多第三方模块交付时并没有源码，故确定该WASM模块的功能就需要手工验证。有以前的工作研究了WASM样本本身的目的，但是没有工作帮助开发者理解WASM模块的函数功能。</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230526213539080.png" style="zoom: 67%;" /></p>
-<p>​
-WebAssembly模块有一个明确的结构定义。每个模块由10个部分组成，分别描述模块的不同组成部分：</p>
+<p>​    WebAssembly模块有一个明确的结构定义。每个模块由10个部分组成，分别描述模块的不同组成部分：</p>
+<div class="table-container">
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>Name</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>Types</td>
 <td>所有函数参数和返回值类型</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Functions</td>
 <td>所有WASM函数的类型、使用的局部变量和WASM指令组成的函数体</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Tables</td>
 <td>间接调用目标函数表</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Memory</td>
 <td>本模块线性内存部分属性</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Globals</td>
 <td>该模块使用的全局变量</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Elements</td>
 <td>用于初始化指定函数表的函数索引</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Data</td>
 <td>用于初始化指定的线性内存部分的字节序列</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Start</td>
 <td>模块初始化函数</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Import</td>
 <td>从JS导入，并在WASM调用的函数</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Exports</td>
 <td>导出到JS中被调用的函数</td>
 </tr>
 </tbody>
 </table>
-<p>​ 本工作的分类方法聚焦于<strong><em>Functions</em></strong>节。</p>
-<h2 id="贡献">贡献</h2>
-<ol type="1">
+</div>
+<p>​    本工作的分类方法聚焦于<strong><em>Functions</em></strong>节。</p>
+<h2 id="贡献"><a href="#贡献" class="headerlink" title="贡献"></a>贡献</h2><ol>
 <li>我们提出了一个中间表示法（IR）来抽象WebAssembly应用程序的底层语义，以实现语法弹性分析；</li>
 <li>构建了从真实网站、火狐插件、Chrome拓展和Github仓库中爬取的WASM样本数据集；</li>
 <li>对WASM样本综合分析，将行为目的分为12类；</li>
 <li>开发自动分类工具WASPur，以实现WASM函数的自动打标签，准确率达到88.07%。</li>
 </ol>
-<h2 id="模型方法">模型方法</h2>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230528195748.png" style="zoom: 67%;" /></p>
-<h3 id="生成中间表示ir">1. 生成中间表示IR</h3>
-<p>​ 对虚拟栈操作的抽象：</p>
+<h2 id="模型方法"><a href="#模型方法" class="headerlink" title="模型方法"></a>模型方法</h2><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230528195748.png" style="zoom: 67%;" /></p>
+<h3 id="1-生成中间表示IR"><a href="#1-生成中间表示IR" class="headerlink" title="1. 生成中间表示IR"></a>1. 生成中间表示IR</h3><p>​    对虚拟栈操作的抽象：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230528202454.png" style="zoom:67%;" /></p>
-<h3 id="抽象处理">2. 抽象处理</h3>
-<p>​
-首先构建每个函数的内部cfg（iCFG）,再通过call调用连接各个iCFG构建程序间ICFG。为每个函数建立一个单独的ICFG，所需的函数被用作图形遍历的起始点。call的深度被限制为2，其防止了递归函数无限调用。</p>
-<h3 id="分类器">3. 分类器</h3>
-<ul>
+<h3 id="2-抽象处理"><a href="#2-抽象处理" class="headerlink" title="2. 抽象处理"></a>2. 抽象处理</h3><p>​    首先构建每个函数的内部cfg（iCFG）,再通过call调用连接各个iCFG构建程序间ICFG。为每个函数建立一个单独的ICFG，所需的函数被用作图形遍历的起始点。call的深度被限制为2，其防止了递归函数无限调用。</p>
+<h3 id="3-分类器"><a href="#3-分类器" class="headerlink" title="3. 分类器"></a>3. 分类器</h3><ul>
 <li><strong>模型：</strong>全连接层神经网络；</li>
 <li><strong>输入：</strong>抽象序列（每个函数的）；</li>
 <li><strong>输出：</strong>189个unit（对应人工分析的189个不同function类）</li>
 </ul>
-<h3 id="数据集">4. 数据集</h3>
-<ul>
-<li><p><strong>来源：</strong>Alexa、Chrome extensions、Firefox
-add-ons、GitHub repositories。</p></li>
+<h3 id="4-数据集"><a href="#4-数据集" class="headerlink" title="4. 数据集"></a>4. 数据集</h3><ul>
+<li><p><strong>来源：</strong>Alexa、Chrome extensions、Firefox add-ons、GitHub repositories。</p>
+</li>
 <li><p><strong>构建的数据集：</strong></p>
 <ul>
 <li><p><strong><em>Dataset for WebAssembly Binaries</em></strong></p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230529111145.png" style="zoom:50%;" /></p>
-<p>上表显示了从四个source爬取的：<u>样本总数</u>、<u>使用WASM的样本数</u>、<u>WASM程序数</u>。故这里共有6769个WASM样本，由于一个程序可能有多个WASM模块，这里共有1829个独立模块。</p></li>
-<li><p><strong><em>Dataset for WebAssembly GitHub
-Repositories</em></strong></p>
+<p>上表显示了从四个source爬取的：<u>样本总数</u>、<u>使用WASM的样本数</u>、<u>WASM程序数</u>。故这里共有6769个WASM样本，由于一个程序可能有多个WASM模块，这里共有1829个独立模块。</p>
+</li>
+<li><p><strong><em>Dataset for WebAssembly GitHub Repositories</em></strong></p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230529111746.png" style="zoom:50%;" /></p>
-<p>从112M的Github仓库中定位了435个与WASM有关的仓库，上表表明了这些仓库的功能目的。</p></li>
-</ul></li>
+<p>从112M的Github仓库中定位了435个与WASM有关的仓库，上表表明了这些仓库的功能目的。</p>
+</li>
+</ul>
+</li>
 <li><p><strong>Module-level 分类</strong>：</p>
 <p>首先将样本分为12类：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230529112849.png" style="zoom:50%;" /></p>
 <p>对于每一类，下表给出其位置、文件大小信息：</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230529113357.png" /></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230529113357.png" alt=""></p>
 <p>下表给出了每个类的特征数和特征例子：</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230529114040.png" /></p></li>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230529114040.png" alt=""></p>
+</li>
 <li><p><strong>Function-level 分类</strong>：</p>
-<p>由于WASM在编译时会采用最小化函数名称的机制，会损失很多函数名称信息。这里从至少两个独立模块中出现的函数中创建标签，将类似malloc,
-_malloc,
-和memory.allocate的函数名称压缩为一个单独的标签组malloc。这里得到了189个不同功能的函数类别。</p></li>
+<p>由于WASM在编译时会采用最小化函数名称的机制，会损失很多函数名称信息。这里从至少两个独立模块中出现的函数中创建标签，将类似malloc, _malloc, 和memory.allocate的函数名称压缩为一个单独的标签组malloc。这里得到了189个不同功能的函数类别。</p>
+</li>
 </ul>
 
       
@@ -331,9 +317,7 @@ _malloc,
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#automated-webassembly-function-purpose-identification-with-semantics-aware-analysis"><span class="nav-number">1.</span> <span class="nav-text">Automated
-WebAssembly Function Purpose Identification With Semantics-Aware
-Analysis</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#abstract"><span class="nav-number">2.</span> <span class="nav-text">ABSTRACT</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9F%A5%E8%AF%86%E8%83%8C%E6%99%AF"><span class="nav-number">3.</span> <span class="nav-text">知识背景</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%A1%E7%8C%AE"><span class="nav-number">3.1.</span> <span class="nav-text">贡献</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E6%96%B9%E6%B3%95"><span class="nav-number">3.2.</span> <span class="nav-text">模型方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E4%B8%AD%E9%97%B4%E8%A1%A8%E7%A4%BAir"><span class="nav-number">3.2.1.</span> <span class="nav-text">1. 生成中间表示IR</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%BD%E8%B1%A1%E5%A4%84%E7%90%86"><span class="nav-number">3.2.2.</span> <span class="nav-text">2. 抽象处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E7%B1%BB%E5%99%A8"><span class="nav-number">3.2.3.</span> <span class="nav-text">3. 分类器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">3.2.4.</span> <span class="nav-text">4. 数据集</span></a></li></ol></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Automated-WebAssembly-Function-Purpose-Identification-With-Semantics-Aware-Analysis"><span class="nav-number">1.</span> <span class="nav-text">Automated WebAssembly Function Purpose Identification With Semantics-Aware Analysis</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ABSTRACT"><span class="nav-number">2.</span> <span class="nav-text">ABSTRACT</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9F%A5%E8%AF%86%E8%83%8C%E6%99%AF"><span class="nav-number">3.</span> <span class="nav-text">知识背景</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%A1%E7%8C%AE"><span class="nav-number">3.1.</span> <span class="nav-text">贡献</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E6%96%B9%E6%B3%95"><span class="nav-number">3.2.</span> <span class="nav-text">模型方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%94%9F%E6%88%90%E4%B8%AD%E9%97%B4%E8%A1%A8%E7%A4%BAIR"><span class="nav-number">3.2.1.</span> <span class="nav-text">1. 生成中间表示IR</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%8A%BD%E8%B1%A1%E5%A4%84%E7%90%86"><span class="nav-number">3.2.2.</span> <span class="nav-text">2. 抽象处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%88%86%E7%B1%BB%E5%99%A8"><span class="nav-number">3.2.3.</span> <span class="nav-text">3. 分类器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">3.2.4.</span> <span class="nav-text">4. 数据集</span></a></li></ol></li></ol></li></ol>
     
     </div>
   </aside>
@@ -527,5 +511,20 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>

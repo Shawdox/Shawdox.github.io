@@ -116,6 +116,78 @@
         
           <section id="main">
   
+    <article id="post-【论文阅读】Binary-level Directed Fuzzing for Use-After-Free Vulnerabilities"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2023/05/25/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Binary-level%20Directed%20Fuzzing%20for%20Use-After-Free%20Vulnerabilities/">(论文阅读)Binary-level Directed Fuzzing for Use-After-Free Vulnerabilities</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/05/25/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Binary-level%20Directed%20Fuzzing%20for%20Use-After-Free%20Vulnerabilities/" class="article-date">
+	  <time datetime="2023-05-25T07:01:42.000Z" itemprop="datePublished">五月 25, 2023</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+
+          
+            <div class="entry-thumbnail">
+              <a href="/2023/05/25/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Binary-level%20Directed%20Fuzzing%20for%20Use-After-Free%20Vulnerabilities/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+            </div>
+          
+          <div class="entry-summary">
+          (论文阅读)Binary-level Directed Fuzzing for Use-After-Free Vulnerabilities
+时间：2020
+作者：Manh-Dung Nguyen（巴黎萨克雷大学CEA）、Sébastien Bardin、Richard Bonichon
+会议：RAID
+开源：[1]https://github.com/strongcourage/uafuzz ;[2]https://github.com/strongcourage/uafbench
+
+ABSTRACT​    Directed fuzzing聚焦于通过利用额外信息（bug stack trace、补丁或者有风险的操作）来测试代码的特定部分，其重要的应用场景包括漏洞复现、补丁测试以及对静态分析报告的验证。尽管Directed fuzzing最近受到了很多关注，但诸如UAF等难以检测的漏洞仍然没有得到很好的解决，特别是在二进制层面。
+​    我们提出了UAFUZZ，第一个针对UAF漏洞的二进制级别directed greybox fuzzer。该技术包括了一个针对UAF特性设计的Fuzzer，一个轻量级的代码插装（code instrumentation）工具和一个高效的bug处理步骤。
+​    对真实案例中的bug复现进行的实验评估表明，UAFUZZ在故障检测率、暴露时间和bug处理方面明显优于最先进的Directed fuzzer。UAFUZZ在补丁测试中也被证明是有效的，在Perl、GPAC和GNU Patch等程序中发现了30个新的错误（7个CVEs）。最后，我们为社区提供了一个专门用于UAF的大型模糊测试基准，该基准建立在真实代码和真实bug之上。
+
+        
+          <p class="article-more-link">
+            <a href="/2023/05/25/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Binary-level%20Directed%20Fuzzing%20for%20Use-After-Free%20Vulnerabilities/#more">阅读全文</a>
+          </p>
+        </div>
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/UAF/" rel="tag">UAF</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
     <article id="post-【代码分析】GREBE-Analyzer污点分析代码解析"  class="article article-type-post" itemscope itemprop="blogPost" >
   <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
     
@@ -148,14 +220,12 @@
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/05/09/%E3%80%90%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%E3%80%91GREBE-Analyzer%E6%B1%A1%E7%82%B9%E5%88%86%E6%9E%90%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/05/09/%E3%80%90%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%E3%80%91GREBE-Analyzer%E6%B1%A1%E7%82%B9%E5%88%86%E6%9E%90%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/"><img src="http://lorempixel.com/750/450/city/7" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
           (代码分析)GREBE-Analyzer污点分析代码解析
-
-Code：Markakd/GREBE
-(github.com)
+Code：Markakd/GREBE (github.com)
 Target：GREBE/analyzer
 
         
@@ -216,28 +286,20 @@ Target：GREBE/analyzer
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/05/08/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91The-Use-of-Likely-Invariants-as-Feedback-for-FuzzersVulnerabilities/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/05/08/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91The-Use-of-Likely-Invariants-as-Feedback-for-FuzzersVulnerabilities/"><img src="http://lorempixel.com/750/450/city/3" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          (论文阅读)The
-Use of Likely Invariants as Feedback for Fuzzers
-
+          (论文阅读)The Use of Likely Invariants as Feedback for Fuzzers
 时间：2021.8
-作者：Andrea Fioraldi、Daniele Cono D’Elia、Davide
-Balzarotti
+作者：Andrea Fioraldi、Daniele Cono D’Elia、Davide Balzarotti
 会议：USENIX
-开源：eurecom-s3/invscov: The Use
-of Likely Invariants as Feedback for Fuzzers (github.com)
+开源：eurecom-s3/invscov: The Use of Likely Invariants as Feedback for Fuzzers (github.com)
 截止2023.5.6被引23次
 
-ABSTRACT
-​
-如今Fuzzing的主要限制是以coverage-guided为基准设计的fuzzing方法是为了尽可能达到程序的不同部分而逐渐被优化，但若仅仅可达性不足以触发一个漏洞时，这种方法就会陷入困境。实际上，许多bug的触发不仅依赖于特定的控制流，还依赖一些程序的变量的值（数据流）。不幸的是，过去提出的捕捉程序状态的替代探索策略在实践中帮助不大，因为它们会立即导致状态爆炸问题。
-​
-在本文，我们提出了一个新型反馈机制，通过考虑到程序变量的”不变值“和其之间的关系来增强代码覆盖率。为此，我们在基本块层面上学习可能的变量“不变值”，并相应地划分程序状态空间。我们的反馈可以区分输入是否违反了一个或多个不变量，并对其进行奖励，从而完善代码覆盖通常提供的程序状态近似值。
-​
-基于LLVM和AFPL++，我们在一个名为INVSCOV的原型中实现了上述的技术。实验表明，与使用纯代码覆盖反馈的fuzzer相比，我们的方法可以发现更多、更不同的bug。此外，还发现了一个在OSS-Fuzz上每天测试的库中的两个漏洞，而且当时在其最新版本中仍然存在。
+ABSTRACT​    如今Fuzzing的主要限制是以coverage-guided为基准设计的fuzzing方法是为了尽可能达到程序的不同部分而逐渐被优化，但若仅仅可达性不足以触发一个漏洞时，这种方法就会陷入困境。实际上，许多bug的触发不仅依赖于特定的控制流，还依赖一些程序的变量的值（数据流）。不幸的是，过去提出的捕捉程序状态的替代探索策略在实践中帮助不大，因为它们会立即导致状态爆炸问题。
+​    在本文，我们提出了一个新型反馈机制，通过考虑到程序变量的”不变值“和其之间的关系来增强代码覆盖率。为此，我们在基本块层面上学习可能的变量“不变值”，并相应地划分程序状态空间。我们的反馈可以区分输入是否违反了一个或多个不变量，并对其进行奖励，从而完善代码覆盖通常提供的程序状态近似值。
+​    基于LLVM和AFPL++，我们在一个名为INVSCOV的原型中实现了上述的技术。实验表明，与使用纯代码覆盖反馈的fuzzer相比，我们的方法可以发现更多、更不同的bug。此外，还发现了一个在OSS-Fuzz上每天测试的库中的两个漏洞，而且当时在其最新版本中仍然存在。
 
         
           <p class="article-more-link">
@@ -297,24 +359,14 @@ ABSTRACT
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/05/04/%E3%80%90%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93%E3%80%91The%20Kernel%20Address%20Sanitizer(KASAN)/"><img src="http://lorempixel.com/750/450/city/7" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/05/04/%E3%80%90%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93%E3%80%91The%20Kernel%20Address%20Sanitizer(KASAN)/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          The Kernel Address
-Sanitizer(KASAN)
-1. 兼容性
-​
-KASAN是一个动态内存安全错误检测器，旨在发现内核out-of-bounds和UAF错误。KASAN有三个模块：Generic KASAN、Software Tag-Based KASAN、Hardware Tag-Based KASAN。Generic KASAN兼容许多CPU架构，但性能开销很大；Software Tag-Based KASAN和Hardware Tag-Based KASAN都只兼容arm64架构的CPU，性能开销会更小。
-​
-一般的，称Generic KASAN和Software Tag-Based KASAN为software
-KASAN；
-​
-称Software Tag-Based KASAN和Hardware Tag-Based KASAN为tag-based
-KASAN。
-​ Generic KASAN支持的指令集架构有：x86_64, arm, arm64,
-powerpc, riscv, s390, 和
-xtensa；tag-based KASAN只支持arm64。
+          The Kernel Address Sanitizer(KASAN)1. 兼容性​    KASAN是一个动态内存安全错误检测器，旨在发现内核out-of-bounds和UAF错误。KASAN有三个模块：Generic KASAN、Software Tag-Based KASAN、Hardware Tag-Based KASAN。Generic KASAN兼容许多CPU架构，但性能开销很大；Software Tag-Based KASAN和Hardware Tag-Based KASAN都只兼容arm64架构的CPU，性能开销会更小。
+​    一般的，称Generic KASAN和Software Tag-Based KASAN为software KASAN；
+​    称Software Tag-Based KASAN和Hardware Tag-Based KASAN为tag-based KASAN。
+​    Generic KASAN支持的指令集架构有：x86_64, arm, arm64, powerpc, riscv, s390, 和 xtensa；tag-based KASAN只支持arm64。
 
         
           <p class="article-more-link">
@@ -374,12 +426,11 @@ xtensa；tag-based KASAN只支持arm64。
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/05/01/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91(LLVM%E5%85%A5%E9%97%A8)%E7%BC%96%E5%86%99LLVM%20PASS/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/05/01/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91(LLVM%E5%85%A5%E9%97%A8)%E7%BC%96%E5%86%99LLVM%20PASS/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          (LLVM入门)编写LLVM PASS
-​ 前置知识：
+          (LLVM入门)编写LLVM PASS​    前置知识：
 
 
 LLVM IR结构；
@@ -446,24 +497,18 @@ CMake；
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/04/10/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91GREBE-Unveiling-Exploitation-Potential-for-Linux-Kernel-Bugs/"><img src="http://lorempixel.com/750/450/city/7" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/04/10/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91GREBE-Unveiling-Exploitation-Potential-for-Linux-Kernel-Bugs/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          GREBE:
-Unveiling Exploitation Potential for Linux Kernel Bugs
-
+          GREBE: Unveiling Exploitation Potential for Linux Kernel Bugs
 时间：2022
 作者：Zhenpeng Lin,Yueqi Chen,Yuhang Wu
 会议：SP
 
-ABSTRACT
-​
-最近，动态测试工具显著提升了Linux内核漏洞的发掘速度，这些工具会在挖掘漏洞时自动地生成报告，具体说明Linux系统的error。报告中的error暗示了相应的内核错误的可能的exploitability，因此，许多安全分析员使用(报告中)表现出来的error来推断一个错误的可利用性，从而考虑其exploit开发的优先级。然而，使用报告中的error可能会低估一个错误的可利用性。报告中表现出的error可能取决于该error是如何被触发的。通过不同的路径或在不同的背景下，一个error可能表现出各种错误行为，意味着非常不同的利用潜力。
-​
-此文提出了一个新的内核fuzz技术来找到所有可能的内核漏洞的error的表现。与传统的专注于内核代码覆盖率的内核fuzzing技术不同，我们的fuzzing技术更多的是针对有漏洞的代码片段。为了探索不同触发同一个bug的上下文/路径，文章引入了object-driven内核fuzzing技术。通过新探索的error，安全研究人员可以更好地推断出一个error的可利用性。
-​
-为了评估我们提出的技术的有效性、效率和影响，我们将我们的fuzzing技术作为一个工具GREBE来实现，并将其应用于60个真实世界的Linux内核漏洞。平均来说，GREBE可以为每个内核漏洞表现出2个以上的额外错误行为。对于26个内核错误，GREBE发现了更高的开发潜力。我们向内核供应商报告了其中的一些错误--这些错误的可利用性被错误地评估了，相应的补丁还没有被仔细地应用--导致他们迅速地采用补丁。
+ABSTRACT​    最近，动态测试工具显著提升了Linux内核漏洞的发掘速度，这些工具会在挖掘漏洞时自动地生成报告，具体说明Linux系统的error。报告中的error暗示了相应的内核错误的可能的exploitability，因此，许多安全分析员使用(报告中)表现出来的error来推断一个错误的可利用性，从而考虑其exploit开发的优先级。然而，使用报告中的error可能会低估一个错误的可利用性。报告中表现出的error可能取决于该error是如何被触发的。通过不同的路径或在不同的背景下，一个error可能表现出各种错误行为，意味着非常不同的利用潜力。
+​    此文提出了一个新的内核fuzz技术来找到所有可能的内核漏洞的error的表现。与传统的专注于内核代码覆盖率的内核fuzzing技术不同，我们的fuzzing技术更多的是针对有漏洞的代码片段。为了探索不同触发同一个bug的上下文/路径，文章引入了object-driven内核fuzzing技术。通过新探索的error，安全研究人员可以更好地推断出一个error的可利用性。
+​    为了评估我们提出的技术的有效性、效率和影响，我们将我们的fuzzing技术作为一个工具GREBE来实现，并将其应用于60个真实世界的Linux内核漏洞。平均来说，GREBE可以为每个内核漏洞表现出2个以上的额外错误行为。对于26个内核错误，GREBE发现了更高的开发潜力。我们向内核供应商报告了其中的一些错误—这些错误的可利用性被错误地评估了，相应的补丁还没有被仔细地应用—导致他们迅速地采用补丁。
 
         
           <p class="article-more-link">
@@ -527,22 +572,15 @@ ABSTRACT
             </div>
           
           <div class="entry-summary">
-          Demons
-in the Shared Kernel: Abstract Resource Attacks Against OS-level
-Virtualization
-
+          Demons in the Shared Kernel: Abstract Resource Attacks Against OS-level Virtualization
 时间：2021.11
 作者：Nanzi Yang（西电）、Wenbo Shen（浙大）
 会议：CCS
 
 对docker的一种Ddos攻击，实现了自动化检测。
-ABSTRACT
-​ 由于其更快的启动速度和更好的资源利用效率，操作系统级虚拟化(OS-level
-virtualization)已被广泛采用，并已成为云计算的一项基本技术。与硬件虚拟化相比，操作系统级虚拟化利用共享内核设计来达到更高的效率，并在共享内核上运行多个用户空间实例（又称容器）。然而，在本文中，我们揭示了一个新的攻击面，此漏洞是操作系统级虚拟化技术所固有的，会影响到Linux、FreeBSD和Fuchsia。
-​
-产生漏洞的根本原因是，操作系统级虚拟化中的共享内核设计导致容器直接或间接地共享成千上万的内核变量和数据结构。在不利用任何内核漏洞的情况下，非特权容器可以轻易地用尽共享的内核变量和数据结构实例，对其他容器进行DoS攻击。与物理资源相比，这些内核变量或数据结构实例（称为抽象资源）更普遍，但受到的保护不足。
-​ 为了显示限制抽象资源（Abstract
-Resources）的重要性，我们针对操作系统内核的不同方面进行了抽象资源攻击。结果表明，攻击抽象资源是非常实用和关键的。我们进一步进行了系统分析，以识别Linux内核中易受攻击的抽象资源，成功检测出1010个抽象资源，其中501个可以被动态地重复消耗。我们还在四大云厂商的自部署共享内核容器环境中进行了攻击实验。结果显示，所有环境都容易受到抽象资源的攻击。我们得出结论，限制抽象资源的使用是很难的，并给出了减轻此风险的多种策略。
+ABSTRACT​    由于其更快的启动速度和更好的资源利用效率，操作系统级虚拟化(OS-level virtualization)已被广泛采用，并已成为云计算的一项基本技术。与硬件虚拟化相比，操作系统级虚拟化利用共享内核设计来达到更高的效率，并在共享内核上运行多个用户空间实例（又称容器）。然而，在本文中，我们揭示了一个新的攻击面，此漏洞是操作系统级虚拟化技术所固有的，会影响到Linux、FreeBSD和Fuchsia。
+​    产生漏洞的根本原因是，操作系统级虚拟化中的共享内核设计导致容器直接或间接地共享成千上万的内核变量和数据结构。在不利用任何内核漏洞的情况下，非特权容器可以轻易地用尽共享的内核变量和数据结构实例，对其他容器进行DoS攻击。与物理资源相比，这些内核变量或数据结构实例（称为抽象资源）更普遍，但受到的保护不足。
+​    为了显示限制抽象资源（Abstract Resources）的重要性，我们针对操作系统内核的不同方面进行了抽象资源攻击。结果表明，攻击抽象资源是非常实用和关键的。我们进一步进行了系统分析，以识别Linux内核中易受攻击的抽象资源，成功检测出1010个抽象资源，其中501个可以被动态地重复消耗。我们还在四大云厂商的自部署共享内核容器环境中进行了攻击实验。结果显示，所有环境都容易受到抽象资源的攻击。我们得出结论，限制抽象资源的使用是很难的，并给出了减轻此风险的多种策略。
 
         
           <p class="article-more-link">
@@ -602,19 +640,16 @@ Resources）的重要性，我们针对操作系统内核的不同方面进行�
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/02/27/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Windows%20of%20Vulnerability%20A%20Case%20Study%20Analysis/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/02/27/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Windows%20of%20Vulnerability%20A%20Case%20Study%20Analysis/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          【论文阅读】Windows
-of Vulnerability: A Case Study Analysis
-
+          【论文阅读】Windows of Vulnerability: A Case Study Analysis
 时间：2000
 作者：Arbaugh W A, Fithen W L, McHugh J
 期刊：Computer
 
-ABSTRACT
-作者为系统漏洞提出了一个“生命循环”模型，以此来分析三个样例，揭示了系统如何在安全修复后的很长一段时间内仍然存在漏洞。
+ABSTRACT作者为系统漏洞提出了一个“生命循环”模型，以此来分析三个样例，揭示了系统如何在安全修复后的很长一段时间内仍然存在漏洞。
 
         
           <p class="article-more-link">
@@ -674,21 +709,14 @@ ABSTRACT
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/02/16/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Symbolic%20Execution-%E7%AC%A6%E5%8F%B7%E6%89%A7%E8%A1%8C/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/02/16/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Symbolic%20Execution-%E7%AC%A6%E5%8F%B7%E6%89%A7%E8%A1%8C/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
-          Symbolic
-Execution：从思维上理解符号执行
-​
-符号执行作为软件分析、漏洞发掘领域经常出现的技术，国内已经有不少文章总结讨论。但新手直接翻阅学习这些总结性质的文章时碰到的诸如“符号路径约束”、“约束求解”、“执行状态”等专有名词会难以理解，思维逻辑与理论概念不易同轨。本文从国外的一些热门教程入手，
-将符号执行从思维上捋一遍， 诠才末学，仅做抛砖引玉之用。
-1. 引子：
-1.0 一个样例
-​ 从一段经典的代码入手，解释符号执行的核心思路。
+          Symbolic Execution：从思维上理解符号执行​    符号执行作为软件分析、漏洞发掘领域经常出现的技术，国内已经有不少文章总结讨论。但新手直接翻阅学习这些总结性质的文章时碰到的诸如“符号路径约束”、“约束求解”、“执行状态”等专有名词会难以理解，思维逻辑与理论概念不易同轨。本文从国外的一些热门教程入手， 将符号执行从思维上捋一遍， 诠才末学，仅做抛砖引玉之用。
+1. 引子：1.0 一个样例​    从一段经典的代码入手，解释符号执行的核心思路。
 
-​
-分析目标：对于任意可能的输入组合(a,b)，找到使得断言assert语句失败的所有输入。
+​    分析目标：对于任意可能的输入组合(a,b)，找到使得断言assert语句失败的所有输入。
 
         
           <p class="article-more-link">
@@ -752,34 +780,26 @@ Execution：从思维上理解符号执行
             </div>
           
           <div class="entry-summary">
-          【论文复现】How
-Machine Learning Is Solving the Binary Function Similarity Problem
-一、模糊哈希（Fuzzy Hashing）
-1. Bytes fuzzy
-hashing——Catalog1
-
+          【论文复现】How Machine Learning Is Solving the Binary Function Similarity Problem一、模糊哈希（Fuzzy Hashing）1. Bytes fuzzy hashing——Catalog1
 出处：
-​ 1. xorpd |
-FCatalog
-​ 2. binary_function_similarity/Models/Catalog1
-at main · Cisco-Talos/binary_function_similarity (github.com)
-"FCatalog allows you to keep a database of all your named functions,
-and find similarities from this database efficiently."
+​    1. xorpd | FCatalog
+​    2. binary_function_similarity/Models/Catalog1 at main · Cisco-Talos/binary_function_similarity (github.com)
+“FCatalog allows you to keep a database of all your named functions, and find similarities from this database efficiently.”
 
 前置知识：
-
 binary blob：一串bytes；
-S(a)：字节串a的四字截取集合，例如: \[
+
+S(a)：字节串a的四字截取集合，例如:
+
 \mathbf{S(a)}= \{123x,23xy,3xy1\},a=123xy1 \\
 \mathbf{S(b)}= \{1111\},b=111111111 \\
-\]
-Jaccard Similarity：计算两个集合相似性： \[
+Jaccard Similarity：计算两个集合相似性：
+
 J（S(a),S(b)）=\frac {S(a)\cap S(b)}{S(a)\cup S(b)}
-\]
 minhash：文本相似度比较算法，用于快速估算两个集合的相似度。
 
-​
-Catalog1算法利用minhash，使用哈希近似替代两个S集合，以此来估算其Jaccard系数，从而达到高效率地比较两个集合。
+
+​    Catalog1算法利用minhash，使用哈希近似替代两个S集合，以此来估算其Jaccard系数，从而达到高效率地比较两个集合。
 
         
           <p class="article-more-link">
@@ -792,80 +812,6 @@ Catalog1算法利用minhash，使用哈希近似替代两个S集合，以此来�
       
 	<span class="ico-folder"></span>
     <a class="article-category-link" href="/categories/Reproduce/">Reproduce</a>
-
-      
-  <span class="ico-tags"></span>
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Binary/" rel="tag">Binary</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ML/" rel="tag">ML</a></li></ul>
-
-      
-    </footer>
-    <hr class="entry-footer-hr">
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
-    <article id="post-Comparing-One-with-Many-—-Solving-Binary2source-Function-Matching-Under-Function-Inlining"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2023/01/10/Comparing-One-with-Many-%E2%80%94-Solving-Binary2source-Function-Matching-Under-Function-Inlining/">Comparing One with Many — Solving Binary2source Function Matching Under  Function Inlining</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2023/01/10/Comparing-One-with-Many-%E2%80%94-Solving-Binary2source-Function-Matching-Under-Function-Inlining/" class="article-date">
-	  <time datetime="2023-01-10T07:27:48.000Z" itemprop="datePublished">一月 10, 2023</time>
-	</a>
-
-      
-	<span class="ico-folder"></span>
-    <a class="article-category-link" href="/categories/Paper/">Paper</a>
- 
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-
-          
-            <div class="entry-thumbnail">
-              <a href="/2023/01/10/Comparing-One-with-Many-%E2%80%94-Solving-Binary2source-Function-Matching-Under-Function-Inlining/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
-            </div>
-          
-          <div class="entry-summary">
-          【论文阅读】Comparing
-One with Many — Solving Binary2source Function Matching Under Function
-Inlining
-一、ABSTRACT
-为了在函数内联下施行b2s函数匹配，我们提出了一个叫O2NMatcher的方法，通过其生成的Source
-function Sets (SFSs)作为匹配结果。
-我们首先提出了一个模型EOOCJ48来预测内联的位置，
-为了训练这个模型，我们利用可编译的开源软件（Open Source
-Software）生成一个带有标记的调用点（内联或不内联）的数据集，从调用点中提取几个特征，并通过检查不同编译之间的内联相关性来设计一个基于编译器-选项的多标签分类器。
-然后，我们使用这个模型来预测不可编译的开源项目，得到带标记的函数调用图。接下来，我们将SFSs的构建视为一个子树生成问题，并设计根节点选择和边缘扩展规则来自动构建SFSs。最后，这些SFSs将被添加到源函数的语料库中，并与有内联的二进制函数进行比较。
-我们对OSNMatcher进行了一些实验测试，结果表明我们的方法超过所有state-of-the-art，将结果提升了6%。
-
-        
-          <p class="article-more-link">
-            <a href="/2023/01/10/Comparing-One-with-Many-%E2%80%94-Solving-Binary2source-Function-Matching-Under-Function-Inlining/#more">阅读全文</a>
-          </p>
-        </div>
-      
-    </div>
-    <footer class="entry-meta entry-footer">
-      
-	<span class="ico-folder"></span>
-    <a class="article-category-link" href="/categories/Paper/">Paper</a>
 
       
   <span class="ico-tags"></span>
@@ -990,6 +936,18 @@ Software）生成一个带有标记的调用点（内联或不内联）的数据
               <div class="widget-entry-summary" style="margin: 0;">
             
 
+              <h6 style="margin: 0;"><a href="/2023/12/26/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91CODAMOSA-Escaping-Coverage-Plateaus-in-Test-Generation-with-Pre-trained-Large-Language-Models/">(论文阅读)CODAMOSA-Escaping Coverage Plateaus in Test Generation with Pre-trained Large Language Models</a></h6>
+              <span>十二月 26, 2023</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
               <h6 style="margin: 0;"><a href="/2023/12/19/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91An-orchestrated-survey-of-methodologies-for-automated-software-test-case-generation/">(论文阅读)An orchestrated survey of methodologies for automated software test case generation</a></h6>
               <span>十二月 19, 2023</span>
             </div>
@@ -1044,18 +1002,6 @@ Software）生成一个带有标记的调用点（内联或不内联）的数据
 
           </li>
         
-          <li class="clearfix">
-
-            
-              <div class="widget-entry-summary" style="margin: 0;">
-            
-
-              <h6 style="margin: 0;"><a href="/2023/09/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Security-Risks-of-Porting-C-Programs-to-WebAssembly/">(论文阅读)Security Risks of Porting C Programs to WebAssembly</a></h6>
-              <span>九月 4, 2023</span>
-            </div>
-
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -1065,7 +1011,7 @@ Software）生成一个带有标记的调用点（内联或不内联）的数据
   <div class="widget-wrap">
     <h3 class="widget-title">分类</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Book/">Book</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Code/">Code</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kaggle/">Kaggle</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Paper/">Paper</a><span class="category-list-count">51</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Project/">Project</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Reproduce/">Reproduce</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Something/">Something</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/paper/">paper</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Book/">Book</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Code/">Code</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kaggle/">Kaggle</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Paper/">Paper</a><span class="category-list-count">52</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Project/">Project</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Reproduce/">Reproduce</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Something/">Something</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/paper/">paper</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1075,7 +1021,7 @@ Software）生成一个带有标记的调用点（内联或不内联）的数据
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD/" rel="tag">AD</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD-training/" rel="tag">AD training</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AEG/" rel="tag">AEG</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BCSA/" rel="tag">BCSA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary/" rel="tag">Binary</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Botnet/" rel="tag">Botnet</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CV/" rel="tag">CV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cloud/" rel="tag">Cloud</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNN/" rel="tag">DNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Differential-fuzzing/" rel="tag">Differential fuzzing</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a><span class="tag-list-count">16</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDS/" rel="tag">IDS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Klee/" rel="tag">Klee</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LLVM/" rel="tag">LLVM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Latex/" rel="tag">Latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ML/" rel="tag">ML</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Malware-Classifiers/" rel="tag">Malware Classifiers</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Math/" rel="tag">Math</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mutiagent/" rel="tag">Mutiagent</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/" rel="tag">NLP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDF/" rel="tag">PDF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RL/" rel="tag">RL</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RNN/" rel="tag">RNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Software-Testing/" rel="tag">Software Testing</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Symbolic-Execution/" rel="tag">Symbolic Execution</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UAF/" rel="tag">UAF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vulnerability/" rel="tag">Vulnerability</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WASI/" rel="tag">WASI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WASM/" rel="tag">WASM</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WebAssembly/" rel="tag">WebAssembly</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/" rel="tag">Windows</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/obfuscation/" rel="tag">obfuscation</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD/" rel="tag">AD</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD-training/" rel="tag">AD training</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AEG/" rel="tag">AEG</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BCSA/" rel="tag">BCSA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary/" rel="tag">Binary</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Botnet/" rel="tag">Botnet</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CV/" rel="tag">CV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cloud/" rel="tag">Cloud</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNN/" rel="tag">DNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Differential-fuzzing/" rel="tag">Differential fuzzing</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a><span class="tag-list-count">16</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDS/" rel="tag">IDS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Klee/" rel="tag">Klee</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LLM/" rel="tag">LLM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LLVM/" rel="tag">LLVM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Latex/" rel="tag">Latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ML/" rel="tag">ML</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Malware-Classifiers/" rel="tag">Malware Classifiers</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Math/" rel="tag">Math</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mutiagent/" rel="tag">Mutiagent</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/" rel="tag">NLP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDF/" rel="tag">PDF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RL/" rel="tag">RL</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RNN/" rel="tag">RNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Software-Testing/" rel="tag">Software Testing</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Symbolic-Execution/" rel="tag">Symbolic Execution</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UAF/" rel="tag">UAF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vulnerability/" rel="tag">Vulnerability</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WASI/" rel="tag">WASI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WASM/" rel="tag">WASM</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WebAssembly/" rel="tag">WebAssembly</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/" rel="tag">Windows</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/obfuscation/" rel="tag">obfuscation</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1085,7 +1031,7 @@ Software）生成一个带有标记的调用点（内联或不内联）的数据
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/AD/" style="font-size: 18.57px;">AD</a> <a href="/tags/AD-training/" style="font-size: 10px;">AD training</a> <a href="/tags/AEG/" style="font-size: 15.71px;">AEG</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/BCSA/" style="font-size: 10px;">BCSA</a> <a href="/tags/Binary/" style="font-size: 12.86px;">Binary</a> <a href="/tags/Botnet/" style="font-size: 10px;">Botnet</a> <a href="/tags/CV/" style="font-size: 10px;">CV</a> <a href="/tags/Cloud/" style="font-size: 10px;">Cloud</a> <a href="/tags/DDoS/" style="font-size: 10px;">DDoS</a> <a href="/tags/DNN/" style="font-size: 10px;">DNN</a> <a href="/tags/Differential-fuzzing/" style="font-size: 10px;">Differential fuzzing</a> <a href="/tags/Fuzzing/" style="font-size: 20px;">Fuzzing</a> <a href="/tags/IDS/" style="font-size: 11.43px;">IDS</a> <a href="/tags/Klee/" style="font-size: 10px;">Klee</a> <a href="/tags/LLVM/" style="font-size: 10px;">LLVM</a> <a href="/tags/Latex/" style="font-size: 10px;">Latex</a> <a href="/tags/ML/" style="font-size: 12.86px;">ML</a> <a href="/tags/Machine-Learning/" style="font-size: 11.43px;">Machine Learning</a> <a href="/tags/Malware-Classifiers/" style="font-size: 15.71px;">Malware Classifiers</a> <a href="/tags/Math/" style="font-size: 10px;">Math</a> <a href="/tags/Mutiagent/" style="font-size: 10px;">Mutiagent</a> <a href="/tags/NLP/" style="font-size: 12.86px;">NLP</a> <a href="/tags/PDF/" style="font-size: 10px;">PDF</a> <a href="/tags/Pytorch/" style="font-size: 11.43px;">Pytorch</a> <a href="/tags/RL/" style="font-size: 14.29px;">RL</a> <a href="/tags/RNN/" style="font-size: 10px;">RNN</a> <a href="/tags/Software-Testing/" style="font-size: 11.43px;">Software Testing</a> <a href="/tags/Symbolic-Execution/" style="font-size: 14.29px;">Symbolic Execution</a> <a href="/tags/UAF/" style="font-size: 10px;">UAF</a> <a href="/tags/Vulnerability/" style="font-size: 17.14px;">Vulnerability</a> <a href="/tags/WASI/" style="font-size: 10px;">WASI</a> <a href="/tags/WASM/" style="font-size: 17.14px;">WASM</a> <a href="/tags/WebAssembly/" style="font-size: 10px;">WebAssembly</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/obfuscation/" style="font-size: 10px;">obfuscation</a>
+      <a href="/tags/AD/" style="font-size: 18.57px;">AD</a> <a href="/tags/AD-training/" style="font-size: 10px;">AD training</a> <a href="/tags/AEG/" style="font-size: 15.71px;">AEG</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/BCSA/" style="font-size: 10px;">BCSA</a> <a href="/tags/Binary/" style="font-size: 12.86px;">Binary</a> <a href="/tags/Botnet/" style="font-size: 10px;">Botnet</a> <a href="/tags/CV/" style="font-size: 10px;">CV</a> <a href="/tags/Cloud/" style="font-size: 10px;">Cloud</a> <a href="/tags/DDoS/" style="font-size: 10px;">DDoS</a> <a href="/tags/DNN/" style="font-size: 10px;">DNN</a> <a href="/tags/Differential-fuzzing/" style="font-size: 10px;">Differential fuzzing</a> <a href="/tags/Fuzzing/" style="font-size: 20px;">Fuzzing</a> <a href="/tags/IDS/" style="font-size: 11.43px;">IDS</a> <a href="/tags/Klee/" style="font-size: 10px;">Klee</a> <a href="/tags/LLM/" style="font-size: 10px;">LLM</a> <a href="/tags/LLVM/" style="font-size: 10px;">LLVM</a> <a href="/tags/Latex/" style="font-size: 10px;">Latex</a> <a href="/tags/ML/" style="font-size: 12.86px;">ML</a> <a href="/tags/Machine-Learning/" style="font-size: 11.43px;">Machine Learning</a> <a href="/tags/Malware-Classifiers/" style="font-size: 15.71px;">Malware Classifiers</a> <a href="/tags/Math/" style="font-size: 10px;">Math</a> <a href="/tags/Mutiagent/" style="font-size: 10px;">Mutiagent</a> <a href="/tags/NLP/" style="font-size: 12.86px;">NLP</a> <a href="/tags/PDF/" style="font-size: 10px;">PDF</a> <a href="/tags/Pytorch/" style="font-size: 11.43px;">Pytorch</a> <a href="/tags/RL/" style="font-size: 14.29px;">RL</a> <a href="/tags/RNN/" style="font-size: 10px;">RNN</a> <a href="/tags/Software-Testing/" style="font-size: 12.86px;">Software Testing</a> <a href="/tags/Symbolic-Execution/" style="font-size: 14.29px;">Symbolic Execution</a> <a href="/tags/UAF/" style="font-size: 10px;">UAF</a> <a href="/tags/Vulnerability/" style="font-size: 17.14px;">Vulnerability</a> <a href="/tags/WASI/" style="font-size: 10px;">WASI</a> <a href="/tags/WASM/" style="font-size: 17.14px;">WASM</a> <a href="/tags/WebAssembly/" style="font-size: 10px;">WebAssembly</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/obfuscation/" style="font-size: 10px;">obfuscation</a>
     </div>
   </div>
 
@@ -1095,7 +1041,7 @@ Software）生成一个带有标记的调用点（内联或不内联）的数据
     <h3 class="widget-title">归档</h3>
 
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">十月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/09/">九月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/07/">七月 2023</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">14</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">十月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/09/">九月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/07/">七月 2023</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">14</span></li></ul>
     </div>
   </div>
 
@@ -1291,5 +1237,20 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>

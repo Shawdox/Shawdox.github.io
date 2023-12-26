@@ -13,19 +13,21 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="(论文阅读)Security Risks of Porting C Programs to WebAssembly  时间: 2022 作者：Quentin Stiévenart、Coen De Roover、Mohammad Ghafari 会议：Proceedings of the 37th ACM&#x2F;SIGAPP Symposium on Applied Computing">
+  <meta name="description" content="(论文阅读)Security Risks of Porting C Programs to WebAssembly 时间: 2022 作者：Quentin Stiévenart、Coen De Roover、Mohammad Ghafari 会议：Proceedings of the 37th ACM&#x2F;SIGAPP Symposium on Applied Computing  Abstract​">
 <meta property="og:type" content="article">
 <meta property="og:title" content="(论文阅读)Security Risks of Porting C Programs to WebAssembly">
 <meta property="og:url" content="http://example.com/2023/09/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Security-Risks-of-Porting-C-Programs-to-WebAssembly/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="(论文阅读)Security Risks of Porting C Programs to WebAssembly  时间: 2022 作者：Quentin Stiévenart、Coen De Roover、Mohammad Ghafari 会议：Proceedings of the 37th ACM&#x2F;SIGAPP Symposium on Applied Computing">
+<meta property="og:description" content="(论文阅读)Security Risks of Porting C Programs to WebAssembly 时间: 2022 作者：Quentin Stiévenart、Coen De Roover、Mohammad Ghafari 会议：Proceedings of the 37th ACM&#x2F;SIGAPP Symposium on Applied Computing  Abstract​">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230903171704326.png">
 <meta property="article:published_time" content="2023-09-04T10:40:18.558Z">
 <meta property="article:modified_time" content="2023-10-08T08:19:31.610Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="Vulnerability">
 <meta property="article:tag" content="AEG">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230903171704326.png">
   
     <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
   
@@ -152,118 +154,70 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1
-id="论文阅读security-risks-of-porting-c-programs-to-webassembly">(论文阅读)Security
-Risks of Porting C Programs to WebAssembly</h1>
-<blockquote>
+        <h1 id="论文阅读-Security-Risks-of-Porting-C-Programs-to-WebAssembly"><a href="#论文阅读-Security-Risks-of-Porting-C-Programs-to-WebAssembly" class="headerlink" title="(论文阅读)Security Risks of Porting C Programs to WebAssembly"></a>(论文阅读)Security Risks of Porting C Programs to WebAssembly</h1><blockquote>
 <p><strong>时间:</strong> 2022</p>
-<p><strong>作者：</strong>Quentin Stiévenart、Coen De Roover、Mohammad
-Ghafari</p>
-<p><strong>会议：</strong>Proceedings of the 37th ACM/SIGAPP Symposium
-on Applied Computing</p>
+<p><strong>作者：</strong>Quentin Stiévenart、Coen De Roover、Mohammad Ghafari</p>
+<p><strong>会议：</strong>Proceedings of the 37th ACM/SIGAPP Symposium on Applied Computing</p>
 </blockquote>
-<h1 id="abstract">Abstract</h1>
-<p>​
-WebAssembly是一种用于跨平台应用程序的编译目标，目前正被越来越多地使用。在本文中，我们研究了<strong>能否将
-C 程序不需要大量修改直接编译到 WebAssembly
-中</strong>，如果不能，移植会对其安全性产生什么影响。我们将表现出常见漏洞的17802个程序编译成64位的x86和WebAssembly二进制文件，并观察到在这些平台上执行4911个二进制文件会产生不同的结果。</p>
-<p>​ 通过<u>人工检查</u>，我们找出了造成这种差异的三类根本原因：</p>
+<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>​    WebAssembly是一种用于跨平台应用程序的编译目标，目前正被越来越多地使用。在本文中，我们研究了<strong>能否将 C 程序不需要大量修改直接编译到 WebAssembly 中</strong>，如果不能，移植会对其安全性产生什么影响。我们将表现出常见漏洞的17802个程序编译成64位的x86和WebAssembly二进制文件，并观察到在这些平台上执行4911个二进制文件会产生不同的结果。</p>
+<p>​    通过<u>人工检查</u>，我们找出了造成这种差异的三类根本原因：</p>
 <blockquote>
-<ol type="1">
+<ol>
 <li>使用了不同的标准库实现；</li>
 <li>WebAssembly 缺乏安全措施；</li>
 <li>执行环境的语义不同。</li>
 </ol>
 </blockquote>
-<p>​
-我们描述了我们的观察结果，并讨论了从安全角度来看至关重要、最需要开发人员关注的问题。我们的结论是，将现有的
-C 程序编译成 WebAssembly
-进行跨平台发布可能需要对源代码进行调整；否则，WebAssembly
-应用程序的安全性可能会受到威胁。 <span id="more"></span></p>
-<h2 id="backgrouond">Backgrouond</h2>
-<p>​
-由于WebAssembly作为编译器目标的时间尚短，许多工具链（如各种语言的编译器后端和相互竞争的
-WebAssembly
-运行时）还不像现有目标那样成熟。事实上，最近的一项研究表明，<u><strong>为本地二进制程序开发的程序在编译成
-WebAssembly
-后，其语义可能并不完全相同</strong></u>[30]。我们将在这项工作的基础上进一步研究，旨在找出造成这些差异的根本原因。从安全角度来看，这一点尤为重要：如果本地应用程序和
-WebAssembly 应用程序的安全保证不匹配，那么在将应用程序移植到 WebAssembly
-时就必须意识到这一点。</p>
-<h2 id="contribution">Contribution</h2>
-<p>​ 我们特别研究了在执行编译为64位x86
-native代码和WebAssembly代码的C程序时，我们是否能观察到代码输出结果上的差异。为此，我们将17802个包含常见问题的C程序分别编译成本地二进制代码和
-WebAssembly
-二进制代码。运行这些程序，并调查在执行过程中是否能观察到任何差异，即本地可执行文件的行为与相应的
-WebAssembly 可执行文件的行为不同。</p>
-<p>​ 我们在4911个程序中观察到了这种差异，这可能会使C应用程序移植到
-WebAssembly
-变得复杂。我们调查了所有暴露出行为差异的情况，并确定了其根本原因。我们总共发现了三类根本原因：不同的标准库实现、WebAssembly
-缺乏安全措施以及执行环境的语义偏差。我们描述了每种根源，并举例说明了表现出不同行为的实例。重要的是，我们强调了可能影响
-WebAssembly 应用程序安全性的原因。总之，这项工作有以下贡献：</p>
+<p>​    我们描述了我们的观察结果，并讨论了从安全角度来看至关重要、最需要开发人员关注的问题。我们的结论是，将现有的 C 程序编译成 WebAssembly 进行跨平台发布可能需要对源代码进行调整；否则，WebAssembly 应用程序的安全性可能会受到威胁。<br><span id="more"></span></p>
+<h2 id="Backgrouond"><a href="#Backgrouond" class="headerlink" title="Backgrouond"></a>Backgrouond</h2><p>​    由于WebAssembly作为编译器目标的时间尚短，许多工具链（如各种语言的编译器后端和相互竞争的 WebAssembly 运行时）还不像现有目标那样成熟。事实上，最近的一项研究表明，<u><strong>为本地二进制程序开发的程序在编译成 WebAssembly 后，其语义可能并不完全相同</strong></u>[30]。我们将在这项工作的基础上进一步研究，旨在找出造成这些差异的根本原因。从安全角度来看，这一点尤为重要：如果本地应用程序和 WebAssembly 应用程序的安全保证不匹配，那么在将应用程序移植到 WebAssembly 时就必须意识到这一点。</p>
+<h2 id="Contribution"><a href="#Contribution" class="headerlink" title="Contribution"></a>Contribution</h2><p>​    我们特别研究了在执行编译为64位x86 native代码和WebAssembly代码的C程序时，我们是否能观察到代码输出结果上的差异。为此，我们将17802个包含常见问题的C程序分别编译成本地二进制代码和 WebAssembly 二进制代码。运行这些程序，并调查在执行过程中是否能观察到任何差异，即本地可执行文件的行为与相应的 WebAssembly 可执行文件的行为不同。</p>
+<p>​    我们在4911个程序中观察到了这种差异，这可能会使C应用程序移植到 WebAssembly 变得复杂。我们调查了所有暴露出行为差异的情况，并确定了其根本原因。我们总共发现了三类根本原因：不同的标准库实现、WebAssembly 缺乏安全措施以及执行环境的语义偏差。我们描述了每种根源，并举例说明了表现出不同行为的实例。重要的是，我们强调了可能影响 WebAssembly 应用程序安全性的原因。总之，这项工作有以下贡献：</p>
 <blockquote>
-<ol type="1">
-<li>发现了编译成 WebAssembly 的 C 程序与编译成本地代码的 C
-程序在执行上存在差异的三个根本原因；</li>
+<ol>
+<li>发现了编译成 WebAssembly 的 C 程序与编译成本地代码的 C 程序在执行上存在差异的三个根本原因；</li>
 <li>我们将讨论一组示例，揭示行为差异的每个根本原因，并重点讨论从安全角度来看最重要的差异；</li>
-<li>我们公开分享了4911个表现出不同行为的 C 程序的数据集，以及相应的 x86
-和 WebAssembly 可执行文件。</li>
+<li>我们公开分享了4911个表现出不同行为的 C 程序的数据集，以及相应的 x86 和 WebAssembly 可执行文件。</li>
 </ol>
 </blockquote>
-<h2 id="how-to-deal-with-the-juliet-test-suite">How to deal with the
-Juliet test suite?</h2>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230903171704326.png" /></p>
-<ol type="1">
+<h2 id="How-to-deal-with-the-Juliet-test-suite"><a href="#How-to-deal-with-the-Juliet-test-suite" class="headerlink" title="How to deal with the Juliet test suite?"></a>How to deal with the Juliet test suite?</h2><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20230903171704326.png" alt=""></p>
+<ol>
 <li><p><strong>过滤掉non-determinism的程序：</strong></p>
 <ul>
 <li>将所有rand()函数的返回值替换为1；</li>
 <li>排除运行时间超过100秒的程序；</li>
 <li>每个程序运行10次，排除输出不一样的；</li>
-</ul></li>
+</ul>
+</li>
 <li><p><strong>good函数和bad函数都编译进程序：</strong></p>
-<p>同一个测试样例的good function和bad
-function都使用，先执行bad，再执行good</p></li>
+<p>同一个测试样例的good function和bad function都使用，先执行bad，再执行good</p>
+</li>
 <li><p><strong>编译为WASM的参数：</strong></p>
 <blockquote>
 <ul>
-<li><p>Clang v12.0.1</p></li>
-<li><p>-O2</p></li>
-<li><p>排除使用threads和sockets的函数</p></li>
+<li><p>Clang v12.0.1</p>
+</li>
+<li><p>-O2</p>
+</li>
+<li><p>排除使用threads和sockets的函数</p>
+</li>
 </ul>
-</blockquote></li>
+</blockquote>
+</li>
 </ol>
-<h2 id="results">Results</h2>
-<p>​ PC2W将观察到的discrepancy分为两类：安全相关的和安全无关的。</p>
-<h3 id="security-critical-differences">1. Security-Critical
-Differences</h3>
-<ul>
-<li><h5 id="malloc-free-implementation">malloc/ free implementation</h5>
-<p>为了将 C 代码编译成 WebAssembly，我们使用了 WASI，该接口本身依赖于
-musl 标准库，而不是操作系统提供的标准库，在我们的例子中就是
-glibc。因此，与malloc和free相关的标准库函数的实现行为会有一些差异，这可能会导致安全问题。</p>
-<p>请看下面的代码，第 1 行分配了一个 100 字节的缓冲区，第 2
-行进行了初始化。在第 3 行，指向该缓冲区的指针递增了
-10，结果指针指向了缓冲区中间的某个位置。最后，使用该指针调用
-free，这是一个不安全的操作，因为 free
-应始终在动态分配的缓冲区开始时调用。</p>
+<h2 id="Results"><a href="#Results" class="headerlink" title="Results"></a>Results</h2><p>​    PC2W将观察到的discrepancy分为两类：安全相关的和安全无关的。</p>
+<h3 id="1-Security-Critical-Differences"><a href="#1-Security-Critical-Differences" class="headerlink" title="1. Security-Critical Differences"></a>1. Security-Critical Differences</h3><ul>
+<li><h5 id="malloc-free-implementation"><a href="#malloc-free-implementation" class="headerlink" title="malloc/ free implementation"></a>malloc/ free implementation</h5><p>为了将 C 代码编译成 WebAssembly，我们使用了 WASI，该接口本身依赖于 musl 标准库，而不是操作系统提供的标准库，在我们的例子中就是 glibc。因此，与malloc和free相关的标准库函数的实现行为会有一些差异，这可能会导致安全问题。</p>
+<p>请看下面的代码，第 1 行分配了一个 100 字节的缓冲区，第 2 行进行了初始化。在第 3 行，指向该缓冲区的指针递增了 10，结果指针指向了缓冲区中间的某个位置。最后，使用该指针调用 free，这是一个不安全的操作，因为 free 应始终在动态分配的缓冲区开始时调用。</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">char</span> <span class="token operator">*</span>data <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">100</span> <span class="token operator">*</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">char</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token function">strcpy</span><span class="token punctuation">(</span>data<span class="token punctuation">,</span> SOURCE<span class="token punctuation">)</span><span class="token punctuation">;</span> 
 data <span class="token operator">+=</span> <span class="token number">10</span><span class="token punctuation">;</span> 
 <span class="token function">free</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p>当编译成本地代码时，free 会正确处理这种情况：它会打印出
-free()无效指针的错误信息，并中止程序 (SIGABRT)。然而，WebAssembly
-应用程序在执行 free 操作后继续执行。因此，由于程序员在第 3
-行的错误，敏感数据可能在程序的其余执行过程中仍可被访问。</p>
-<p>这是一个重要的差异，可能超出了 musl 的使用范围，因为有许多
-WebAssembly 的 malloc 和 free
-的定制实现存在并在实际中使用[15]，在其他实现中也可能遇到这种行为差异。我们总共在
-259
-个程序中发现了这种差异。<code>CWE761_Free_Pointer _Not_at_Start_of_Buffer__char_fixed_string_01.c</code>就是一个示例程序。</p></li>
-<li><h5 id="missing-stack-smashing-protections">Missing Stack-Smashing
-Protections</h5>
-<p>编译成 WebAssembly
-的代码不包含堆栈粉碎保护（如堆栈金丝雀）。因此，如果程序中发生堆栈粉碎，在本地执行时可能会崩溃，但在
-WebAssembly 中却总是检测不到相应的溢出。请看以下代码:</p>
+<p>当编译成本地代码时，free 会正确处理这种情况：它会打印出 free()无效指针的错误信息，并中止程序 (SIGABRT)。然而，WebAssembly 应用程序在执行 free 操作后继续执行。因此，由于程序员在第 3 行的错误，敏感数据可能在程序的其余执行过程中仍可被访问。</p>
+<p>这是一个重要的差异，可能超出了 musl 的使用范围，因为有许多 WebAssembly 的 malloc 和 free 的定制实现存在并在实际中使用[15]，在其他实现中也可能遇到这种行为差异。我们总共在 259 个程序中发现了这种差异。<code>CWE761_Free_Pointer _Not_at_Start_of_Buffer__char_fixed_string_01.c</code>就是一个示例程序。</p>
+</li>
+</ul>
+<ul>
+<li><h5 id="Missing-Stack-Smashing-Protections"><a href="#Missing-Stack-Smashing-Protections" class="headerlink" title="Missing Stack-Smashing Protections"></a>Missing Stack-Smashing Protections</h5><p>编译成 WebAssembly 的代码不包含堆栈粉碎保护（如堆栈金丝雀）。因此，如果程序中发生堆栈粉碎，在本地执行时可能会崩溃，但在 WebAssembly 中却总是检测不到相应的溢出。请看以下代码:</p>
 <pre class="line-numbers language-C" data-language="C"><code class="language-C">char * data; 
 char dataBadBuffer[50]; 
 data &#x3D; dataBadBuffer; 
@@ -277,20 +231,13 @@ for (i &#x3D; 0; i &lt; 100; i++) &#123;
 data[100-1] &#x3D; &#39;\0&#39;; 
 printLine(data); <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>这是一个简单的栈溢出代码，由于data数组太小会将source的数据拷贝到其空间外。由于在x86平台中堆栈金丝雀保护机制的存在这段代码会导致程序停止，而wasm中不存在这类保护措施，故会产生堆溢出。</p>
-<p>我们在 626
-个程序中观察到了这种行为差异。<code>CWE665_Improper _Initialization__char_cat_01.c.</code>就是一个显示这种差异的示例程序。</p></li>
-<li><h5 id="missing-memory-protections">Missing Memory Protections</h5>
-<p>x86 中存在内存保护，而 WebAssembly
-中却没有，这就造成了许多差异。因此，本地可执行文件会因分段故障（SIGSEGV）而崩溃，通常会在硬件层面被检测到。然而，在
-WebAssembly
-中，由于线性内存中没有页或段的概念，因此没有类似的保护措施。线性内存是一个连续的字节块，对它的读写没有任何限制。</p>
-<p>例如，缓冲区写入（buffer
-underwrites）是指数据在目标缓冲区之前被复制的情况。在本地代码中，可以在硬件级或通过某种形式的边界检查检测到欠写，执行欠写的程序通常会因地址边界错误而崩溃。然而，在
-WebAssembly 中，这种操作仍不会被检测到，程序会继续运行。</p>
-<p>下面的示例就是这种情况。第 1-4 行分配并填充了一个 100
-字节的缓冲区。在第 4 行，data 变量指向缓冲区之前的 8
-个字节，因此指向一个无效位置。第 9 行在 data 所指向的位置复制了一个 100
-字节的源缓冲区，导致缓冲区下溢。</p>
+<p>我们在 626 个程序中观察到了这种行为差异。<code>CWE665_Improper _Initialization__char_cat_01.c.</code>就是一个显示这种差异的示例程序。</p>
+</li>
+</ul>
+<ul>
+<li><h5 id="Missing-Memory-Protections"><a href="#Missing-Memory-Protections" class="headerlink" title="Missing Memory Protections"></a>Missing Memory Protections</h5><p>x86 中存在内存保护，而 WebAssembly 中却没有，这就造成了许多差异。因此，本地可执行文件会因分段故障（SIGSEGV）而崩溃，通常会在硬件层面被检测到。然而，在 WebAssembly 中，由于线性内存中没有页或段的概念，因此没有类似的保护措施。线性内存是一个连续的字节块，对它的读写没有任何限制。</p>
+<p>例如，缓冲区写入（buffer underwrites）是指数据在目标缓冲区之前被复制的情况。在本地代码中，可以在硬件级或通过某种形式的边界检查检测到欠写，执行欠写的程序通常会因地址边界错误而崩溃。然而，在 WebAssembly 中，这种操作仍不会被检测到，程序会继续运行。</p>
+<p>下面的示例就是这种情况。第 1-4 行分配并填充了一个 100 字节的缓冲区。在第 4 行，data 变量指向缓冲区之前的 8 个字节，因此指向一个无效位置。第 9 行在 data 所指向的位置复制了一个 100 字节的源缓冲区，导致缓冲区下溢。</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">char</span> <span class="token operator">*</span>dataBuffer <span class="token operator">=</span> 
     <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">alloca</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token operator">*</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">char</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
 <span class="token function">memset</span><span class="token punctuation">(</span>dataBuffer<span class="token punctuation">,</span> <span class="token string">'A'</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
@@ -300,77 +247,41 @@ data <span class="token operator">=</span> dataBuffer <span class="token operato
 <span class="token function">memset</span><span class="token punctuation">(</span>source<span class="token punctuation">,</span> <span class="token string">'C'</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
 source<span class="token punctuation">[</span><span class="token number">100</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">'\0'</span><span class="token punctuation">;</span> 
 <span class="token function">strcpy</span><span class="token punctuation">(</span>data<span class="token punctuation">,</span> source<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>我们在 143
-个程序中观察到了这种行为差异。<code>CWE124_Buffer _Underwrite__wchar_t_alloca_cpy_01.c</code>
-就是一个显示这种差异的示例程序。</p></li>
+<p>我们在 143 个程序中观察到了这种行为差异。<code>CWE124_Buffer _Underwrite__wchar_t_alloca_cpy_01.c</code> 就是一个显示这种差异的示例程序。</p>
+</li>
 </ul>
-<h3 id="non-security-critical-differences">2. Non-Security-Critical
-Differences</h3>
-<p>我们将简要介绍我们遇到的其他行为差异。这些差异对于应用程序的安全性来说并不那么重要，但在将
-C 应用程序移植到 WebAssembly 时，还是有必要注意的。</p>
-<h5 id="different-standard-library-implementation">1. Different Standard
-Library Implementation</h5>
-<p>如前所述，使用 WASI编译成 WebAssembly 的程序依赖于 musl-libc
-实现。相反，在我们的设置中，当程序被编译为本地代码时，则依赖于glibc。标准库实现的这种差异导致了几种行为上的不同。除了
-malloc 和 free
-的不同行为（我们认为这是一个关键差异，并在上一节中进行了介绍）外，其他一些函数也表现出了差异。在我们的数据集中，我们发现行为上的差异可与标准
-C 语言库的以下元素联系起来。</p>
+<h3 id="2-Non-Security-Critical-Differences"><a href="#2-Non-Security-Critical-Differences" class="headerlink" title="2. Non-Security-Critical Differences"></a>2. Non-Security-Critical Differences</h3><p>我们将简要介绍我们遇到的其他行为差异。这些差异对于应用程序的安全性来说并不那么重要，但在将 C 应用程序移植到 WebAssembly 时，还是有必要注意的。</p>
+<h5 id="1-Different-Standard-Library-Implementation"><a href="#1-Different-Standard-Library-Implementation" class="headerlink" title="1. Different Standard Library Implementation"></a>1. Different Standard Library Implementation</h5><p>如前所述，使用 WASI编译成 WebAssembly 的程序依赖于 musl-libc 实现。相反，在我们的设置中，当程序被编译为本地代码时，则依赖于glibc。标准库实现的这种差异导致了几种行为上的不同。除了 malloc 和 free 的不同行为（我们认为这是一个关键差异，并在上一节中进行了介绍）外，其他一些函数也表现出了差异。在我们的数据集中，我们发现行为上的差异可与标准 C 语言库的以下元素联系起来。</p>
 <ul>
-<li><p><strong>Wide character’s mode for wprintf (3253
-programs)</strong></p>
-<p>在本地代码中，wprintf
-的默认行为是不向控制台打印任何内容，除非之前调用过 fwide(stdout,
-1)。但在 WebAssembly 中，我们发现默认情况下 wprintf
-会打印到控制台，导致输出结果与本地可执行文件不同。显示这种差异的示例程序是<code>CWE126_Buffer_Overread__CWE170_wchar_t_loop_01.c</code></p></li>
+<li><p><strong>Wide character’s mode for wprintf (3253 programs)</strong></p>
+<p>在本地代码中，wprintf 的默认行为是不向控制台打印任何内容，除非之前调用过 fwide(stdout, 1)。但在 WebAssembly 中，我们发现默认情况下 wprintf 会打印到控制台，导致输出结果与本地可执行文件不同。显示这种差异的示例程序是<code>CWE126_Buffer_Overread__CWE170_wchar_t_loop_01.c</code></p>
+</li>
 <li><p><strong><code>puts</code>return value (36 programs)</strong></p>
-<p>puts 和 fputs 函数成功后会返回一个非负数。但返回值取决于 libc
-的实现：在 musl 中，成功后返回 0，而在 glibc
-中，返回的是正数。<code>CWE253_Incorrect_Check_of_Function_Return_Value_ _char_fputs_01.c</code>示例程序就显示了这种差异。</p></li>
+<p>puts 和 fputs 函数成功后会返回一个非负数。但返回值取决于 libc 的实现：在 musl 中，成功后返回 0，而在 glibc 中，返回的是正数。<code>CWE253_Incorrect_Check_of_Function_Return_Value_ _char_fputs_01.c</code>示例程序就显示了这种差异。</p>
+</li>
 <li><p><strong>Missing arguments to printf (26 programs)</strong></p>
-<p>调用 printf 时，如果缺少参数，则会有不同的表现。例如，printf("%s") 在
-x86 上执行时会打印一些 "垃圾"，但在 WebAssembly
-中执行时却会打印（空），这表明 printf 的实现与 musl
-不同。<code>CWE134 _Uncontrolled_Format_String__char_console _vfprintf_44.c</code>就是一个显示这种差异的示例程序。</p></li>
+<p>调用 printf 时，如果缺少参数，则会有不同的表现。例如，printf(“%s”) 在 x86 上执行时会打印一些 “垃圾”，但在 WebAssembly 中执行时却会打印（空），这表明 printf 的实现与 musl 不同。<code>CWE134 _Uncontrolled_Format_String__char_console _vfprintf_44.c</code>就是一个显示这种差异的示例程序。</p>
+</li>
 </ul>
-<h5 id="semantic-differences-in-execution-platforms">2. Semantic
-Differences in Execution Platforms</h5>
-<p>其余的差异可追溯到 WebAssembly 和本地执行平台。</p>
+<h5 id="2-Semantic-Differences-in-Execution-Platforms"><a href="#2-Semantic-Differences-in-Execution-Platforms" class="headerlink" title="2. Semantic Differences in Execution Platforms"></a>2. Semantic Differences in Execution Platforms</h5><p>其余的差异可追溯到 WebAssembly 和本地执行平台。</p>
 <ul>
 <li><p><strong>Size of pointers (26 programs)</strong></p>
-<p>在 64 位机器上，指针长度为 8 字节，而在 WebAssembly 中，指针长度为 4
-字节。因此，sizeof(void
-*)的返回值在二者之间存在差异，从而导致执行中的明显差异。<code>CWE789_Uncontrolled_Mem_Alloc__malloc_char_fgets_01.c</code>就是一个显示这种差异的示例程序。</p></li>
+<p>在 64 位机器上，指针长度为 8 字节，而在 WebAssembly 中，指针长度为 4 字节。因此，sizeof(void *)的返回值在二者之间存在差异，从而导致执行中的明显差异。<code>CWE789_Uncontrolled_Mem_Alloc__malloc_char_fgets_01.c</code>就是一个显示这种差异的示例程序。</p>
+</li>
 <li><p><strong>Different number sizes (18 programs)</strong></p>
-<p>这与上一点有关：在 WebAssembly 中，long 的大小与 64
-位机器上的不同。因此，我们可以观察到不同的返回值，例如，当 strtol
-导致溢出并因此返回默认值 LONG_MAX 时，在 64 位机器上的默认值是 263 -
-1，而在 WebAssembly 中的默认值是 232-1。显示这种差异的示例程序是
-CWE391_Unchecked_Error _Condition__strtol_01.c 。</p></li>
+<p>这与上一点有关：在 WebAssembly 中，long 的大小与 64 位机器上的不同。因此，我们可以观察到不同的返回值，例如，当 strtol 导致溢出并因此返回默认值 LONG_MAX 时，在 64 位机器上的默认值是 263 - 1，而在 WebAssembly 中的默认值是 232-1。显示这种差异的示例程序是 CWE391_Unchecked_Error _Condition__strtol_01.c 。</p>
+</li>
 <li><p><strong>Uninitialised data behaviour (382 programs)</strong></p>
-<p>在 C
-语言中，依赖使用未初始化数据被视为一种未定义的行为。在x86代码中，访问未初始化的数据可能会触发
-SIGSEGV 错误，或导致垃圾被当作数据处理。然而，在 WebAssembly
-中，线性内存最初是由 0
-填满的。例如，在本地代码中打印一个没有空结束符的字符串，可能会在字符串后打印垃圾，而在
-WebAssembly 中，字符串后的字节往往是
-0，它充当了空结束符。在其他情况下，当 WebAssembly
-应用程序从预期边界之外读取数据时，它可能会读取到已经写入的数据，而本地应用程序则会崩溃或读取到不同的数据。因此，我们会遇到输出不同的情况。同样，访问值为
-NULL 的指针也会触发 SIGSEGV 错误或使用未初始化的数据。但在 WebAssembly
-中，在这两种情况下，程序都会继续执行并使用设置为 0 的数据： 由于
-<em>pointer 没有初始化，所以它的值为 0，因此打印 </em>data
-时只打印了一个包含字符 （0）的字符串。</p>
+<p>在 C 语言中，依赖使用未初始化数据被视为一种未定义的行为。在x86代码中，访问未初始化的数据可能会触发 SIGSEGV 错误，或导致垃圾被当作数据处理。然而，在 WebAssembly 中，线性内存最初是由 0 填满的。例如，在本地代码中打印一个没有空结束符的字符串，可能会在字符串后打印垃圾，而在 WebAssembly 中，字符串后的字节往往是 0，它充当了空结束符。在其他情况下，当 WebAssembly 应用程序从预期边界之外读取数据时，它可能会读取到已经写入的数据，而本地应用程序则会崩溃或读取到不同的数据。因此，我们会遇到输出不同的情况。同样，访问值为 NULL 的指针也会触发 SIGSEGV 错误或使用未初始化的数据。但在 WebAssembly 中，在这两种情况下，程序都会继续执行并使用设置为 0 的数据： 由于 <em>pointer 没有初始化，所以它的值为 0，因此打印 </em>data 时只打印了一个包含字符 （0）的字符串。</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">double</span> <span class="token operator">*</span><span class="token operator">*</span>pointer <span class="token operator">=</span> 
     <span class="token punctuation">(</span><span class="token keyword">double</span> <span class="token operator">*</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">alloca</span><span class="token punctuation">(</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">double</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
 <span class="token keyword">double</span> <span class="token operator">*</span>data <span class="token operator">=</span> <span class="token operator">*</span>pointer<span class="token punctuation">;</span> 
 <span class="token function">printDoubleLine</span><span class="token punctuation">(</span><span class="token operator">*</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p><code>CWE457_Use_of_Uninitialized_Variable__char_pointer_01.c</code>是一个显示这种差异的示例程序。</p></li>
-<li><p><strong>Different execution environments (18
-programs)</strong></p>
-<p>由于 WebAssembly
-和本地代码的执行环境不同，我们观察到了一些差异。例如，getenv
-函数可用于访问可执行文件的环境变量。在本地二进制代码中，环境由启动进程继承，并包含用户定义的环境变量（如
-PATH）。而在 wasmer
-环境中，除非另有规定，否则环境变量最初是空的。<code>CWE526_Info_Exposure_Environment _Variables__basic_01.c</code>示例程序就体现了这种差异。</p></li>
+<p><code>CWE457_Use_of_Uninitialized_Variable__char_pointer_01.c</code>是一个显示这种差异的示例程序。</p>
+</li>
+<li><p><strong>Different execution environments (18 programs)</strong></p>
+<p>由于 WebAssembly 和本地代码的执行环境不同，我们观察到了一些差异。例如，getenv 函数可用于访问可执行文件的环境变量。在本地二进制代码中，环境由启动进程继承，并包含用户定义的环境变量（如 PATH）。而在 wasmer 环境中，除非另有规定，否则环境变量最初是空的。<code>CWE526_Info_Exposure_Environment _Variables__basic_01.c</code>示例程序就体现了这种差异。</p>
+</li>
 </ul>
 
       
@@ -418,14 +329,7 @@ PATH）。而在 wasmer
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BBsecurity-risks-of-porting-c-programs-to-webassembly"><span class="nav-number">1.</span> <span class="nav-text">(论文阅读)Security
-Risks of Porting C Programs to WebAssembly</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#abstract"><span class="nav-number">2.</span> <span class="nav-text">Abstract</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#backgrouond"><span class="nav-number">2.1.</span> <span class="nav-text">Backgrouond</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#contribution"><span class="nav-number">2.2.</span> <span class="nav-text">Contribution</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#how-to-deal-with-the-juliet-test-suite"><span class="nav-number">2.3.</span> <span class="nav-text">How to deal with the
-Juliet test suite?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#results"><span class="nav-number">2.4.</span> <span class="nav-text">Results</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#security-critical-differences"><span class="nav-number">2.4.1.</span> <span class="nav-text">1. Security-Critical
-Differences</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#malloc-free-implementation"><span class="nav-number">2.4.1.0.1.</span> <span class="nav-text">malloc&#x2F; free implementation</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#missing-stack-smashing-protections"><span class="nav-number">2.4.1.0.2.</span> <span class="nav-text">Missing Stack-Smashing
-Protections</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#missing-memory-protections"><span class="nav-number">2.4.1.0.3.</span> <span class="nav-text">Missing Memory Protections</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#non-security-critical-differences"><span class="nav-number">2.4.2.</span> <span class="nav-text">2. Non-Security-Critical
-Differences</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#different-standard-library-implementation"><span class="nav-number">2.4.2.0.1.</span> <span class="nav-text">1. Different Standard
-Library Implementation</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#semantic-differences-in-execution-platforms"><span class="nav-number">2.4.2.0.2.</span> <span class="nav-text">2. Semantic
-Differences in Execution Platforms</span></a></li></ol></li></ol></li></ol></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB-Security-Risks-of-Porting-C-Programs-to-WebAssembly"><span class="nav-number">1.</span> <span class="nav-text">(论文阅读)Security Risks of Porting C Programs to WebAssembly</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Abstract"><span class="nav-number">2.</span> <span class="nav-text">Abstract</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Backgrouond"><span class="nav-number">2.1.</span> <span class="nav-text">Backgrouond</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Contribution"><span class="nav-number">2.2.</span> <span class="nav-text">Contribution</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How-to-deal-with-the-Juliet-test-suite"><span class="nav-number">2.3.</span> <span class="nav-text">How to deal with the Juliet test suite?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Results"><span class="nav-number">2.4.</span> <span class="nav-text">Results</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Security-Critical-Differences"><span class="nav-number">2.4.1.</span> <span class="nav-text">1. Security-Critical Differences</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#malloc-free-implementation"><span class="nav-number">2.4.1.0.1.</span> <span class="nav-text">malloc&#x2F; free implementation</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Missing-Stack-Smashing-Protections"><span class="nav-number">2.4.1.0.2.</span> <span class="nav-text">Missing Stack-Smashing Protections</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Missing-Memory-Protections"><span class="nav-number">2.4.1.0.3.</span> <span class="nav-text">Missing Memory Protections</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Non-Security-Critical-Differences"><span class="nav-number">2.4.2.</span> <span class="nav-text">2. Non-Security-Critical Differences</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-Different-Standard-Library-Implementation"><span class="nav-number">2.4.2.0.1.</span> <span class="nav-text">1. Different Standard Library Implementation</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-Semantic-Differences-in-Execution-Platforms"><span class="nav-number">2.4.2.0.2.</span> <span class="nav-text">2. Semantic Differences in Execution Platforms</span></a></li></ol></li></ol></li></ol></li></ol></li></ol>
     
     </div>
   </aside>
@@ -619,5 +523,20 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>
