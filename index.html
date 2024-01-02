@@ -186,101 +186,26 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="linux系统工作环境搭建">Linux系统工作环境搭建</h1>
-<blockquote>
-<p>系统：Ubuntu 20.04</p>
-<p>用户名：wx</p>
-</blockquote>
-<ul>
-<li>美化PS1:</li>
-</ul>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#添加到~/.bashrc</span>
-<span class="token builtin class-name">echo</span> <span class="token string">"export PS1='\[<span class="token entity" title="\e">\e</span>]0;\u@\h:  \W<span class="token entity" title="\a">\a</span>\][\[<span class="token entity" title="\033">\033</span>[01;36m\]\u@\h\[<span class="token entity" title="\033">\033</span>[00m\]:\[<span class="token entity" title="\033">\033</span>[01;34m\]\W\[<span class="token entity" title="\033">\033</span>[00m\]]<span class="token entity" title="\n">\n</span>\[<span class="token entity" title="\033">\033</span>[01;32m\]>$\[<span class="token entity" title="\033">\033</span>[00m\] '"</span> <span class="token operator">>></span> ~/.bashrc <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">source</span> ~/.bashrc<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240102192311001.png" style="zoom:80%;" /></p>
-<ul>
-<li>sudo用户组</li>
-</ul>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">chmod</span> +w /etc/sudoers
-<span class="token builtin class-name">echo</span> <span class="token string">"wx   ALL=(ALL:ALL) ALL"</span> <span class="token operator">>></span> /etc/sudoers<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<ul>
-<li>ssh密钥登陆[<a
-target="_blank" rel="noopener" href="https://www.runoob.com/w3cnote/set-ssh-login-key.html">设置 SSH
-通过密钥登录 | 菜鸟教程 (runoob.com)</a>)：</li>
-</ul>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#window客户端</span>
-<span class="token comment">#cmd</span>
-ssh-keygen -t rsa
-<span class="token function">scp</span> -P <span class="token number">2253</span> C:<span class="token punctuation">\</span>Users<span class="token punctuation">\</span>Shaw<span class="token punctuation">\</span>.ssh<span class="token punctuation">\</span>id_rsa.pub wx@222.20.94.23:~/.ssh
-<span class="token comment">#Linux</span>
-<span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> <span class="token function">ssh</span>
-<span class="token comment">#如果没有这个文件夹就先连接自己一次</span>
-<span class="token builtin class-name">cd</span> ~/.ssh
-<span class="token function">cat</span> id_rsa.pub <span class="token operator">>></span> authorized_keys
-<span class="token function">chmod</span> <span class="token number">600</span> authorized_keys
-<span class="token function">chmod</span> <span class="token number">700</span> ~/.ssh
-<span class="token comment"># 将/etc/ssh/sshd_config设置：PubkeyAuthentication yes</span>
-<span class="token function">sudo</span> <span class="token function">service</span> sshd restart<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<ol type="1">
-<li>如果Linux是虚拟机，需要配置VMWare的NAT端口映射（主机是固定IP，这里映射为主机的2024端口）：</li>
-</ol>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240102193515812.png" /></p>
-<ol start="2" type="1">
-<li>如果需要管理多台虚拟机，密钥配置需要指定具体私钥文件的路径：</li>
-</ol>
-<pre class="line-numbers language-none"><code class="language-none">Host 10.12.189.55
-  HostName 10.12.189.55
-  User wx
-  Port 2024
-  IdentityFile C:\Users\Shaw\.ssh\id_rsa_Eunomia<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<ul>
-<li>换源：</li>
-</ul>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#一定先切换root用户</span>
-<span class="token function">apt</span> <span class="token function">install</span> <span class="token function">curl</span>
-<span class="token function">sudo</span> -i
-<span class="token function">bash</span> <span class="token operator">&lt;</span><span class="token punctuation">(</span><span class="token function">curl</span> -sSL https://gitee.com/SuperManito/LinuxMirrors/raw/main/ChangeMirrors.sh<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<ul>
-<li>关闭系统自动休眠：</li>
-</ul>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<ul>
-<li>相关工具：</li>
-</ul>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> software-properties-common
-<span class="token comment"># ssh</span>
-<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> openssh openssh-service openssh-client 
-<span class="token comment"># network</span>
-<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> net-tools
-<span class="token comment"># text</span>
-<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> <span class="token function">vim</span> jq
-<span class="token comment"># download</span>
-<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> <span class="token function">curl</span>
-<span class="token comment"># git</span>
-<span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> <span class="token function">git</span>
-<span class="token comment"># make</span>
-<span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> gcc clang <span class="token function">make</span> cmake
-<span class="token comment"># 32bit</span>
-<span class="token function">sudo</span> dpkg --add-architecture i386 <span class="token operator">&amp;&amp;</span> <span class="token function">sudo</span> <span class="token function">apt-get</span> update  
-<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> libc6:i386 libncurses5:i386 libstdc++6:i386 libz1:i386
-<span class="token comment"># openssl dev</span>
-<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> libssl-dev
-<span class="token comment"># Conda</span>
-<span class="token function">wget</span> https://mirrors.bfsu.edu.cn/anaconda/archive/Anaconda3-2022.10-Linux-x86_64.sh --no-check-certificate
-<span class="token function">bash</span> Anaconda3-2022.10-Linux-x86_64.sh
-<span class="token builtin class-name">source</span> ~/.bashrc
-<span class="token comment"># screen </span>
- <span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> <span class="token function">screen</span>
-<span class="token comment"># mail</span>
-<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> <span class="token function">sendmail</span> sendmail-cf mailutils
-<span class="token comment"># docker</span>
-<span class="token function">sudo</span> <span class="token function">apt-get</span>  <span class="token function">install</span> docker.io --fix-missing
-<span class="token function">sudo</span> <span class="token function">groupadd</span> docker
-<span class="token function">sudo</span> gpasswd -a <span class="token variable">$&#123;<span class="token environment constant">USER</span>&#125;</span> docker
-<span class="token function">sudo</span> systemctl restart docker
-<span class="token function">sudo</span> <span class="token function">chmod</span> a+rw /var/run/docker.sock
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+        
 
+          
+            <div class="entry-thumbnail">
+              <a href="/2024/01/02/Linux%E7%B3%BB%E7%BB%9F%E5%B7%A5%E4%BD%9C%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"><img src="http://lorempixel.com/750/450/city/3" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+            </div>
+          
+          <div class="entry-summary">
+          Linux系统工作环境搭建
+
+系统：Ubuntu 20.04
+用户名：wx
+
+Linux系统相关配置整理。
+
+        
+          <p class="article-more-link">
+            <a href="/2024/01/02/Linux%E7%B3%BB%E7%BB%9F%E5%B7%A5%E4%BD%9C%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/#more">阅读全文</a>
+          </p>
+        </div>
       
     </div>
     <footer class="entry-meta entry-footer">
@@ -405,7 +330,7 @@ ABSTRACT通过将test case generation与mutation相结合，SBST为待测试程�
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/12/19/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91An-orchestrated-survey-of-methodologies-for-automated-software-test-case-generation/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/12/19/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91An-orchestrated-survey-of-methodologies-for-automated-software-test-case-generation/"><img src="http://lorempixel.com/750/450/city/4" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -484,7 +409,7 @@ search-based testing。
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/12/17/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91On-Learning-Meaningful-Assert-Statements-for-Unit-Test-Cases/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/12/17/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91On-Learning-Meaningful-Assert-Statements-for-Unit-Test-Cases/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -552,7 +477,7 @@ ABSTRACTSoftware testing是软件生命周期的重要组成部分，其需要�
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/10/20/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Latex%E6%AD%A3%E5%BC%8F%E5%85%A5%E9%97%A8/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/10/20/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Latex%E6%AD%A3%E5%BC%8F%E5%85%A5%E9%97%A8/"><img src="http://lorempixel.com/750/450/city/3" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -616,7 +541,7 @@ ABSTRACTSoftware testing是软件生命周期的重要组成部分，其需要�
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/10/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91How%20to%20debug%20wasm%20compiled%20by%20wasi-sdk/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/10/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91How%20to%20debug%20wasm%20compiled%20by%20wasi-sdk/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -682,7 +607,7 @@ ABSTRACTSoftware testing是软件生命周期的重要组成部分，其需要�
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/10/07/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Go%20or%20No%20Go%20Differential%20Fuzzing%20of%20Native%20and%20C%20Libraries/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/10/07/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Go%20or%20No%20Go%20Differential%20Fuzzing%20of%20Native%20and%20C%20Libraries/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -829,7 +754,7 @@ WebAssembly 缺乏安全措施；
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/08/15/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91FuzzBuilder%E5%A4%8D%E7%8E%B0/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/08/15/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91FuzzBuilder%E5%A4%8D%E7%8E%B0/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
