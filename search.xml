@@ -7,10 +7,240 @@
 ]]></content>
   </entry>
   <entry>
+    <title>(论文阅读)(Part2)SoK-Sanitizing for Security</title>
+    <url>/2024/01/05/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91(Part2)SoK-Sanitizing-for-Security/</url>
+    <content><![CDATA[<h1 id="Part2-SoK-Sanitizing-for-Security"><a href="#Part2-SoK-Sanitizing-for-Security" class="headerlink" title="(Part2)SoK: Sanitizing for Security"></a>(Part2)SoK: Sanitizing for Security</h1><blockquote>
+<p><strong>作者：</strong>Dokyung Song, Julian Lettner, Prabhu Rajasekaran(UC Irvine)</p>
+<p><strong>会议：</strong>S&amp;P’19</p>
+</blockquote>
+<h2 id="Program-Instrumentation"><a href="#Program-Instrumentation" class="headerlink" title="Program Instrumentation"></a>Program Instrumentation</h2><p>Sanitizer 通过在程序中嵌入<strong><em>inlined reference monitors（IRM）</em></strong>来执行其漏洞查找策略，这些IRM会监控和调和所有可能导致漏洞的程序指令，这些指令包括（但不限于）load和store、栈帧分配和释放、调用内存分配函数（如 malloc）和系统调用。<u>IRM可以通过compiler、linker或instrumentation framework嵌入程序中。</u></p>
+<span id="more"></span>
+<h3 id="1-Language-level-instrumentation"><a href="#1-Language-level-instrumentation" class="headerlink" title="1. Language-level instrumentation"></a>1. Language-level instrumentation</h3><p>Sanitizer 可以嵌入到源代码或抽象语法树（AST）级别。源代码和 AST 是特定于语言的，通常包含完整的类型信息、特定于语言的语法以及编译时评估的表达式，如 const_cast 和 static_cast 类型转换。<u>当编译器将 AST 简化为中间表示（IR）代码时，这些特定于语言的信息通常会被丢弃。</u></p>
+<p>这里建议（甚至有必要）对通过指针转换做监测来检测指针类型错误的 sanitizer 进行语言级插桩。</p>
+<p>在Language-level instrumentation的另一个优势是，编译器会在编译的早期阶段保留程序的全部语义，因此，sanitizer 可以看到程序员希望看到的语义。在编译的后期阶段，编译器可能会假设程序不包含未定义的行为，并根据这一假设对代码进行优化（例如，消除看似不必要的安全检查）。Language-level instrumentation的缺点是，必须有应用程序的全部源代码，而且代码必须用预期的语言编写。因此，这种方法不适用于与封闭源代码库链接的应用程序，也不适用于包含内联汇编代码的应用程序[80]。</p>
+<h3 id="2-IR-level-instrumentation"><a href="#2-IR-level-instrumentation" class="headerlink" title="2. IR-level instrumentation"></a>2. IR-level instrumentation</h3><p>在编译的后期阶段，当AST转换为IR时，也可以在此处插入sanitizer，例如LLVM 等编译器后端支持 IR 级插桩[81]。这种方法比Language-level instrumentation更通用，因为IR（大部分）独立于源语言。因此，通过在这一级别进行插桩，sanitizer可以自动支持多种源语言。另一个优势是，编译器后端实现了各种静态分析和优化传递，可被 sanitizer 使用。sanitizer 可以利用这种基础架构来优化它们嵌入到程序中的 IRM（例如，通过删除多余的或可证明安全的检查）。</p>
+<p>IR-level instrumentation的缺点与Language-level instrumentation大体相似，即不支持闭源库和内联汇编代码（第 V-A 节）。作为例外，<strong><em>AddressSanitizer（ASan）</em></strong>通过检测内联汇编块中的 MOV 和 MOVAPS 指令，为内联 x86 汇编代码提供了有限的支持[31]。不过，这种方法是针对特定体系结构的，需要针对每个支持的体系结构重新实现或复制。</p>
+<h3 id="3-Binary-level-instrumentation"><a href="#3-Binary-level-instrumentation" class="headerlink" title="3. Binary-level instrumentation"></a>3. Binary-level instrumentation</h3><p><strong><em>Dynamic binary translation (DBT)</em></strong>框架可以支持二进制程序在运行时进行插桩。[82]–[84]</p>
+<p>在程序执行过程中，它们会读取程序代码、检测程序代码、将程序代码转换为机器代码，并暴露出各种hook来影响程序的执行。</p>
+<p>与compiler-based的插桩方式相比，DBT-based instrumentation的主要优势在于它们能很好地处理闭源程序。此外，DBT 框架还能对用户模式代码提供完整的检测覆盖范围，无论其来源如何。DBT 框架可以检测程序本身、第三方代码（可能是动态加载的），甚至是动态生成的代码。</p>
+<p>DBT 的主要缺点是运行时性能开销（远高于静态工具）（见第 VIII-E 节），这种开销主要归因于运行时的指令解码和翻译。使用<strong><em>Static Binary Instrumentation (SBI)</em></strong> 框架对二进制文件进行静态插桩可以部分解决这个问题。但是，SBI 和基于 DBT 的 sanitizer 都必须在几乎不包含任何类型信息或特定语言语法的二进制文件上运行。因此，现阶段不可能嵌入指针类型错误 sanitizer。<u>有关堆栈框架和全局数据部分布局的信息也会在二进制级别丢失，这使得使用二进制仪器插入完全精确的空间内存安全 sanitizer 变得不可能。</u></p>
+<h3 id="4-Library-Interposition"><a href="#4-Library-Interposition" class="headerlink" title="4. Library Interposition"></a>4. Library Interposition</h3><p>另一种方法是使用 Library Interposition拦截对库函数的调用[85]，尽管这种方法非常的粗粒度。 Library Interposition是一个共享库，预加载到程序中时[86]，可以拦截、监控和操作程序中的所有库间函数调用。一些 sanitizer 使用这种方法拦截对内存分配函数（如 malloc 和 free）的调用。</p>
+<p>这种方法的优点是，与基于 DBT 的插桩类似，它也适用于 COTS 二进制文件，不需要源代码或目标代码。不过，与 DBT 不同的是， Library Interposition几乎不会产生任何开销。一个缺点是， Library Interposition仅适用于库间调用。同一库中两个函数之间的调用不能被拦截。另一个缺点是， Library Interposition高度针对特定平台和目标。例如，使用 Library Interposition来拦截对 malloc 调用的 sanitizer 就不适用于有自实现的内存分配器的程序。</p>
+<hr>
+<h2 id="Metadata-Management"><a href="#Metadata-Management" class="headerlink" title="Metadata Management"></a>Metadata Management</h2><p>Sanitizer 设计的一个重要方面是如何存储和查找元数据，这种元数据通常捕获程序中使用的指针或内存对象的状态信息。尽管运行时性能并不是 sanitizer 开发人员或用户最关心的问题，但大多数 sanitizer 所存储的元数据数量之大，意味着即使存储方案中存在微小的低效，也会使 sanitizer 的运行速度慢得令人无法接受。元数据存储方案在很大程度上也决定了两个 sanitizer 是否可以结合使用。如果两个独立的 sanitizer 都使用改变了程序中的指针和/或对象表示的元数据方案，那么它们往往不能一起使用。</p>
+<h3 id="1-Object-Metadata"><a href="#1-Object-Metadata" class="headerlink" title="1. Object Metadata"></a>1. Object Metadata</h3><p>有些 sanitizer 使用object元数据存储方案来存储所有已分配内存对象的状态，可能包括对象的大小、类型，状态（已分配/释放、已初始化/未初始化等），分配identifier等等。</p>
+<ul>
+<li><strong><em>Embedded metadata</em></strong></li>
+</ul>
+<p>为对象存储元数据的一个显而易见的方法是增加其分配大小，并将元数据附加或预置到对象的数据中。这种机制在现代内存分配器中非常流行，例如，它可以在实际缓冲区之前存储缓冲区的长度。</p>
+<p>使用工具可以修改内存分配器，在请求的缓冲区大小之外为元数据透明地保留内存，然后返回一个指向分配中间的指针，这样客户端就看不到元数据了。</p>
+<p>ASan [31] 和 Oscar [36] 等软件都使用了Embedded metadata。ASan 在每个分配对象中嵌入了有关分配上下文的信息。Oscar 将每个对象的规范地址存储为嵌入式元数据。</p>
+<ul>
+<li><strong><em>Direct-mapped Shadow</em></strong></li>
+</ul>
+<p>Direct-mapped shadow通过一些公式将应用程序内存中的每个 n 字节块映射为一个 m 字节元数据块，例如：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240105163435054.png" style="zoom: 67%;" /></p>
+<p>ASAN为每8字节的程序内存分配1字节影子内存：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240105163618250.png" style="zoom:80%;" /></p>
+<p>Direct-mapped Shadow易于实施并插入到应用程序中，它通常也非常高效，因为只需读取一次内存即可检索任何给定对象的元数据。不过，在某些情况下，这种方案也会导致运行时性能低下，因为它可能会使已经碎片化的地址空间中的内存碎片（以及空间位置性）更加恶化。由于影子内存区域是连续的，必须足够大才能镜像所有已分配的内存块（从最低虚拟地址到最高虚拟地址），因此也会浪费已分配的内存。</p>
+<ul>
+<li><strong><em>Multi-level Shadow</em></strong></li>
+</ul>
+<p>Multi-level Shadow通过以目录表的形式引入额外的间接层，可以减少元数据存储的内存占用，这些目录表可以存储指向元数据表或其他目录表的指针，每个元数据表直接映射应用内存的一部分，与Direct-mapped Shadow方案类似。<u>从整体上看，Multi-level Shadow类似于现代操作系统实现页表的方式。</u></p>
+<p>有了额外的间接层，元数据存储就可以按需分配元数据表。它们只需自己分配目录表，元数据表的分配可以推迟到需要时再进行。这对于地址空间有限的系统（如 32 位系统）尤其有用，因为在这些系统中，实施Direct-mapped Shadow方案（如 ASan [31]）的 sanitizer 经常会耗尽可用地址空间，导致程序终止。</p>
+<p>需要按对象元数据（而不是按字节元数据）的工具可以使用<em>variable-compression-ratio</em> multilevel shadow mapping scheme，其中目录表将大小可变的对象映射为大小不变的元数据。这种方案可以帮助工具优化影子内存的使用和分配时的性能 [87]。</p>
+<p>这种方案的主要特点是，每次元数据访问都需要多次内存访问：一次是对每一级目录表的访问，另一次是对相应元数据表的访问。这严重影响了性能，尤其是对于经常查找元数据的工具，例如边界检查工具，它的大多数内存访问都需要元数据访问。例如，TypeSan[70]就非常适合两级可变压缩比方案，因为类型元数据是按对象和大小恒定的，元数据查找并不频繁。</p>
+<ul>
+<li><strong><em>Custom Data Structure</em></strong></li>
+</ul>
+<p>除了前面介绍的元数据方案之外，一些工具作者还选择了一系列自定义数据结构和特定工具解决方案来存储元数据。</p>
+<p> J&amp;K、CRED 和 D&amp;A 等边界校验工具采用了拼接树（splay trees） [34]、[37]、[38]。</p>
+<p>UBSan 和 CaVer 使用额外的哈希表作为缓存来存储类型检查的最新结果 [67], [69]。</p>
+<p>DangNull 利用线程安全的红黑树来编码对象之间的关系 [58]。需要注意的是，当使用不支持并发访问的数据结构时，必须在多线程环境下使用显式锁进行保护。对于线程本地变量或堆栈变量，每线程元数据也是一种选择，例如 CaVer 针对堆栈和全局对象的每线程红黑树。</p>
+<h3 id="2-Pointer-Metadata"><a href="#2-Pointer-Metadata" class="headerlink" title="2. Pointer Metadata"></a>2. Pointer Metadata</h3><ul>
+<li><strong><em>Fat Pointers:</em></strong></li>
+</ul>
+<p>有些 sanitizer 会用胖指针替换标准机器指针。胖指针是包含原始指针值以及与原始指针相关的元数据的结构。在许多按指针边界跟踪工具中使用的胖指针布局相当简单，只需替换如下数据结构：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240105164430444.png" style="zoom:67%;" /></p>
+<ul>
+<li><strong><em>Tagged Pointers:</em></strong></li>
+</ul>
+<p>存储每个指针元数据的一种侵入性较小的方法是用标记指针取代普通的机器指针。标记指针将元数据嵌入指针本身，而不改变其大小。与胖指针相比，这种技术具有更好的兼容性。例如，将标记指针作为函数参数传递不需要修改标准调用约定。</p>
+<h3 id="3-Static-Metadata"><a href="#3-Static-Metadata" class="headerlink" title="3. Static Metadata"></a>3. Static Metadata</h3><p>有些 sanitizer 需要编译器丢弃的某些信息，以便在运行时进行检查。</p>
+<p>为了在运行时提供所需的编译时信息，这些 sanitizer 通常会在编译后的程序中嵌入静态元数据。例如，bad-casting sanitizer 会在编译时创建一个类型层次表(type hierarchy table)，以便在运行时进行类型转换检查。HexVASAN 是一种变参函数 sanitizer，它为每个变参调用点建立静态元数据，以编码参数的数量及其类型。在运行时，被插桩的caller会将静态元数据推送到一个自定义堆栈中，被调用者会使用该堆栈检查所提供参数的有效性。</p>
+<hr>
+<h2 id="Driving-a-Sanitizer"><a href="#Driving-a-Sanitizer" class="headerlink" title="Driving a Sanitizer"></a>Driving a Sanitizer</h2><p>Sanitizer只能在程序执行的时候检测到刚好位于执行路径上的Bug，因此在测试时达到更高的代码覆盖率，Bug检测几率就更高。</p>
+<p>一般来说，Sanitizer可以配合unit test, integration test suite等人工手段，以及符号执行、Fuzzing等自动化手段一起使用。</p>
+<p>Lettner 等人[95]证明了partitioned-sanitization，即在运行时根据覆盖率和执行速度等标准开启或关闭 sanitization，可以减轻sanitizer带来的运行时负担，提升测试效率。</p>
+<h2 id="Analysis"><a href="#Analysis" class="headerlink" title="Analysis"></a>Analysis</h2><p>表 II 总结了正在积极维护（作为开源项目或商业产品）或在学术会议上发表的 sanitizer 的功能。我们收录的一些工具最初是作为exploit mitigation设计的，因此没有内置的错误报告机制。不过，这些工具确实符合我们对 sanitizer 的定义（参见第二节），因为它们可以精确定位漏洞代码的位置，如果与调试器结合使用，还可以提供有用的反馈。我们排除了 Intel Inspector [96]、ParaSoft Insure++ [75]、Micro Focus DevPartner [97] 和 UNICOM Global PurifyPlus [98]，因为这些 sanitizer 缺乏公开信息，无法进行准确比较。</p>
+<p>对于每一个 sanitizer，表格中都显示了它发现了哪些 bug、使用了哪些技术来发现这些 bug，以及使用了哪种元数据存储方案（如果有的话）。</p>
+<p>饼形标记代表我们对该 sanitizer 有效性的评估，以及它在运行时间和内存开销方面的效率。彩色单元格表示该 sanitizer 会产生误报。我们将在第 VIII-A 节讨论产生误报的原因。我们在同一实验平台上使用相同的基准集运行了其中 10 种工具（即表 II 中性能开销单元标有星号的工具），验证了所报告的性能数据。我们在附录 A 中报告了这些工具的确切性能数据。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240105202707576.png" alt=""></p>
+<h3 id="A-False-Positives"><a href="#A-False-Positives" class="headerlink" title="A. False Positives"></a>A. False Positives</h3><p>对developer来说，最重要的考量因素是false positive,其次是false negative，也就是说sanitizer可以漏报，但尽可能不要误报，因为这会浪费开发者大量的时间来检查bug（与静态分析倒是完全相反的）。</p>
+<p>最经常出现的问题是，sanitizer 实施的策略或机制往往比语言标准或事实标准更严格。事实上的标准（de facto standard）包括被广泛遵循的编程实践，而这些编程实践并不一定符合语言标准，尽管它们会产生无缺陷代码[99]。因此，我们可以认为，将不符合事实标准的行为报告为错误会构成假阳性检测。</p>
+<p>…</p>
+<p>[中间略]</p>
+<h2 id="Deployment"><a href="#Deployment" class="headerlink" title="Deployment"></a>Deployment</h2><p>我们对目前使用的 sanitizer 进行了研究。我们的目标是确定 (i) 哪些sanitizers受到开发人员的青睐，(ii) 它们与那些不受青睐的sanitizers有何不同。</p>
+<h3 id="1-Methodology"><a href="#1-Methodology" class="headerlink" title="1. Methodology"></a>1. Methodology</h3><ol>
+<li><p>我们编制了一份 GitHub 上前 100 个 C 和前 100 个 C++ 项目的列表，并检查了它们的build和test scripts、GitHub issues和Commit histories。<u>我们审查的大多数 sanitizer 都需要在编译时集成到测试程序中</u>。因此，程序的构建配置将揭示程序是否定期进行sanitizer。我们对测试套件和测试脚本的检查进一步显示了哪些 sanitizer 可以在测试过程中启用。与构建系统/配置文件相反，在运行时检测程序的 sanitizer（如 Memcheck）会在这里显示。</p>
+</li>
+<li><p>我们检查了 sanitizer 工具的网站，寻找使用 sanitizer 的项目的明确参考信息和对发现的错误的确认。</p>
+</li>
+<li>我们研究并比较了不同sanitizer的搜索趋势。我们将 ASan 作为搜索趋势的baseline，因为我们的研究表明它是目前使用最广泛的sanitizer。</li>
+</ol>
+<h3 id="2-Findings"><a href="#2-Findings" class="headerlink" title="2. Findings"></a>2. Findings</h3><ol>
+<li>ASAN是使用最为广泛的Sanitizer；</li>
+<li>其它基于LLVM的Sanitizer采用率较低；</li>
+</ol>
+<h3 id="3-Deployment-Directions"><a href="#3-Deployment-Directions" class="headerlink" title="3. Deployment Directions"></a>3. Deployment Directions</h3><p>更低的使用门槛、误报率都会提高Sanitizer的使用率。</p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>Sanitizer</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>(论文阅读)(Part1)SoK-Sanitizing for Security</title>
+    <url>/2024/01/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91(Part1)SoK-Sanitizing-for-Security/</url>
+    <content><![CDATA[<h1 id="Part1-SoK-Sanitizing-for-Security"><a href="#Part1-SoK-Sanitizing-for-Security" class="headerlink" title="(Part1)SoK: Sanitizing for Security"></a>(Part1)SoK: Sanitizing for Security</h1><blockquote>
+<p><strong>作者：</strong>Dokyung Song, Julian Lettner, Prabhu Rajasekaran(UC Irvine)</p>
+<p><strong>会议：</strong>S&amp;P’19</p>
+</blockquote>
+<h2 id="ABSTRACT"><a href="#ABSTRACT" class="headerlink" title="ABSTRACT"></a>ABSTRACT</h2><p>C 和 C++ 编程语言出了名的不安全，但仍然不可或缺。因此，开发人员采用多管齐下的方法，抢在对手之前发现安全问题。这些方法包括手动、静态和动态程序分析。动态错误查找工具（即 “sanitizers”）可以发现其他类型分析无法发现的错误，因为它们可以观察到程序的实际执行情况，因此可以直接观察到发生的不正确程序行为。</p>
+<p>学术界已经开发了大量的sanitizer原型，实践者也对其进行了改进。我们系统地概述了sanitizer，重点介绍了它们在发现安全问题方面的作用。具体来说，我们对现有工具及其涵盖的安全漏洞进行了分类，描述了它们的性能和兼容性，并强调了各种权衡。</p>
+<span id="more"></span>
+<h2 id="Exploit-Mitigations-VS-Sanitizers"><a href="#Exploit-Mitigations-VS-Sanitizers" class="headerlink" title="Exploit Mitigations VS. Sanitizers"></a>Exploit Mitigations VS. Sanitizers</h2><p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240104160518671.png" style="zoom: 67%;" /></p>
+<p>Sanitizer 与许多著名的Exploit Mitigation(漏洞利用缓解措施)类似，它们可以通过插入inlined reference monitors（IRM）等类似方式对程序进行检测。尽管有这些相似之处，Exploit Mitigation和 sanitizer 在目标和用例上却有很大不同。</p>
+<p>这两类工具的最大区别在于它们执行的安全策略类型。Exploit Mitigation工具部署的策略旨在检测或防止攻击，而sanitizer工具则旨在精确定位有漏洞的程序语句。控制流完整性（CFI）[10]、[11]、数据流完整性（DFI）[12]和写完整性测试（WIT）[13]都是Exploit Mitigation工具的例子，因为它们能检测出合法控制流或数据流路径的偏差，这些偏差通常是漏洞利用的结果，<u>但不一定发生在易受攻击程序语句的精确位置</u>。与此相反，边界检查工具(bounds checking tool)可被视为 sanitizer，因为违反其策略会直接在有漏洞的语句位置触发。</p>
+<p>有些工具会选择性地应用 sanitizer 技术，并可能与Exploit Mitigation相结合。例如，Code-Pointer Integrity（CPI）仅在程序直接或间接访问敏感代码指针时执行边界检查（许多 sanitizer 使用的一种 sanitization 技术）[14]。因此，我们认为 CPI 是一种Exploit Mitigation，而不是一种 sanitizer，因为 CPI 只能检测出所有可使用边界检查检测出的漏洞中的一小部分。</p>
+<p>Exploit Mitigation是要在生产中部署的，因此对设计的各个方面提出了严格的要求。首先，如果Exploit Mitigation程序会产生不可忽略的运行时开销，那么它们在现实世界中就很少被采用[15]。<u>Sanitizer 对性能的要求不那么严格，因为它们只用于测试</u>。其次，Exploit Mitigation中的假阳性检测是不可接受的，因为它会终止程序。Sanitizer 可以容忍假阳性（FPs），但以开发人员愿意审查错误报告为限。最后，出于可靠性和可用性的考虑，在生产系统中允许并经常希望存在一些benign error（如写入填充），而 sanitizer 则旨在精确检测这些错误，因为它们的可利用性是未知的。</p>
+<h2 id="Low-level-Vulnerabilities"><a href="#Low-level-Vulnerabilities" class="headerlink" title="Low-level Vulnerabilities"></a>Low-level Vulnerabilities</h2><p>鉴于与安全相关的 Bug 种类繁多，我们将重点放在对 C/C++ 有特定安全影响的 Bug 上。这不仅包括未定义的行为，还包括在缺乏类型和内存安全的情况下具有潜在危险的定义明确的行为。我们将简要介绍这些漏洞，以及如何利用它们来泄漏信息、提升权限或执行任意代码。</p>
+<h3 id="1-Memory-Safety-Violations"><a href="#1-Memory-Safety-Violations" class="headerlink" title="1. Memory Safety Violations"></a>1. Memory Safety Violations</h3><blockquote>
+<p><strong>Intended referent:</strong> 指一个指针预期的合理范围。其可能是：在分配和取消分配之间（heap-allocated referents）、函数调用和返回之间（stack-allocated referents）、创建和销毁相关线程之间（threadlocal referents）或无限期（global referents）是有效的。</p>
+</blockquote>
+<h4 id="1-1-Spatial-Safety-Violations"><a href="#1-1-Spatial-Safety-Violations" class="headerlink" title="1.1 Spatial Safety Violations"></a>1.1 Spatial Safety Violations</h4><p>访问不在指针的intended referent范围内的内存行为就被视为spatial safety violation，例如buffer overflow。</p>
+<p>如果易受攻击的访问对象是一个subobject（如结构体字段），而攻击者向同一object中的另一个subobject写入了内容，那么我们就称之为intra-object overflow（对象内溢出）。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240104162449326.png" style="zoom:67%;" /></p>
+<h4 id="1-2-Temporal-Safety-Violations"><a href="#1-2-Temporal-Safety-Violations" class="headerlink" title="1.2 Temporal Safety Violations"></a>1.2 Temporal Safety Violations</h4><p>虽然访问指针的intended referent范围合理，但访问时该referent已经不再可用，例如UAF。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240104162654269.png" style="zoom:67%;" /></p>
+<h3 id="2-Use-of-Uninitialized-Variables"><a href="#2-Use-of-Uninitialized-Variables" class="headerlink" title="2. Use of Uninitialized Variables"></a>2. Use of Uninitialized Variables</h3><p>变量在初始化之前有一个不确定值，如果源变量和目标变量都是无符号的窄字符类型，<u>C++14 允许这种不确定值传播到其他变量。</u>对未初始化变量的任何其他使用都会导致未定义行为。这种未定义行为的效果取决于许多因素，包括编译程序时使用的编译器和编译器标志。</p>
+<p>在大多数情况下，不确定值实际上是先前已释放变量的（部分）内容，这些变量与未初始化变量占用了相同的内存范围。由于这些先前已重新配置的变量有时可能持有安全敏感值，因此读取未初始化内存可能是信息泄漏攻击的一部分。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240104163046144.png" style="zoom:67%;" /></p>
+<h3 id="3-Pointer-Type-Errors"><a href="#3-Pointer-Type-Errors" class="headerlink" title="3. Pointer Type Errors"></a>3. Pointer Type Errors</h3><p>C 和 C++ 支持多种转换操作符和语言结构，这些操作符和语言结构会导致内存访问错误地解释存储在引用对象中的数据，从而违反类型安全。</p>
+<p><u>指针类型错误通常是由不安全的类型转换造成的，C 允许指针类型之间的所有类型转换，以及整数和指针类型之间的类型转换</u>。</p>
+<p>C++ 的 reinterpret_cast 类型转换操作符同样不受任何限制。static_cast和dynamic_cast操作符确实有一些限制：static_cast禁止指针到整数的转换，也禁止指针到通过继承不相关的对象之间的转换。不过，它允许将指针从基类投向派生类（也称为下投），也允许从 void<em> 类型投向 void</em> 类型。当下投指针既没有其引用对象的运行时类型，也没有引用对象的一个祖先类型时，就会发生错误投射（通常称为类型混淆）。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240104163226790.png" style="zoom:67%;" /></p>
+<h3 id="4-Variadic-Function-Misuse"><a href="#4-Variadic-Function-Misuse" class="headerlink" title="4. Variadic Function Misuse"></a>4. Variadic Function Misuse</h3><p>C/C++ 支持Variadic Function（可变函数），除了接受固定数量的常规函数参数外，还接受可变数量的可变函数参数。Variadic Function的源代码中并不指定这些可变参数的数量或类型。可变参数可以使用 va_arg 访问并同时进行类型转换。<u>一般来说，无法静态验证 va_arg 是否访问了有效参数，或是否将参数类型转换为有效类型</u>。缺乏这个问题的静态验证可能导致type errors、spatial memory safety violations和uses of uninitialized values。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240104163700886.png" style="zoom:67%;" /></p>
+<h3 id="5-Other-Vulnerabilities"><a href="#5-Other-Vulnerabilities" class="headerlink" title="5. Other Vulnerabilities"></a>5. Other Vulnerabilities</h3><p>在缺乏类型和内存安全的情况下，还有其他一些操作可能会带来安全风险，值得注意的例子包括在内存分配或指针运算操作中使用此类值时可能被利用的溢出错误。如果使用攻击者控制的整数值来计算缓冲区大小或数组索引，攻击者就可能溢出该值，分配比预期更小的缓冲区（整数溢出）：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240104163851966.png" style="zoom:67%;" /></p>
+<p>或编译器优化导致的问题：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240104164020673.png" style="zoom:67%;" /></p>
+<p>编译器开发人员经常在他们的编译器中添加这种激进的优化。因此，有人将未定义行为称为ime bombs，定时炸弹。</p>
+<h2 id="Bug-Finding-Techniques"><a href="#Bug-Finding-Techniques" class="headerlink" title="Bug Finding Techniques"></a>Bug Finding Techniques</h2><h3 id="1-Memory-Safety-Violations-1"><a href="#1-Memory-Safety-Violations-1" class="headerlink" title="1. Memory Safety Violations"></a>1. Memory Safety Violations</h3><p>内存安全漏洞查找工具可检测指针的解引用，这些指针要么不指向其intended referent（即空间安全违规），要么针对的Intended referent已不再有效（即时间安全违规），有两大类工具可用于检测这些错误。</p>
+<ul>
+<li><strong><em>Location-based Access Checkers</em></strong>—&gt;不需要插桩</li>
+</ul>
+<p>Location-based Access Checkers可检测对无效内存区域的内存访问。这些检查器有一个元数据存储空间，用于维护可寻址地址空间（部分）每个字节的状态，每当程序尝试访问内存时，检查器都会查阅该元数据存储空间，以确定内存访问是否有效。</p>
+<p>Location-based Access check program可以使用redzone insertion [27]-[31] 或guard pages[32], [33] 来检测空间安全违规。这些技术中的任何一种都可以与reuse delay相结合，以额外检测时间安全违规[27]-[29]，[31]-[36]。Location-based Access Checkers的运行时<u>性能开销较低</u>，而且与未经插桩的代码高度兼容。缺点是这些工具不够精确，因为它们只能检测指令是否访问了有效内存，而不能检测访问的内存是否属于指令的intended referent。这些工具通常会产生较高的内存开销。</p>
+<ul>
+<li><strong><em>Identity-based Access Checkers</em></strong>—&gt;需要插桩</li>
+</ul>
+<p>Identity-based Access Checkers可检测出不针对intended referent的内存访问。这些工具为每个已分配的内存对象维护元数据（如边界或分配状态），并有一套机制来确定程序中每个指针的intended referent。元数据查询可在程序使用算术运算计算新指针时进行，以确定计算结果是否为有效指针，和/或在指针取消引用时进行，以确定取消引用是否访问了指针的预定引用对象。</p>
+<p>Identity-based Access Checkers可以使用每个对象的边界跟踪[34]、[37]-[43]或每个指针的边界跟踪[44][55]来检测空间安全违规，还可以通过重用延迟[55]、锁定和密钥检查[46]、[47]、[56]或悬空指针标记[57]-[60]来检测时间安全违规。</p>
+<p>Identity-based Access Checkers比Location-based Access Checkers更精确，因为它们不仅能检测对无效内存的访问，还能检测对intended referent之外的有效内存的访问。不过，与Location-based Access Checkers相比，这些工具的运行时性能开销更高。基于Identity-based Access Checkers通常与未被插桩的代码不兼容，它们的误报检测率也高于基于位置的检查器。</p>
+<hr>
+<ul>
+<li><strong><em>Red-zone Insertion</em></strong></li>
+</ul>
+<p>Location-based access checkers中可以使用Red-zone Insertion技术来在内存对象之间插入redzone，redzone被视为非法内存区域，代表工具：</p>
+<ol>
+<li>Purify；</li>
+<li>Memcheck；</li>
+<li>Light-weight Bounds Checking（LBC）。</li>
+</ol>
+<p>使用readzone insertion based location-based access checker通常会产生较低的运行时性能开销，但精度有限，因为它们只能检测以红区为目标的非法访问。而针对有效对象的非法访问则无法检测，因为有效对象可能与intended referent属于同一分配，也可能不属于同一分配。基于插入红区的工具也无法检测对象内溢出错误，因为它们不会在子对象之间插入红区。虽然技术上可行，但在子对象之间插入红区会导致过多的内存开销，而且会改变父对象的布局。因此，任何访问父对象或其子对象之一的代码都必须进行修改，这也会破坏与不了解已更改数据布局的外部代码的兼容性。</p>
+<ul>
+<li><strong><em>Guard Pages</em></strong></li>
+</ul>
+<p>可在每个分配的内存对象之前和/或之后插入不可访问的保护页，访问保护页面的越界读写会触发页面故障，进而在应用程序中触发异常。这种利用分页硬件检测非法访问的方法，允许运行基于位置的访问检查程序运行未经插桩的load和store指令。</p>
+<p>不过，使用保护页会产生较高的内存开销，因此对于工作集较大的应用程序来说，这种技术并不实用。微软意识到了这个问题，并在 PageHeap [33] 中增加了一个选项，即用保护块而不是完整的保护页来包围内存对象。PageHeap 使用填充模式填充这些保护块，并在释放内存对象时验证该模式是否仍然存在。严格来说，这种技术不如红区插入技术，因为它只能检测越界写入（而不是读取），而且直到被覆盖的对象被释放时，它才会检测到非法写入。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240104170541686.png" style="zoom:67%;" /></p>
+<ul>
+<li><strong><em>Per-pointer Bounds Tracking</em></strong></li>
+</ul>
+<p>基于身份的访问检查器还可以为每个内存对象而不是每个指针存储边界元数据.</p>
+<p>这种方法由 Jones 和 Kelly（J&amp;K）率先提出，解决了与每对象边界跟踪相关的一些兼容性问题[34]。每个对象的边界跟踪器可以维护边界元数据，而无需检测指针的创建和赋值操作。跟踪器只需拦截对内存分配（即 malloc）和去分配（即 free）函数的调用即可，<u>即使在未完全插桩的程序中也能做到这一点</u>。</p>
+<p>由于边界元数据只针对对象而非指针进行维护，因此很难将指针与其intended referent联系起来。虽然可以使用元数据存储中基于范围的查找来找到界内指针的预定引用，但这种查找不会返回界外（OOB）指针的正确元数据。因此，J&amp;K 建议对指针运算操作进行检测，并在指针越界时使其失效。任何后续的取消引用都会触发故障，然后可以捕获故障以输出警告。</p>
+<ul>
+<li><strong><em>Reuse Delay</em></strong></li>
+</ul>
+<p>基于位置的访问检查器可以在元数据存储中将最近重新分配的对象标记为无效，<u>方法是用红色区域[27]-[29]、[31]、[34]或保护页[32]、[33]、[35]、[36]代替它们。</u></p>
+<p>Dhurjati 和 Adve（D&amp;A）提议使用静态分析来准确确定何时可以安全地重用已分配的内存[35]。D&amp;A 将每个内存对象分配在自己的虚拟内存页上，但允许对象通过将虚拟内存页别名为相同的物理页来共享物理内存页。当程序释放内存对象时，D&amp;A 会将其虚拟页面转换为保护页面。D&amp;A 还利用一种名为 “自动池分配”（Automatic Pool Allocation）的静态分析方法，将堆划分为多个池[62]。这种分析可以推断一个池何时不再可访问（即使是通过潜在的悬空指针），此时池中的所有虚拟页都可以被回收。Dang 等人提出了一种不使用池分配的类似系统，因此可用于无源程序[36]。与 D&amp;A 类似，Dang 等人将所有内存对象分配在各自的虚拟页上。当一个对象被取消分配时，Dang 等人就会取消该对象虚拟页的映射。这实际上实现了与保护页相同的目标，但允许内核释放虚拟页的内部元数据，从而减少了物理内存开销。为了防止重复使用未映射的虚拟页，Dang 等人建议在高水位（即程序中使用过的最高虚拟地址）处映射新页。虽然这并不能完全排除未映射虚拟页的重复使用，但其理念是，在 64 位地址空间中，重复使用不太可能发生。</p>
+<ul>
+<li><strong><em>Lock-and-key</em></strong></li>
+</ul>
+<p>基于身份的检查器可以通过为每个已分配的内存对象分配唯一的分配标识符（通常称为密钥），并将该密钥存储在lock location中来检测违反时间安全的情况 [46], [47], [56]，当相关对象被解除分配时，检查器会从锁定位置撤销密钥。</p>
+<ul>
+<li><strong><em>Dangling Pointer Tagging</em></strong></li>
+</ul>
+<p>标记悬空指针的最直接方法是将传递给 free 函数的指针相关值或边界作废[49]。空间内存安全违规检测机制会在此类指针稍后被取消引用时触发警告。这种方法的缺点是没有标记悬空指针的副本，而这些副本也可能在以后被使用。</p>
+<hr>
+<h3 id="2-Use-of-Uninitialized-Variables-1"><a href="#2-Use-of-Uninitialized-Variables-1" class="headerlink" title="2. Use of Uninitialized Variables"></a>2. Use of Uninitialized Variables</h3><ul>
+<li><strong><em>Uninitialized Memory Read Detection</em></strong></li>
+</ul>
+<p>通过在元数据存储中<u>将新分配对象占用的所有内存区域标记为未初始化</u>，基于位置的访问检查程序可以扩展到检测对未初始化内存值的读取[27]。这些工具会检测读取指令，如果读取的是未初始化的内存区域，就会触发警告；如果写入指令，就会清除覆盖区域的未初始化标记。请注意，将内存区域标记为未初始化并不等同于将其标记为redzone，因为对红色区域的读取和写入访问都会触发警告，而对未初始化内存的访问只在读取时才会被禁止。</p>
+<ul>
+<li><strong><em>Uninitialized Value Use Detection</em></strong></li>
+</ul>
+<p>上述检测对未初始化内存的读取会产生许多假阳性检测，因为 C++14 标准明确允许未初始化值在程序中传播，只要它们未被使用。例如，将部分未初始化的结构体从一个位置复制到另一个位置时，就会出现这种情况。</p>
+<p>Memcheck 试图只检测未初始化值的使用，将错误报告限制在：(i) 取消引用（部分）未定义的指针；(ii) 在（部分）未定义值上分支；(iii) 将未定义值传递给系统调用；(iv) 将未初始化值复制到浮点寄存器[28]。为支持这一策略，Memcheck 为程序内存中每一个部分初始化的字节添加一个字节的影子状态。</p>
+<p>这样，Memcheck 就能以bit级精度跟踪程序所有内存的定义性。Memcheck 近似于 C++14 的语义，但会产生假阴性（无法报告非法使用未初始化内存）和假阳性（报告合法使用未初始化内存），这是不可避免的，因为 Memcheck 是在二进制级别而非源代码级别运行的。</p>
+<p>MemorySanitizer (MSan) 实现了与 Memcheck 基本相同的策略，但在编译器中间表示（IR）级别对程序进行检测[66]。IR 代码比二进制代码携带更多信息，这使得 MSan 比 Memcheck 更精确。MSan 不会产生假阳性（前提是整个程序都被检测到），假阴性也很少，其性能开销也比 Memcheck 低一个数量级。</p>
+<hr>
+<h3 id="3-Pointer-Type-Errors-1"><a href="#3-Pointer-Type-Errors-1" class="headerlink" title="3. Pointer Type Errors"></a>3. Pointer Type Errors</h3><ul>
+<li><strong><em>Pointer Casting Monitor</em></strong></li>
+</ul>
+<p>指针转换监控程序通过 C++ static_cast 操作符检测非法downcast。非法downcast发生在下投的目标类型不等于源对象的运行时类型（或其祖先类型之一）时。</p>
+<p>UndefinedBehaviorSanitizer [67] (UBSan) 和 Clang CFI [68] 中的检查程序通过比较目标类型和与源对象关联的运行时类型信息 (RTTI) 来验证静态下投操作的正确性。这就有效地将 static_cast 操作变成了 dynamic_cast。其缺点是，基于 RTTI 的工具无法验证缺乏 RTTI 的非多态类型之间的投递。</p>
+<ul>
+<li><strong><em>Pointer Use Monitor</em></strong></li>
+</ul>
+<p>C/C++ 支持几种以潜在危险方式转换指针类型的构造；C-风格的cast、reinterpret_cast 和联合都可用于绕过编译时和运行时类型检查。不过，将指针类型转换监控扩展到这些构造可能会导致误报。</p>
+<h3 id="4-Variadic-Function-Misuse-1"><a href="#4-Variadic-Function-Misuse-1" class="headerlink" title="4. Variadic Function Misuse"></a>4. Variadic Function Misuse</h3><ul>
+<li><strong><em>Dangerous Format String Detection</em></strong></li>
+</ul>
+<p>格式化字符串漏洞是最常见的变种Variadic Function Misuse漏洞，但大多数工作都只侧重于检测对 printf 的危险调用。在这些努力中，有一些工具限制了格式字符串中 %n 限定符的使用 [76], [77]。该限定符可用于将 printf 写入调用者指定的内存位置。然而，这种危险的操作 [2] 是 printf 函数特有的，因此上述工具的适用性有限。</p>
+<ul>
+<li><strong><em>Argument Mismatch Detection</em></strong></li>
+</ul>
+<p>FormatGuard 可以防止 printf 读取比调用者传递的参数更多的参数 [78]。FormatGuard 的做法是将调用重定向到受保护的 printf 实现，该实现在通过 va_arg 获取变量参数时会递增计数器。HexVASAN 将参数计数推广到所有变量函数，并增加了类型检查功能 [79]。</p>
+<p>HexVASAN 会在变参函数的调用位置记录传给被调用者的参数数量和类型，并将这些信息保存在元数据存储中。然后，该工具利用 va_start 和 va_copy 操作从元数据存储中检索信息，并利用 va_arg 操作检查正在访问的参数是否在给定的参数个数范围内，是否属于给定的类型。</p>
+<h3 id="5-Other-Vulnerabilities-1"><a href="#5-Other-Vulnerabilities-1" class="headerlink" title="5. Other Vulnerabilities"></a>5. Other Vulnerabilities</h3><p>这些工具可检测到其他未定义的行为，或定义明确但可能是意外和危险的行为。</p>
+<ul>
+<li><strong><em>Stateless Monitoring</em></strong></li>
+</ul>
+<p><u>UndefinedBehaviorSanitizer (UBSan)</u>是一个用来检测未定义行为的Sanitizer，其检测范围包括：整数溢出、浮点数\整数÷零，无效位移操作，类型转换导致的浮点数溢出（例如将一个double转换为float），使用错位指针（misaligned pointer），空指针解引用，有返回值的函数没有返回。</p>
+<p>UBSan 的大多数检测功能都是无状态的，因此可以一起被开启，而不会相互干扰。</p>
+<p>UBSan 还能检测几种定义明确但很可能是非预期的行为。例如，语言标准规定无符号整数在溢出时要进行循环（wrap-arounds）。然而，这种定义明确的行为往往是意想不到的，也是 bug 的常见来源，因此 UBSan 可以有选择地检测这些无符号整数环绕（wrap-arounds）。</p>
+<blockquote>
+<p>What is a misaligned pointer?</p>
+<p><a href="https://stackoverflow.com/questions/20183094/what-is-a-misaligned-pointer">c - What is a misaligned pointer? - Stack Overflow</a></p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>Sanitizer</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>(技术积累) Linux系统工作环境搭建</title>
     <url>/2024/01/02/Linux%E7%B3%BB%E7%BB%9F%E5%B7%A5%E4%BD%9C%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</url>
-    <content><![CDATA[<h1 id="linux系统工作环境搭建">Linux系统工作环境搭建</h1>
-<blockquote>
+    <content><![CDATA[<h1 id="Linux系统工作环境搭建"><a href="#Linux系统工作环境搭建" class="headerlink" title="Linux系统工作环境搭建"></a>Linux系统工作环境搭建</h1><blockquote>
 <p>系统：Ubuntu 20.04</p>
 <p>用户名：wx</p>
 </blockquote>
@@ -20,7 +250,11 @@
 <li>美化PS1:</li>
 </ul>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#添加到~/.bashrc</span>
-<span class="token builtin class-name">echo</span> <span class="token string">"export PS1='\[<span class="token entity" title="\e">\e</span>]0;\u@\h:  \W<span class="token entity" title="\a">\a</span>\][\[<span class="token entity" title="\033">\033</span>[01;36m\]\u@\h\[<span class="token entity" title="\033">\033</span>[00m\]:\[<span class="token entity" title="\033">\033</span>[01;34m\]\W\[<span class="token entity" title="\033">\033</span>[00m\]]<span class="token entity" title="\n">\n</span>\[<span class="token entity" title="\033">\033</span>[01;32m\]$ >\[<span class="token entity" title="\033">\033</span>[00m\] '"</span> <span class="token operator">>></span> ~/.bashrc <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">source</span> ~/.bashrc<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<span class="token builtin class-name">echo</span> <span class="token string">"export PS1='\[<span class="token entity" title="\e">\e</span>]0;\u@\h:  \W<span class="token entity" title="\a">\a</span>\][\[<span class="token entity" title="\033">\033</span>[01;36m\]\u@\h\[<span class="token entity" title="\033">\033</span>[00m\]:\[<span class="token entity" title="\033">\033</span>[01;34m\]\W\[<span class="token entity" title="\033">\033</span>[00m\]]<span class="token entity" title="\n">\n</span>\[<span class="token entity" title="\033">\033</span>[01;32m\]$ >\[<span class="token entity" title="\033">\033</span>[00m\] '"</span> <span class="token operator">>></span> ~/.bashrc <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">source</span> ~/.bashrc
+<span class="token comment">#Autosuggestions</span>
+<span class="token function">git</span> clone --recursive https://github.com/akinomyoga/ble.sh.git
+<span class="token function">make</span> -C ble.sh
+<span class="token builtin class-name">source</span> ble.sh/out/ble.sh<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240102192311001.png" style="zoom:80%;" /></p>
 <ul>
 <li>sudo用户组</li>
@@ -28,9 +262,7 @@
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">chmod</span> +w /etc/sudoers
 <span class="token builtin class-name">echo</span> <span class="token string">"wx   ALL=(ALL:ALL) ALL"</span> <span class="token operator">>></span> /etc/sudoers<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <ul>
-<li>ssh密钥登陆[<a
-href="https://www.runoob.com/w3cnote/set-ssh-login-key.html">设置 SSH
-通过密钥登录 | 菜鸟教程 (runoob.com)</a>)：</li>
+<li>ssh密钥登陆[<a href="https://www.runoob.com/w3cnote/set-ssh-login-key.html">设置 SSH 通过密钥登录 | 菜鸟教程 (runoob.com)</a>)：</li>
 </ul>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#window客户端</span>
 <span class="token comment">#cmd</span>
@@ -45,12 +277,11 @@ ssh-keygen -t rsa
 <span class="token function">chmod</span> <span class="token number">700</span> ~/.ssh
 <span class="token comment"># 将/etc/ssh/sshd_config设置：PubkeyAuthentication yes</span>
 <span class="token function">sudo</span> <span class="token function">service</span> sshd restart<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<ol type="1">
+<ol>
 <li>如果Linux是虚拟机，需要配置VMWare的NAT端口映射（主机是固定IP，这里映射为主机的2024端口）：</li>
 </ol>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240102193515812.png" /></p>
-<ol start="2" type="1">
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240102193515812.png" alt=""></p>
+<ol>
 <li>如果需要管理多台虚拟机，密钥配置需要指定具体私钥文件的路径：</li>
 </ol>
 <pre class="line-numbers language-none"><code class="language-none">Host 10.12.189.55
