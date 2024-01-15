@@ -186,259 +186,30 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="how-does-wasm-module-interact-with-javascripte-in-browser">How
-does Wasm module interact with JavaScripte in browser?</h1>
-<blockquote>
-<p>Reference:</p>
-<ul>
-<li><strong><em>WebAssembly in Action</em></strong>. Chapter 4</li>
-</ul>
-</blockquote>
-<h2 id="background">Background</h2>
-<p>假设一个公司有一个用C++开发的销售程序，但想开发一个网页端销售接口用于对用户输入的数据进行验证，例如：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240113154003567.png" style="zoom: 50%;" /></p>
-<p>整个业务系统的逻辑如下：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240113154343378.png" style="zoom: 67%;" /></p>
-<p>用户填写的数据要在浏览器端和服务器端都进行验证，理由如下：</p>
-<ol type="1">
-<li>使用户端响应更快；</li>
-<li>减少服务端负载；</li>
-</ol>
-<p>尽管在浏览器中验证用户数据很有帮助，但不能假定数据在到达服务器时就是完美的；有一些方法可以绕过浏览器的验证检查。无论数据是无意提交的还是用户有意提交的，您都不希望冒险向数据库中添加不良数据。无论浏览器中的验证有多好，服务器端代码都必须始终验证它接收到的数据。</p>
-<p>在浏览器端，我们需要构建的验证功能有：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240113154946589.png" style="zoom:67%;" /></p>
-<p>实现该功能的C++代码如下：</p>
-<ol type="1">
-<li>检测一个值是否为空：</li>
-</ol>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">int ValidateValueProvided(const char* value, const char* error_message, char* return_error_message)&#123;
-    &#x2F;&#x2F; If the string is null or the first character is the null terminator then the string is empty
-    if ((value &#x3D;&#x3D; NULL) || (value[0] &#x3D;&#x3D; &#39;\0&#39;))&#123;
-        strcpy(return_error_message, error_message);
-        return 0;
-    &#125;
-    &#x2F;&#x2F; Everything is ok
-    return 1;
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<ol start="2" type="1">
-<li>检测<code>Name</code>属性是否合理（非空，长度限制）：</li>
-</ol>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">int ValidateName(char* name, int maximum_length, char* return_error_message)&#123;
-    &#x2F;&#x2F; Validation 1: A name must be provided
-    if (ValidateValueProvided(name, &quot;A Product Name must be provided.&quot;, return_error_message) &#x3D;&#x3D; 0)&#123; return 0; &#125;
-    &#x2F;&#x2F; Validation 2: A name must not exceed the specified length
-    if (strlen(name) &gt; maximum_length)&#123;
-        strcpy(return_error_message, &quot;The Product Name is too long.&quot;);
-        return 0;
-    &#125;
-    &#x2F;&#x2F; Everything is ok (no issues with the name)
-    return 1;
-&#125;
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<ol start="3" type="1">
-<li>检查目录ID是否存在：</li>
-</ol>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">int IsCategoryIdInArray(char* selected_category_id, int* valid_category_ids, int array_length)&#123;
-    &#x2F;&#x2F; Loop through the array of valid ids that were passed in...
-    int category_id &#x3D; atoi(selected_category_id);
-    for (int index &#x3D; 0; index &lt; array_length; index++)&#123;
-      &#x2F;&#x2F; If the selected id is in the array then...
-      if (valid_category_ids[index] &#x3D;&#x3D; category_id)&#123;
-        &#x2F;&#x2F; The user has a valid selection so exit now
-        return 1;
-      &#125;
-    &#125;
-    &#x2F;&#x2F; We did not find the category id in the array
-    return 0;
-  &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<ol start="4" type="1">
-<li>检查<code>Category</code>属性是否合理：</li>
-</ol>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">int ValidateCategory(char* category_id, int* valid_category_ids, int array_length, char* return_error_message)&#123;
-    &#x2F;&#x2F; Validation 1: A Category ID must be selected
-    if (ValidateValueProvided(category_id, &quot;A Product Category must be selected.&quot;, return_error_message) &#x3D;&#x3D; 0)&#123;
-      return 0;
-    &#125;
-    &#x2F;&#x2F; Validation 2: A list of valid Category IDs must be passed in
-    if ((valid_category_ids &#x3D;&#x3D; NULL) || (array_length &#x3D;&#x3D; 0))&#123;
-      strcpy(return_error_message, &quot;There are no Product Categories available.&quot;);
-      return 0;
-    &#125;
-    &#x2F;&#x2F; Validation 3: The selected Category ID must match one of the IDs provided
-    if (IsCategoryIdInArray(category_id, valid_category_ids, array_length) &#x3D;&#x3D; 0)&#123;
-      strcpy(return_error_message, &quot;The selected Product Category is not valid.&quot;);
-      return 0;
-    &#125;
-    &#x2F;&#x2F; Everything is ok (no issues with the category id)
-    return 1;
-  &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="emscripten">Emscripten</h2>
-<p>我们要使用上述代码中的<code>ValidateName</code>和<code>ValidateCategory</code>两个函数来验证用户在网页端的输入是否合理，这就必然涉及到Wasm与JS交互的问题，为了防止C++重命名函数导致JS无法调用，这里需要在被编译的函数外包上如下宏：</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#ifdef __cplusplus
-extern &quot;C&quot; &#123; &#x2F;&#x2F; So that the C++ compiler does not rename our function names
-#endif
-    &#x2F;&#x2F;...
-#ifdef __cplusplus
-&#125;
-#endif<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>另外，需要在这两个函数的前面加上如下的宏来使其自动变为export
-function：</p>
-<pre class="line-numbers language-C++" data-language="C++"><code class="language-C++">#ifdef __EMSCRIPTEN__ 
-EMSCRIPTEN_KEEPALIVE 
-#endif<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<p>当然，在编译时也可以通过命令行<code>EXPORTED_FUNCIONTS</code>参数来指定export
-function。</p>
-<p>在文件的开头，加上Emscripten相关头文件：</p>
-<pre class="line-numbers language-C++" data-language="C++"><code class="language-C++">#ifdef __EMSCRIPTEN__
-  #include &lt;emscripten.h&gt;
-#endif<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<h2 id="compilation">Compilation</h2>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">emcc validate.cpp -o validate.js -s <span class="token assign-left variable">EXPORTED_RUNTIME_METHODS</span><span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">'ccall'</span>,<span class="token string">'UTF8ToString'</span><span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><code>EXPORTED_RUNTIME_METHODS</code>指定了Emscripten helper
-functions：<code>ccall</code>,<code>UTF8ToString</code>。</p>
-<h2 id="web-page">Web page</h2>
-<pre class="line-numbers language-html" data-language="html"><code class="language-html"><span class="token doctype"><span class="token punctuation">&lt;!</span><span class="token doctype-tag">DOCTYPE</span> <span class="token name">html</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span><span class="token punctuation">></span></span>
-  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">></span></span>Edit Product<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">charset</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>utf-8<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>viewport<span class="token punctuation">"</span></span> <span class="token attr-name">content</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>width=device-width, initial-scale=1<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>link</span> <span class="token attr-name">rel</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>stylesheet<span class="token punctuation">"</span></span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
-  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span>
-  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span> <span class="token attr-name">onload</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>initializePage()<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>container<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span><span class="token punctuation">></span></span>Edit Product<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">></span></span>
+        
 
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>errorMessage<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>alert alert-danger<span class="token punctuation">"</span></span> <span class="token attr-name">role</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>alert<span class="token punctuation">"</span></span> <span class="token style-attr"><span class="token attr-name">style</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span><span class="token style language-css"><span class="token property">display</span><span class="token punctuation">:</span>none<span class="token punctuation">;</span></span><span class="token punctuation">"</span></span></span><span class="token punctuation">></span></span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+          
+            <div class="entry-thumbnail">
+              <a href="/2024/01/13/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91How%20dose%20Wasm%20module%20interact%20with%20JavaScript%20in%20browser/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+            </div>
+          
+          <div class="entry-summary">
+          How
+does Wasm module interact with JavaScripte in browser?
 
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>form-group<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>label</span> <span class="token attr-name">for</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>name<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Name:<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>label</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>text<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>form-control<span class="token punctuation">"</span></span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>name<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>form-group<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>label</span> <span class="token attr-name">for</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>category<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Category:<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>label</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>select</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>custom-select<span class="token punctuation">"</span></span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>category<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>option</span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>0<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>option</span><span class="token punctuation">></span></span>
-          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>option</span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>100<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Jeans<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>option</span><span class="token punctuation">></span></span>
-          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>option</span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>101<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Dress Pants<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>option</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>select</span><span class="token punctuation">></span></span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
- 
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>button<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>btn btn-primary<span class="token punctuation">"</span></span> <span class="token attr-name">onclick</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>onClickSave()<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>Save<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+Reference:
 
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>editproduct.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>validate.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
-  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2
-id="creating-the-javascript-that-will-interact-with-the-module">Creating
-the JavaScript that will interact with the module</h2>
-<p>这里构建一个editproduct.js，用于Wasm和html之间的交互.</p>
-<ol type="1">
-<li>初始化数据显示：</li>
-</ol>
-<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> initialData <span class="token operator">=</span> <span class="token punctuation">&#123;</span> 
-    name<span class="token operator">:</span> <span class="token string">"Women's Mid Rise Skinny Jeans"</span><span class="token punctuation">,</span> 
-    categoryId<span class="token operator">:</span> <span class="token string">"100"</span><span class="token punctuation">,</span> 
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<ol start="2" type="1">
-<li>定义常量<code>MAXIMUM_NAME_LENGTH</code>和<code>VALID_CATEGORY_IDS</code>用来表示<code>name</code>的最大长度和有效目录ID数组：</li>
-</ol>
-<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> <span class="token constant">MAXIMUM_NAME_LENGTH</span> <span class="token operator">=</span> <span class="token number">50</span><span class="token punctuation">;</span> 
-<span class="token keyword">const</span> <span class="token constant">VALID_CATEGORY_IDS</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">100</span><span class="token punctuation">,</span> <span class="token number">101</span><span class="token punctuation">]</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<ol start="3" type="1">
-<li>补充HTML中的<code>initializePage</code>函数，使其用<code>initialData</code>填充表单：</li>
-</ol>
-<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">initializePage</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-  <span class="token comment">// 初始化name</span>
-  document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">"name"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>value <span class="token operator">=</span> initialData<span class="token punctuation">.</span>name<span class="token punctuation">;</span>
-  <span class="token keyword">const</span> category <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">"category"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">const</span> count <span class="token operator">=</span> category<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
-  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> index <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> index <span class="token operator">&lt;</span> count<span class="token punctuation">;</span> index<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token comment">// 如果value合理，则初始化Index，让Select选中这个键</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>category<span class="token punctuation">[</span>index<span class="token punctuation">]</span><span class="token punctuation">.</span>value <span class="token operator">===</span> initialData<span class="token punctuation">.</span>categoryId<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-      category<span class="token punctuation">.</span>selectedIndex <span class="token operator">=</span> index<span class="token punctuation">;</span>
-      <span class="token keyword">break</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-  <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<ol start="4" type="1">
-<li>定义函数<code>getSelectedCategoryId</code>来获取category中被选中的项：</li>
-</ol>
-<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">getSelectedCategoryId</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-  <span class="token keyword">const</span> category <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">"category"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">const</span> index <span class="token operator">=</span> category<span class="token punctuation">.</span>selectedIndex<span class="token punctuation">;</span>
-  <span class="token keyword">if</span> <span class="token punctuation">(</span>index <span class="token operator">!==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> category<span class="token punctuation">[</span>index<span class="token punctuation">]</span><span class="token punctuation">.</span>value<span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
-  <span class="token keyword">return</span> <span class="token string">"0"</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<ol start="5" type="1">
-<li>在HTML文件中，设置了一个名为<code>errorMessage</code>的初始不可见的div块，这里要定义函数<code>setErrorMessage</code>来将错误信息显示到这个div上：</li>
-</ol>
-<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">setErrorMessage</span><span class="token punctuation">(</span><span class="token parameter">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-  <span class="token keyword">const</span> errorMessage <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">"errorMessage"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  errorMessage<span class="token punctuation">.</span>innerText <span class="token operator">=</span> error<span class="token punctuation">;</span> 
-  errorMessage<span class="token punctuation">.</span>style<span class="token punctuation">.</span>display <span class="token operator">=</span> <span class="token punctuation">(</span>error <span class="token operator">===</span> <span class="token string">""</span> <span class="token operator">?</span> <span class="token string">"none"</span> <span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<ol start="6" type="1">
-<li>补充<code>onClickSave</code>函数，使其在被点击时调用<code>ValidateName</code>和<code>ValidateCategory</code>两个函数来验证用户在网页端的输入是否合理，并根据结果向服务器发送信息/报错：</li>
-</ol>
-<p>这里，JS需要传递给<code>ValidateName</code>一个buffer
-name和一个错误信息指针，其会读取name中的内容并将可能的错误信息写如错误指针处的内存。</p>
-<p>注意到C++中的<code>ValidateName</code>和<code>ValidateCategory</code>都会使用char指针来传递错误信息，但由于Wasm只支持四种基本类型的数据，故想要把这个信息传给JS代码就需要使用memory。</p>
-<p>Emscripten plumbing code提供了符合C标准的<code>_malloc</code>和
-<code>_free</code>函数来操纵Wasm的内存：</p>
-<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">onClickSave</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-  <span class="token keyword">let</span> errorMessage <span class="token operator">=</span> <span class="token string">""</span><span class="token punctuation">;</span>
-  <span class="token keyword">const</span> errorMessagePointer <span class="token operator">=</span> Module<span class="token punctuation">.</span><span class="token function">_malloc</span><span class="token punctuation">(</span><span class="token number">256</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token comment">//从HTML中获取用户输入的值</span>
-  <span class="token keyword">const</span> name <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">"name"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>value<span class="token punctuation">;</span>
-  <span class="token keyword">const</span> categoryId <span class="token operator">=</span> <span class="token function">getSelectedCategoryId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+WebAssembly in Action. Chapter 4
 
-  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">validateName</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> errorMessagePointer<span class="token punctuation">)</span> <span class="token operator">||</span>
-      <span class="token operator">!</span><span class="token function">validateCategory</span><span class="token punctuation">(</span>categoryId<span class="token punctuation">,</span> errorMessagePointer<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    errorMessage <span class="token operator">=</span> Module<span class="token punctuation">.</span><span class="token function">UTF8ToString</span><span class="token punctuation">(</span>errorMessagePointer<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">&#125;</span> 
-  Module<span class="token punctuation">.</span><span class="token function">_free</span><span class="token punctuation">(</span>errorMessagePointer<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token function">setErrorMessage</span><span class="token punctuation">(</span>errorMessage<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">if</span> <span class="token punctuation">(</span>errorMessage <span class="token operator">===</span> <span class="token string">""</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    <span class="token comment">// everything is ok...we can pass the data to the server-side code</span>
-  <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>其中，<code>UTF8ToString</code>函数用于从Wasm内存中读取字符串。</p>
-<p>注意此时的<code>ValidateName</code>和<code>ValidateCategory</code>都还是JS函数，我们这里使用与Wasm同名的包装函数，通过Emscripten
-helper function ccall来调用Wasm中的函数：</p>
-<pre class="line-numbers language-JavaScript" data-language="JavaScript"><code class="language-JavaScript">function validateName(name, errorMessagePointer) &#123;
-  const isValid &#x3D; Module.ccall(&#39;ValidateName&#39;,
-      &#39;number&#39;,
-      [&#39;string&#39;, &#39;number&#39;, &#39;number&#39;],
-      [name, MAXIMUM_NAME_LENGTH, errorMessagePointer]);
 
-  return (isValid &#x3D;&#x3D;&#x3D; 1);
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>通过开头定义的全局变量来给<code>validateCategory</code>传递数组长度等信息：
-<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">validateCategory</span><span class="token punctuation">(</span><span class="token parameter">categoryId<span class="token punctuation">,</span> errorMessagePointer</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-  <span class="token keyword">const</span> arrayLength <span class="token operator">=</span> <span class="token constant">VALID_CATEGORY_IDS</span><span class="token punctuation">.</span>length<span class="token punctuation">;</span>
-  <span class="token keyword">const</span> bytesPerElement <span class="token operator">=</span> Module<span class="token punctuation">.</span><span class="token constant">HEAP32</span><span class="token punctuation">.</span><span class="token constant">BYTES_PER_ELEMENT</span><span class="token punctuation">;</span>
-  <span class="token keyword">const</span> arrayPointer <span class="token operator">=</span> Module<span class="token punctuation">.</span><span class="token function">_malloc</span><span class="token punctuation">(</span><span class="token punctuation">(</span>arrayLength <span class="token operator">*</span> bytesPerElement<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token comment">// 为VALID_CATEGORY_IDS分配一块内存并将其设置为数组的内容</span>
-  Module<span class="token punctuation">.</span><span class="token constant">HEAP32</span><span class="token punctuation">.</span><span class="token function">set</span><span class="token punctuation">(</span><span class="token constant">VALID_CATEGORY_IDS</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>arrayPointer <span class="token operator">/</span> bytesPerElement<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+Background
+假设一个公司有一个用C++开发的销售程序，但想开发一个网页端销售接口用于对用户输入的数据进行验证，例如：
 
-  <span class="token keyword">const</span> isValid <span class="token operator">=</span> Module<span class="token punctuation">.</span><span class="token function">ccall</span><span class="token punctuation">(</span><span class="token string">'ValidateCategory'</span><span class="token punctuation">,</span> 
-      <span class="token string">'number'</span><span class="token punctuation">,</span>
-      <span class="token punctuation">[</span><span class="token string">'string'</span><span class="token punctuation">,</span> <span class="token string">'number'</span><span class="token punctuation">,</span> <span class="token string">'number'</span><span class="token punctuation">,</span> <span class="token string">'number'</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-      <span class="token punctuation">[</span>categoryId<span class="token punctuation">,</span> arrayPointer<span class="token punctuation">,</span> arrayLength<span class="token punctuation">,</span> errorMessagePointer<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-  Module<span class="token punctuation">.</span><span class="token function">_free</span><span class="token punctuation">(</span>arrayPointer<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-  <span class="token keyword">return</span> <span class="token punctuation">(</span>isValid <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></p>
-<p>以上就是editproduct.js的全部内容，validate.js会将Wasm模块初始化，而editproduct.js会初始化界面、在用户点击按钮后调用Wasm函数，返回判断结果，充当Wasm模块与浏览器之间的桥梁。</p>
-
+        
+          <p class="article-more-link">
+            <a href="/2024/01/13/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91How%20dose%20Wasm%20module%20interact%20with%20JavaScript%20in%20browser/#more">阅读全文</a>
+          </p>
+        </div>
       
     </div>
     <footer class="entry-meta entry-footer">
@@ -492,7 +263,7 @@ helper function ccall来调用Wasm中的函数：</p>
 
           
             <div class="entry-thumbnail">
-              <a href="/2024/01/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Creating-your-first-Wasm-module/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2024/01/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Creating-your-first-Wasm-module/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -561,7 +332,7 @@ module
 
           
             <div class="entry-thumbnail">
-              <a href="/2024/01/10/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Wasabi-A-Framework-for-Dynamically-Analyzing-WebAssembly/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2024/01/10/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Wasabi-A-Framework-for-Dynamically-Analyzing-WebAssembly/"><img src="http://lorempixel.com/750/450/city/4" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -641,7 +412,7 @@ monomorphization）来解决这个问题。
 
           
             <div class="entry-thumbnail">
-              <a href="/2024/01/05/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91(Part2)SoK-Sanitizing-for-Security/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2024/01/05/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91(Part2)SoK-Sanitizing-for-Security/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -709,7 +480,7 @@ Program InstrumentationSanitizer 通过在程序中嵌入inlined reference monit
 
           
             <div class="entry-thumbnail">
-              <a href="/2024/01/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91(Part1)SoK-Sanitizing-for-Security/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2024/01/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91(Part1)SoK-Sanitizing-for-Security/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -778,7 +549,7 @@ ABSTRACTC 和 C++ 编程语言出了名的不安全，但仍然不可或缺。�
 
           
             <div class="entry-thumbnail">
-              <a href="/2024/01/02/Linux%E7%B3%BB%E7%BB%9F%E5%B7%A5%E4%BD%9C%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2024/01/02/Linux%E7%B3%BB%E7%BB%9F%E5%B7%A5%E4%BD%9C%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"><img src="http://lorempixel.com/750/450/city/4" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -846,7 +617,7 @@ Linux系统相关配置整理。
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/12/26/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91CODAMOSA-Escaping-Coverage-Plateaus-in-Test-Generation-with-Pre-trained-Large-Language-Models/"><img src="http://lorempixel.com/750/450/city/7" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/12/26/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91CODAMOSA-Escaping-Coverage-Plateaus-in-Test-Generation-with-Pre-trained-Large-Language-Models/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -996,7 +767,7 @@ search-based testing。
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/12/17/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91On-Learning-Meaningful-Assert-Statements-for-Unit-Test-Cases/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/12/17/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91On-Learning-Meaningful-Assert-Statements-for-Unit-Test-Cases/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -1442,20 +1213,5 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>
