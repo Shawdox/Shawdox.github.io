@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>(技术积累)How does Wasm module interact with JavaScripte in browser? | Shaw</title>
+  <title>(技术积累)(Part 1)How does Wasm module interact with JavaScripte in browser? | Shaw</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
   <meta name="keywords" content="WASM" />
@@ -13,18 +13,18 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="How does Wasm module interact with JavaScripte in browser?  Reference:  WebAssembly in Action. Chapter 4   Background 假设一个公司有一个用C++开发的销售程序，但想开发一个网页端销售接口用于对用户输入的数据进行验证，例如：">
+  <meta name="description" content="(Part 1)How does Wasm module interact with JavaScripte in browser? Reference:  WebAssembly in Action. Chapter 4.1   Background假设一个公司有一个用C++开发的销售程序，但想开发一个网页端销售接口用于对用户输入的数据进行验证，例如：">
 <meta property="og:type" content="article">
-<meta property="og:title" content="(技术积累)How does Wasm module interact with JavaScripte in browser?">
+<meta property="og:title" content="(技术积累)(Part 1)How does Wasm module interact with JavaScripte in browser?">
 <meta property="og:url" content="http://example.com/2024/01/13/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91How%20dose%20Wasm%20module%20interact%20with%20JavaScript%20in%20browser/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="How does Wasm module interact with JavaScripte in browser?  Reference:  WebAssembly in Action. Chapter 4   Background 假设一个公司有一个用C++开发的销售程序，但想开发一个网页端销售接口用于对用户输入的数据进行验证，例如：">
+<meta property="og:description" content="(Part 1)How does Wasm module interact with JavaScripte in browser? Reference:  WebAssembly in Action. Chapter 4.1   Background假设一个公司有一个用C++开发的销售程序，但想开发一个网页端销售接口用于对用户输入的数据进行验证，例如：">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240113154003567.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240113154343378.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240113154946589.png">
 <meta property="article:published_time" content="2024-01-12T16:00:00.000Z">
-<meta property="article:modified_time" content="2024-01-15T10:32:05.615Z">
+<meta property="article:modified_time" content="2024-01-17T06:15:58.362Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="WASM">
 <meta name="twitter:card" content="summary">
@@ -131,7 +131,7 @@
         
   
     <h1 class="thumb" class="article-title" itemprop="name">
-      (技术积累)How does Wasm module interact with JavaScripte in browser?
+      (技术积累)(Part 1)How does Wasm module interact with JavaScripte in browser?
     </h1>
   
 
@@ -155,22 +155,19 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="how-does-wasm-module-interact-with-javascripte-in-browser">How
-does Wasm module interact with JavaScripte in browser?</h1>
-<blockquote>
+        <h1 id="Part-1-How-does-Wasm-module-interact-with-JavaScripte-in-browser"><a href="#Part-1-How-does-Wasm-module-interact-with-JavaScripte-in-browser" class="headerlink" title="(Part 1)How does Wasm module interact with JavaScripte in browser?"></a>(Part 1)How does Wasm module interact with JavaScripte in browser?</h1><blockquote>
 <p>Reference:</p>
 <ul>
-<li><strong><em>WebAssembly in Action</em></strong>. Chapter 4</li>
+<li><strong><em>WebAssembly in Action</em></strong>. Chapter 4.1</li>
 </ul>
 </blockquote>
-<h2 id="background">Background</h2>
-<p>假设一个公司有一个用C++开发的销售程序，但想开发一个网页端销售接口用于对用户输入的数据进行验证，例如：</p>
+<h2 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h2><p>假设一个公司有一个用C++开发的销售程序，但想开发一个网页端销售接口用于对用户输入的数据进行验证，例如：</p>
 <span id="more"></span>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240113154003567.png" style="zoom: 50%;" /></p>
 <p>整个业务系统的逻辑如下：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240113154343378.png" style="zoom: 67%;" /></p>
 <p>用户填写的数据要在浏览器端和服务器端都进行验证，理由如下：</p>
-<ol type="1">
+<ol>
 <li>使用户端响应更快；</li>
 <li>减少服务端负载；</li>
 </ol>
@@ -178,7 +175,7 @@ does Wasm module interact with JavaScripte in browser?</h1>
 <p>在浏览器端，我们需要构建的验证功能有：</p>
 <p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240113154946589.png" style="zoom:67%;" /></p>
 <p>实现该功能的C++代码如下：</p>
-<ol type="1">
+<ol>
 <li>检测一个值是否为空：</li>
 </ol>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">int ValidateValueProvided(const char* value, const char* error_message, char* return_error_message)&#123;
@@ -190,7 +187,7 @@ does Wasm module interact with JavaScripte in browser?</h1>
     &#x2F;&#x2F; Everything is ok
     return 1;
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<ol start="2" type="1">
+<ol>
 <li>检测<code>Name</code>属性是否合理（非空，长度限制）：</li>
 </ol>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">int ValidateName(char* name, int maximum_length, char* return_error_message)&#123;
@@ -205,7 +202,7 @@ does Wasm module interact with JavaScripte in browser?</h1>
     return 1;
 &#125;
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<ol start="3" type="1">
+<ol>
 <li>检查目录ID是否存在：</li>
 </ol>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">int IsCategoryIdInArray(char* selected_category_id, int* valid_category_ids, int array_length)&#123;
@@ -221,7 +218,7 @@ does Wasm module interact with JavaScripte in browser?</h1>
     &#x2F;&#x2F; We did not find the category id in the array
     return 0;
   &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<ol start="4" type="1">
+<ol>
 <li>检查<code>Category</code>属性是否合理：</li>
 </ol>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">int ValidateCategory(char* category_id, int* valid_category_ids, int array_length, char* return_error_message)&#123;
@@ -242,8 +239,7 @@ does Wasm module interact with JavaScripte in browser?</h1>
     &#x2F;&#x2F; Everything is ok (no issues with the category id)
     return 1;
   &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="emscripten">Emscripten</h2>
-<p>我们要使用上述代码中的<code>ValidateName</code>和<code>ValidateCategory</code>两个函数来验证用户在网页端的输入是否合理，这就必然涉及到Wasm与JS交互的问题，为了防止C++重命名函数导致JS无法调用，这里需要在被编译的函数外包上如下宏：</p>
+<h2 id="Emscripten"><a href="#Emscripten" class="headerlink" title="Emscripten"></a>Emscripten</h2><p>我们要使用上述代码中的<code>ValidateName</code>和<code>ValidateCategory</code>两个函数来验证用户在网页端的输入是否合理，这就必然涉及到Wasm与JS交互的问题，为了防止C++重命名函数导致JS无法调用，这里需要在被编译的函数外包上如下宏：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#ifdef __cplusplus
 extern &quot;C&quot; &#123; &#x2F;&#x2F; So that the C++ compiler does not rename our function names
 #endif
@@ -251,23 +247,18 @@ extern &quot;C&quot; &#123; &#x2F;&#x2F; So that the C++ compiler does not renam
 #ifdef __cplusplus
 &#125;
 #endif<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>另外，需要在这两个函数的前面加上如下的宏来使其自动变为export
-function：</p>
+<p>另外，需要在这两个函数的前面加上如下的宏来使其自动变为export function：</p>
 <pre class="line-numbers language-C++" data-language="C++"><code class="language-C++">#ifdef __EMSCRIPTEN__ 
 EMSCRIPTEN_KEEPALIVE 
 #endif<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<p>当然，在编译时也可以通过命令行<code>EXPORTED_FUNCIONTS</code>参数来指定export
-function。</p>
+<p>当然，在编译时也可以通过命令行<code>EXPORTED_FUNCIONTS</code>参数来指定export function。</p>
 <p>在文件的开头，加上Emscripten相关头文件：</p>
 <pre class="line-numbers language-C++" data-language="C++"><code class="language-C++">#ifdef __EMSCRIPTEN__
   #include &lt;emscripten.h&gt;
 #endif<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<h2 id="compilation">Compilation</h2>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">emcc validate.cpp -o validate.js -s <span class="token assign-left variable">EXPORTED_RUNTIME_METHODS</span><span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">'ccall'</span>,<span class="token string">'UTF8ToString'</span><span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><code>EXPORTED_RUNTIME_METHODS</code>指定了Emscripten helper
-functions：<code>ccall</code>,<code>UTF8ToString</code>。</p>
-<h2 id="web-page">Web page</h2>
-<pre class="line-numbers language-html" data-language="html"><code class="language-html"><span class="token doctype"><span class="token punctuation">&lt;!</span><span class="token doctype-tag">DOCTYPE</span> <span class="token name">html</span><span class="token punctuation">></span></span>
+<h2 id="Compilation"><a href="#Compilation" class="headerlink" title="Compilation"></a>Compilation</h2><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">emcc validate.cpp -o validate.js -s <span class="token assign-left variable">EXPORTED_RUNTIME_METHODS</span><span class="token operator">=</span><span class="token punctuation">[</span><span class="token string">'ccall'</span>,<span class="token string">'UTF8ToString'</span><span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><code>EXPORTED_RUNTIME_METHODS</code>指定了Emscripten helper functions：<code>ccall</code>,<code>UTF8ToString</code>。</p>
+<h2 id="Web-page"><a href="#Web-page" class="headerlink" title="Web page"></a>Web page</h2><pre class="line-numbers language-html" data-language="html"><code class="language-html"><span class="token doctype"><span class="token punctuation">&lt;!</span><span class="token doctype-tag">DOCTYPE</span> <span class="token name">html</span><span class="token punctuation">></span></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span><span class="token punctuation">></span></span>
   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">></span></span>Edit Product<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">></span></span>
@@ -305,23 +296,20 @@ functions：<code>ccall</code>,<code>UTF8ToString</code>。</p>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>validate.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2
-id="creating-the-javascript-that-will-interact-with-the-module">Creating
-the JavaScript that will interact with the module</h2>
-<p>这里构建一个editproduct.js，用于Wasm和html之间的交互.</p>
-<ol type="1">
+<h2 id="Creating-the-JavaScript-that-will-interact-with-the-module"><a href="#Creating-the-JavaScript-that-will-interact-with-the-module" class="headerlink" title="Creating the JavaScript that will interact with the module"></a>Creating the JavaScript that will interact with the module</h2><p>这里构建一个editproduct.js，用于Wasm和html之间的交互.</p>
+<ol>
 <li>初始化数据显示：</li>
 </ol>
 <pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> initialData <span class="token operator">=</span> <span class="token punctuation">&#123;</span> 
     name<span class="token operator">:</span> <span class="token string">"Women's Mid Rise Skinny Jeans"</span><span class="token punctuation">,</span> 
     categoryId<span class="token operator">:</span> <span class="token string">"100"</span><span class="token punctuation">,</span> 
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<ol start="2" type="1">
+<ol>
 <li>定义常量<code>MAXIMUM_NAME_LENGTH</code>和<code>VALID_CATEGORY_IDS</code>用来表示<code>name</code>的最大长度和有效目录ID数组：</li>
 </ol>
 <pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> <span class="token constant">MAXIMUM_NAME_LENGTH</span> <span class="token operator">=</span> <span class="token number">50</span><span class="token punctuation">;</span> 
 <span class="token keyword">const</span> <span class="token constant">VALID_CATEGORY_IDS</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">100</span><span class="token punctuation">,</span> <span class="token number">101</span><span class="token punctuation">]</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<ol start="3" type="1">
+<ol>
 <li>补充HTML中的<code>initializePage</code>函数，使其用<code>initialData</code>填充表单：</li>
 </ol>
 <pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">initializePage</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -337,7 +325,7 @@ the JavaScript that will interact with the module</h2>
     <span class="token punctuation">&#125;</span>
   <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<ol start="4" type="1">
+<ol>
 <li>定义函数<code>getSelectedCategoryId</code>来获取category中被选中的项：</li>
 </ol>
 <pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">getSelectedCategoryId</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -346,7 +334,7 @@ the JavaScript that will interact with the module</h2>
   <span class="token keyword">if</span> <span class="token punctuation">(</span>index <span class="token operator">!==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> category<span class="token punctuation">[</span>index<span class="token punctuation">]</span><span class="token punctuation">.</span>value<span class="token punctuation">;</span> <span class="token punctuation">&#125;</span>
   <span class="token keyword">return</span> <span class="token string">"0"</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<ol start="5" type="1">
+<ol>
 <li>在HTML文件中，设置了一个名为<code>errorMessage</code>的初始不可见的div块，这里要定义函数<code>setErrorMessage</code>来将错误信息显示到这个div上：</li>
 </ol>
 <pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">setErrorMessage</span><span class="token punctuation">(</span><span class="token parameter">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -354,14 +342,12 @@ the JavaScript that will interact with the module</h2>
   errorMessage<span class="token punctuation">.</span>innerText <span class="token operator">=</span> error<span class="token punctuation">;</span> 
   errorMessage<span class="token punctuation">.</span>style<span class="token punctuation">.</span>display <span class="token operator">=</span> <span class="token punctuation">(</span>error <span class="token operator">===</span> <span class="token string">""</span> <span class="token operator">?</span> <span class="token string">"none"</span> <span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<ol start="6" type="1">
+<ol>
 <li>补充<code>onClickSave</code>函数，使其在被点击时调用<code>ValidateName</code>和<code>ValidateCategory</code>两个函数来验证用户在网页端的输入是否合理，并根据结果向服务器发送信息/报错：</li>
 </ol>
-<p>这里，JS需要传递给<code>ValidateName</code>一个buffer
-name和一个错误信息指针，其会读取name中的内容并将可能的错误信息写如错误指针处的内存。</p>
+<p>这里，JS需要传递给<code>ValidateName</code>一个buffer name和一个错误信息指针，其会读取name中的内容并将可能的错误信息写如错误指针处的内存。</p>
 <p>注意到C++中的<code>ValidateName</code>和<code>ValidateCategory</code>都会使用char指针来传递错误信息，但由于Wasm只支持四种基本类型的数据，故想要把这个信息传给JS代码就需要使用memory。</p>
-<p>Emscripten plumbing code提供了符合C标准的<code>_malloc</code>和
-<code>_free</code>函数来操纵Wasm的内存：</p>
+<p>Emscripten plumbing code提供了符合C标准的<code>_malloc</code>和 <code>_free</code>函数来操纵Wasm的内存：</p>
 <pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">onClickSave</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
   <span class="token keyword">let</span> errorMessage <span class="token operator">=</span> <span class="token string">""</span><span class="token punctuation">;</span>
   <span class="token keyword">const</span> errorMessagePointer <span class="token operator">=</span> Module<span class="token punctuation">.</span><span class="token function">_malloc</span><span class="token punctuation">(</span><span class="token number">256</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -380,8 +366,7 @@ name和一个错误信息指针，其会读取name中的内容并将可能的错
   <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>其中，<code>UTF8ToString</code>函数用于从Wasm内存中读取字符串。</p>
-<p>注意此时的<code>ValidateName</code>和<code>ValidateCategory</code>都还是JS函数，我们这里使用与Wasm同名的包装函数，通过Emscripten
-helper function ccall来调用Wasm中的函数：</p>
+<p>注意此时的<code>ValidateName</code>和<code>ValidateCategory</code>都还是JS函数，我们这里使用与Wasm同名的包装函数，通过Emscripten helper function ccall来调用Wasm中的函数：</p>
 <pre class="line-numbers language-JavaScript" data-language="JavaScript"><code class="language-JavaScript">function validateName(name, errorMessagePointer) &#123;
   const isValid &#x3D; Module.ccall(&#39;ValidateName&#39;,
       &#39;number&#39;,
@@ -390,8 +375,7 @@ helper function ccall来调用Wasm中的函数：</p>
 
   return (isValid &#x3D;&#x3D;&#x3D; 1);
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>通过开头定义的全局变量来给<code>validateCategory</code>传递数组长度等信息：
-<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">validateCategory</span><span class="token punctuation">(</span><span class="token parameter">categoryId<span class="token punctuation">,</span> errorMessagePointer</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+<p>通过开头定义的全局变量来给<code>validateCategory</code>传递数组长度等信息：<br><pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">validateCategory</span><span class="token punctuation">(</span><span class="token parameter">categoryId<span class="token punctuation">,</span> errorMessagePointer</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
   <span class="token keyword">const</span> arrayLength <span class="token operator">=</span> <span class="token constant">VALID_CATEGORY_IDS</span><span class="token punctuation">.</span>length<span class="token punctuation">;</span>
   <span class="token keyword">const</span> bytesPerElement <span class="token operator">=</span> Module<span class="token punctuation">.</span><span class="token constant">HEAP32</span><span class="token punctuation">.</span><span class="token constant">BYTES_PER_ELEMENT</span><span class="token punctuation">;</span>
   <span class="token keyword">const</span> arrayPointer <span class="token operator">=</span> Module<span class="token punctuation">.</span><span class="token function">_malloc</span><span class="token punctuation">(</span><span class="token punctuation">(</span>arrayLength <span class="token operator">*</span> bytesPerElement<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -428,6 +412,15 @@ helper function ccall来调用Wasm中的函数：</p>
     
 <nav id="article-nav">
   
+    <a href="/2024/01/17/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91(Part-2)How-does-Wasm-module-interact-with-JavaScripte-in-browser/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          (技术积累)(Part 2)How does Wasm module interact with JavaScripte in browser?
+        
+      </div>
+    </a>
+  
   
     <a href="/2024/01/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Creating-your-first-Wasm-module/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">下一篇</strong>
@@ -445,9 +438,7 @@ helper function ccall来调用Wasm中的函数：</p>
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#how-does-wasm-module-interact-with-javascripte-in-browser"><span class="nav-number">1.</span> <span class="nav-text">How
-does Wasm module interact with JavaScripte in browser?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#background"><span class="nav-number">1.1.</span> <span class="nav-text">Background</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#emscripten"><span class="nav-number">1.2.</span> <span class="nav-text">Emscripten</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#compilation"><span class="nav-number">1.3.</span> <span class="nav-text">Compilation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#web-page"><span class="nav-number">1.4.</span> <span class="nav-text">Web page</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#creating-the-javascript-that-will-interact-with-the-module"><span class="nav-number">1.5.</span> <span class="nav-text">Creating
-the JavaScript that will interact with the module</span></a></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Part-1-How-does-Wasm-module-interact-with-JavaScripte-in-browser"><span class="nav-number">1.</span> <span class="nav-text">(Part 1)How does Wasm module interact with JavaScripte in browser?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Background"><span class="nav-number">1.1.</span> <span class="nav-text">Background</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Emscripten"><span class="nav-number">1.2.</span> <span class="nav-text">Emscripten</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Compilation"><span class="nav-number">1.3.</span> <span class="nav-text">Compilation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Web-page"><span class="nav-number">1.4.</span> <span class="nav-text">Web page</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Creating-the-JavaScript-that-will-interact-with-the-module"><span class="nav-number">1.5.</span> <span class="nav-text">Creating the JavaScript that will interact with the module</span></a></li></ol></li></ol>
     
     </div>
   </aside>
@@ -641,5 +632,20 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>
