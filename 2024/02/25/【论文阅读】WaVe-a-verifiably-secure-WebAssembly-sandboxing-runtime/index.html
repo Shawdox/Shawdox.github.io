@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>(论文阅读)WaVe-a verifiably secure WebAssembly sandboxing runtime | Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="WebAssembly" />
+  
+  
+  
+    <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
+  
+  
+  <meta name="description" content="WaVe: a verifiably secure WebAssembly sandboxing runtime  作者：Evan Johnson(UCSD), Evan Laufer(Stanford), Zijie Zhao(UIUC), Fraser Brown(CMU) 会议：SP&#39;23  Abstract WebAssembly (Wasm) 是一种流行的可移植字节码，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(论文阅读)WaVe-a verifiably secure WebAssembly sandboxing runtime">
+<meta property="og:url" content="http://example.com/2024/02/25/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91WaVe-a-verifiably-secure-WebAssembly-sandboxing-runtime/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="WaVe: a verifiably secure WebAssembly sandboxing runtime  作者：Evan Johnson(UCSD), Evan Laufer(Stanford), Zijie Zhao(UIUC), Fraser Brown(CMU) 会议：SP&#39;23  Abstract WebAssembly (Wasm) 是一种流行的可移植字节码，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240225153854138.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240225154539358.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240225155638236.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240227103916643.png">
+<meta property="article:published_time" content="2024-02-24T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-02-27T02:54:32.232Z">
+<meta property="article:author" content="Shaw">
+<meta property="article:tag" content="WebAssembly">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240225153854138.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-【论文阅读】WaVe-a-verifiably-secure-WebAssembly-sandboxing-runtime" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      (论文阅读)WaVe-a verifiably secure WebAssembly sandboxing runtime
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2024/02/25/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91WaVe-a-verifiably-secure-WebAssembly-sandboxing-runtime/" class="article-date">
+	  <time datetime="2024-02-24T16:00:00.000Z" itemprop="datePublished">二月 25, 2024</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="wave-a-verifiably-secure-webassembly-sandboxing-runtime">WaVe: a
+verifiably secure WebAssembly sandboxing runtime</h1>
+<blockquote>
+<p><strong>作者：</strong>Evan Johnson(UCSD), Evan Laufer(Stanford),
+Zijie Zhao(UIUC), Fraser Brown(CMU)</p>
+<p><strong>会议：</strong>SP'23</p>
+</blockquote>
+<h2 id="abstract">Abstract</h2>
+<p>WebAssembly (Wasm)
+是一种流行的可移植字节码，其编译器会自动插入运行时检查，以确保数据流和控制流被限制在单一内存段内。事实上，现代编译后的Wasm程序已经发展到可以自行验证这些检查的程度，从而将编译器从可信计算基础中移除。</p>
+<p>然而，由此产生的完整性属性仅对严格在 Wasm
+沙箱内执行的代码有效。与运行时系统的任何交互（运行时系统管理沙箱并公开用于访问操作系统资源的
+WebAssembly 系统接口
+(WASI)）都是在此契约之外进行的。<u>由此产生的难题是，如何在保持 Wasm
+强大隔离特性的同时，还允许此类程序与外部世界（即文件系统、网络等）进行交互</u>。</p>
+<p>我们的论文通过实现 WASI 的已验证安全运行时系统 WaVe
+提出了这一问题的解决方案。我们从机制上验证了与 WaVe
+的交互（包括操作系统的副作用）不仅能保持 Wasm
+的内存安全保证，还能保持对主机操作系统的存储和网络资源的访问隔离。我们从机制上验证了与WaVe的交互（包括操作系统的副作用）不仅能保持Wasm的内存安全保证，还能保持主机操作系统存储和网络资源的访问隔离。最后，尽管运行时完全脱离了可信计算基础，我们还是证明了WaVe的性能可与现有的工业（但不安全）Wasm运行时媲美。</p>
+<span id="more"></span>
+<h2 id="motivation">Motivation</h2>
+<p><strong>传统的Wasm
+Runtime针对WASI的内存完整性和资源完整性验证并不完善。</strong></p>
+<h4 id="memory-isolation-problem">1. Memory isolation problem</h4>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240225153854138.png" style="zoom:67%;" /></p>
+<p>上图是一个从密码学库NaCl中截取的C++代码片段，其中的if-else用于判断当前的offset+len是否超出了内存边界，如果没有则将这段内存的内容拷贝到共享内存中。这里就存在一个整数溢出漏洞（offset+len可以很大）。</p>
+<p>很多Wasm runtime都存在这类整数溢出bug。</p>
+<h4 id="resource-isolation-problem">2. Resource isolation problem</h4>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240225154539358.png" style="zoom:67%;" /></p>
+<p>上图是Wasmer中的部分源码，第4行hostcall从sanbox中读取路径，第7行hostcall检查该路径是否在sandbox可以访问的路径之中并重写路径到对应根目录，但第10行直接删除了未经验证的path，这很可能导致runtime删除其访问范围之外的文件。</p>
+<p>在Wasmer中，有些路径检查是正确的，但这个例子就是错误的。这个例子很好的体现了目前runtime安全策略的现状：<u><strong>开发人员有责任在所有正确的地方设置所有正确的检查</strong></u>。</p>
+<p>作者表明，可以使用自动验证器来检查运行时的隔离策略是否正确，而不是把正确性的责任推给开发人员，并将运行时代码从
+TCB 中完全删除。</p>
+<h2 id="method">Method</h2>
+<p>WaVe 不依赖于开发人员对 POSIX
+和操作系统语义的隐性了解，而是使用显性的操作系统规范(OS
+Specifications)，描述每个系统调用对用户空间内存和操作系统的影响。</p>
+<p>WaVe
+不依赖于开发人员在所有正确的地方设置所有正确的安全检查，而是使用单一的集中式、可审计和可测试的安全策略，并通过自动验证器来执行。总的来说，WaVe
+通过静态证明系统调用的安全使用，实现了内存隔离、文件系统隔离和网络隔离（在安全策略中进行了描述）。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240225155638236.png" style="zoom:67%;" /></p>
+<p>上图是WaVe的<code>wasi_path_remove_directory</code>函数的实现，其中注释是用来解释Verifier功能的，并不是真的有这段代码。</p>
+<p>WaVe会要求developer在一些函数后面加上一些<strong><u>postcondition</u></strong>(后置条件)，用于目标函数后自动进行检查。例如，<code>ctx.translate_path()</code>函数后就会进行<code>is_in_sbox_fs()</code>，即host_path是否位于sandbox可访问范围内的检查。</p>
+<p>在第 21 行，hostcall 调用操作系统删除目录。Verifier认识到
+<code>unlinkat</code>正在读写操作系统状态（根据OS
+Specifications），因此会静态检查 host_path 是否在沙盒的根目录内。</p>
+<p>如果代码存在漏洞，而验证器又无法保证 host_path
+位于沙箱的根目录中，验证器就会出错，甚至无法编译有漏洞的代码。</p>
+<h4 id="threat-model">Threat Model</h4>
+<ol type="1">
+<li>假设Wasm runtime的代码是恶意的，其会通过一系列hostcalls来逃逸；</li>
+<li>不考虑runtime内的data
+corruption和控制流劫持，因为已经有相关防御工具；</li>
+<li>假设sandbox被分配了一个root
+directory，其包含了可以访问的所有数据；</li>
+<li>root
+directory只包含常规文件、符号链接和受信任的设备文件（没有类似<code>/proc/self/mem</code>这类的特殊文件）；</li>
+<li>假设一个sandbox只有一个线程，并且WASI公开的所有函数都是synchronous的。</li>
+</ol>
+<h4 id="design">Design</h4>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240227103916643.png" style="zoom: 67%;" /></p>
+<p>WaVe 是一个实现了 WebAssembly 系统接口的 Wasm
+runtime，它向sandbox提供了 45
+个WASI相关的hostcall，沙盒在需要访问文件系统或网络等操作系统资源时会调用这些hostcall。WaVe还管理用于执行主机调用的沙盒特定状态，如沙盒的开放文件描述符列表。</p>
+<p>当sandbox发起一个hostcall时，WaVe就会像其它Wasm
+runtime那样，动态地检查这个call的参数是否安全（例如指针是否在sandbox的内存范围内），接着将这些参数调用转化为对应OS的表示形式，最后将hostcall的返回结果送回sandbox。<strong><u>WaVe与其它Wasm
+runtime不同的是，其会静态检查check-and-translate这个过程以保证runtime的安全性。</u></strong></p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WebAssembly/" rel="tag">WebAssembly</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2024/01/24/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91What-is-memory-leak/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">(技术积累)What is memory leak?</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#wave-a-verifiably-secure-webassembly-sandboxing-runtime"><span class="nav-number">1.</span> <span class="nav-text">WaVe: a
+verifiably secure WebAssembly sandboxing runtime</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#abstract"><span class="nav-number">1.1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#motivation"><span class="nav-number">1.2.</span> <span class="nav-text">Motivation</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#memory-isolation-problem"><span class="nav-number">1.2.0.1.</span> <span class="nav-text">1. Memory isolation problem</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#resource-isolation-problem"><span class="nav-number">1.2.0.2.</span> <span class="nav-text">2. Resource isolation problem</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#method"><span class="nav-number">1.3.</span> <span class="nav-text">Method</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#threat-model"><span class="nav-number">1.3.0.1.</span> <span class="nav-text">Threat Model</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#design"><span class="nav-number">1.3.0.2.</span> <span class="nav-text">Design</span></a></li></ol></li></ol></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+<footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2024 Shaw All Rights Reserved.
+        
+          <span id="busuanzi_container_site_pv">
+            本站总访问量<span id="busuanzi_value_site_pv"></span>次
+          </span>
+          <span class="post-meta-divider">|</span>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            本站访客数<span id="busuanzi_value_site_uv"></span>人
+          </span>
+          <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+
+  
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'true', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+<!-- Gaug.es Analytics -->
+<script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', 'true');
+    t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+    t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+<!-- End Gaug.es Analytics -->
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+	<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2439014eb270056ee1808a49956fe114";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<!-- Tencent Analytics -->
+	<script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId={{ theme.tencent_analytics }}";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+<!-- End Tencent Analytics -->
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>

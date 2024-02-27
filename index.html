@@ -158,6 +158,88 @@
 <!-- Table of Contents -->
 
   
+    <article id="post-【论文阅读】WaVe-a-verifiably-secure-WebAssembly-sandboxing-runtime"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2024/02/25/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91WaVe-a-verifiably-secure-WebAssembly-sandboxing-runtime/">(论文阅读)WaVe-a verifiably secure WebAssembly sandboxing runtime</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2024/02/25/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91WaVe-a-verifiably-secure-WebAssembly-sandboxing-runtime/" class="article-date">
+	  <time datetime="2024-02-24T16:00:00.000Z" itemprop="datePublished">二月 25, 2024</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+
+          
+            <div class="entry-thumbnail">
+              <a href="/2024/02/25/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91WaVe-a-verifiably-secure-WebAssembly-sandboxing-runtime/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+            </div>
+          
+          <div class="entry-summary">
+          WaVe: a
+verifiably secure WebAssembly sandboxing runtime
+
+作者：Evan Johnson(UCSD), Evan Laufer(Stanford),
+Zijie Zhao(UIUC), Fraser Brown(CMU)
+会议：SP'23
+
+Abstract
+WebAssembly (Wasm)
+是一种流行的可移植字节码，其编译器会自动插入运行时检查，以确保数据流和控制流被限制在单一内存段内。事实上，现代编译后的Wasm程序已经发展到可以自行验证这些检查的程度，从而将编译器从可信计算基础中移除。
+然而，由此产生的完整性属性仅对严格在 Wasm
+沙箱内执行的代码有效。与运行时系统的任何交互（运行时系统管理沙箱并公开用于访问操作系统资源的
+WebAssembly 系统接口
+(WASI)）都是在此契约之外进行的。由此产生的难题是，如何在保持 Wasm
+强大隔离特性的同时，还允许此类程序与外部世界（即文件系统、网络等）进行交互。
+我们的论文通过实现 WASI 的已验证安全运行时系统 WaVe
+提出了这一问题的解决方案。我们从机制上验证了与 WaVe
+的交互（包括操作系统的副作用）不仅能保持 Wasm
+的内存安全保证，还能保持对主机操作系统的存储和网络资源的访问隔离。我们从机制上验证了与WaVe的交互（包括操作系统的副作用）不仅能保持Wasm的内存安全保证，还能保持主机操作系统存储和网络资源的访问隔离。最后，尽管运行时完全脱离了可信计算基础，我们还是证明了WaVe的性能可与现有的工业（但不安全）Wasm运行时媲美。
+
+        
+          <p class="article-more-link">
+            <a href="/2024/02/25/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91WaVe-a-verifiably-secure-WebAssembly-sandboxing-runtime/#more">阅读全文</a>
+          </p>
+        </div>
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WebAssembly/" rel="tag">WebAssembly</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
     <article id="post-【技术积累】What-is-memory-leak"  class="article article-type-post" itemscope itemprop="blogPost" >
   <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
     
@@ -190,7 +272,7 @@
 
           
             <div class="entry-thumbnail">
-              <a href="/2024/01/24/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91What-is-memory-leak/"><img src="http://lorempixel.com/750/450/city/7" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2024/01/24/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91What-is-memory-leak/"><img src="http://lorempixel.com/750/450/city/4" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -250,215 +332,33 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="Part-2-How-does-Wasm-module-interact-with-JavaScripte-in-browser"><a href="#Part-2-How-does-Wasm-module-interact-with-JavaScripte-in-browser" class="headerlink" title="(Part 2)How does Wasm module interact with JavaScripte in browser?"></a>(Part 2)How does Wasm module interact with JavaScripte in browser?</h1><blockquote>
-<p>Reference:</p>
-<ul>
-<li><strong><em>WebAssembly in Action</em></strong>. Chapter 4.2</li>
-</ul>
-</blockquote>
-<p>Part1中为了使得JS代码可以直接调用Wasm函数，并传递内存，使用了Emscripten提供的<code>ccall</code>，<code>UTF8ToString</code>,<code>_malloc</code>和 <code>_free</code>函数，这些helper functions提供了对标准JavaScripte WebAssembly API的封装。若Emscripten不生成JS plumbing code，即没有这些help functions时，使用下面的方式来使JS和Wasm Module交互：</p>
-<h3 id="1-修改代码"><a href="#1-修改代码" class="headerlink" title="1. 修改代码"></a>1. 修改代码</h3><p>因为原始的validate.cpp代码中使用了一些例如<code>strlen</code>的C/C++标准库函数，当让Emscripten生成side module时其并不会生成相应的函数，并且，此时并没有相应的<code>_malloc</code>和 <code>_free</code>函数了，我们需要自己实现。</p>
-<p>下面首先实现自己的库函数，创建一个<code>side_module_system_functions.h</code>：</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#pragma once
-#ifndef
-SIDE_MODULE_SYSTEM_FUNCTIONS_H_
-#define SIDE_MODULE_SYSTEM_FUNCTIONS_H_
-#include &lt;stdio.h&gt; 
-void InsertIntoAllocatedArray(int new_item_index, int offset_start, int size_needed); 
-int create_buffer(int size_needed); 
-void free_buffer(int offset); 
-char* strcpy(char* destination, const char* source); 
-size_t strlen(const char* value); 
-int atoi(const char* value); 
-#endif &#x2F;&#x2F; SIDE_MODULE_SYSTEM_FUNCTIONS_H_<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>创建<code>side_module_system_functions.cpp</code>：</p>
-<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
-<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;emscripten.h></span></span>
+        
 
-<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifdef</span> <span class="token expression">__cplusplus</span></span>
-<span class="token keyword">extern</span> <span class="token string">"C"</span> <span class="token punctuation">&#123;</span> <span class="token comment">// So that the C++ compiler does not rename our function names</span>
-<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span>
-	<span class="token keyword">const</span> <span class="token keyword">int</span> TOTAL_MEMORY <span class="token operator">=</span> <span class="token number">65536</span><span class="token punctuation">;</span> <span class="token comment">// We should always have at least 1 page of memory (1,024 bytes x 64 KiB).</span>
-	<span class="token keyword">const</span> <span class="token keyword">int</span> MAXIMUM_ALLOCATED_CHUNKS <span class="token operator">=</span> <span class="token number">10</span><span class="token punctuation">;</span>
-    <span class="token keyword">int</span> current_allocated_count <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-    
-	<span class="token comment">//...</span>
-    
-<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifdef</span> <span class="token expression">__cplusplus</span></span>
-<span class="token punctuation">&#125;</span>
-<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>接着添加对应malloc和free的实现，定义内存分配的结构：</p>
-<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">struct</span> <span class="token class-name">MemoryAllocated</span> 
-<span class="token punctuation">&#123;</span>
-    <span class="token keyword">int</span> offset<span class="token punctuation">;</span>
-    <span class="token keyword">int</span> length<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+          
+            <div class="entry-thumbnail">
+              <a href="/2024/01/17/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91(Part-2)How-does-Wasm-module-interact-with-JavaScripte-in-browser/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+            </div>
+          
+          <div class="entry-summary">
+          (Part
+2)How does Wasm module interact with JavaScripte in browser?
 
-<span class="token comment">// The array that will hold details about each memory allocation</span>
-<span class="token keyword">struct</span> <span class="token class-name">MemoryAllocated</span> AllocatedMemoryChunks<span class="token punctuation">[</span>MAXIMUM_ALLOCATED_CHUNKS<span class="token punctuation">]</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>定义函数<code>InsertIntoAllocatedArray</code>，其功能是向<code>AllocatedMemoryChunks</code>中插入已分配的内存块：</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">void InsertIntoAllocatedArray(int new_item_index, int offset_start, int size_needed)
-&#123;
-    &#x2F;&#x2F; Shift everything to the right by one if it is to the right of where the new item will be inserted
-    for (int i &#x3D; (MAXIMUM_ALLOCATED_CHUNKS - 1); i &gt; new_item_index; i--)
-    &#123;
-        AllocatedMemoryChunks[i] &#x3D; AllocatedMemoryChunks[(i - 1)];
-    &#125;
+Reference:
 
-    &#x2F;&#x2F; Add the new item at the specified index
-    AllocatedMemoryChunks[new_item_index].offset &#x3D; offset_start;
-    AllocatedMemoryChunks[new_item_index].length &#x3D; size_needed;
+WebAssembly in Action. Chapter 4.2
 
-    &#x2F;&#x2F; Increment the count of blocks allocated
-    current_allocated_count++;
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>定义对应malloc函数：</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; Our version of malloc
-EMSCRIPTEN_KEEPALIVE
-    int create_buffer(int size_needed)
-&#123;
-    &#x2F;&#x2F; If we are already at our limit of allocated memory blocks then exit now
-    if (current_allocated_count &#x3D;&#x3D; MAXIMUM_ALLOCATED_CHUNKS) &#123; return 0; &#125;
 
-    &#x2F;&#x2F; Adjust the start position to give room for items that will be copied into memory when the module is instantiated
-    int offset_start &#x3D; 1024;
-    int current_offset &#x3D; 0;
-    int found_room &#x3D; 0;
+Part1中为了使得JS代码可以直接调用Wasm函数，并传递内存，使用了Emscripten提供的ccall，UTF8ToString,_malloc和
+_free函数，这些helper functions提供了对标准JavaScripte
+WebAssembly API的封装。若Emscripten不生成JS plumbing
+code，即没有这些help functions时，使用下面的方式来使JS和Wasm
+Module交互：
 
-    int memory_size &#x3D; size_needed;
-    while (memory_size % 8 !&#x3D; 0) &#123; memory_size++; &#125;&#x2F;&#x2F; Increase the size so that the next offset will be a multiple of 8
-
-    &#x2F;&#x2F; Loop through the currently allocated memory...
-    for (int index &#x3D; 0; index &lt; current_allocated_count; index++)
-    &#123;
-        &#x2F;&#x2F; If there is space between the previous offset and the current one for the memory that is wanted then...
-        current_offset &#x3D; AllocatedMemoryChunks[index].offset;
-        if ((current_offset - offset_start) &gt;&#x3D; memory_size)
-        &#123;
-            &#x2F;&#x2F; Add the current item to the current index of the array (bump the rest of the items to the right by one)
-            InsertIntoAllocatedArray(index, offset_start, memory_size);
-            found_room &#x3D; 1;
-            break;
-        &#125;
-
-        &#x2F;&#x2F; OffsetStart for the next loop will be the end of the current array item&#39;s memory block
-        offset_start &#x3D; (current_offset + AllocatedMemoryChunks[index].length);
-    &#125;
-
-    &#x2F;&#x2F; Room wasn&#39;t found in between the existing allocated memory blocks
-    if (found_room &#x3D;&#x3D; 0)
-    &#123;
-        &#x2F;&#x2F; If there is room between the end of the last memory block and the end of memory then...
-        if (((TOTAL_MEMORY - 1) - offset_start) &gt;&#x3D; size_needed)
-        &#123;
-            &#x2F;&#x2F; Add the item to the array
-            AllocatedMemoryChunks[current_allocated_count].offset &#x3D; offset_start;
-            AllocatedMemoryChunks[current_allocated_count].length &#x3D; size_needed;
-            current_allocated_count++;
-            found_room &#x3D; 1;
-        &#125;
-    &#125;
-
-    &#x2F;&#x2F; If there was room for the memory needed then return the offset
-    if (found_room &#x3D;&#x3D; 1) &#123; return offset_start; &#125;
-
-    &#x2F;&#x2F; Otherwise, tell the caller there was no room (NULL pointer)
-    return 0;
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>定义free:</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; Our version of free (for our version of malloc)
-EMSCRIPTEN_KEEPALIVE
-    void free_buffer(int offset)
-&#123;
-    int shift_item_left &#x3D; 0; &#x2F;&#x2F; Don&#39;t shift left by default
-
-    &#x2F;&#x2F; Loop through the currently allocated memory...
-    for (int index &#x3D; 0; index &lt; current_allocated_count; index++)
-    &#123;
-        &#x2F;&#x2F; If the current item&#39;s offset matches the one we wish to free then we want to start shifting all items to the left starting here
-        if (AllocatedMemoryChunks[index].offset &#x3D;&#x3D; offset) &#123; shift_item_left &#x3D; 1; &#125;
-
-        &#x2F;&#x2F; If we are to shift from the left then...
-        if (shift_item_left &#x3D;&#x3D; 1)
-        &#123;
-            &#x2F;&#x2F; If there is at least one more item in the array to the right then...
-            if (index &lt; (current_allocated_count - 1))
-            &#123;
-                AllocatedMemoryChunks[index] &#x3D; AllocatedMemoryChunks[(index + 1)];
-            &#125;
-            else &#x2F;&#x2F; We&#39;re at the end of the array. Zero out the values.
-            &#123; 
-                AllocatedMemoryChunks[index].offset &#x3D; 0;
-                AllocatedMemoryChunks[index].length &#x3D; 0;
-            &#125;
-        &#125;
-    &#125;
-
-    &#x2F;&#x2F; If we shifted left that means we found the offset requested and removed it from the array. Adjust the count of items in the array
-    current_allocated_count--;
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>定义strlen等：</p>
-<pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; Our version of strcpy
-char* strcpy(char* destination, const char* source)
-&#123;
-    &#x2F;&#x2F; Loop until we have copied all of the source characters to the destination
-    char* return_copy &#x3D; destination;
-    while (*source) &#123; *destination++ &#x3D; *source++; &#125;
-    *destination &#x3D; 0;&#x2F;&#x2F; Null terminate the string since we only looped until we hit the null terminator in the source (we didn&#39;t copy the null terminator)
-
-    return return_copy;
-&#125;
-
-&#x2F;&#x2F; Our version of strlen
-size_t strlen(const char* value)
-&#123;
-    &#x2F;&#x2F; Loop while the current character is not NULL
-    size_t length &#x3D; 0;
-    while (value[length] !&#x3D; &#39;\0&#39;) &#123; length++; &#125;
-
-    &#x2F;&#x2F; Return the count
-    return length;
-&#125;
-
-&#x2F;&#x2F; our version of atoi
-int atoi(const char* value)
-&#123;
-    &#x2F;&#x2F; If a null pointer or an empty string was passed in then exit now
-    if ((value &#x3D;&#x3D; NULL) || (value[0] &#x3D;&#x3D; &#39;\0&#39;)) &#123; return 0; &#125;
-
-    int result &#x3D; 0;
-    int sign &#x3D; 0;
-
-    &#x2F;&#x2F; If we have a negative sign then set the flag and move to the next character.
-    if (*value &#x3D;&#x3D; &#39;-&#39;) &#123; sign &#x3D; -1; ++value; &#125;
-
-    &#x2F;&#x2F; Loop until we reach the null terminator of the string...
-    char current_value &#x3D; *value;
-    while (current_value !&#x3D; &#39;\0&#39;)
-    &#123;
-        &#x2F;&#x2F; If the current character is between 0 and 9 then...
-        if ((current_value &gt;&#x3D; &#39;0&#39;) &amp;&amp; (current_value &lt;&#x3D; &#39;9&#39;))
-        &#123;
-            result &#x3D; result * 10 + current_value - &#39;0&#39;;&#x2F;&#x2F; Convert the current character to an integer and add to to the result
-            ++value;
-            current_value &#x3D; *value;
-        &#125;
-        else 
-        &#123; 
-            return 0; &#x2F;&#x2F; Invalid character found. exit now
-        &#125; 
-    &#125;
-
-    &#x2F;&#x2F; If the value is negative, flip the flag by multiplying the value by -1
-    if (sign &#x3D;&#x3D; -1) &#123; result *&#x3D; -1; &#125;
-
-    return result;
-&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>编译：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">emcc side_module_system_functions.cpp validate.cpp -s <span class="token assign-left variable">SIDE_MODULE</span><span class="token operator">=</span><span class="token number">2</span> -O1 -o validate.wasm<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>此时，由于没有<code>validate.js</code>，我们需要编写JS代码来初始化wasm模块，利用Part1中的<code>editproduct.js</code>和<code>editproduct.html</code>，删除<code>editproduct.html</code>中的这句：</p>
-<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token operator">&lt;</span>script src<span class="token operator">=</span><span class="token string">"validate.js"</span><span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
+        
+          <p class="article-more-link">
+            <a href="/2024/01/17/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91(Part-2)How-does-Wasm-module-interact-with-JavaScripte-in-browser/#more">阅读全文</a>
+          </p>
+        </div>
       
     </div>
     <footer class="entry-meta entry-footer">
@@ -512,7 +412,7 @@ int atoi(const char* value)
 
           
             <div class="entry-thumbnail">
-              <a href="/2024/01/13/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91How%20dose%20Wasm%20module%20interact%20with%20JavaScript%20in%20browser/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2024/01/13/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91How%20dose%20Wasm%20module%20interact%20with%20JavaScript%20in%20browser/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -582,7 +482,7 @@ Background假设一个公司有一个用C++开发的销售程序，但想开发�
 
           
             <div class="entry-thumbnail">
-              <a href="/2024/01/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Creating-your-first-Wasm-module/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2024/01/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Creating-your-first-Wasm-module/"><img src="http://lorempixel.com/750/450/city/4" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -651,7 +551,7 @@ module
 
           
             <div class="entry-thumbnail">
-              <a href="/2024/01/10/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Wasabi-A-Framework-for-Dynamically-Analyzing-WebAssembly/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2024/01/10/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Wasabi-A-Framework-for-Dynamically-Analyzing-WebAssembly/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -731,7 +631,7 @@ monomorphization）来解决这个问题。
 
           
             <div class="entry-thumbnail">
-              <a href="/2024/01/05/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91(Part2)SoK-Sanitizing-for-Security/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2024/01/05/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91(Part2)SoK-Sanitizing-for-Security/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -799,7 +699,7 @@ Program InstrumentationSanitizer 通过在程序中嵌入inlined reference monit
 
           
             <div class="entry-thumbnail">
-              <a href="/2024/01/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91(Part1)SoK-Sanitizing-for-Security/"><img src="http://lorempixel.com/750/450/city/4" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2024/01/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91(Part1)SoK-Sanitizing-for-Security/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -868,7 +768,7 @@ ABSTRACTC 和 C++ 编程语言出了名的不安全，但仍然不可或缺。�
 
           
             <div class="entry-thumbnail">
-              <a href="/2024/01/02/Linux%E7%B3%BB%E7%BB%9F%E5%B7%A5%E4%BD%9C%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2024/01/02/Linux%E7%B3%BB%E7%BB%9F%E5%B7%A5%E4%BD%9C%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -893,77 +793,6 @@ Linux系统相关配置整理。
       
   <span class="ico-tags"></span>
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Configuration/" rel="tag">Configuration</a></li></ul>
-
-      
-    </footer>
-    <hr class="entry-footer-hr">
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
-    <article id="post-【论文阅读】CODAMOSA-Escaping-Coverage-Plateaus-in-Test-Generation-with-Pre-trained-Large-Language-Models"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2023/12/26/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91CODAMOSA-Escaping-Coverage-Plateaus-in-Test-Generation-with-Pre-trained-Large-Language-Models/">(论文阅读)CODAMOSA-Escaping Coverage Plateaus in Test Generation with Pre-trained Large Language Models</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2023/12/26/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91CODAMOSA-Escaping-Coverage-Plateaus-in-Test-Generation-with-Pre-trained-Large-Language-Models/" class="article-date">
-	  <time datetime="2023-12-25T16:00:00.000Z" itemprop="datePublished">十二月 26, 2023</time>
-	</a>
-
-      
-	<span class="ico-folder"></span>
-    <a class="article-category-link" href="/categories/Paper/">Paper</a>
- 
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-
-          
-            <div class="entry-thumbnail">
-              <a href="/2023/12/26/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91CODAMOSA-Escaping-Coverage-Plateaus-in-Test-Generation-with-Pre-trained-Large-Language-Models/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
-            </div>
-          
-          <div class="entry-summary">
-          （论文阅读)CODAMOSA: Escaping Coverage Plateaus in Test Generation with Pre-trained Large Language Models
-时间：2023.5
-作者：Caroline Lemieux(University of British Columbia), Jeevana Priya Inala(Microsoft)
-会议：ICSE’23
-开源：https://github.com/microsoft/codamosa
-
-ABSTRACT通过将test case generation与mutation相结合，SBST为待测试程序生成高覆盖率的test cases。SBST的表现依赖于生成test cases的合理概率，这些test cases可执行被测程序的核心逻辑。使用这些test cases，SBST可以探索这些cases周围的空间来探索更多的程序空间。
-这篇文章探索了例如OpenAI的Codex等LLM是否可以被用于帮助SBST的搜索过程。我们提出了名为CODAMOSA的方法，其首先执行SBST直到覆盖率提升停滞，接着询问Codex提供example test cases来探索没未访问过的函数。这些examples帮助SBST调整其搜索方向到更有用的领域。在486个benchmarks上的evaluation结果表明，与仅有SBST或者仅有LLM相比，CODAMOSA在更多benchmark（173 和 279 个）上实现了更高的覆盖率明显，其数量高于其减少的覆盖率数量（10 和 4 个）。
-
-        
-          <p class="article-more-link">
-            <a href="/2023/12/26/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91CODAMOSA-Escaping-Coverage-Plateaus-in-Test-Generation-with-Pre-trained-Large-Language-Models/#more">阅读全文</a>
-          </p>
-        </div>
-      
-    </div>
-    <footer class="entry-meta entry-footer">
-      
-	<span class="ico-folder"></span>
-    <a class="article-category-link" href="/categories/Paper/">Paper</a>
-
-      
-  <span class="ico-tags"></span>
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LLM/" rel="tag">LLM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Software-Testing/" rel="tag">Software Testing</a></li></ul>
 
       
     </footer>
@@ -1084,6 +913,18 @@ ABSTRACT通过将test case generation与mutation相结合，SBST为待测试程�
               <div class="widget-entry-summary" style="margin: 0;">
             
 
+              <h6 style="margin: 0;"><a href="/2024/02/25/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91WaVe-a-verifiably-secure-WebAssembly-sandboxing-runtime/">(论文阅读)WaVe-a verifiably secure WebAssembly sandboxing runtime</a></h6>
+              <span>二月 25, 2024</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
               <h6 style="margin: 0;"><a href="/2024/01/24/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91What-is-memory-leak/">(技术积累)What is memory leak?</a></h6>
               <span>一月 24, 2024</span>
             </div>
@@ -1138,18 +979,6 @@ ABSTRACT通过将test case generation与mutation相结合，SBST为待测试程�
 
           </li>
         
-          <li class="clearfix">
-
-            
-              <div class="widget-entry-summary" style="margin: 0;">
-            
-
-              <h6 style="margin: 0;"><a href="/2024/01/05/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91(Part2)SoK-Sanitizing-for-Security/">(论文阅读)(Part2)SoK-Sanitizing for Security</a></h6>
-              <span>一月 5, 2024</span>
-            </div>
-
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -1159,7 +988,7 @@ ABSTRACT通过将test case generation与mutation相结合，SBST为待测试程�
   <div class="widget-wrap">
     <h3 class="widget-title">分类</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Book/">Book</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Code/">Code</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kaggle/">Kaggle</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Paper/">Paper</a><span class="category-list-count">60</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Project/">Project</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Reproduce/">Reproduce</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Something/">Something</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/paper/">paper</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Book/">Book</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Code/">Code</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kaggle/">Kaggle</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Paper/">Paper</a><span class="category-list-count">61</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Project/">Project</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Reproduce/">Reproduce</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Something/">Something</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/paper/">paper</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1169,7 +998,7 @@ ABSTRACT通过将test case generation与mutation相结合，SBST为待测试程�
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD/" rel="tag">AD</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD-training/" rel="tag">AD training</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AEG/" rel="tag">AEG</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BCSA/" rel="tag">BCSA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary/" rel="tag">Binary</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Botnet/" rel="tag">Botnet</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CV/" rel="tag">CV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cloud/" rel="tag">Cloud</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Configuration/" rel="tag">Configuration</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNN/" rel="tag">DNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Differential-fuzzing/" rel="tag">Differential fuzzing</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a><span class="tag-list-count">16</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDS/" rel="tag">IDS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Klee/" rel="tag">Klee</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LLM/" rel="tag">LLM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LLVM/" rel="tag">LLVM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Latex/" rel="tag">Latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ML/" rel="tag">ML</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Malware-Classifiers/" rel="tag">Malware Classifiers</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Math/" rel="tag">Math</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mutiagent/" rel="tag">Mutiagent</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/" rel="tag">NLP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDF/" rel="tag">PDF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RL/" rel="tag">RL</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RNN/" rel="tag">RNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sanitizer/" rel="tag">Sanitizer</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Software-Testing/" rel="tag">Software Testing</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Symbolic-Execution/" rel="tag">Symbolic Execution</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UAF/" rel="tag">UAF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vulnerability/" rel="tag">Vulnerability</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WASI/" rel="tag">WASI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WASM/" rel="tag">WASM</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WebAssembly/" rel="tag">WebAssembly</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/" rel="tag">Windows</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/obfuscation/" rel="tag">obfuscation</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD/" rel="tag">AD</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD-training/" rel="tag">AD training</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AEG/" rel="tag">AEG</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BCSA/" rel="tag">BCSA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary/" rel="tag">Binary</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Botnet/" rel="tag">Botnet</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CV/" rel="tag">CV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cloud/" rel="tag">Cloud</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Configuration/" rel="tag">Configuration</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNN/" rel="tag">DNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Differential-fuzzing/" rel="tag">Differential fuzzing</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a><span class="tag-list-count">16</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDS/" rel="tag">IDS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Klee/" rel="tag">Klee</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LLM/" rel="tag">LLM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LLVM/" rel="tag">LLVM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Latex/" rel="tag">Latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ML/" rel="tag">ML</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Malware-Classifiers/" rel="tag">Malware Classifiers</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Math/" rel="tag">Math</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mutiagent/" rel="tag">Mutiagent</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/" rel="tag">NLP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDF/" rel="tag">PDF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RL/" rel="tag">RL</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RNN/" rel="tag">RNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sanitizer/" rel="tag">Sanitizer</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Software-Testing/" rel="tag">Software Testing</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Symbolic-Execution/" rel="tag">Symbolic Execution</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UAF/" rel="tag">UAF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vulnerability/" rel="tag">Vulnerability</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WASI/" rel="tag">WASI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WASM/" rel="tag">WASM</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WebAssembly/" rel="tag">WebAssembly</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/" rel="tag">Windows</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/obfuscation/" rel="tag">obfuscation</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1179,7 +1008,7 @@ ABSTRACT通过将test case generation与mutation相结合，SBST为待测试程�
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/AD/" style="font-size: 17.78px;">AD</a> <a href="/tags/AD-training/" style="font-size: 10px;">AD training</a> <a href="/tags/AEG/" style="font-size: 15.56px;">AEG</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/BCSA/" style="font-size: 10px;">BCSA</a> <a href="/tags/Binary/" style="font-size: 13.33px;">Binary</a> <a href="/tags/Botnet/" style="font-size: 10px;">Botnet</a> <a href="/tags/CV/" style="font-size: 10px;">CV</a> <a href="/tags/Cloud/" style="font-size: 10px;">Cloud</a> <a href="/tags/Configuration/" style="font-size: 10px;">Configuration</a> <a href="/tags/DDoS/" style="font-size: 10px;">DDoS</a> <a href="/tags/DNN/" style="font-size: 10px;">DNN</a> <a href="/tags/Differential-fuzzing/" style="font-size: 10px;">Differential fuzzing</a> <a href="/tags/Fuzzing/" style="font-size: 20px;">Fuzzing</a> <a href="/tags/IDS/" style="font-size: 11.11px;">IDS</a> <a href="/tags/Klee/" style="font-size: 10px;">Klee</a> <a href="/tags/LLM/" style="font-size: 10px;">LLM</a> <a href="/tags/LLVM/" style="font-size: 10px;">LLVM</a> <a href="/tags/Latex/" style="font-size: 10px;">Latex</a> <a href="/tags/ML/" style="font-size: 12.22px;">ML</a> <a href="/tags/Machine-Learning/" style="font-size: 11.11px;">Machine Learning</a> <a href="/tags/Malware-Classifiers/" style="font-size: 15.56px;">Malware Classifiers</a> <a href="/tags/Math/" style="font-size: 10px;">Math</a> <a href="/tags/Mutiagent/" style="font-size: 10px;">Mutiagent</a> <a href="/tags/NLP/" style="font-size: 12.22px;">NLP</a> <a href="/tags/PDF/" style="font-size: 10px;">PDF</a> <a href="/tags/Pytorch/" style="font-size: 11.11px;">Pytorch</a> <a href="/tags/RL/" style="font-size: 14.44px;">RL</a> <a href="/tags/RNN/" style="font-size: 10px;">RNN</a> <a href="/tags/Sanitizer/" style="font-size: 11.11px;">Sanitizer</a> <a href="/tags/Software-Testing/" style="font-size: 12.22px;">Software Testing</a> <a href="/tags/Symbolic-Execution/" style="font-size: 14.44px;">Symbolic Execution</a> <a href="/tags/UAF/" style="font-size: 10px;">UAF</a> <a href="/tags/Vulnerability/" style="font-size: 16.67px;">Vulnerability</a> <a href="/tags/WASI/" style="font-size: 10px;">WASI</a> <a href="/tags/WASM/" style="font-size: 18.89px;">WASM</a> <a href="/tags/WebAssembly/" style="font-size: 10px;">WebAssembly</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/obfuscation/" style="font-size: 10px;">obfuscation</a>
+      <a href="/tags/AD/" style="font-size: 17.78px;">AD</a> <a href="/tags/AD-training/" style="font-size: 10px;">AD training</a> <a href="/tags/AEG/" style="font-size: 15.56px;">AEG</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/BCSA/" style="font-size: 10px;">BCSA</a> <a href="/tags/Binary/" style="font-size: 13.33px;">Binary</a> <a href="/tags/Botnet/" style="font-size: 10px;">Botnet</a> <a href="/tags/CV/" style="font-size: 10px;">CV</a> <a href="/tags/Cloud/" style="font-size: 10px;">Cloud</a> <a href="/tags/Configuration/" style="font-size: 10px;">Configuration</a> <a href="/tags/DDoS/" style="font-size: 10px;">DDoS</a> <a href="/tags/DNN/" style="font-size: 10px;">DNN</a> <a href="/tags/Differential-fuzzing/" style="font-size: 10px;">Differential fuzzing</a> <a href="/tags/Fuzzing/" style="font-size: 20px;">Fuzzing</a> <a href="/tags/IDS/" style="font-size: 11.11px;">IDS</a> <a href="/tags/Klee/" style="font-size: 10px;">Klee</a> <a href="/tags/LLM/" style="font-size: 10px;">LLM</a> <a href="/tags/LLVM/" style="font-size: 10px;">LLVM</a> <a href="/tags/Latex/" style="font-size: 10px;">Latex</a> <a href="/tags/ML/" style="font-size: 12.22px;">ML</a> <a href="/tags/Machine-Learning/" style="font-size: 11.11px;">Machine Learning</a> <a href="/tags/Malware-Classifiers/" style="font-size: 15.56px;">Malware Classifiers</a> <a href="/tags/Math/" style="font-size: 10px;">Math</a> <a href="/tags/Mutiagent/" style="font-size: 10px;">Mutiagent</a> <a href="/tags/NLP/" style="font-size: 12.22px;">NLP</a> <a href="/tags/PDF/" style="font-size: 10px;">PDF</a> <a href="/tags/Pytorch/" style="font-size: 11.11px;">Pytorch</a> <a href="/tags/RL/" style="font-size: 14.44px;">RL</a> <a href="/tags/RNN/" style="font-size: 10px;">RNN</a> <a href="/tags/Sanitizer/" style="font-size: 11.11px;">Sanitizer</a> <a href="/tags/Software-Testing/" style="font-size: 12.22px;">Software Testing</a> <a href="/tags/Symbolic-Execution/" style="font-size: 14.44px;">Symbolic Execution</a> <a href="/tags/UAF/" style="font-size: 10px;">UAF</a> <a href="/tags/Vulnerability/" style="font-size: 16.67px;">Vulnerability</a> <a href="/tags/WASI/" style="font-size: 10px;">WASI</a> <a href="/tags/WASM/" style="font-size: 18.89px;">WASM</a> <a href="/tags/WebAssembly/" style="font-size: 11.11px;">WebAssembly</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/obfuscation/" style="font-size: 10px;">obfuscation</a>
     </div>
   </div>
 
@@ -1189,7 +1018,7 @@ ABSTRACT通过将test case generation与mutation相结合，SBST为待测试程�
     <h3 class="widget-title">归档</h3>
 
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">十月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/09/">九月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/07/">七月 2023</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">14</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">十月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/09/">九月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/07/">七月 2023</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">14</span></li></ul>
     </div>
   </div>
 
@@ -1385,5 +1214,20 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>
