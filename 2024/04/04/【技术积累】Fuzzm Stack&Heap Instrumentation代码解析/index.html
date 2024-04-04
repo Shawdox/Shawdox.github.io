@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>(技术积累)Fuzzm Heap&amp;Stack Instrumentation代码解析 | Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="WASM" />
+  
+  
+  
+    <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
+  
+  
+  <meta name="description" content="Fuzzm Heap&amp;Stack Instrumentation代码解析 1. instrument_with_heap_canary_check()  Source: &#x2F;fuzzm-project&#x2F;wasm_instrumenter&#x2F;src&#x2F;canaries.rs Functionality: 对Wasm插入heap canary  1. dlmalloc(size)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(技术积累)Fuzzm Heap&amp;Stack Instrumentation代码解析">
+<meta property="og:url" content="http://example.com/2024/04/04/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Fuzzm%20Stack&Heap%20Instrumentation%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="Fuzzm Heap&amp;Stack Instrumentation代码解析 1. instrument_with_heap_canary_check()  Source: &#x2F;fuzzm-project&#x2F;wasm_instrumenter&#x2F;src&#x2F;canaries.rs Functionality: 对Wasm插入heap canary  1. dlmalloc(size)">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240404161531437.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240404170332204.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240404170558815.png">
+<meta property="article:published_time" content="2024-04-03T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-04-04T09:41:17.726Z">
+<meta property="article:author" content="Shaw">
+<meta property="article:tag" content="WASM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240404161531437.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-【技术积累】Fuzzm Stack&amp;Heap Instrumentation代码解析" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      (技术积累)Fuzzm Heap&amp;Stack Instrumentation代码解析
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2024/04/04/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Fuzzm%20Stack&Heap%20Instrumentation%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/" class="article-date">
+	  <time datetime="2024-04-03T16:00:00.000Z" itemprop="datePublished">四月 4, 2024</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="fuzzm-heapstack-instrumentation代码解析">Fuzzm Heap&amp;Stack
+Instrumentation代码解析</h1>
+<h2 id="instrument_with_heap_canary_check">1.
+instrument_with_heap_canary_check()</h2>
+<blockquote>
+<p><strong>Source:</strong>
+/fuzzm-project/wasm_instrumenter/src/canaries.rs</p>
+<p><strong>Functionality:</strong> 对Wasm插入heap canary</p>
+</blockquote>
+<h3 id="dlmallocsize">1. dlmalloc(size)</h3>
+<span id="more"></span>
+<h4 id="prefix">1.1 Prefix</h4>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240404160059352.png" /></p>
+<ul>
+<li><strong>插入内容：</strong></li>
+</ul>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"> <span class="token keyword">block</span>  
+      <span class="token keyword">global</span>.get <span class="token variable">$__disable_canary_insertion_in_malloc</span>
+      <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">1</span>
+      <span class="token keyword">i32<span class="token punctuation">.</span>eq</span>
+      <span class="token keyword">br_if</span> <span class="token number">0</span> 
+      <span class="token keyword">local</span>.get <span class="token number">0</span>
+      <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">20</span>
+      <span class="token keyword">i32<span class="token punctuation">.</span>add</span>
+      <span class="token keyword">local</span>.tee <span class="token number">12</span>
+      <span class="token keyword">local</span>.set <span class="token number">0</span>
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li><strong>插入位置：</strong>dlmalloc函数代码段开头。</li>
+<li><strong>解析：</strong></li>
+</ul>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"><span class="token keyword">block</span>  
+     <span class="token keyword">global</span>.get <span class="token variable">$__disable_canary_insertion_in_malloc</span>
+     <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">1</span>
+     <span class="token keyword">i32<span class="token punctuation">.</span>eq</span>
+     <span class="token keyword">br_if</span> <span class="token number">0</span> 
+     //...
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这里在<code>dlmalloc</code>函数开头插入一个新的block，编号为block
+0。Wasm中的<code>br</code>/<code>br_if</code>指令的功能是跳出目标block，故这里前几句的功能是判断<code>$__disable_canary_insertion_in_malloc</code>是否等予1，如果等于则直接跳过该块的插桩代码。</p>
+<blockquote>
+<p>$__disable_canary_insertion_in_malloc
+在实际的Wasm指令中一般是最后一个globe的值。</p>
+</blockquote>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"> <span class="token keyword">block</span>  
+      //...
+      <span class="token keyword">br_if</span> <span class="token number">0</span> 
+      <span class="token keyword">local</span>.get <span class="token number">0</span>
+      <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">20</span>
+      <span class="token keyword">i32<span class="token punctuation">.</span>add</span>
+      <span class="token keyword">local</span>.tee <span class="token number">12</span>
+      <span class="token keyword">local</span>.set <span class="token number">0</span>
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这里字面上的逻辑是将local 0的值加了20，并将这个值也存在local
+12（最后一个local）中。在Wasm中函数的参数是存在局部变量中的，这里dlmalloc接受一个size参数用于表示需要分配的内存大小，故这里实际上是让dlmalloc分配size+20空间的内存，多出的20用于存储canary。</p>
+<h4 id="postfix">1.2 Postfix</h4>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240404160158226.png" /></p>
+<p>在原本函数结尾：</p>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"><span class="token keyword">global</span>.set <span class="token variable">$__stack_pointer</span>
+<span class="token keyword">local</span>.get <span class="token number">0</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>这两句指令重新设置了栈帧，并将返回值（local 0）压栈。</p>
+<p>插桩后的代码在这两句指令之后加入了如下指令：</p>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"><span class="token keyword">local</span>.set <span class="token number">13</span>
+<span class="token keyword">block</span> <span class="token punctuation">(</span><span class="token keyword">result</span> <span class="token keyword">i32</span><span class="token punctuation">)</span> 
+    <span class="token keyword">local</span>.get <span class="token number">13</span>
+    <span class="token keyword">local</span>.get <span class="token number">13</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>eqz</span>
+    <span class="token keyword">br_if</span> <span class="token number">0</span> 
+    <span class="token keyword">global</span>.get <span class="token variable">$__disable_canary_insertion_in_malloc</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">1</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>eq</span>
+    <span class="token keyword">br_if</span> <span class="token number">0</span> 
+    <span class="token keyword">local</span>.get <span class="token number">12</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>store</span> <span class="token keyword">align<span class="token operator">=</span></span><span class="token number">1</span>
+    <span class="token keyword">local</span>.get <span class="token number">13</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>const</span> <span class="token number">0</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>store</span> <span class="token keyword">offset<span class="token operator">=</span></span><span class="token number">4</span> <span class="token keyword">align<span class="token operator">=</span></span><span class="token number">1</span>
+    <span class="token keyword">local</span>.get <span class="token number">12</span>
+    <span class="token keyword">local</span>.get <span class="token number">13</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>add</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">8</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>sub</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>const</span> <span class="token number">0</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>store</span> <span class="token keyword">align<span class="token operator">=</span></span><span class="token number">1</span>
+    <span class="token keyword">local</span>.get <span class="token number">13</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">12</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>add</span>
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>首先，其使用<code>local.set 13</code>将栈上的返回值存储到了local
+13中，然后在函数结尾插入了一个block。</p>
+<p>在block中，首先进行了两次条件判断：</p>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"><span class="token keyword">block</span> <span class="token punctuation">(</span><span class="token keyword">result</span> <span class="token keyword">i32</span><span class="token punctuation">)</span> 
+    <span class="token keyword">local</span>.get <span class="token number">13</span>
+    <span class="token keyword">local</span>.get <span class="token number">13</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>eqz</span>
+    <span class="token keyword">br_if</span> <span class="token number">0</span> 
+    <span class="token keyword">global</span>.get <span class="token variable">$__disable_canary_insertion_in_malloc</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">1</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>eq</span>
+    <span class="token keyword">br_if</span> <span class="token number">0</span> 
+    //...
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>dlmalloc的返回值是已分配空间的首地址，这判断dlmalloc是否返回零(分配失败)并判断是否需要跳过canary，接着：</p>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"><span class="token keyword">block</span>
+	//...
+	<span class="token keyword">local</span>.get <span class="token number">12</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>store</span> <span class="token keyword">align<span class="token operator">=</span></span><span class="token number">1</span>
+    <span class="token keyword">local</span>.get <span class="token number">13</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>const</span> <span class="token number">0</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>store</span> <span class="token keyword">offset<span class="token operator">=</span></span><span class="token number">4</span> <span class="token keyword">align<span class="token operator">=</span></span><span class="token number">1</span>
+    //...
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>第一句<code>local.get 12</code>之后当前的栈：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240404161531437.png" style="zoom:50%;" /></p>
+<p>故接下来<code>i32.store align=1</code>将size+20存储到了分配好的空间的开头4字节，类似地，<code>i64.store offset=4 align=1</code>将0（i64，8字节）存储到了分配好的空间的第5-12个字节处，这里的0就是canary。</p>
+<p>接下来：</p>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"><span class="token keyword">block</span>
+	//...
+	<span class="token keyword">local</span>.get <span class="token number">12</span>
+    <span class="token keyword">local</span>.get <span class="token number">13</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>add</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">8</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>sub</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>const</span> <span class="token number">0</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>store</span> <span class="token keyword">align<span class="token operator">=</span></span><span class="token number">1</span>
+    <span class="token keyword">local</span>.get <span class="token number">13</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">12</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>add</span>
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这段代码将0(i64，8字节)存储到了已分配好的空间的倒数第=八个字节，并使函数返回已分配好的空间的首地址+12的地址。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240404170332204.png" style="zoom:67%;" /></p>
+<h3 id="dlfreep">2. dlfree(p)</h3>
+<p>free函数会在free操作之前检查canary的值。</p>
+<h4 id="prefix-1">2.1 Prefix</h4>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240404170558815.png" style="zoom:50%;" /></p>
+<p>br判断的流程与上述相似，这里略（总的来说就是跳过$__disable_canary_insertion_in_malloc和返回值为Null的情况）。</p>
+<p>检查第一个canary：</p>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"><span class="token keyword">block</span>  <span class="token comment">;; label = @3</span>
+    <span class="token keyword">local</span>.get <span class="token number">0</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">12</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>sub</span>
+    <span class="token keyword">local</span>.set <span class="token number">0</span> //将指针指向<span class="token keyword">return</span> - <span class="token number">12</span>，即dlmalloc原本分配的位置
+    <span class="token keyword">local</span>.get <span class="token number">0</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">4</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>add</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>load</span> <span class="token keyword">align<span class="token operator">=</span></span><span class="token number">1</span> // load canary <span class="token number">1</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>eqz</span> // 检查是否为<span class="token number">0</span>
+    <span class="token keyword">br_if</span> <span class="token number">0</span> <span class="token comment">(;@3;)</span> 
+    <span class="token keyword">unreachable</span> // 如果不为零则报错：<span class="token string">"RuntimeError: unreachable"</span>
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>检查第二个canary:</p>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"><span class="token keyword">block</span>  <span class="token comment">;; label = @3</span>
+    <span class="token keyword">local</span>.get <span class="token number">0</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>load</span> <span class="token keyword">align<span class="token operator">=</span></span><span class="token number">1</span> // size<span class="token number">+20</span>入栈
+    <span class="token keyword">local</span>.get <span class="token number">0</span> 
+    <span class="token keyword">i32<span class="token punctuation">.</span>add</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">8</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>sub</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>load</span> <span class="token keyword">align<span class="token operator">=</span></span><span class="token number">1</span> // load canary <span class="token number">2</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>eqz</span> // 检查是否为<span class="token number">0</span>
+    <span class="token keyword">br_if</span> <span class="token number">0</span> <span class="token comment">(;@3;)</span>
+    <span class="token keyword">unreachable</span> // 如果不为零则报错：<span class="token string">"RuntimeError: unreachable"</span>
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>以上就是heap
+canary在fuzzm中的具体实现，作者在这里使用了简单的两个64位的0来作为canary。</p>
+<blockquote>
+<ol type="1">
+<li>如果有目的的构造溢出，这个canary可以被绕过（canary的部分覆盖为0即可）；</li>
+<li>开头的4字节（size+20）如果被修改？</li>
+<li>这个措施增加了多少性能损耗？</li>
+<li>这个canary要求每个dlmalloc都对应一个dlfree，但在真实的代码中并不一定所有dlmalloc都会被主动释放。（可以学习rust的做法，每个函数或scope退出后主动添加free吗？）</li>
+</ol>
+</blockquote>
+<h2 id="instrument_with_heap_canary_check-1">2.
+instrument_with_heap_canary_check()</h2>
+<blockquote>
+<p><strong>Source:</strong>
+/fuzzm-project/wasm_instrumenter/src/canaries.rs</p>
+<p><strong>Functionality:</strong> 对Wasm插入stack canary</p>
+</blockquote>
+<h3 id="哪些函数需要插桩">2.1 哪些函数需要插桩？</h3>
+<pre class="line-numbers language-rust" data-language="rust"><code class="language-rust"><span class="token keyword">fn</span> <span class="token function-definition function">requires_canary_check</span><span class="token punctuation">(</span>f<span class="token punctuation">:</span> <span class="token operator">&amp;</span><span class="token class-name">Function</span><span class="token punctuation">,</span> stack_ptr<span class="token punctuation">:</span> <span class="token operator">&amp;</span><span class="token class-name">Idx</span><span class="token operator">&lt;</span><span class="token class-name">Global</span><span class="token operator">></span><span class="token punctuation">)</span> <span class="token punctuation">-></span> <span class="token keyword">bool</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// emscripten adds the stackAlloc and stackRestore functions</span>
+    <span class="token comment">// that both break the invarint that the stack size prior to function</span>
+    <span class="token comment">// entrance is equal to the stack size after function exit.</span>
+    <span class="token comment">// The stackAlloc function is used to, for example, allocate space for argv</span>
+    <span class="token comment">// before the main function is called.</span>
+    <span class="token keyword">let</span> breaks_stack_invariant <span class="token operator">=</span> <span class="token function">is_stack_alloc</span><span class="token punctuation">(</span>f<span class="token punctuation">,</span> stack_ptr<span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token function">is_stack_restore</span><span class="token punctuation">(</span>f<span class="token punctuation">,</span> stack_ptr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">// we check instr_count > 1 since all functions implicitly have an end instruction.</span>
+    f<span class="token punctuation">.</span><span class="token function">instr_count</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">1</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>breaks_stack_invariant
+    <span class="token comment">// possible other optimizations?</span>
+    <span class="token comment">// TODO check if f even uses the stack pointer.</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Emscripten添加的<code>stackAlloc</code>和<code>stackRestore</code>函数并不遵循栈平衡原则，故作者排除了这两个函数或者指令数小于等于1的函数。</p>
+<h3 id="prefix-2">2.2 Prefix</h3>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240404172847664.png" /></p>
+<p>对函数开头的插桩如下：</p>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"><span class="token punctuation">(</span><span class="token keyword">func</span> func_name <span class="token punctuation">(</span><span class="token keyword">type</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token keyword">param</span> <span class="token keyword">i32</span> <span class="token keyword">i32</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token keyword">result</span> <span class="token keyword">i32</span><span class="token punctuation">)</span>
+	<span class="token keyword">global</span>.get <span class="token variable">$__stack_pointer</span>
+	<span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">16</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>sub</span>
+    <span class="token keyword">global</span>.set <span class="token variable">$__stack_pointer</span> // 函数栈帧增长<span class="token number">16</span>字节
+    <span class="token keyword">global</span>.get <span class="token variable">$__stack_pointer</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>const</span> <span class="token variable">$__random_number</span> 
+    <span class="token keyword">i64<span class="token punctuation">.</span>store</span> <span class="token keyword">align<span class="token operator">=</span></span><span class="token number">1</span> // 在栈帧边缘插入<span class="token number">8</span>字节随机数
+    <span class="token keyword">block</span> <span class="token punctuation">(</span><span class="token keyword">result</span> <span class="token keyword">i32</span><span class="token punctuation">)</span> // 将原本函数体包裹
+    	// func_body
+    	<span class="token keyword">br</span> <span class="token number">0</span>
+    <span class="token keyword">end</span>
+    
+<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="postfix-1">2.3 Postfix</h3>
+<p>对函数结尾插桩如下：</p>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"><span class="token punctuation">(</span><span class="token keyword">func</span> func_name <span class="token punctuation">(</span><span class="token keyword">type</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token keyword">param</span> <span class="token keyword">i32</span> <span class="token keyword">i32</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token keyword">result</span> <span class="token keyword">i32</span><span class="token punctuation">)</span>
+	//...
+	<span class="token keyword">block</span>  
+      <span class="token keyword">global</span>.get <span class="token variable">$__stack_pointer</span>
+      <span class="token keyword">i64<span class="token punctuation">.</span>load</span> <span class="token keyword">align<span class="token operator">=</span></span><span class="token number">1</span>
+      <span class="token keyword">i64<span class="token punctuation">.</span>const</span> <span class="token variable">$__random_number</span>
+      <span class="token keyword">i64<span class="token punctuation">.</span>eq</span> // 比较栈帧边缘的值和随机数是否相等
+      <span class="token keyword">br_if</span> <span class="token number">0</span> 
+      <span class="token keyword">unreachable</span> // 如果不相等则报错：<span class="token string">"RuntimeError: unreachable"</span>
+    <span class="token keyword">end</span>
+    <span class="token keyword">global</span>.get <span class="token variable">$__stack_pointer</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">16</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>add</span>
+    <span class="token keyword">global</span>.set <span class="token number">0</span> // 将栈帧复原
+<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="reference">Reference</h2>
+<ul>
+<li>Blogs:
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://radu-matei.com/blog/intro-wasm-components/">Introduction
+to WebAssembly components - radu's blog (radu-matei.com)</a></li>
+<li><a target="_blank" rel="noopener" href="https://hackmd.io/@pepyakin/SkmPKGhiq">Different Stacks of
+Wasm - HackMD</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://stackoverflow.com/questions/49345115/how-to-understand-the-align-attribute-in-webassembly">How
+to understand the "align" attribute in WebAssembly? - Stack
+Overflow</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://stackoverflow.com/questions/49345115/how-to-understand-the-align-attribute-in-webassembly">How
+to understand the "align" attribute in WebAssembly? - Stack
+Overflow</a></li>
+</ul></li>
+<li>Github:
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/WebAssembly/design/issues/1037">Does
+local variables count include function arguments? · Issue #1037 ·
+WebAssembly/design (github.com)</a></li>
+</ul></li>
+</ul>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WASM/" rel="tag">WASM</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2024/02/25/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91WaVe-a-verifiably-secure-WebAssembly-sandboxing-runtime/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">(论文阅读)WaVe-a verifiably secure WebAssembly sandboxing runtime</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#fuzzm-heapstack-instrumentation%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90"><span class="nav-number">1.</span> <span class="nav-text">Fuzzm Heap&amp;Stack
+Instrumentation代码解析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#instrument_with_heap_canary_check"><span class="nav-number">1.1.</span> <span class="nav-text">1.
+instrument_with_heap_canary_check()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#dlmallocsize"><span class="nav-number">1.1.1.</span> <span class="nav-text">1. dlmalloc(size)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#prefix"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">1.1 Prefix</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#postfix"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">1.2 Postfix</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dlfreep"><span class="nav-number">1.1.2.</span> <span class="nav-text">2. dlfree(p)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#prefix-1"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">2.1 Prefix</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#instrument_with_heap_canary_check-1"><span class="nav-number">1.2.</span> <span class="nav-text">2.
+instrument_with_heap_canary_check()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%93%AA%E4%BA%9B%E5%87%BD%E6%95%B0%E9%9C%80%E8%A6%81%E6%8F%92%E6%A1%A9"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 哪些函数需要插桩？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#prefix-2"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 Prefix</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#postfix-1"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 Postfix</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">1.3.</span> <span class="nav-text">Reference</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+<footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2024 Shaw All Rights Reserved.
+        
+          <span id="busuanzi_container_site_pv">
+            本站总访问量<span id="busuanzi_value_site_pv"></span>次
+          </span>
+          <span class="post-meta-divider">|</span>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            本站访客数<span id="busuanzi_value_site_uv"></span>人
+          </span>
+          <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+
+  
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'true', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+<!-- Gaug.es Analytics -->
+<script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', 'true');
+    t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+    t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+<!-- End Gaug.es Analytics -->
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+	<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2439014eb270056ee1808a49956fe114";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<!-- Tencent Analytics -->
+	<script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId={{ theme.tencent_analytics }}";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+<!-- End Tencent Analytics -->
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>

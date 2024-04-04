@@ -11405,4 +11405,271 @@ runtime不同的是，其会静态检查check-and-translate这个过程以保证
         <tag>WebAssembly</tag>
       </tags>
   </entry>
+  <entry>
+    <title>(技术积累)Fuzzm Heap&amp;Stack Instrumentation代码解析</title>
+    <url>/2024/04/04/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Fuzzm%20Stack&amp;Heap%20Instrumentation%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/</url>
+    <content><![CDATA[<h1 id="fuzzm-heapstack-instrumentation代码解析">Fuzzm Heap&amp;Stack
+Instrumentation代码解析</h1>
+<h2 id="instrument_with_heap_canary_check">1.
+instrument_with_heap_canary_check()</h2>
+<blockquote>
+<p><strong>Source:</strong>
+/fuzzm-project/wasm_instrumenter/src/canaries.rs</p>
+<p><strong>Functionality:</strong> 对Wasm插入heap canary</p>
+</blockquote>
+<h3 id="dlmallocsize">1. dlmalloc(size)</h3>
+<span id="more"></span>
+<h4 id="prefix">1.1 Prefix</h4>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240404160059352.png" /></p>
+<ul>
+<li><strong>插入内容：</strong></li>
+</ul>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"> <span class="token keyword">block</span>  
+      <span class="token keyword">global</span>.get <span class="token variable">$__disable_canary_insertion_in_malloc</span>
+      <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">1</span>
+      <span class="token keyword">i32<span class="token punctuation">.</span>eq</span>
+      <span class="token keyword">br_if</span> <span class="token number">0</span> 
+      <span class="token keyword">local</span>.get <span class="token number">0</span>
+      <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">20</span>
+      <span class="token keyword">i32<span class="token punctuation">.</span>add</span>
+      <span class="token keyword">local</span>.tee <span class="token number">12</span>
+      <span class="token keyword">local</span>.set <span class="token number">0</span>
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li><strong>插入位置：</strong>dlmalloc函数代码段开头。</li>
+<li><strong>解析：</strong></li>
+</ul>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"><span class="token keyword">block</span>  
+     <span class="token keyword">global</span>.get <span class="token variable">$__disable_canary_insertion_in_malloc</span>
+     <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">1</span>
+     <span class="token keyword">i32<span class="token punctuation">.</span>eq</span>
+     <span class="token keyword">br_if</span> <span class="token number">0</span> 
+     //...
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这里在<code>dlmalloc</code>函数开头插入一个新的block，编号为block
+0。Wasm中的<code>br</code>/<code>br_if</code>指令的功能是跳出目标block，故这里前几句的功能是判断<code>$__disable_canary_insertion_in_malloc</code>是否等予1，如果等于则直接跳过该块的插桩代码。</p>
+<blockquote>
+<p>$__disable_canary_insertion_in_malloc
+在实际的Wasm指令中一般是最后一个globe的值。</p>
+</blockquote>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"> <span class="token keyword">block</span>  
+      //...
+      <span class="token keyword">br_if</span> <span class="token number">0</span> 
+      <span class="token keyword">local</span>.get <span class="token number">0</span>
+      <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">20</span>
+      <span class="token keyword">i32<span class="token punctuation">.</span>add</span>
+      <span class="token keyword">local</span>.tee <span class="token number">12</span>
+      <span class="token keyword">local</span>.set <span class="token number">0</span>
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这里字面上的逻辑是将local 0的值加了20，并将这个值也存在local
+12（最后一个local）中。在Wasm中函数的参数是存在局部变量中的，这里dlmalloc接受一个size参数用于表示需要分配的内存大小，故这里实际上是让dlmalloc分配size+20空间的内存，多出的20用于存储canary。</p>
+<h4 id="postfix">1.2 Postfix</h4>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240404160158226.png" /></p>
+<p>在原本函数结尾：</p>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"><span class="token keyword">global</span>.set <span class="token variable">$__stack_pointer</span>
+<span class="token keyword">local</span>.get <span class="token number">0</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>这两句指令重新设置了栈帧，并将返回值（local 0）压栈。</p>
+<p>插桩后的代码在这两句指令之后加入了如下指令：</p>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"><span class="token keyword">local</span>.set <span class="token number">13</span>
+<span class="token keyword">block</span> <span class="token punctuation">(</span><span class="token keyword">result</span> <span class="token keyword">i32</span><span class="token punctuation">)</span> 
+    <span class="token keyword">local</span>.get <span class="token number">13</span>
+    <span class="token keyword">local</span>.get <span class="token number">13</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>eqz</span>
+    <span class="token keyword">br_if</span> <span class="token number">0</span> 
+    <span class="token keyword">global</span>.get <span class="token variable">$__disable_canary_insertion_in_malloc</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">1</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>eq</span>
+    <span class="token keyword">br_if</span> <span class="token number">0</span> 
+    <span class="token keyword">local</span>.get <span class="token number">12</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>store</span> <span class="token keyword">align<span class="token operator">=</span></span><span class="token number">1</span>
+    <span class="token keyword">local</span>.get <span class="token number">13</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>const</span> <span class="token number">0</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>store</span> <span class="token keyword">offset<span class="token operator">=</span></span><span class="token number">4</span> <span class="token keyword">align<span class="token operator">=</span></span><span class="token number">1</span>
+    <span class="token keyword">local</span>.get <span class="token number">12</span>
+    <span class="token keyword">local</span>.get <span class="token number">13</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>add</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">8</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>sub</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>const</span> <span class="token number">0</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>store</span> <span class="token keyword">align<span class="token operator">=</span></span><span class="token number">1</span>
+    <span class="token keyword">local</span>.get <span class="token number">13</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">12</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>add</span>
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>首先，其使用<code>local.set 13</code>将栈上的返回值存储到了local
+13中，然后在函数结尾插入了一个block。</p>
+<p>在block中，首先进行了两次条件判断：</p>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"><span class="token keyword">block</span> <span class="token punctuation">(</span><span class="token keyword">result</span> <span class="token keyword">i32</span><span class="token punctuation">)</span> 
+    <span class="token keyword">local</span>.get <span class="token number">13</span>
+    <span class="token keyword">local</span>.get <span class="token number">13</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>eqz</span>
+    <span class="token keyword">br_if</span> <span class="token number">0</span> 
+    <span class="token keyword">global</span>.get <span class="token variable">$__disable_canary_insertion_in_malloc</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">1</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>eq</span>
+    <span class="token keyword">br_if</span> <span class="token number">0</span> 
+    //...
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>dlmalloc的返回值是已分配空间的首地址，这判断dlmalloc是否返回零(分配失败)并判断是否需要跳过canary，接着：</p>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"><span class="token keyword">block</span>
+	//...
+	<span class="token keyword">local</span>.get <span class="token number">12</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>store</span> <span class="token keyword">align<span class="token operator">=</span></span><span class="token number">1</span>
+    <span class="token keyword">local</span>.get <span class="token number">13</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>const</span> <span class="token number">0</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>store</span> <span class="token keyword">offset<span class="token operator">=</span></span><span class="token number">4</span> <span class="token keyword">align<span class="token operator">=</span></span><span class="token number">1</span>
+    //...
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>第一句<code>local.get 12</code>之后当前的栈：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240404161531437.png" style="zoom:50%;" /></p>
+<p>故接下来<code>i32.store align=1</code>将size+20存储到了分配好的空间的开头4字节，类似地，<code>i64.store offset=4 align=1</code>将0（i64，8字节）存储到了分配好的空间的第5-12个字节处，这里的0就是canary。</p>
+<p>接下来：</p>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"><span class="token keyword">block</span>
+	//...
+	<span class="token keyword">local</span>.get <span class="token number">12</span>
+    <span class="token keyword">local</span>.get <span class="token number">13</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>add</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">8</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>sub</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>const</span> <span class="token number">0</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>store</span> <span class="token keyword">align<span class="token operator">=</span></span><span class="token number">1</span>
+    <span class="token keyword">local</span>.get <span class="token number">13</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">12</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>add</span>
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这段代码将0(i64，8字节)存储到了已分配好的空间的倒数第=八个字节，并使函数返回已分配好的空间的首地址+12的地址。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240404170332204.png" style="zoom:67%;" /></p>
+<h3 id="dlfreep">2. dlfree(p)</h3>
+<p>free函数会在free操作之前检查canary的值。</p>
+<h4 id="prefix-1">2.1 Prefix</h4>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240404170558815.png" style="zoom:50%;" /></p>
+<p>br判断的流程与上述相似，这里略（总的来说就是跳过$__disable_canary_insertion_in_malloc和返回值为Null的情况）。</p>
+<p>检查第一个canary：</p>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"><span class="token keyword">block</span>  <span class="token comment">;; label = @3</span>
+    <span class="token keyword">local</span>.get <span class="token number">0</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">12</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>sub</span>
+    <span class="token keyword">local</span>.set <span class="token number">0</span> //将指针指向<span class="token keyword">return</span> - <span class="token number">12</span>，即dlmalloc原本分配的位置
+    <span class="token keyword">local</span>.get <span class="token number">0</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">4</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>add</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>load</span> <span class="token keyword">align<span class="token operator">=</span></span><span class="token number">1</span> // load canary <span class="token number">1</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>eqz</span> // 检查是否为<span class="token number">0</span>
+    <span class="token keyword">br_if</span> <span class="token number">0</span> <span class="token comment">(;@3;)</span> 
+    <span class="token keyword">unreachable</span> // 如果不为零则报错：<span class="token string">"RuntimeError: unreachable"</span>
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>检查第二个canary:</p>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"><span class="token keyword">block</span>  <span class="token comment">;; label = @3</span>
+    <span class="token keyword">local</span>.get <span class="token number">0</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>load</span> <span class="token keyword">align<span class="token operator">=</span></span><span class="token number">1</span> // size<span class="token number">+20</span>入栈
+    <span class="token keyword">local</span>.get <span class="token number">0</span> 
+    <span class="token keyword">i32<span class="token punctuation">.</span>add</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">8</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>sub</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>load</span> <span class="token keyword">align<span class="token operator">=</span></span><span class="token number">1</span> // load canary <span class="token number">2</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>eqz</span> // 检查是否为<span class="token number">0</span>
+    <span class="token keyword">br_if</span> <span class="token number">0</span> <span class="token comment">(;@3;)</span>
+    <span class="token keyword">unreachable</span> // 如果不为零则报错：<span class="token string">"RuntimeError: unreachable"</span>
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>以上就是heap
+canary在fuzzm中的具体实现，作者在这里使用了简单的两个64位的0来作为canary。</p>
+<blockquote>
+<ol type="1">
+<li>如果有目的的构造溢出，这个canary可以被绕过（canary的部分覆盖为0即可）；</li>
+<li>开头的4字节（size+20）如果被修改？</li>
+<li>这个措施增加了多少性能损耗？</li>
+<li>这个canary要求每个dlmalloc都对应一个dlfree，但在真实的代码中并不一定所有dlmalloc都会被主动释放。（可以学习rust的做法，每个函数或scope退出后主动添加free吗？）</li>
+</ol>
+</blockquote>
+<h2 id="instrument_with_heap_canary_check-1">2.
+instrument_with_heap_canary_check()</h2>
+<blockquote>
+<p><strong>Source:</strong>
+/fuzzm-project/wasm_instrumenter/src/canaries.rs</p>
+<p><strong>Functionality:</strong> 对Wasm插入stack canary</p>
+</blockquote>
+<h3 id="哪些函数需要插桩">2.1 哪些函数需要插桩？</h3>
+<pre class="line-numbers language-rust" data-language="rust"><code class="language-rust"><span class="token keyword">fn</span> <span class="token function-definition function">requires_canary_check</span><span class="token punctuation">(</span>f<span class="token punctuation">:</span> <span class="token operator">&amp;</span><span class="token class-name">Function</span><span class="token punctuation">,</span> stack_ptr<span class="token punctuation">:</span> <span class="token operator">&amp;</span><span class="token class-name">Idx</span><span class="token operator">&lt;</span><span class="token class-name">Global</span><span class="token operator">></span><span class="token punctuation">)</span> <span class="token punctuation">-></span> <span class="token keyword">bool</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// emscripten adds the stackAlloc and stackRestore functions</span>
+    <span class="token comment">// that both break the invarint that the stack size prior to function</span>
+    <span class="token comment">// entrance is equal to the stack size after function exit.</span>
+    <span class="token comment">// The stackAlloc function is used to, for example, allocate space for argv</span>
+    <span class="token comment">// before the main function is called.</span>
+    <span class="token keyword">let</span> breaks_stack_invariant <span class="token operator">=</span> <span class="token function">is_stack_alloc</span><span class="token punctuation">(</span>f<span class="token punctuation">,</span> stack_ptr<span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token function">is_stack_restore</span><span class="token punctuation">(</span>f<span class="token punctuation">,</span> stack_ptr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">// we check instr_count > 1 since all functions implicitly have an end instruction.</span>
+    f<span class="token punctuation">.</span><span class="token function">instr_count</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">1</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>breaks_stack_invariant
+    <span class="token comment">// possible other optimizations?</span>
+    <span class="token comment">// TODO check if f even uses the stack pointer.</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Emscripten添加的<code>stackAlloc</code>和<code>stackRestore</code>函数并不遵循栈平衡原则，故作者排除了这两个函数或者指令数小于等于1的函数。</p>
+<h3 id="prefix-2">2.2 Prefix</h3>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240404172847664.png" /></p>
+<p>对函数开头的插桩如下：</p>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"><span class="token punctuation">(</span><span class="token keyword">func</span> func_name <span class="token punctuation">(</span><span class="token keyword">type</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token keyword">param</span> <span class="token keyword">i32</span> <span class="token keyword">i32</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token keyword">result</span> <span class="token keyword">i32</span><span class="token punctuation">)</span>
+	<span class="token keyword">global</span>.get <span class="token variable">$__stack_pointer</span>
+	<span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">16</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>sub</span>
+    <span class="token keyword">global</span>.set <span class="token variable">$__stack_pointer</span> // 函数栈帧增长<span class="token number">16</span>字节
+    <span class="token keyword">global</span>.get <span class="token variable">$__stack_pointer</span>
+    <span class="token keyword">i64<span class="token punctuation">.</span>const</span> <span class="token variable">$__random_number</span> 
+    <span class="token keyword">i64<span class="token punctuation">.</span>store</span> <span class="token keyword">align<span class="token operator">=</span></span><span class="token number">1</span> // 在栈帧边缘插入<span class="token number">8</span>字节随机数
+    <span class="token keyword">block</span> <span class="token punctuation">(</span><span class="token keyword">result</span> <span class="token keyword">i32</span><span class="token punctuation">)</span> // 将原本函数体包裹
+    	// func_body
+    	<span class="token keyword">br</span> <span class="token number">0</span>
+    <span class="token keyword">end</span>
+    
+<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="postfix-1">2.3 Postfix</h3>
+<p>对函数结尾插桩如下：</p>
+<pre class="line-numbers language-wasm" data-language="wasm"><code class="language-wasm"><span class="token punctuation">(</span><span class="token keyword">func</span> func_name <span class="token punctuation">(</span><span class="token keyword">type</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token keyword">param</span> <span class="token keyword">i32</span> <span class="token keyword">i32</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token keyword">result</span> <span class="token keyword">i32</span><span class="token punctuation">)</span>
+	//...
+	<span class="token keyword">block</span>  
+      <span class="token keyword">global</span>.get <span class="token variable">$__stack_pointer</span>
+      <span class="token keyword">i64<span class="token punctuation">.</span>load</span> <span class="token keyword">align<span class="token operator">=</span></span><span class="token number">1</span>
+      <span class="token keyword">i64<span class="token punctuation">.</span>const</span> <span class="token variable">$__random_number</span>
+      <span class="token keyword">i64<span class="token punctuation">.</span>eq</span> // 比较栈帧边缘的值和随机数是否相等
+      <span class="token keyword">br_if</span> <span class="token number">0</span> 
+      <span class="token keyword">unreachable</span> // 如果不相等则报错：<span class="token string">"RuntimeError: unreachable"</span>
+    <span class="token keyword">end</span>
+    <span class="token keyword">global</span>.get <span class="token variable">$__stack_pointer</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>const</span> <span class="token number">16</span>
+    <span class="token keyword">i32<span class="token punctuation">.</span>add</span>
+    <span class="token keyword">global</span>.set <span class="token number">0</span> // 将栈帧复原
+<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="reference">Reference</h2>
+<ul>
+<li>Blogs:
+<ul>
+<li><a
+href="https://radu-matei.com/blog/intro-wasm-components/">Introduction
+to WebAssembly components - radu's blog (radu-matei.com)</a></li>
+<li><a href="https://hackmd.io/@pepyakin/SkmPKGhiq">Different Stacks of
+Wasm - HackMD</a></li>
+<li><a
+href="https://stackoverflow.com/questions/49345115/how-to-understand-the-align-attribute-in-webassembly">How
+to understand the "align" attribute in WebAssembly? - Stack
+Overflow</a></li>
+<li><a
+href="https://stackoverflow.com/questions/49345115/how-to-understand-the-align-attribute-in-webassembly">How
+to understand the "align" attribute in WebAssembly? - Stack
+Overflow</a></li>
+</ul></li>
+<li>Github:
+<ul>
+<li><a href="https://github.com/WebAssembly/design/issues/1037">Does
+local variables count include function arguments? · Issue #1037 ·
+WebAssembly/design (github.com)</a></li>
+</ul></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>WASM</tag>
+      </tags>
+  </entry>
 </search>
