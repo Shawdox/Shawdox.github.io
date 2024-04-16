@@ -9,7 +9,12 @@
   <entry>
     <title></title>
     <url>/2024/04/16/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Ret2libc%E4%B8%AD%E7%9A%84main%E4%B8%8E_start%E5%87%BD%E6%95%B0/</url>
-    <content><![CDATA[<h1 id="Ret2libc中的main与-start函数"><a href="#Ret2libc中的main与-start函数" class="headerlink" title="Ret2libc中的main与_start函数"></a>Ret2libc中的main与_start函数</h1><h3 id="1-题目背景"><a href="#1-题目背景" class="headerlink" title="1. 题目背景"></a>1. 题目背景</h3><p>Ret2libc3练习(<a href="https://github.com/ctf-wiki/ctf-challenges/raw/master/pwn/stackoverflow/ret2libc/ret2libc3/ret2libc3">ret2libc3-CTF Wiki</a>)是一个简单的return to libc练习题，其通过向程序输入两次payload来get shell，第一次payload用于获取<code>__libc_start_main</code>函数真实加载地址，第二次payload通过该加载地址计算出libc中的偏移，进而调用<code>system</code>函数：</p>
+    <content><![CDATA[<h1 id="ret2libc中的main与_start函数">Ret2libc中的main与_start函数</h1>
+<h3 id="题目背景">1. 题目背景</h3>
+<p>Ret2libc3练习(<a href="https://github.com/ctf-wiki/ctf-challenges/raw/master/pwn/stackoverflow/ret2libc/ret2libc3/ret2libc3">ret2libc3-CTF
+Wiki</a>)是一个简单的return to
+libc练习题，其通过向程序输入两次payload来get
+shell，第一次payload用于获取<code>__libc_start_main</code>函数真实加载地址，第二次payload通过该加载地址计算出libc中的偏移，进而调用<code>system</code>函数：</p>
 <span id="more"></span>
 <p><img src="/.com//image-20240416143243963.png" style="zoom: 80%;"></p>
 <p>第一个payload:</p>
@@ -41,9 +46,10 @@ sh<span class="token punctuation">.</span>sendline<span class="token punctuation
 
 sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <blockquote>
-<p>这里发现，如果payload1选择返回main函数，则payload2就是<code>b&#39;A&#39; * 104</code>，如果选择<code>_start</code>函数返回，则payload2就是<code>b&#39;A&#39; * 112</code>。</p>
+<p>这里发现，如果payload1选择返回main函数，则payload2就是<code>b'A' * 104</code>，如果选择<code>_start</code>函数返回，则payload2就是<code>b'A' * 112</code>。</p>
 </blockquote>
-<h3 id="2-问题解析"><a href="#2-问题解析" class="headerlink" title="2. 问题解析"></a>2. 问题解析</h3><p>网上的资料解析如下：</p>
+<h3 id="问题解析">2. 问题解析</h3>
+<p>网上的资料解析如下：</p>
 <p><img src="/.com//image-20240416144221180.png" style="zoom:80%;"></p>
 <p>问题是，这个操作main函数里也有：</p>
 <p><img src="/.com//image-20240416144436368.png" style="zoom:80%;"></p>
@@ -58,59 +64,54 @@ sh<span class="token punctuation">.</span>interactive<span class="token punctuat
 mov     ebp, esp
 and 	esp, 0FFFFFFF0h<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>这里令ebp=esp，并将esp的低八位置零，可能存在三种情况：</p>
-<div class="table-container">
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>ESP低八位</th>
 <th>三句指令后</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>0</td>
 <td>esp == ebp</td>
 </tr>
-<tr>
+<tr class="even">
 <td>4</td>
 <td>ebp == esp + 4</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>8</td>
 <td>ebp == esp + 8</td>
 </tr>
 </tbody>
 </table>
-</div>
 <p>这里分情况讨论再次进入main函数时的场景，注意再次进入main函数后，栈帧重新生成，数组S重新分配：</p>
-<ol>
+<ol type="1">
 <li><p>ESP低8位为8：</p>
 <p><img src="/.com//image-20240416184120512.png" style="zoom:80%;"></p>
 <p>当运行至③时栈的结构如下：</p>
 <p><img src="/.com//image-20240416185626897.png" style="zoom: 67%;"></p>
 <p>可以看见由于esp比ebp开始就少了8字节，最后数组s的首地址距离返回地址108+4=112字节，payload2需要填充112字节。</p>
 <p>调试验证：</p>
-<p><img src="/.com//image-20240416190945992.png" alt></p>
+<p><img src="/.com//image-20240416190945992.png"></p>
 <p>从如果payload1从_start函数返回，则再次进入main函数时esp的后八位就为8，所以payload2需要填充112字节。</p>
-<ol>
+<ol start="2" type="1">
 <li><p>ESP低8位为0：</p>
 <p>同理，如果第八位为0则payload2就填充128-28+4=104字节。如果payload1从man函数返回时，就是这种情况：</p>
-<p><img src="/.com//image-20240416191538952.png" alt></p>
-</li>
+<p><img src="/.com//image-20240416191538952.png"></p></li>
 <li><p>ESP低8位为4：</p>
 <p>如果ESP低8位为4（虽然此题没有这种情况），可以预见payload2需要填充128+4-28+4=108字节，使用IDA调试更改这个值来验证：</p>
-<p><img src="/.com//image-20240416193303822.png" alt></p>
-<p><img src="/.com//image-20240416192551479.png" style="zoom: 67%;"></p>
-</li>
-</ol>
-</li>
+<p><img src="/.com//image-20240416193303822.png"></p>
+<p><img src="/.com//image-20240416192551479.png" style="zoom: 67%;"></p></li>
+</ol></li>
 </ol>
 <p>综上可以发现，造成不同payload长度的原因就是因为main函数开头构造栈帧时有一句特殊的<code>and esp, 0FFFFFFF0h</code>，从而导致不同的esp初始值需要不同的填充长度。</p>
-<h3 id="3-资料"><a href="#3-资料" class="headerlink" title="3. 资料"></a>3. 资料</h3><ul>
-<li><p>题目：<a href="https://github.com/ctf-wiki/ctf-challenges/raw/master/pwn/stackoverflow/ret2libc/ret2libc3/ret2libc3">ret2libc3-CTF Wiki</a></p>
-</li>
-<li><p>完整exp：</p>
-</li>
+<h3 id="资料">3. 资料</h3>
+<ul>
+<li><p>题目：<a href="https://github.com/ctf-wiki/ctf-challenges/raw/master/pwn/stackoverflow/ret2libc/ret2libc3/ret2libc3">ret2libc3-CTF
+Wiki</a></p></li>
+<li><p>完整exp：</p></li>
 </ul>
 <pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span> <span class="token operator">*</span>
 <span class="token keyword">from</span> LibcSearcher <span class="token keyword">import</span> LibcSearcher
@@ -151,10 +152,10 @@ sh<span class="token punctuation">.</span>sendline<span class="token punctuation
 
 sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ul>
-<li>References:<ul>
+<li>References:
+<ul>
 <li><a href="https://blog.csdn.net/AcSuccess/article/details/104335514">基本ROP之ret2libc3-CSDN博客</a></li>
-</ul>
-</li>
+</ul></li>
 </ul>
 ]]></content>
   </entry>
