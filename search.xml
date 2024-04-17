@@ -7,8 +7,8 @@
 ]]></content>
   </entry>
   <entry>
-    <title></title>
-    <url>/2024/04/16/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Ret2libc%E4%B8%AD%E7%9A%84main%E4%B8%8E_start%E5%87%BD%E6%95%B0/</url>
+    <title>(技术积累)Ret2libc中的main与_start函数</title>
+    <url>/2024/04/17/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Ret2libc%E4%B8%AD%E7%9A%84main%E4%B8%8E_start%E5%87%BD%E6%95%B0/</url>
     <content><![CDATA[<h1 id="ret2libc中的main与_start函数">Ret2libc中的main与_start函数</h1>
 <h3 id="题目背景">1. 题目背景</h3>
 <p>Ret2libc3练习(<a
@@ -161,6 +161,12 @@ href="https://blog.csdn.net/AcSuccess/article/details/104335514">基本ROP之ret
 </ul></li>
 </ul>
 ]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>pwn</tag>
+      </tags>
   </entry>
   <entry>
     <title>(技术积累)Fuzzm Heap&amp;Stack Instrumentation代码解析</title>
