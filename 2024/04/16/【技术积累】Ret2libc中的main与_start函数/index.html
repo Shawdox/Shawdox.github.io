@@ -18,23 +18,23 @@
 <meta property="og:site_name" content="Shaw">
 <meta property="og:description" content="Ret2libc中的main与_start函数 1. 题目背景 Ret2libc3练习(ret2libc3-CTF Wiki)是一个简单的return to libc练习题，其通过向程序输入两次payload来get shell，第一次payload用于获取__libc_start_main函数真实加载地址，第二次payload通过该加载地址计算出libc中的偏移，进而调用system函">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/.com//image-20240416143243963.png">
-<meta property="og:image" content="http://example.com/.com//image-20240416144221180.png">
-<meta property="og:image" content="http://example.com/.com//image-20240416144436368.png">
-<meta property="og:image" content="http://example.com/.com//image-20240416182706318.png">
-<meta property="og:image" content="http://example.com/.com//image-20240416182856052.png">
-<meta property="og:image" content="http://example.com/.com//image-20240416183119295.png">
-<meta property="og:image" content="http://example.com/.com//image-20240416184120512.png">
-<meta property="og:image" content="http://example.com/.com//image-20240416185626897.png">
-<meta property="og:image" content="http://example.com/.com//image-20240416190945992.png">
-<meta property="og:image" content="http://example.com/.com//image-20240416191538952.png">
-<meta property="og:image" content="http://example.com/.com//image-20240416193303822.png">
-<meta property="og:image" content="http://example.com/.com//image-20240416192551479.png">
+<meta property="og:image" content="http://example.com/figures/image-20240416143243963.png">
+<meta property="og:image" content="http://example.com/figures/image-20240416144221180.png">
+<meta property="og:image" content="http://example.com/figures/image-20240416144436368.png">
+<meta property="og:image" content="http://example.com/figures/image-20240416182706318.png">
+<meta property="og:image" content="http://example.com/figures/image-20240416182856052.png">
+<meta property="og:image" content="http://example.com/figures/image-20240416183119295.png">
+<meta property="og:image" content="http://example.com/figures/image-20240416184120512.png">
+<meta property="og:image" content="http://example.com/figures/image-20240416185626897.png">
+<meta property="og:image" content="http://example.com/figures/image-20240416190945992.png">
+<meta property="og:image" content="http://example.com/figures/image-20240416191538952.png">
+<meta property="og:image" content="http://example.com/figures/image-20240416193303822.png">
+<meta property="og:image" content="http://example.com/figures/image-20240416192551479.png">
 <meta property="article:published_time" content="2024-04-16T06:23:16.388Z">
-<meta property="article:modified_time" content="2024-04-16T11:45:34.604Z">
+<meta property="article:modified_time" content="2024-04-17T02:44:50.248Z">
 <meta property="article:author" content="Shaw">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/.com//image-20240416143243963.png">
+<meta name="twitter:image" content="http://example.com/figures/image-20240416143243963.png">
   
     <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
   
@@ -150,12 +150,13 @@
       
         <h1 id="ret2libc中的main与_start函数">Ret2libc中的main与_start函数</h1>
 <h3 id="题目背景">1. 题目背景</h3>
-<p>Ret2libc3练习(<a target="_blank" rel="noopener" href="https://github.com/ctf-wiki/ctf-challenges/raw/master/pwn/stackoverflow/ret2libc/ret2libc3/ret2libc3">ret2libc3-CTF
+<p>Ret2libc3练习(<a
+target="_blank" rel="noopener" href="https://github.com/ctf-wiki/ctf-challenges/raw/master/pwn/stackoverflow/ret2libc/ret2libc3/ret2libc3">ret2libc3-CTF
 Wiki</a>)是一个简单的return to
 libc练习题，其通过向程序输入两次payload来get
 shell，第一次payload用于获取<code>__libc_start_main</code>函数真实加载地址，第二次payload通过该加载地址计算出libc中的偏移，进而调用<code>system</code>函数：</p>
 <span id="more"></span>
-<p><img src="/.com//image-20240416143243963.png" style="zoom: 80%;"></p>
+<p><img src="/figures/image-20240416143243963.png" style="zoom: 80%;" /></p>
 <p>第一个payload:</p>
 <pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment">#!/usr/bin/env python</span>
 <span class="token keyword">from</span> pwn <span class="token keyword">import</span> <span class="token operator">*</span>
@@ -189,15 +190,15 @@ sh<span class="token punctuation">.</span>interactive<span class="token punctuat
 </blockquote>
 <h3 id="问题解析">2. 问题解析</h3>
 <p>网上的资料解析如下：</p>
-<p><img src="/.com//image-20240416144221180.png" style="zoom:80%;"></p>
+<p><img src="/figures/image-20240416144221180.png" style="zoom:80%;" /></p>
 <p>问题是，这个操作main函数里也有：</p>
-<p><img src="/.com//image-20240416144436368.png" style="zoom:80%;"></p>
+<p><img src="/figures/image-20240416144436368.png" style="zoom:80%;" /></p>
 <p>并且该解释也没有说明payload2具体填充时到底是怎么错位了8 bit的。</p>
 <p>我们注意到_start函数和main函数都有如下语句<code>and esp, 0FFFFFFF0h</code>：</p>
-<p><img src="/.com//image-20240416182706318.png" style="zoom:80%;"></p>
-<p><img src="/.com//image-20240416182856052.png" style="zoom:80%;"></p>
+<p><img src="/figures/image-20240416182706318.png" style="zoom:80%;" /></p>
+<p><img src="/figures/image-20240416182856052.png" style="zoom:80%;" /></p>
 <p>但由于从_start到main涉及到了新函数栈的调用以及<code>__libc_start_main</code>调用，_start函数中对esp第八位置零作用不大（可能）。</p>
-<p><img src="/.com//image-20240416183119295.png" style="zoom:67%;"></p>
+<p><img src="/figures/image-20240416183119295.png" style="zoom:67%;" /></p>
 <p>注意main函数开头的三句指令：</p>
 <pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">push    ebp
 mov     ebp, esp
@@ -228,27 +229,28 @@ and 	esp, 0FFFFFFF0h<span aria-hidden="true" class="line-numbers-rows"><span></s
 <p>这里分情况讨论再次进入main函数时的场景，注意再次进入main函数后，栈帧重新生成，数组S重新分配：</p>
 <ol type="1">
 <li><p>ESP低8位为8：</p>
-<p><img src="/.com//image-20240416184120512.png" style="zoom:80%;"></p>
+<p><img src="/figures/image-20240416184120512.png" style="zoom:80%;" /></p>
 <p>当运行至③时栈的结构如下：</p>
-<p><img src="/.com//image-20240416185626897.png" style="zoom: 67%;"></p>
+<p><img src="/figures/image-20240416185626897.png" style="zoom: 67%;" /></p>
 <p>可以看见由于esp比ebp开始就少了8字节，最后数组s的首地址距离返回地址108+4=112字节，payload2需要填充112字节。</p>
 <p>调试验证：</p>
-<p><img src="/.com//image-20240416190945992.png"></p>
+<p><img src="/figures/image-20240416190945992.png" /></p>
 <p>从如果payload1从_start函数返回，则再次进入main函数时esp的后八位就为8，所以payload2需要填充112字节。</p>
 <ol start="2" type="1">
 <li><p>ESP低8位为0：</p>
 <p>同理，如果第八位为0则payload2就填充128-28+4=104字节。如果payload1从man函数返回时，就是这种情况：</p>
-<p><img src="/.com//image-20240416191538952.png"></p></li>
+<p><img src="/figures/image-20240416191538952.png" /></p></li>
 <li><p>ESP低8位为4：</p>
 <p>如果ESP低8位为4（虽然此题没有这种情况），可以预见payload2需要填充128+4-28+4=108字节，使用IDA调试更改这个值来验证：</p>
-<p><img src="/.com//image-20240416193303822.png"></p>
-<p><img src="/.com//image-20240416192551479.png" style="zoom: 67%;"></p></li>
+<p><img src="/figures/image-20240416193303822.png" /></p>
+<p><img src="/figures/image-20240416192551479.png" style="zoom: 67%;" /></p></li>
 </ol></li>
 </ol>
 <p>综上可以发现，造成不同payload长度的原因就是因为main函数开头构造栈帧时有一句特殊的<code>and esp, 0FFFFFFF0h</code>，从而导致不同的esp初始值需要不同的填充长度。</p>
 <h3 id="资料">3. 资料</h3>
 <ul>
-<li><p>题目：<a target="_blank" rel="noopener" href="https://github.com/ctf-wiki/ctf-challenges/raw/master/pwn/stackoverflow/ret2libc/ret2libc3/ret2libc3">ret2libc3-CTF
+<li><p>题目：<a
+target="_blank" rel="noopener" href="https://github.com/ctf-wiki/ctf-challenges/raw/master/pwn/stackoverflow/ret2libc/ret2libc3/ret2libc3">ret2libc3-CTF
 Wiki</a></p></li>
 <li><p>完整exp：</p></li>
 </ul>
@@ -293,7 +295,8 @@ sh<span class="token punctuation">.</span>interactive<span class="token punctuat
 <ul>
 <li>References:
 <ul>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/AcSuccess/article/details/104335514">基本ROP之ret2libc3-CSDN博客</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/AcSuccess/article/details/104335514">基本ROP之ret2libc3-CSDN博客</a></li>
 </ul></li>
 </ul>
 
@@ -521,5 +524,20 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>
