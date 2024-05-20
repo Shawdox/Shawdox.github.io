@@ -9,14 +9,19 @@
   <entry>
     <title>(技术积累)WasmParser Examples</title>
     <url>/2024/04/24/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91WasmParser-Examples/</url>
-    <content><![CDATA[<h1 id="WasmParser-Examples解析"><a href="#WasmParser-Examples解析" class="headerlink" title="WasmParser Examples解析"></a>WasmParser Examples解析</h1><blockquote>
+    <content><![CDATA[<h1 id="wasmparser-examples解析">WasmParser Examples解析</h1>
+<blockquote>
 <p>针对Rust库Wasmparesr中给出的如下样例：</p>
-<p><a href="https://docs.rs/wasmparser/latest/wasmparser/struct.Parser.html#method.parse">https://docs.rs/wasmparser/latest/wasmparser/struct.Parser.html#method.parse</a></p>
-<p><a href="https://docs.rs/wasmparser/latest/wasmparser/struct.Parser.html#method.parse_all">https://docs.rs/wasmparser/latest/wasmparser/struct.Parser.html#method.parse_all</a></p>
+<p>https://docs.rs/wasmparser/latest/wasmparser/struct.Parser.html#method.parse</p>
+<p>https://docs.rs/wasmparser/latest/wasmparser/struct.Parser.html#method.parse_all</p>
 <p>的解析</p>
 </blockquote>
-<h2 id="1-相关数据结构"><a href="#1-相关数据结构" class="headerlink" title="1. 相关数据结构"></a>1. 相关数据结构</h2><h4 id="1-1-Payload"><a href="#1-1-Payload" class="headerlink" title="1.1 Payload"></a>1.1 Payload</h4><blockquote>
-<p>Payload表示可以从Wasm module/component中分析的所有chuck的枚举类型。</p>
+<span id="more"></span>
+<h2 id="相关数据结构">1. 相关数据结构</h2>
+<h4 id="payload">1.1 Payload</h4>
+<blockquote>
+<p>Payload表示可以从Wasm
+module/component中分析的所有chuck的枚举类型。</p>
 <p>对于许多section来说，整个section都是被一次性解析的，除了CodeSection（可以被流式解析）。</p>
 <p>Payload返回的每个Section并不一定都被parse了，可能会返回对应的Reader，需要通过该Reader进一步分解。</p>
 </blockquote>
@@ -78,7 +83,8 @@
     <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
     <span class="token class-name">End</span><span class="token punctuation">(</span><span class="token keyword">usize</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h4 id="1-2-Chunk"><a href="#1-2-Chunk" class="headerlink" title="1.2 Chunk"></a>1.2 Chunk</h4><blockquote>
+<h4 id="chunk">1.2 Chunk</h4>
+<blockquote>
 <p>表明是否需要更多数据 or 已经分析完毕。</p>
 <p>Parsed包含了已经分析的数据大小consumed和分析payload。</p>
 </blockquote>
@@ -89,8 +95,10 @@
         payload<span class="token punctuation">:</span> <span class="token class-name">Payload</span><span class="token operator">&lt;</span><span class="token lifetime-annotation symbol">'a</span><span class="token operator">></span><span class="token punctuation">,</span>
     <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="3-wasmparser-parse"><a href="#3-wasmparser-parse" class="headerlink" title="3. wasmparser::parse"></a>3. wasmparser::parse</h2><blockquote>
-<p>Source: <a href="https://docs.rs/wasmparser/latest/src/wasmparser/parser.rs.html#527-563">https://docs.rs/wasmparser/latest/src/wasmparser/parser.rs.html#527-563</a></p>
+<h2 id="wasmparserparse">3. wasmparser::parse</h2>
+<blockquote>
+<p>Source:
+https://docs.rs/wasmparser/latest/src/wasmparser/parser.rs.html#527-563</p>
 </blockquote>
 <pre class="line-numbers language-rust" data-language="rust"><code class="language-rust"><span class="token keyword">pub</span> <span class="token keyword">fn</span> <span class="token function-definition function">parse</span><span class="token operator">&lt;</span><span class="token lifetime-annotation symbol">'a</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token operator">&amp;</span><span class="token keyword">mut</span> <span class="token keyword">self</span><span class="token punctuation">,</span> data<span class="token punctuation">:</span> <span class="token operator">&amp;</span><span class="token lifetime-annotation symbol">'a</span> <span class="token punctuation">[</span><span class="token keyword">u8</span><span class="token punctuation">]</span><span class="token punctuation">,</span> eof<span class="token punctuation">:</span> <span class="token keyword">bool</span><span class="token punctuation">)</span> <span class="token punctuation">-></span> <span class="token class-name">Result</span><span class="token operator">&lt;</span><span class="token class-name">Chunk</span><span class="token operator">&lt;</span><span class="token lifetime-annotation symbol">'a</span><span class="token operator">>></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><code>parse</code>函数为结构体Parser的method：</p>
@@ -107,7 +115,8 @@
 <li><code>Chunk::NeedMoreData</code>：表明当前到达的数据还不足以分析；</li>
 <li><code>Chunk::Parsed</code>：到达的数据已经分析完成。</li>
 </ul>
-<h2 id="4-Example1-parser"><a href="#4-Example1-parser" class="headerlink" title="4. Example1: parser"></a>4. Example1: parser</h2><blockquote>
+<h2 id="example1-parser">4. Example1: parser</h2>
+<blockquote>
 <p>从std::io::Read中流式读取Wasm文件并逐步分析该文件</p>
 </blockquote>
 <pre class="line-numbers language-rust" data-language="rust"><code class="language-rust"><span class="token keyword">use</span> <span class="token namespace">std<span class="token punctuation">::</span>io<span class="token punctuation">::</span></span><span class="token class-name">Read</span><span class="token punctuation">;</span>
@@ -208,7 +217,8 @@
 
     <span class="token class-name">Ok</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="5-Example-2-parser-all"><a href="#5-Example-2-parser-all" class="headerlink" title="5. Example 2: parser_all"></a>5. Example 2: parser_all</h2><blockquote>
+<h2 id="example-2-parser_all">5. Example 2: parser_all</h2>
+<blockquote>
 <p>用于分析已经完整读进内存的Wasm module/component</p>
 </blockquote>
 <pre class="line-numbers language-rust" data-language="rust"><code class="language-rust"><span class="token keyword">use</span> <span class="token namespace">std<span class="token punctuation">::</span>io<span class="token punctuation">::</span></span><span class="token class-name">Read</span><span class="token punctuation">;</span>
