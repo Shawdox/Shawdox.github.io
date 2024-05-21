@@ -7,6 +7,114 @@
 ]]></content>
   </entry>
   <entry>
+    <title>(论文阅读)Finding the Dwarf - Recovering Precise Types from WebAssembly Binaries</title>
+    <url>/2024/05/20/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Finding-the-Dwarf---Recovering-Precise-Types-from-WebAssembly-Binaries/</url>
+    <content><![CDATA[<h1
+id="finding-the-dwarf-recovering-precise-types-from-webassembly-binaries">Finding
+the Dwarf: Recovering Precise Types from WebAssembly Binaries</h1>
+<blockquote>
+<p><strong>会议：</strong>PLDI'22</p>
+<p><strong>作者：</strong>Daniel Lehmann, Michael Pradel</p>
+</blockquote>
+<h2 id="问题背景">1. 问题背景</h2>
+<p>随着WebAssembly越来越受欢迎，在越来越多的应用领域应用，Wasm逆向的需求也越来越旺盛。例如，一个开发者可能回想了解其在项目中使用的第三方Wasm
+module，以更加了解其exported functions。</p>
+<p>理解一个WebAssembly binary的第一步就是理解函数的type
+signatures（参数、返回值）。由于type与理解底层代码高度相关，因此现有的native
+binary逆向工程工具都以type为目标 [12, 14,
+57]。开发人员的研究也表明，static type有助于理解代码。</p>
+<p>但Wasm
+binary中的函数type种类非常受限，wasm只支持i32/i64/f32/f64四种基本类型。一个i32可能是一个signed或者unsigned
+integer，又或者pointer。因此，如果能恢复高级语言中的type是非常有用的。</p>
+<p>恢复高级type的一种方法是基于 "经典 "data-flow anlysis或type
+inference，即根据程序中值的使用方式收集约束[12]。不过，这种方法实施起来比较复杂，而且通常需要建立在繁重的分析框架上，如
+BAP 或 CodeSurfer [43, 54]。支持
+WebAssembly，尤其是其略显特别的堆栈机[25]，将是一项非同小可的工作。</p>
+<span id="more"></span>
+<p>近年来，人们提出了多种learning-based的方法来预测其他语言的类型。这些方法考虑的是native架构的二进制文件
+[14, 27, 47] 或动态类型源语言，如 Python [5, 59] 和 JavaScript [28, 48,
+61]。这些方法探索了不同的输入表示法，如token sequences[28]、data flow
+graphs[5]和与代码相关的自然语言[48]，以及不同的模型架构和训练方法，如RNN[59]、变transformers[2]、图神经网络[5]和无监督预训练[57]。</p>
+<h2 id="method">2. Method</h2>
+<p>几乎所有的工作都将learning-based来预测type的任务看做一个多分类任务，但多分类任务面对目标种类太多时表现并不好。</p>
+<p>作者提出了SNOWWHITE，一个learning-based用于预测high-level function
+type的方法，其定义了一个自己的language来表达模型预测的type以避免多分类任务的target过多。type
+language从DEWAF调试信息中生成。</p>
+<p>给定类型语言后，SnowWhite
+会训练一个模型，将类型预测为一系列标记。也就是说，我们将类型预测问题表述为序列预测，而不是分类任务。序列预测的一个重要优势是，我们不必人为限制模型可选择的类型数量，而是支持（至少在原则上）无限多的类型。</p>
+<p><img src="/figures/image-20240521154208875.png" /></p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>WebAssembly&quot;</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>(论文阅读)Wasmati-An efficient static vulnerability scanner for WebAssembly</title>
+    <url>/2024/05/20/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Wasmati-An-efficient-static-vulnerability-scanner-for-WebAssembly/</url>
+    <content><![CDATA[<h1
+id="wasmati-an-efficient-static-vulnerability-scanner-for-webassembly">Wasmati:
+An efficient static vulnerability scanner for WebAssembly</h1>
+<blockquote>
+<p><strong>作者：</strong>Tiago Brito, Pedro Lopes, Nuno Santos</p>
+<p><strong>时间：</strong>2022.4</p>
+<p><strong>期刊：</strong>Computers &amp; Security(B刊)</p>
+<p><strong>Code：</strong><a
+href="https://github.com/wasmati/wasmati">wasmati/wasmati: A Generic and
+Efficient Code Property Graph Infrastructure forScanning Vulnerabilities
+in WebAssembly Code (github.com)</a></p>
+</blockquote>
+<h2 id="abstract">ABSTRACT</h2>
+<p>本文提出了Wasmati，一种static analysis tool用于寻找Wasm
+binary中的漏洞。其基于code property
+graph(CPG)。作者给出了Wasm中CPG的定义和生成方法，自定义了快速生成CPG的算法和一个查询语言Wasmati
+Query
+Language（WQL）。作者实现了10中不同的vulnerability查询，并在四种dateset和真实程序上做了测试。</p>
+<span id="more"></span>
+<h2 id="code-property-graphcpg">Code Property Graph(CPG)</h2>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240520154145504.png" /></p>
+<p>CPG包含了AST(<em>Abstract Syntax Tree</em>), CFG(<em>Control Flow
+Graph</em>), DDG(<em>Data Dependency Graph</em>)和CG(<em>Call
+Graph</em>)四种图。CG表示函数调用图，在Wasm程序间分析方面至关重要，它是一个简单的有向图，连接调用节点和相应被调用函数的根节点。在图5中看不到它，因为我们没有分析程序间的情况，但我们会在第4节中解释其重要性。</p>
+<p>原文提到：</p>
+<blockquote>
+<p>“In WebAssembly, buffer overflows happen when a buffer is incorrectly
+used inside a loop”</p>
+</blockquote>
+<p>在这个结论正确的前提下，做个查找buffer
+overflow的query需要在一个loop中查找：</p>
+<ul>
+<li>包含一个不断增长的local $i；</li>
+<li>包含一个使用了$i的store指令；</li>
+<li>缺乏一个判断$i边界的br_if指令。</li>
+</ul>
+<p>所以可以在loop中查找是否有使用了$i的<code>i32.add</code>和<code>store</code>指令，并查找是否存在判断$i边界的<code>br_if</code>指令即可。</p>
+<h2 id="wasmati">Wasmati</h2>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240520160636127.png" style="zoom:80%;" /></p>
+<p>整个Wasmati包括CPG的生成和查询两个步骤，其中查询可以自定义，关键在于查询模式的定义。下面是作者自定义的10中pattern:</p>
+<p><img
+src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240520160832672.png" /></p>
+<h3 id="query-for-uaf">Query for UAF</h3>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240520161446183.png" style="zoom: 67%;" /></p>
+<p>上图是作者定义的UAF查询pattern，其需要满足：</p>
+<ul>
+<li>node1 调用了malloc</li>
+<li>node2 调用了free</li>
+<li>node3在node2之后调用了node1返回的指针</li>
+</ul>
+<p>这里作者找到了所有可能的node2，并在最后一步排除不使用node1返回的地址的node3。</p>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>WebAssembly&quot;</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>(技术积累)WasmParser Examples</title>
     <url>/2024/04/24/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91WasmParser-Examples/</url>
     <content><![CDATA[<h1 id="wasmparser-examples解析">WasmParser Examples解析</h1>
