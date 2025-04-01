@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>(Syzkaller)How does Syzkaller generate a program (syscall sequences)? | Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="FuzzingSyzkallerKernel" />
+  
+  
+  
+    <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
+  
+  
+  <meta name="description" content="How does Syzkaller generate a program (syscall sequences)? Hey guys! It’s been a while since I last updated my blog. Of course, I haven’t been idle during this time. I successfully published a paper a">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(Syzkaller)How does Syzkaller generate a program (syscall sequences)?">
+<meta property="og:url" content="http://example.com/2025/03/23/2025323-(Syzkaller)How-does-Syzkaller-generate-a-program()/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="How does Syzkaller generate a program (syscall sequences)? Hey guys! It’s been a while since I last updated my blog. Of course, I haven’t been idle during this time. I successfully published a paper a">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2025/03/23/figures/image-20250331125757944.png">
+<meta property="article:published_time" content="2025-03-22T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-03-31T05:09:36.981Z">
+<meta property="article:author" content="Shaw">
+<meta property="article:tag" content="Fuzzing">
+<meta property="article:tag" content="Syzkaller">
+<meta property="article:tag" content="Kernel">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2025/03/23/figures/image-20250331125757944.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-2025323-(Syzkaller)How-does-Syzkaller-generate-a-program()" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      (Syzkaller)How does Syzkaller generate a program (syscall sequences)?
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2025/03/23/2025323-(Syzkaller)How-does-Syzkaller-generate-a-program()/" class="article-date">
+	  <time datetime="2025-03-22T16:00:00.000Z" itemprop="datePublished">三月 23, 2025</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="How-does-Syzkaller-generate-a-program-syscall-sequences"><a href="#How-does-Syzkaller-generate-a-program-syscall-sequences" class="headerlink" title="How does Syzkaller generate a program (syscall sequences)?"></a>How does Syzkaller generate a program (syscall sequences)?</h1><blockquote>
+<p>Hey guys! It’s been a while since I last updated my blog. Of course, I haven’t been idle during this time. I successfully published a paper and received two verbal PHD offers from CUHK. Everything is getting better and I love 2025!</p>
+<p>2025.3.23<br>Xiao</p>
+</blockquote>
+<span id="more"></span>
+<h2 id="Generating-a-Program"><a href="#Generating-a-Program" class="headerlink" title="Generating a Program"></a>Generating a Program</h2><p>Syzkaller uses a <code>ChoiceTable</code> to guide the random selection process of syscalls while ensuring the rationality of the related constraints. For example, for a syscall <code>accept()</code>:</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">accept</span><span class="token punctuation">(</span><span class="token keyword">int</span> sockfd<span class="token punctuation">,</span> <span class="token keyword">struct</span> <span class="token class-name">sockaddr</span> <span class="token operator">*</span>addr<span class="token punctuation">,</span> <span class="token class-name">socklen_t</span> <span class="token operator">*</span>addrlen<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>It needs to accept a socket file handler (<code>sockfd</code>), an address (<code>addr</code>) and a number representing the length of the address (<code>addrlen</code>). Apparently, <code>int sockfd</code> should be return value of some functions like <code>socket()</code>. A random integer would most likely not trigger any meaningful behavior. </p>
+<p>There comes the problem, <em>the actual range represented by the type of a parameter (<code>int</code>) in function signatures is often larger than the range of values practically meaningful (<code>sockfd</code>).</em> Function signatures are not suitable guidance. To this end, Syzkaller uses <a target="_blank" rel="noopener" href="https://github.com/google/syzkaller/blob/master/docs/syscall_descriptions_syntax.md">syz-lang</a> (Syscall description language) to specifically describe the source type, read/write direction and other attributes of the parameters of syscalls.</p>
+<pre class="line-numbers language-syz-lang" data-language="syz-lang"><code class="language-syz-lang">accept$inet(fd sock_in, peer ptr[out, sockaddr_in, opt],
+            peerlen ptr[inout, len[peer, int32]]) sock_in<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<hr>
+<p>I’m not going to be a syz-lang expert here so let’s dive into the code. Syzkaller use <code>Generate()</code> to generate specific length, randomly chosen syscall sequences(<code>Prog</code>):</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// prog/generation.go</span>
+<span class="token comment">// Generate generates a random program with ncalls calls.</span>
+<span class="token comment">// ct contains a set of allowed syscalls, if nil all syscalls are used.</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>target <span class="token operator">*</span>Target<span class="token punctuation">)</span> <span class="token function">Generate</span><span class="token punctuation">(</span>rs rand<span class="token punctuation">.</span>Source<span class="token punctuation">,</span> ncalls <span class="token builtin">int</span><span class="token punctuation">,</span> ct <span class="token operator">*</span>ChoiceTable<span class="token punctuation">)</span> <span class="token operator">*</span>Prog <span class="token punctuation">&#123;</span>
+	p <span class="token operator">:=</span> <span class="token operator">&amp;</span>Prog<span class="token punctuation">&#123;</span>
+		Target<span class="token punctuation">:</span> target<span class="token punctuation">,</span>
+	<span class="token punctuation">&#125;</span>
+	r <span class="token operator">:=</span> <span class="token function">newRand</span><span class="token punctuation">(</span>target<span class="token punctuation">,</span> rs<span class="token punctuation">)</span>
+	s <span class="token operator">:=</span> <span class="token function">newState</span><span class="token punctuation">(</span>target<span class="token punctuation">,</span> ct<span class="token punctuation">,</span> <span class="token boolean">nil</span><span class="token punctuation">)</span>
+	<span class="token keyword">for</span> <span class="token function">len</span><span class="token punctuation">(</span>p<span class="token punctuation">.</span>Calls<span class="token punctuation">)</span> <span class="token operator">&lt;</span> ncalls <span class="token punctuation">&#123;</span>
+		calls <span class="token operator">:=</span> r<span class="token punctuation">.</span><span class="token function">generateCall</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> p<span class="token punctuation">,</span> <span class="token function">len</span><span class="token punctuation">(</span>p<span class="token punctuation">.</span>Calls<span class="token punctuation">)</span><span class="token punctuation">)</span>
+		<span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> c <span class="token operator">:=</span> <span class="token keyword">range</span> calls <span class="token punctuation">&#123;</span>
+			s<span class="token punctuation">.</span><span class="token function">analyze</span><span class="token punctuation">(</span>c<span class="token punctuation">)</span>
+			p<span class="token punctuation">.</span>Calls <span class="token operator">=</span> <span class="token function">append</span><span class="token punctuation">(</span>p<span class="token punctuation">.</span>Calls<span class="token punctuation">,</span> c<span class="token punctuation">)</span>
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token comment">// For the last generated call we could get additional calls that create</span>
+	<span class="token comment">// resources and overflow ncalls. Remove some of these calls.</span>
+	<span class="token comment">// The resources in the last call will be replaced with the default values,</span>
+	<span class="token comment">// which is exactly what we want.</span>
+	<span class="token keyword">for</span> <span class="token function">len</span><span class="token punctuation">(</span>p<span class="token punctuation">.</span>Calls<span class="token punctuation">)</span> <span class="token operator">></span> ncalls <span class="token punctuation">&#123;</span>
+		p<span class="token punctuation">.</span><span class="token function">RemoveCall</span><span class="token punctuation">(</span>ncalls <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	p<span class="token punctuation">.</span><span class="token function">sanitizeFix</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	p<span class="token punctuation">.</span><span class="token function">debugValidate</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">return</span> p
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>The logic is simple. It continually generate one or more <code>Calls</code> and add it/them to the end of sequence until it meets the length. <code>ChoiceTable</code> is the key struct to direct the syscall selection:</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// ChooseTable allows to do a weighted choice of a syscall for a given syscall</span>
+<span class="token comment">// based on call-to-call priorities and a set of enabled and generatable syscalls.</span>
+<span class="token keyword">type</span> ChoiceTable <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+	target          <span class="token operator">*</span>Target
+	runs            <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">int32</span>
+	calls           <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">*</span>Syscall
+	noGenerateCalls <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">int</span><span class="token punctuation">]</span><span class="token builtin">bool</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><code>ct.runs</code> maintaions an integer two-dimensional array, where each value represents the probability of achieving new coverage by appending syscall Y to a syscall sequence containing X. When choosing a new syscall, Syzkaller needs to determine a <em>biasCall</em> within the existing sequence to select which row in the choice table:</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>r <span class="token operator">*</span>randGen<span class="token punctuation">)</span> <span class="token function">generateCall</span><span class="token punctuation">(</span>s <span class="token operator">*</span>state<span class="token punctuation">,</span> p <span class="token operator">*</span>Prog<span class="token punctuation">,</span> insertionPoint <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">*</span>Call <span class="token punctuation">&#123;</span>
+	biasCall <span class="token operator">:=</span> <span class="token operator">-</span><span class="token number">1</span>
+	<span class="token keyword">if</span> insertionPoint <span class="token operator">></span> <span class="token number">0</span> <span class="token punctuation">&#123;</span>
+		<span class="token comment">// Choosing the base call is based on the insertion point of the new calls sequence.</span>
+		insertionCall <span class="token operator">:=</span> p<span class="token punctuation">.</span>Calls<span class="token punctuation">[</span>r<span class="token punctuation">.</span><span class="token function">Intn</span><span class="token punctuation">(</span>insertionPoint<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">.</span>Meta
+		<span class="token keyword">if</span> <span class="token operator">!</span>insertionCall<span class="token punctuation">.</span>Attrs<span class="token punctuation">.</span>NoGenerate <span class="token punctuation">&#123;</span>
+			<span class="token comment">// We must be careful not to bias towards a non-generatable call.</span>
+			biasCall <span class="token operator">=</span> insertionCall<span class="token punctuation">.</span>ID
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span>
+    <span class="token comment">// get a new call from ct</span>
+	idx <span class="token operator">:=</span> s<span class="token punctuation">.</span>ct<span class="token punctuation">.</span><span class="token function">choose</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span>Rand<span class="token punctuation">,</span> biasCall<span class="token punctuation">)</span>
+	meta <span class="token operator">:=</span> r<span class="token punctuation">.</span>target<span class="token punctuation">.</span>Syscalls<span class="token punctuation">[</span>idx<span class="token punctuation">]</span>
+	<span class="token keyword">return</span> r<span class="token punctuation">.</span><span class="token function">generateParticularCall</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> meta<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><code>generateCall</code> gets <code>biasCall</code> from args. If <code>biasCall</code> is -1 Syzkaller will choose a random bias call from existing sequence. </p>
+<p><img src="../figures/image-20250331125757944.png" style="zoom: 50%;" /></p>
+<p>Syzkaller continuously selects new calls from the choice table and generates arguments for them. Due to argument dependency constraints, the generated arguments may include additional calls (green one in fig). Syzkaller then incorporates these calls into the sequence to produce valid arguments. All types and the second return value of <code>generate(r,s,dir)</code>:</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Return2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><em>ResourceType</em></strong></td>
+<td>Return value from socket, mmap, fork,…</td>
+<td><strong>nil/calls</strong></td>
+</tr>
+<tr>
+<td><em>BufferType</em></td>
+<td>Buffer</td>
+<td>nil</td>
+</tr>
+<tr>
+<td><u><em>VmaType</em></u></td>
+<td>Virtual memory address, like <code>addr</code> in  <code>mmap(addr, size, ...)</code></td>
+<td>nil</td>
+</tr>
+<tr>
+<td><u><em>FlagsType</em></u></td>
+<td><code>O_RDWR</code>, <code>O_CREAT</code>, <code>SOCK_STREAM</code>, <code>SOCK_NONBLOCK</code>, …</td>
+<td>nil</td>
+</tr>
+<tr>
+<td><u><em>ConstType</em></u></td>
+<td>Const value</td>
+<td>nil</td>
+</tr>
+<tr>
+<td><u><em>IntType</em></u></td>
+<td>Int variables</td>
+<td>nil</td>
+</tr>
+<tr>
+<td><u><em>ProcType</em></u></td>
+<td>pid, core_id, …</td>
+<td>nil</td>
+</tr>
+<tr>
+<td><strong><em>ArrayType</em></strong></td>
+<td>Array, must refer other type resources</td>
+<td><strong>nil/calls</strong></td>
+</tr>
+<tr>
+<td><strong><em>StructType</em></strong></td>
+<td>Struct</td>
+<td><strong>nil/calls</strong></td>
+</tr>
+<tr>
+<td><strong><em>UnionType</em></strong></td>
+<td>Union</td>
+<td><strong>nil/calls</strong></td>
+</tr>
+<tr>
+<td><strong><em>PtrType</em></strong></td>
+<td>Pointer</td>
+<td><strong>nil/calls</strong></td>
+</tr>
+<tr>
+<td><em>LenType</em></td>
+<td>Length</td>
+<td>nil</td>
+</tr>
+<tr>
+<td><em>CsumType</em></td>
+<td>Checksum type, usually used in network function</td>
+<td>nil</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="Generating-Arguments-for-a-Call"><a href="#Generating-Arguments-for-a-Call" class="headerlink" title="Generating Arguments for a Call"></a>Generating Arguments for a Call</h2><p>There are five ways to generate args for a given syscall: </p>
+<h3 id="target-SpecialTypes"><a href="#target-SpecialTypes" class="headerlink" title="target.SpecialTypes"></a>target.SpecialTypes</h3><p>generateArgImpl:</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>r <span class="token operator">*</span>randGen<span class="token punctuation">)</span> <span class="token function">generateArgImpl</span><span class="token punctuation">(</span>s <span class="token operator">*</span>state<span class="token punctuation">,</span> typ Type<span class="token punctuation">,</span> dir Dir<span class="token punctuation">,</span> ignoreSpecial <span class="token builtin">bool</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>arg Arg<span class="token punctuation">,</span> calls <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">*</span>Call<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">if</span> dir <span class="token operator">==</span> DirOut <span class="token punctuation">&#123;</span>
+		<span class="token comment">// No need to generate something interesting for output scalar arguments.</span>
+		<span class="token comment">// But we still need to generate the argument itself so that it can be referenced</span>
+		<span class="token comment">// in subsequent calls. For the same reason we do generate pointer/array/struct</span>
+		<span class="token comment">// output arguments (their elements can be referenced in subsequent calls).</span>
+		<span class="token keyword">switch</span> typ<span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token keyword">type</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">case</span> <span class="token operator">*</span>IntType<span class="token punctuation">,</span> <span class="token operator">*</span>FlagsType<span class="token punctuation">,</span> <span class="token operator">*</span>ConstType<span class="token punctuation">,</span> <span class="token operator">*</span>ProcType<span class="token punctuation">,</span> <span class="token operator">*</span>VmaType<span class="token punctuation">:</span>
+			<span class="token keyword">return</span> typ<span class="token punctuation">.</span><span class="token function">DefaultArg</span><span class="token punctuation">(</span>dir<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">nil</span>
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span>
+
+	<span class="token keyword">if</span> typ<span class="token punctuation">.</span><span class="token function">Optional</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> r<span class="token punctuation">.</span><span class="token function">oneOf</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">if</span> res<span class="token punctuation">,</span> ok <span class="token operator">:=</span> typ<span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token operator">*</span>ResourceType<span class="token punctuation">)</span><span class="token punctuation">;</span> ok <span class="token punctuation">&#123;</span>
+			v <span class="token operator">:=</span> res<span class="token punctuation">.</span>Desc<span class="token punctuation">.</span>Values<span class="token punctuation">[</span>r<span class="token punctuation">.</span><span class="token function">Intn</span><span class="token punctuation">(</span><span class="token function">len</span><span class="token punctuation">(</span>res<span class="token punctuation">.</span>Desc<span class="token punctuation">.</span>Values<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
+			<span class="token keyword">return</span> <span class="token function">MakeResultArg</span><span class="token punctuation">(</span>typ<span class="token punctuation">,</span> dir<span class="token punctuation">,</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> v<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">nil</span>
+		<span class="token punctuation">&#125;</span>
+		<span class="token keyword">return</span> typ<span class="token punctuation">.</span><span class="token function">DefaultArg</span><span class="token punctuation">(</span>dir<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">nil</span>
+	<span class="token punctuation">&#125;</span>
+
+	<span class="token comment">// Allow infinite recursion for optional pointers.</span>
+	<span class="token keyword">if</span> pt<span class="token punctuation">,</span> ok <span class="token operator">:=</span> typ<span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token operator">*</span>PtrType<span class="token punctuation">)</span><span class="token punctuation">;</span> ok <span class="token operator">&amp;&amp;</span> typ<span class="token punctuation">.</span><span class="token function">Optional</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">switch</span> pt<span class="token punctuation">.</span>Elem<span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token keyword">type</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">case</span> <span class="token operator">*</span>StructType<span class="token punctuation">,</span> <span class="token operator">*</span>ArrayType<span class="token punctuation">,</span> <span class="token operator">*</span>UnionType<span class="token punctuation">:</span>
+			name <span class="token operator">:=</span> pt<span class="token punctuation">.</span>Elem<span class="token punctuation">.</span><span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+			r<span class="token punctuation">.</span>recDepth<span class="token punctuation">[</span>name<span class="token punctuation">]</span><span class="token operator">++</span>
+			<span class="token keyword">defer</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+				r<span class="token punctuation">.</span>recDepth<span class="token punctuation">[</span>name<span class="token punctuation">]</span><span class="token operator">--</span>
+				<span class="token keyword">if</span> r<span class="token punctuation">.</span>recDepth<span class="token punctuation">[</span>name<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token number">0</span> <span class="token punctuation">&#123;</span>
+					<span class="token function">delete</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span>recDepth<span class="token punctuation">,</span> name<span class="token punctuation">)</span>
+				<span class="token punctuation">&#125;</span>
+			<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+			<span class="token keyword">if</span> r<span class="token punctuation">.</span>recDepth<span class="token punctuation">[</span>name<span class="token punctuation">]</span> <span class="token operator">>=</span> <span class="token number">3</span> <span class="token punctuation">&#123;</span>
+				<span class="token keyword">return</span> <span class="token function">MakeSpecialPointerArg</span><span class="token punctuation">(</span>typ<span class="token punctuation">,</span> dir<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">nil</span>
+			<span class="token punctuation">&#125;</span>
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span>
+
+	<span class="token keyword">if</span> <span class="token operator">!</span>ignoreSpecial <span class="token operator">&amp;&amp;</span> dir <span class="token operator">!=</span> DirOut <span class="token punctuation">&#123;</span>
+		<span class="token keyword">switch</span> typ<span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token keyword">type</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">case</span> <span class="token operator">*</span>StructType<span class="token punctuation">,</span> <span class="token operator">*</span>UnionType<span class="token punctuation">:</span>
+			<span class="token keyword">if</span> gen <span class="token operator">:=</span> r<span class="token punctuation">.</span>target<span class="token punctuation">.</span>SpecialTypes<span class="token punctuation">[</span>typ<span class="token punctuation">.</span><span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">;</span> gen <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+				fmt<span class="token punctuation">.</span><span class="token function">Print</span><span class="token punctuation">(</span><span class="token string">"[xiao debug] 3\n"</span><span class="token punctuation">)</span>
+				<span class="token keyword">return</span> <span class="token function">gen</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>Gen<span class="token punctuation">&#123;</span>r<span class="token punctuation">,</span> s<span class="token punctuation">&#125;</span><span class="token punctuation">,</span> typ<span class="token punctuation">,</span> dir<span class="token punctuation">,</span> <span class="token boolean">nil</span><span class="token punctuation">)</span>
+			<span class="token punctuation">&#125;</span>
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span>
+
+	<span class="token keyword">return</span> typ<span class="token punctuation">.</span><span class="token function">generate</span><span class="token punctuation">(</span>r<span class="token punctuation">,</span> s<span class="token punctuation">,</span> dir<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>This function has five returns, three of which return <code>nil</code> calls, while the other two may not. </p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">return</span> <span class="token function">gen</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>Gen<span class="token punctuation">&#123;</span>r<span class="token punctuation">,</span> s<span class="token punctuation">&#125;</span><span class="token punctuation">,</span> typ<span class="token punctuation">,</span> dir<span class="token punctuation">,</span> <span class="token boolean">nil</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><code>gen</code> from <code>r.target.SpecialTypes[typ.Name()]</code> is one of special generating functions provided by specific target system (linux, etc.). In <code>sys/linux/init.go</code>, there definitions show as follows: </p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// sys/linux/init.go:57</span>
+target<span class="token punctuation">.</span>SpecialTypes <span class="token operator">=</span> <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token keyword">func</span><span class="token punctuation">(</span>g <span class="token operator">*</span>prog<span class="token punctuation">.</span>Gen<span class="token punctuation">,</span> typ prog<span class="token punctuation">.</span>Type<span class="token punctuation">,</span> dir prog<span class="token punctuation">.</span>Dir<span class="token punctuation">,</span> old prog<span class="token punctuation">.</span>Arg<span class="token punctuation">)</span> <span class="token punctuation">(</span>
+		prog<span class="token punctuation">.</span>Arg<span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">*</span>prog<span class="token punctuation">.</span>Call<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+		<span class="token string">"timespec"</span><span class="token punctuation">:</span>                  arch<span class="token punctuation">.</span>generateTimespec<span class="token punctuation">,</span>
+		<span class="token string">"timeval"</span><span class="token punctuation">:</span>                   arch<span class="token punctuation">.</span>generateTimespec<span class="token punctuation">,</span>
+		<span class="token string">"sockaddr_alg"</span><span class="token punctuation">:</span>              arch<span class="token punctuation">.</span>generateSockaddrAlg<span class="token punctuation">,</span>
+		<span class="token string">"alg_name"</span><span class="token punctuation">:</span>                  arch<span class="token punctuation">.</span>generateAlgName<span class="token punctuation">,</span>
+		<span class="token string">"alg_aead_name"</span><span class="token punctuation">:</span>             arch<span class="token punctuation">.</span>generateAlgAeadName<span class="token punctuation">,</span>
+		<span class="token string">"alg_hash_name"</span><span class="token punctuation">:</span>             arch<span class="token punctuation">.</span>generateAlgHashName<span class="token punctuation">,</span>
+		<span class="token string">"alg_skcipher_name"</span><span class="token punctuation">:</span>         arch<span class="token punctuation">.</span>generateAlgSkcipherhName<span class="token punctuation">,</span>
+		<span class="token string">"ipt_replace"</span><span class="token punctuation">:</span>               arch<span class="token punctuation">.</span>generateIptables<span class="token punctuation">,</span>
+		<span class="token string">"ip6t_replace"</span><span class="token punctuation">:</span>              arch<span class="token punctuation">.</span>generateIptables<span class="token punctuation">,</span>
+		<span class="token string">"arpt_replace"</span><span class="token punctuation">:</span>              arch<span class="token punctuation">.</span>generateArptables<span class="token punctuation">,</span>
+		<span class="token string">"ebt_replace"</span><span class="token punctuation">:</span>               arch<span class="token punctuation">.</span>generateEbtables<span class="token punctuation">,</span>
+		<span class="token string">"usb_device_descriptor"</span><span class="token punctuation">:</span>     arch<span class="token punctuation">.</span>generateUsbDeviceDescriptor<span class="token punctuation">,</span>
+		<span class="token string">"usb_device_descriptor_hid"</span><span class="token punctuation">:</span> arch<span class="token punctuation">.</span>generateUsbHidDeviceDescriptor<span class="token punctuation">,</span>
+	<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>If the args of a syscall is a special value type like timespec, ip tables, etc., these generator functions can help produce more reasonable parameters.</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Desciption</th>
+<th>Return2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>generateTimespec</em></td>
+<td><code>struct timespec &#123; time_t tv_sec = 0;     long tv_nsec = 10_000_000; // 10ms &#125;;</code></td>
+<td>calls</td>
+</tr>
+<tr>
+<td><em>generateSockaddrAlg</em></td>
+<td></td>
+<td>nil/calls</td>
+</tr>
+<tr>
+<td><em>generateAlgName</em></td>
+<td></td>
+<td>nil</td>
+</tr>
+<tr>
+<td><em>generateAlgAeadName</em></td>
+<td></td>
+<td>nil</td>
+</tr>
+<tr>
+<td><em>generateAlgHashName</em></td>
+<td></td>
+<td>nil</td>
+</tr>
+<tr>
+<td><em>generateAlgSkcipherhName</em></td>
+<td></td>
+<td>nil</td>
+</tr>
+<tr>
+<td><em>generateIptables</em></td>
+<td></td>
+<td>nil/calls</td>
+</tr>
+<tr>
+<td><em>generateArptables</em></td>
+<td></td>
+<td>nil/calls</td>
+</tr>
+<tr>
+<td><em>generateEbtables</em></td>
+<td></td>
+<td>nil/calls</td>
+</tr>
+<tr>
+<td>generateUsbDeviceDescriptor</td>
+<td></td>
+<td>nil/calls</td>
+</tr>
+<tr>
+<td>generateUsbHidDeviceDescriptor</td>
+<td></td>
+<td>nil/calls</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>PtrType.generate:</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>a <span class="token operator">*</span>PtrType<span class="token punctuation">)</span> <span class="token function">generate</span><span class="token punctuation">(</span>r <span class="token operator">*</span>randGen<span class="token punctuation">,</span> s <span class="token operator">*</span>state<span class="token punctuation">,</span> dir Dir<span class="token punctuation">)</span> <span class="token punctuation">(</span>arg Arg<span class="token punctuation">,</span> calls <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">*</span>Call<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token comment">// The resource we are trying to generate may be in the pointer,</span>
+	<span class="token comment">// so don't try to create an empty special pointer during resource generation.</span>
+	<span class="token keyword">if</span> <span class="token operator">!</span>r<span class="token punctuation">.</span>inGenerateResource <span class="token operator">&amp;&amp;</span> r<span class="token punctuation">.</span><span class="token function">oneOf</span><span class="token punctuation">(</span><span class="token number">1000</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		index <span class="token operator">:=</span> r<span class="token punctuation">.</span><span class="token function">rand</span><span class="token punctuation">(</span><span class="token function">len</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span>target<span class="token punctuation">.</span>SpecialPointers<span class="token punctuation">)</span><span class="token punctuation">)</span>
+		<span class="token keyword">return</span> <span class="token function">MakeSpecialPointerArg</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> dir<span class="token punctuation">,</span> index<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">nil</span>
+	<span class="token punctuation">&#125;</span>
+	inner<span class="token punctuation">,</span> calls <span class="token operator">:=</span> r<span class="token punctuation">.</span><span class="token function">generateArg</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> a<span class="token punctuation">.</span>Elem<span class="token punctuation">,</span> a<span class="token punctuation">.</span>ElemDir<span class="token punctuation">)</span>
+	arg <span class="token operator">=</span> r<span class="token punctuation">.</span><span class="token function">allocAddr</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> a<span class="token punctuation">,</span> dir<span class="token punctuation">,</span> inner<span class="token punctuation">.</span><span class="token function">Size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> inner<span class="token punctuation">)</span>
+	<span class="token keyword">return</span> arg<span class="token punctuation">,</span> calls
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="References"><a href="#References" class="headerlink" title="References"></a>References</h3><p>- </p>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kernel/" rel="tag">Kernel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Syzkaller/" rel="tag">Syzkaller</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2025/03/31/2025331-(Syzkaller)How-does-Syz-manager-synchronize-information-with-fuzzers/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          (Syzkaller)How does Syz-manager synchronize information with fuzzers?
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2024/05/20/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Finding-the-Dwarf---Recovering-Precise-Types-from-WebAssembly-Binaries/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">(论文阅读)Finding the Dwarf - Recovering Precise Types from WebAssembly Binaries</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#How-does-Syzkaller-generate-a-program-syscall-sequences"><span class="nav-number">1.</span> <span class="nav-text">How does Syzkaller generate a program (syscall sequences)?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Generating-a-Program"><span class="nav-number">1.1.</span> <span class="nav-text">Generating a Program</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Generating-Arguments-for-a-Call"><span class="nav-number">1.2.</span> <span class="nav-text">Generating Arguments for a Call</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#target-SpecialTypes"><span class="nav-number">1.2.1.</span> <span class="nav-text">target.SpecialTypes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#References"><span class="nav-number">1.2.2.</span> <span class="nav-text">References</span></a></li></ol></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+<footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2025 Shaw All Rights Reserved.
+        
+          <span id="busuanzi_container_site_pv">
+            本站总访问量<span id="busuanzi_value_site_pv"></span>次
+          </span>
+          <span class="post-meta-divider">|</span>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            本站访客数<span id="busuanzi_value_site_uv"></span>人
+          </span>
+          <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+
+  
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'true', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+<!-- Gaug.es Analytics -->
+<script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', 'true');
+    t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+    t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+<!-- End Gaug.es Analytics -->
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+	<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2439014eb270056ee1808a49956fe114";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<!-- Tencent Analytics -->
+	<script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId={{ theme.tencent_analytics }}";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+<!-- End Tencent Analytics -->
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>

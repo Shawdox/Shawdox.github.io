@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>(Syzkaller)How does Syz-manager synchronize information with fuzzers? | Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="FuzzingSyzkallerKernel" />
+  
+  
+  
+    <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
+  
+  
+  <meta name="description" content="How does Syz-manager synchronize statistics information with fuzzers? How does Syz-manager gets crashes, total execution times, … , during the fuzzing process?">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(Syzkaller)How does Syz-manager synchronize information with fuzzers?">
+<meta property="og:url" content="http://example.com/2025/03/31/2025331-(Syzkaller)How-does-Syz-manager-synchronize-information-with-fuzzers/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="How does Syz-manager synchronize statistics information with fuzzers? How does Syz-manager gets crashes, total execution times, … , during the fuzzing process?">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2025/03/31/figures/image-20250331142702307.png">
+<meta property="og:image" content="http://example.com/2025/03/31/figures/image-20250331144001758.png">
+<meta property="og:image" content="http://example.com/2025/03/31/figures/image-20250401143310513.png">
+<meta property="article:published_time" content="2025-03-30T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-04-01T06:37:32.287Z">
+<meta property="article:author" content="Shaw">
+<meta property="article:tag" content="Fuzzing">
+<meta property="article:tag" content="Syzkaller">
+<meta property="article:tag" content="Kernel">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2025/03/31/figures/image-20250331142702307.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            <div class="site-description">积沙成塔</div>
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-2025331-(Syzkaller)How-does-Syz-manager-synchronize-information-with-fuzzers" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      (Syzkaller)How does Syz-manager synchronize information with fuzzers?
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2025/03/31/2025331-(Syzkaller)How-does-Syz-manager-synchronize-information-with-fuzzers/" class="article-date">
+	  <time datetime="2025-03-30T16:00:00.000Z" itemprop="datePublished">三月 31, 2025</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="How-does-Syz-manager-synchronize-statistics-information-with-fuzzers"><a href="#How-does-Syz-manager-synchronize-statistics-information-with-fuzzers" class="headerlink" title="How does Syz-manager synchronize statistics information with fuzzers?"></a>How does Syz-manager synchronize statistics information with fuzzers?</h1><blockquote>
+<p>How does Syz-manager gets crashes, total execution times, … , during the fuzzing process?</p>
+</blockquote>
+<span id="more"></span>
+<p>Manager uses integer <code>Stat</code> as info unit and defines the following methods:</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Stat <span class="token builtin">uint64</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>s <span class="token operator">*</span>Stat<span class="token punctuation">)</span> <span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">uint64</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">return</span> atomic<span class="token punctuation">.</span><span class="token function">LoadUint64</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token builtin">uint64</span><span class="token punctuation">)</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>s <span class="token operator">*</span>Stat<span class="token punctuation">)</span> <span class="token function">inc</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	s<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>s <span class="token operator">*</span>Stat<span class="token punctuation">)</span> <span class="token function">add</span><span class="token punctuation">(</span>v <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	atomic<span class="token punctuation">.</span><span class="token function">AddUint64</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token builtin">uint64</span><span class="token punctuation">)</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">uint64</span><span class="token punctuation">(</span>v<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>s <span class="token operator">*</span>Stat<span class="token punctuation">)</span> <span class="token function">set</span><span class="token punctuation">(</span>v <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	atomic<span class="token punctuation">.</span><span class="token function">StoreUint64</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token builtin">uint64</span><span class="token punctuation">)</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">uint64</span><span class="token punctuation">(</span>v<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Manager mantains the <code>Stats</code> representing the statistics info:</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Stats <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+	crashes             Stat
+	crashTypes          Stat
+	crashSuppressed     Stat
+	vmRestarts          Stat
+	newInputs           Stat
+	rotatedInputs       Stat
+	execTotal           Stat
+	hubSendProgAdd      Stat
+	hubSendProgDel      Stat
+	hubSendRepro        Stat
+	hubRecvProg         Stat
+	hubRecvProgDrop     Stat
+	hubRecvRepro        Stat
+	hubRecvReproDrop    Stat
+	corpusCover         Stat
+	corpusCoverFiltered Stat
+	corpusSignal        Stat
+	maxSignal           Stat
+
+	mu         sync<span class="token punctuation">.</span>Mutex
+	namedStats <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token builtin">uint64</span>
+	haveHub    <span class="token builtin">bool</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>When starting the manager, a goroutine will be set:</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">//manager.go:RunManager()</span>
+<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">for</span> lastTime <span class="token operator">:=</span> time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">;</span> <span class="token punctuation">&#123;</span>
+        time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">10</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+        now <span class="token operator">:=</span> time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        diff <span class="token operator">:=</span> now<span class="token punctuation">.</span><span class="token function">Sub</span><span class="token punctuation">(</span>lastTime<span class="token punctuation">)</span>
+        lastTime <span class="token operator">=</span> now
+        mgr<span class="token punctuation">.</span>mu<span class="token punctuation">.</span><span class="token function">Lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">if</span> mgr<span class="token punctuation">.</span>firstConnect<span class="token punctuation">.</span><span class="token function">IsZero</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            mgr<span class="token punctuation">.</span>mu<span class="token punctuation">.</span><span class="token function">Unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token keyword">continue</span>
+        <span class="token punctuation">&#125;</span>
+        mgr<span class="token punctuation">.</span>fuzzingTime <span class="token operator">+=</span> diff <span class="token operator">*</span> time<span class="token punctuation">.</span><span class="token function">Duration</span><span class="token punctuation">(</span>atomic<span class="token punctuation">.</span><span class="token function">LoadUint32</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>mgr<span class="token punctuation">.</span>numFuzzing<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        executed <span class="token operator">:=</span> mgr<span class="token punctuation">.</span>stats<span class="token punctuation">.</span>execTotal<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        crashes <span class="token operator">:=</span> mgr<span class="token punctuation">.</span>stats<span class="token punctuation">.</span>crashes<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        corpusCover <span class="token operator">:=</span> mgr<span class="token punctuation">.</span>stats<span class="token punctuation">.</span>corpusCover<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        corpusSignal <span class="token operator">:=</span> mgr<span class="token punctuation">.</span>stats<span class="token punctuation">.</span>corpusSignal<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        maxSignal <span class="token operator">:=</span> mgr<span class="token punctuation">.</span>stats<span class="token punctuation">.</span>maxSignal<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        triageQLen <span class="token operator">:=</span> <span class="token function">len</span><span class="token punctuation">(</span>mgr<span class="token punctuation">.</span>candidates<span class="token punctuation">)</span>
+        mgr<span class="token punctuation">.</span>mu<span class="token punctuation">.</span><span class="token function">Unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        numReproducing <span class="token operator">:=</span> atomic<span class="token punctuation">.</span><span class="token function">LoadUint32</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>mgr<span class="token punctuation">.</span>numReproducing<span class="token punctuation">)</span>
+        numFuzzing <span class="token operator">:=</span> atomic<span class="token punctuation">.</span><span class="token function">LoadUint32</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>mgr<span class="token punctuation">.</span>numFuzzing<span class="token punctuation">)</span>
+
+        log<span class="token punctuation">.</span><span class="token function">Logf</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token string">"VMs %v, executed %v, cover %v, signal %v/%v, crashes %v, repro %v, triageQLen %v"</span><span class="token punctuation">,</span>
+                 numFuzzing<span class="token punctuation">,</span> executed<span class="token punctuation">,</span> corpusCover<span class="token punctuation">,</span> corpusSignal<span class="token punctuation">,</span> maxSignal<span class="token punctuation">,</span> crashes<span class="token punctuation">,</span> numReproducing<span class="token punctuation">,</span> triageQLen<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>This code snippet gets the current time, loads the info and prints them every 10 seconds.</p>
+<h2 id="Total-Execution"><a href="#Total-Execution" class="headerlink" title="Total Execution"></a>Total Execution</h2><p><code>mergeNamed</code> incorporates the input map into <code>mgr.Stats</code>:</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>stats <span class="token operator">*</span>Stats<span class="token punctuation">)</span> <span class="token function">mergeNamed</span><span class="token punctuation">(</span>named <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token builtin">uint64</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	stats<span class="token punctuation">.</span>mu<span class="token punctuation">.</span><span class="token function">Lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">defer</span> stats<span class="token punctuation">.</span>mu<span class="token punctuation">.</span><span class="token function">Unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> stats<span class="token punctuation">.</span>namedStats <span class="token operator">==</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		stats<span class="token punctuation">.</span>namedStats <span class="token operator">=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token builtin">uint64</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">for</span> k<span class="token punctuation">,</span> v <span class="token operator">:=</span> <span class="token keyword">range</span> named <span class="token punctuation">&#123;</span>
+		<span class="token keyword">switch</span> k <span class="token punctuation">&#123;</span>
+        <span class="token comment">// Add the exec total</span>
+		<span class="token keyword">case</span> <span class="token string">"exec total"</span><span class="token punctuation">:</span>
+			stats<span class="token punctuation">.</span>execTotal<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token function">int</span><span class="token punctuation">(</span>v<span class="token punctuation">)</span><span class="token punctuation">)</span>
+		<span class="token keyword">default</span><span class="token punctuation">:</span>
+			stats<span class="token punctuation">.</span>namedStats<span class="token punctuation">[</span>k<span class="token punctuation">]</span> <span class="token operator">+=</span> v
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>This function is invoked within the Poll function:</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>serv <span class="token operator">*</span>RPCServer<span class="token punctuation">)</span> <span class="token function">Poll</span><span class="token punctuation">(</span>a <span class="token operator">*</span>rpctype<span class="token punctuation">.</span>PollArgs<span class="token punctuation">,</span> r <span class="token operator">*</span>rpctype<span class="token punctuation">.</span>PollRes<span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
+	serv<span class="token punctuation">.</span>stats<span class="token punctuation">.</span><span class="token function">mergeNamed</span><span class="token punctuation">(</span>a<span class="token punctuation">.</span>Stats<span class="token punctuation">)</span>
+
+	serv<span class="token punctuation">.</span>mu<span class="token punctuation">.</span><span class="token function">Lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">defer</span> serv<span class="token punctuation">.</span>mu<span class="token punctuation">.</span><span class="token function">Unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token operator">...</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Fuzzers collect all <code>proc.env.StatExecs</code>, add them together and send them to manager through <code>RPC:Poll()</code> in function <code>poll()</code>.</p>
+<p><img src="../figures/image-20250331142702307.png" alt=""></p>
+<p><code>proc.env.StatExecs</code> is updated in function <code>proc.env.Exec</code>:</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// Exec starts executor binary to execute program p and returns information about the execution:</span>
+<span class="token comment">// output: process output</span>
+<span class="token comment">// info: per-call info</span>
+<span class="token comment">// hanged: program hanged and was killed</span>
+<span class="token comment">// err0: failed to start the process or bug in executor itself.</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>env <span class="token operator">*</span>Env<span class="token punctuation">)</span> <span class="token function">Exec</span><span class="token punctuation">(</span>opts <span class="token operator">*</span>ExecOpts<span class="token punctuation">,</span> p <span class="token operator">*</span>prog<span class="token punctuation">.</span>Prog<span class="token punctuation">)</span> <span class="token punctuation">(</span>output <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> info <span class="token operator">*</span>ProgInfo<span class="token punctuation">,</span> hanged <span class="token builtin">bool</span><span class="token punctuation">,</span> err0 <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token comment">//...</span>
+	atomic<span class="token punctuation">.</span><span class="token function">AddUint64</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>env<span class="token punctuation">.</span>StatExecs<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span>
+	<span class="token comment">//...</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="../figures/image-20250331144001758.png" alt=""></p>
+<h2 id="Crashes"><a href="#Crashes" class="headerlink" title="Crashes"></a>Crashes</h2><p>Getting crashes is from the return results of <code>mgr.runInstance()</code> which start the VM and run syz-fuzzer in it.  Since <strong>syz-fuzzer</strong> itself runs in an infinite loop, the termination of the <code>mgr.runInstance()</code> is most likely due to a crash.</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>mgr <span class="token operator">*</span>Manager<span class="token punctuation">)</span> <span class="token function">vmLoop</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	log<span class="token punctuation">.</span><span class="token function">Logf</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token string">"booting test machines..."</span><span class="token punctuation">)</span>
+	log<span class="token punctuation">.</span><span class="token function">Logf</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token string">"wait for the connection from test machine..."</span><span class="token punctuation">)</span>
+	<span class="token comment">//...</span>
+	runDone <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token operator">*</span>RunResult<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span>
+	<span class="token comment">//...</span>
+	<span class="token keyword">for</span> shutdown <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token operator">||</span> instances<span class="token punctuation">.</span><span class="token function">Len</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">!=</span> vmCount <span class="token punctuation">&#123;</span>
+		<span class="token comment">// ...</span>
+		
+		<span class="token keyword">if</span> shutdown <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+			<span class="token comment">// ...</span>
+			<span class="token keyword">for</span> <span class="token operator">!</span><span class="token function">canRepro</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+				<span class="token comment">// ...</span>
+				log<span class="token punctuation">.</span><span class="token function">Logf</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token string">"loop: starting instance %v"</span><span class="token punctuation">,</span> <span class="token operator">*</span>idx<span class="token punctuation">)</span>
+				<span class="token comment">// 开始fuzzing</span>
+				<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+					<span class="token comment">// 运行第idx个VM, 返回结果，如果crash不为nil则表明发生崩溃</span>
+					crash<span class="token punctuation">,</span> err <span class="token operator">:=</span> mgr<span class="token punctuation">.</span><span class="token function">runInstance</span><span class="token punctuation">(</span><span class="token operator">*</span>idx<span class="token punctuation">)</span>
+					runDone <span class="token operator">&lt;-</span> <span class="token operator">&amp;</span>RunResult<span class="token punctuation">&#123;</span><span class="token operator">*</span>idx<span class="token punctuation">,</span> crash<span class="token punctuation">,</span> err<span class="token punctuation">&#125;</span>
+				<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+			<span class="token punctuation">&#125;</span>
+		<span class="token punctuation">&#125;</span>
+
+		<span class="token comment">//...</span>
+
+	wait<span class="token punctuation">:</span>
+		<span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+		<span class="token comment">// ...</span>
+		<span class="token comment">// 产生了crash</span>
+		<span class="token keyword">case</span> res <span class="token operator">:=</span> <span class="token operator">&lt;-</span>runDone<span class="token punctuation">:</span>
+			log<span class="token punctuation">.</span><span class="token function">Logf</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token string">"loop: instance %v finished, crash=%v"</span><span class="token punctuation">,</span> res<span class="token punctuation">.</span>idx<span class="token punctuation">,</span> res<span class="token punctuation">.</span>crash <span class="token operator">!=</span> <span class="token boolean">nil</span><span class="token punctuation">)</span>
+			<span class="token keyword">if</span> res<span class="token punctuation">.</span>err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token operator">&amp;&amp;</span> shutdown <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+				log<span class="token punctuation">.</span><span class="token function">Logf</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token string">"%v"</span><span class="token punctuation">,</span> res<span class="token punctuation">.</span>err<span class="token punctuation">)</span>
+			<span class="token punctuation">&#125;</span>
+			stopPending <span class="token operator">=</span> <span class="token boolean">false</span>
+			instances<span class="token punctuation">.</span><span class="token function">Put</span><span class="token punctuation">(</span>res<span class="token punctuation">.</span>idx<span class="token punctuation">)</span>
+			<span class="token comment">// On shutdown qemu crashes with "qemu: terminating on signal 2",</span>
+			<span class="token comment">// which we detect as "lost connection". Don't save that as crash.</span>
+			<span class="token keyword">if</span> shutdown <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token operator">&amp;&amp;</span> res<span class="token punctuation">.</span>crash <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+				needRepro <span class="token operator">:=</span> mgr<span class="token punctuation">.</span><span class="token function">saveCrash</span><span class="token punctuation">(</span>res<span class="token punctuation">.</span>crash<span class="token punctuation">)</span>
+				<span class="token comment">// ...</span>
+			<span class="token punctuation">&#125;</span>
+		<span class="token comment">//...</span>
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="../figures/image-20250401143310513.png" style="zoom:67%;" /></p>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><ul>
+<li>How to log msg in syz-fuzzer: <a target="_blank" rel="noopener" href="https://groups.google.com/g/syzkaller/c/CKcFAS1Z_jY">https://groups.google.com/g/syzkaller/c/CKcFAS1Z_jY</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kernel/" rel="tag">Kernel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Syzkaller/" rel="tag">Syzkaller</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2025/03/23/2025323-(Syzkaller)How-does-Syzkaller-generate-a-program()/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">(Syzkaller)How does Syzkaller generate a program (syscall sequences)?</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#How-does-Syz-manager-synchronize-statistics-information-with-fuzzers"><span class="nav-number">1.</span> <span class="nav-text">How does Syz-manager synchronize statistics information with fuzzers?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Total-Execution"><span class="nav-number">1.1.</span> <span class="nav-text">Total Execution</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Crashes"><span class="nav-number">1.2.</span> <span class="nav-text">Crashes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#References"><span class="nav-number">1.3.</span> <span class="nav-text">References</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+<footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2025 Shaw All Rights Reserved.
+        
+          <span id="busuanzi_container_site_pv">
+            本站总访问量<span id="busuanzi_value_site_pv"></span>次
+          </span>
+          <span class="post-meta-divider">|</span>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            本站访客数<span id="busuanzi_value_site_uv"></span>人
+          </span>
+          <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+
+  
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'true', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+<!-- Gaug.es Analytics -->
+<script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', 'true');
+    t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+    t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+<!-- End Gaug.es Analytics -->
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+	<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2439014eb270056ee1808a49956fe114";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<!-- Tencent Analytics -->
+	<script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId={{ theme.tencent_analytics }}";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+<!-- End Tencent Analytics -->
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>
