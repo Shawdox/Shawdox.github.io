@@ -87,9 +87,9 @@ syz-manager</h1>
 </blockquote>
 <span id="more"></span>
 <p>Old syzkaller:</p>
-<p><img src="../figures/image-20250404103227476.png" alt="Old Syzkaller" style="zoom: 67%;" /></p>
+<p><img src="/figures/image-20250404103227476.png" alt="Old Syzkaller" style="zoom: 67%;" /></p>
 <p>New syzkaller:</p>
-<p><img src="../figures/process_structure.png" alt="New Syzkalelr" style="zoom:80%;" /></p>
+<p><img src="/figures/process_structure.png" alt="New Syzkalelr" style="zoom:80%;" /></p>
 <p>Syzkaller moved all syz-fuzzer logic into syz-executor and removed
 syz-fuzzer in commit
 <code>e16e2c9a4cb6937323e861b646792a6c4c978a3c</code> (Jun 4th 2024).
@@ -595,13 +595,13 @@ instances.</p></li>
 of instances and the default job of instance when manager create the
 dispatcher:</p>
 <figure>
-<img src="../figures/image-20250405145942098.png"
+<img src="/figures/image-20250405145942098.png"
 alt="How does new manager run VMs?" />
 <figcaption aria-hidden="true">How does new manager run
 VMs?</figcaption>
 </figure>
 <p>The VM is created and boot this way: <img
-src="../figures/image-20250411145124279.png" /></p>
+src="/figures/image-20250411145124279.png" /></p>
 <h4 id="how-does-new-manager-start-fuzzing"><strong>2. How does new
 manager start fuzzing?</strong></h4>
 <h5 id="rpcserver.server.serve">2.1 rpcserver.server.Serve()</h5>
@@ -640,17 +640,17 @@ handshaking.</p>
 <ul>
 <li>The first go routine, wait and handshake with executor:</li>
 </ul>
-<p><img src="../figures/image-20250413130046163.png" /></p>
+<p><img src="/figures/image-20250413130046163.png" /></p>
 <ul>
 <li>The second go routine, wait until the handshake finished, create
 fuzzer and update the runner source:</li>
 </ul>
-<p><img src="../figures/image-20250413130253233.png" /></p>
+<p><img src="/figures/image-20250413130253233.png" /></p>
 <p>The function <code>mgr.MachineChecked</code> builds the
 <code>fuzzerObj</code>, loads the corpus into
 <code>fuzzer.candidateQueue</code>, and update the source of runner. The
 whole process of <code>Serv()</code>:</p>
-<p><img src="../figures/image-20250413130404201.png" /></p>
+<p><img src="/figures/image-20250413130404201.png" /></p>
 <h5 id="runner">2.2 Runner</h5>
 <h5 id="distributor">2.3 Distributor</h5>
 <p>Distributor distributes requests to different VMs during input
@@ -674,7 +674,7 @@ triage:</p>
 	<span class="token function">run</span><span class="token punctuation">(</span>fuzzer <span class="token operator">*</span>Fuzzer<span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <figure>
-<img src="../figures/image-20250413125503076.png"
+<img src="/figures/image-20250413125503076.png"
 alt="Two go routines in server.Serv()" />
 <figcaption aria-hidden="true">Two go routines in
 server.Serv()</figcaption>
