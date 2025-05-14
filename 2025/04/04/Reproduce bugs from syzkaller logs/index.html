@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>(Syzkaller)Reproduce bugs from syzkaller logs | Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="FuzzingSyzkallerKernel" />
+  
+  
+  
+    <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
+  
+  
+  <meta name="description" content="Reproduce bugs from syzkaller logs Currently I just got some unreprodueced and unminimized crash logs from syzkaller, there are some scripts to get the key program ledding crash and reproduce it.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(Syzkaller)Reproduce bugs from syzkaller logs">
+<meta property="og:url" content="http://example.com/2025/04/04/Reproduce%20bugs%20from%20syzkaller%20logs/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="Reproduce bugs from syzkaller logs Currently I just got some unreprodueced and unminimized crash logs from syzkaller, there are some scripts to get the key program ledding crash and reproduce it.">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-04-03T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-05-14T08:09:52.496Z">
+<meta property="article:author" content="Shaw">
+<meta property="article:tag" content="Fuzzing">
+<meta property="article:tag" content="Syzkaller">
+<meta property="article:tag" content="Kernel">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Reproduce bugs from syzkaller logs" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      (Syzkaller)Reproduce bugs from syzkaller logs
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2025/04/04/Reproduce%20bugs%20from%20syzkaller%20logs/" class="article-date">
+	  <time datetime="2025-04-03T16:00:00.000Z" itemprop="datePublished">四月 4, 2025</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="reproduce-bugs-from-syzkaller-logs">Reproduce bugs from
+syzkaller logs</h1>
+<p>Currently I just got some unreprodueced and unminimized crash logs
+from syzkaller, there are some scripts to get the key program ledding
+crash and reproduce it.</p>
+<span id="more"></span>
+<p>Get the target kernel:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">wget</span> https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.14.6.tar.xz 
+<span class="token function">tar</span> -Jvxf linux-6.14.6.tar.xz<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>Build the kernel:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+<span class="token comment"># Compiling kernel of any version</span>
+<span class="token comment"># Example: ./compile.sh 6.1.11</span>
+
+<span class="token assign-left variable">images</span><span class="token operator">=</span>/home/wuxiao/Syzkaller_Test/linux_images
+<span class="token assign-left variable">kernel</span><span class="token operator">=</span><span class="token string">"linux-<span class="token variable">$1</span>"</span>
+<span class="token comment">#cc=gcc</span>
+<span class="token assign-left variable">cc</span><span class="token operator">=</span>gcc-11
+
+<span class="token builtin class-name">cd</span> <span class="token string">"<span class="token variable">$&#123;images&#125;</span>/<span class="token variable">$&#123;kernel&#125;</span>"</span>
+<span class="token function">make</span> <span class="token assign-left variable">CC</span><span class="token operator">=</span><span class="token variable">$&#123;cc&#125;</span> defconfig
+<span class="token function">make</span> <span class="token assign-left variable">CC</span><span class="token operator">=</span><span class="token variable">$&#123;cc&#125;</span> kvm_guest.config
+
+<span class="token builtin class-name">printf</span> <span class="token string">'<span class="token entity" title="\n">\n</span># Coverage collection.<span class="token entity" title="\n">\n</span>CONFIG_KCOV=y<span class="token entity" title="\n">\n</span><span class="token entity" title="\n">\n</span># Debug info for symbolization.<span class="token entity" title="\n">\n</span>CONFIG_DEBUG_INFO_DWARF4=y<span class="token entity" title="\n">\n</span><span class="token entity" title="\n">\n</span># Memory bug detector<span class="token entity" title="\n">\n</span>CONFIG_KASAN=y<span class="token entity" title="\n">\n</span>CONFIG_KASAN_INLINE=y<span class="token entity" title="\n">\n</span><span class="token entity" title="\n">\n</span># Required for Debian Stretch and later<span class="token entity" title="\n">\n</span>CONFIG_CONFIGFS_FS=y<span class="token entity" title="\n">\n</span>CONFIG_SECURITYFS=y<span class="token entity" title="\n">\n</span><span class="token entity" title="\n">\n</span>CONFIG_CMDLINE_BOOL=y<span class="token entity" title="\n">\n</span>CONFIG_CMDLINE="net.ifnames=0"<span class="token entity" title="\n">\n</span>'</span> <span class="token operator">>></span> .config
+<span class="token function">make</span> <span class="token assign-left variable">CC</span><span class="token operator">=</span><span class="token variable">$&#123;cc&#125;</span> olddefconfig
+
+<span class="token function">make</span> <span class="token assign-left variable">HOSTCC</span><span class="token operator">=</span><span class="token variable">$&#123;cc&#125;</span> <span class="token assign-left variable">CC</span><span class="token operator">=</span><span class="token variable">$&#123;cc&#125;</span> -j<span class="token variable"><span class="token variable">`</span>nproc<span class="token variable">`</span></span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">./compile.sh <span class="token number">6.14</span>.6<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>Start VM (qemu here):</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#/bin/bash</span>
+<span class="token comment"># start_vm.sh</span>
+<span class="token assign-left variable">KERNEL</span><span class="token operator">=</span>/home/wuxiao/Syzkaller_Test/linux_images/linux-6.14.6
+<span class="token assign-left variable">IMAGE</span><span class="token operator">=</span>/home/wuxiao/Syzkaller_Test/image
+qemu-system-x86_64 <span class="token punctuation">\</span>
+	-m 1G <span class="token punctuation">\</span>
+	-smp <span class="token number">2</span> <span class="token punctuation">\</span>
+	-kernel <span class="token variable">$&#123;KERNEL&#125;</span>/arch/x86/boot/bzImage <span class="token punctuation">\</span>
+	-append <span class="token string">"console=ttyS0 root=/dev/sda earlyprintk=serial net.ifnames=0"</span> <span class="token punctuation">\</span>
+	-drive <span class="token assign-left variable">file</span><span class="token operator">=</span><span class="token variable">$&#123;IMAGE&#125;</span>/bullseye.img,format<span class="token operator">=</span>raw <span class="token punctuation">\</span>
+	-net user,host<span class="token operator">=</span><span class="token number">10.0</span>.2.10,hostfwd<span class="token operator">=</span>tcp:127.0.0.1:10021-:22 <span class="token punctuation">\</span>
+	-net nic,model<span class="token operator">=</span>e1000 <span class="token punctuation">\</span>
+	-enable-kvm <span class="token punctuation">\</span>
+	-nographic <span class="token punctuation">\</span>
+    -snapshot <span class="token punctuation">\</span>
+	-pidfile vm.pid <span class="token punctuation">\</span>
+	<span class="token operator"><span class="token file-descriptor important">2</span>></span><span class="token file-descriptor important">&amp;1</span> <span class="token operator">|</span> <span class="token function">tee</span> vm.log<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Copy <code>syz-execprog</code>, <code>syz-exectutor</code> and crash
+log into VM:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">export</span> <span class="token assign-left variable">SYZKALLER_PATH</span><span class="token operator">=</span><span class="token string">"/home/wuxiao/Syzkaller_Test/new_syzkaller"</span>
+<span class="token function">scp</span> -P <span class="token number">10021</span> -o <span class="token assign-left variable">UserKnownHostsFile</span><span class="token operator">=</span>/dev/null  -o <span class="token assign-left variable">StrictHostKeyChecking</span><span class="token operator">=</span>no -o <span class="token assign-left variable">IdentitiesOnly</span><span class="token operator">=</span>yes <span class="token variable">$SYZKALLER_PATH</span>/bin/linux_amd64/* <span class="token punctuation">&#123;</span>l<span class="token punctuation">&#125;</span> root@127.0.0.1:/root/<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>Execute the progs through crash log:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">ssh</span> -p <span class="token number">10021</span> -o <span class="token assign-left variable">UserKnownHostsFile</span><span class="token operator">=</span>/dev/null  -o <span class="token assign-left variable">StrictHostKeyChecking</span><span class="token operator">=</span>no -o <span class="token assign-left variable">IdentitiesOnly</span><span class="token operator">=</span>yes root@127.0.0.1 <span class="token string">'./syz-execprog -enable=all -repeat=0 -procs=8 -cover=0 log0'</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="references">References</h2>
+<ul>
+<li>https://www.kernel.org/</li>
+<li>https://github.com/google/syzkaller/blob/master/docs/reproducing_crashes.md#from-execution-logs</li>
+</ul>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kernel/" rel="tag">Kernel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Syzkaller/" rel="tag">Syzkaller</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2025/04/04/202544-(Syzkaller)New-version-of-syz-manager/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">(Syzkaller)New version of syz-manager</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#reproduce-bugs-from-syzkaller-logs"><span class="nav-number">1.</span> <span class="nav-text">Reproduce bugs from
+syzkaller logs</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#references"><span class="nav-number">1.1.</span> <span class="nav-text">References</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+<footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2025 Shaw All Rights Reserved.
+        
+          <span id="busuanzi_container_site_pv">
+            本站总访问量<span id="busuanzi_value_site_pv"></span>次
+          </span>
+          <span class="post-meta-divider">|</span>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            本站访客数<span id="busuanzi_value_site_uv"></span>人
+          </span>
+          <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+
+  
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'true', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+<!-- Gaug.es Analytics -->
+<script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', 'true');
+    t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+    t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+<!-- End Gaug.es Analytics -->
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+	<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2439014eb270056ee1808a49956fe114";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<!-- Tencent Analytics -->
+	<script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId={{ theme.tencent_analytics }}";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+<!-- End Tencent Analytics -->
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>
