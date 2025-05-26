@@ -9,13 +9,9 @@
   <entry>
     <title>(Syzkaller)Reproduce bugs from syzkaller logs</title>
     <url>/2025/05/14/Reproduce%20bugs%20from%20syzkaller%20logs/</url>
-    <content><![CDATA[<h1 id="reproduce-bugs-from-syzkaller-logs">Reproduce bugs from
-syzkaller logs</h1>
-<p>Currently I just got some unreprodueced and unminimized crash logs
-from syzkaller, there are some scripts to get the key program ledding
-crash and reproduce it.</p>
+    <content><![CDATA[<h1 id="Reproduce-bugs-from-syzkaller-logs"><a href="#Reproduce-bugs-from-syzkaller-logs" class="headerlink" title="Reproduce bugs from syzkaller logs"></a>Reproduce bugs from syzkaller logs</h1><p>Currently I just got some unreprodueced and unminimized crash logs from syzkaller, there are some scripts to get the key program ledding crash and reproduce it.</p>
 <span id="more"></span>
-<p>Get the target kernel:</p>
+<h4 id="1-Get-the-upstream-kernel"><a href="#1-Get-the-upstream-kernel" class="headerlink" title="1. Get the upstream kernel"></a>1. Get the upstream kernel</h4><p>Get the target kernel:</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">wget</span> https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.14.6.tar.xz 
 <span class="token function">tar</span> -Jvxf linux-6.14.6.tar.xz<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>Build the kernel:</p>
@@ -38,10 +34,28 @@ crash and reproduce it.</p>
 <span class="token function">make</span> <span class="token assign-left variable">HOSTCC</span><span class="token operator">=</span><span class="token variable">$&#123;cc&#125;</span> <span class="token assign-left variable">CC</span><span class="token operator">=</span><span class="token variable">$&#123;cc&#125;</span> -j<span class="token variable"><span class="token variable">`</span>nproc<span class="token variable">`</span></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">./compile.sh <span class="token number">6.14</span>.6<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>Start VM (qemu here):</p>
+<p>You can also use the current upstream conifg from syzbot:<br><a href="https://github.com/google/syzkaller/blob/0919b50b3e3291cd417a53ea6fb638ac2d8a4a93/dashboard/config/linux/upstream-apparmor-kasan.config">https://github.com/google/syzkaller/blob/0919b50b3e3291cd417a53ea6fb638ac2d8a4a93/dashboard/config/linux/upstream-apparmor-kasan.config</a></p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+<span class="token comment"># Compiling kernel of any version</span>
+<span class="token comment"># Example: ./compile.sh 6.1.11</span>
+
+<span class="token assign-left variable">images</span><span class="token operator">=</span>/home/wuxiao/Syzkaller_Test/linux_images
+<span class="token assign-left variable">kernel</span><span class="token operator">=</span><span class="token string">"linux-<span class="token variable">$1</span>"</span>
+<span class="token assign-left variable">cc</span><span class="token operator">=</span>gcc-11
+<span class="token assign-left variable">config</span><span class="token operator">=</span>/home/wuxiao/Syzkaller_Test/linux_images/upstream-apparmor-kasan.config
+
+<span class="token builtin class-name">cd</span> <span class="token string">"<span class="token variable">$&#123;images&#125;</span>/<span class="token variable">$&#123;kernel&#125;</span>"</span>
+<span class="token function">make</span> <span class="token assign-left variable">CC</span><span class="token operator">=</span><span class="token variable">$&#123;cc&#125;</span> defconfig
+<span class="token function">make</span> <span class="token assign-left variable">CC</span><span class="token operator">=</span><span class="token variable">$&#123;cc&#125;</span> kvm_guest.config
+<span class="token function">cat</span> <span class="token variable">$config</span> <span class="token operator">></span> .config
+<span class="token function">make</span> <span class="token assign-left variable">CC</span><span class="token operator">=</span><span class="token variable">$&#123;cc&#125;</span> olddefconfig
+
+<span class="token function">make</span> <span class="token assign-left variable">HOSTCC</span><span class="token operator">=</span><span class="token variable">$&#123;cc&#125;</span> <span class="token assign-left variable">CC</span><span class="token operator">=</span><span class="token variable">$&#123;cc&#125;</span> -j<span class="token variable"><span class="token variable">`</span>nproc<span class="token variable">`</span></span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="2-Reproduce"><a href="#2-Reproduce" class="headerlink" title="2. Reproduce"></a>2. Reproduce</h4><p>Start VM (qemu here):</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#/bin/bash</span>
 <span class="token comment"># start_vm.sh</span>
-<span class="token assign-left variable">KERNEL</span><span class="token operator">=</span>/home/wuxiao/Syzkaller_Test/linux_images/linux-6.14.6
+<span class="token assign-left variable">KERNEL</span><span class="token operator">=</span>/home/wuxiao/Syzkaller_Test/linux_images/linux-6.15-rc7
 <span class="token assign-left variable">IMAGE</span><span class="token operator">=</span>/home/wuxiao/Syzkaller_Test/image
 qemu-system-x86_64 <span class="token punctuation">\</span>
 	-m 1G <span class="token punctuation">\</span>
@@ -56,10 +70,9 @@ qemu-system-x86_64 <span class="token punctuation">\</span>
     -snapshot <span class="token punctuation">\</span>
 	-pidfile vm.pid <span class="token punctuation">\</span>
 	<span class="token operator"><span class="token file-descriptor important">2</span>></span><span class="token file-descriptor important">&amp;1</span> <span class="token operator">|</span> <span class="token function">tee</span> vm.log<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>Copy <code>syz-execprog</code>, <code>syz-exectutor</code> and crash
-log into VM:</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">export</span> <span class="token assign-left variable">SYZKALLER_PATH</span><span class="token operator">=</span><span class="token string">"/home/wuxiao/Syzkaller_Test/new_syzkaller"</span>
-<span class="token function">scp</span> -P <span class="token number">10021</span> -o <span class="token assign-left variable">UserKnownHostsFile</span><span class="token operator">=</span>/dev/null  -o <span class="token assign-left variable">StrictHostKeyChecking</span><span class="token operator">=</span>no -o <span class="token assign-left variable">IdentitiesOnly</span><span class="token operator">=</span>yes <span class="token variable">$SYZKALLER_PATH</span>/bin/linux_amd64/* <span class="token punctuation">&#123;</span>l<span class="token punctuation">&#125;</span> root@127.0.0.1:/root/<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>Copy <code>syz-execprog</code>, <code>syz-exectutor</code> into VM:</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">export</span> <span class="token assign-left variable">REPRO_PATH</span><span class="token operator">=</span><span class="token string">"/home/wuxiao/Syzkaller_Test/repro_syzkaller"</span>
+<span class="token function">scp</span> -P <span class="token number">10021</span> -o <span class="token assign-left variable">UserKnownHostsFile</span><span class="token operator">=</span>/dev/null  -o <span class="token assign-left variable">StrictHostKeyChecking</span><span class="token operator">=</span>no -o <span class="token assign-left variable">IdentitiesOnly</span><span class="token operator">=</span>yes <span class="token variable">$REPRO_PATH</span>/bin/linux_amd64/* root@127.0.0.1:/root/<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>Execute the progs through crash log:</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">ssh</span> -p <span class="token number">10021</span> -o <span class="token assign-left variable">UserKnownHostsFile</span><span class="token operator">=</span>/dev/null  -o <span class="token assign-left variable">StrictHostKeyChecking</span><span class="token operator">=</span>no -o <span class="token assign-left variable">IdentitiesOnly</span><span class="token operator">=</span>yes root@127.0.0.1 <span class="token string">'./syz-execprog -enable=all -repeat=0 -procs=8 -cover=0 log0'</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>For the existing syz programs:</p>
@@ -67,10 +80,14 @@ log into VM:</p>
 <span class="token assign-left variable">REPRO</span><span class="token operator">=</span>/home/wuxiao/Syzkaller_Test/test/6.1.1/crashes/5ac71a8ea9b211eb72bfbbf1f4699c4298c20dd6/repro.prog <span class="token operator">&amp;&amp;</span> <span class="token function">scp</span> -P <span class="token number">10021</span> -o <span class="token assign-left variable">UserKnownHostsFile</span><span class="token operator">=</span>/dev/null  -o <span class="token assign-left variable">StrictHostKeyChecking</span><span class="token operator">=</span>no -o <span class="token assign-left variable">IdentitiesOnly</span><span class="token operator">=</span>yes <span class="token variable">$&#123;REPRO&#125;</span> root@127.0.0.1:/root/repro.syz<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># Execute</span>
 <span class="token function">ssh</span> -p <span class="token number">10021</span> -o <span class="token assign-left variable">UserKnownHostsFile</span><span class="token operator">=</span>/dev/null  -o <span class="token assign-left variable">StrictHostKeyChecking</span><span class="token operator">=</span>no -o <span class="token assign-left variable">IdentitiesOnly</span><span class="token operator">=</span>yes root@127.0.0.1 <span class="token string">'./syz-execprog -enable=all -repeat=0 -procs=8 -cover=0 ./repro.syz'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<h2 id="references">References</h2>
+<h4 id="3-Report"><a href="#3-Report" class="headerlink" title="3. Report"></a>3. Report</h4><p>A bug found on old versions must be reproduced successfully on a fresh kernel.</p>
 <ul>
-<li>https://www.kernel.org/</li>
-<li>https://github.com/google/syzkaller/blob/master/docs/reproducing_crashes.md#from-execution-logs</li>
+<li>Report: <a href="https://github.com/google/syzkaller/blob/0919b50b3e3291cd417a53ea6fb638ac2d8a4a93/docs/linux/reporting_kernel_bugs.md">https://github.com/google/syzkaller/blob/0919b50b3e3291cd417a53ea6fb638ac2d8a4a93/docs/linux/reporting_kernel_bugs.md</a></li>
+</ul>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><ul>
+<li><a href="https://www.kernel.org/">https://www.kernel.org/</a></li>
+<li><a href="https://github.com/google/syzkaller/blob/master/docs/reproducing_crashes.md#from-execution-logs">https://github.com/google/syzkaller/blob/master/docs/reproducing_crashes.md#from-execution-logs</a></li>
+<li><a href="https://github.com/google/syzkaller/blob/0919b50b3e3291cd417a53ea6fb638ac2d8a4a93/dashboard/config/linux/upstream-apparmor-kasan.config">https://github.com/google/syzkaller/blob/0919b50b3e3291cd417a53ea6fb638ac2d8a4a93/dashboard/config/linux/upstream-apparmor-kasan.config</a></li>
 </ul>
 ]]></content>
       <categories>
