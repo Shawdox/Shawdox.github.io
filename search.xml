@@ -7,6 +7,109 @@
 ]]></content>
   </entry>
   <entry>
+    <title>Different categories of kernel</title>
+    <url>/2025/05/27/2025527-Different-kinds-of-kernel/</url>
+    <content><![CDATA[<h1 id="different-categories-of-kernel">Different categories of
+kernel</h1>
+<p>Stable, LTS, SLTS, rt, ...</p>
+<span id="more"></span>
+<ul>
+<li><p>Prepatch (rc)</p>
+<p>Prepatch or "RC" kernels are mainline kernel pre-releases that are
+mostly aimed at other kernel developers and Linux enthusiasts. They must
+be compiled from source and usually contain new features that must be
+tested before they can be put into a stable release. Prepatch kernels
+are maintained and released by Linus Torvalds.</p></li>
+<li><p>Mainline</p>
+<p>Mainline tree is maintained by Linus Torvalds. It's the tree where
+all new features are introduced and where all the exciting new
+development happens. New mainline kernels are released every 9-10
+weeks.</p></li>
+<li><p>Stable</p>
+<p>After each mainline kernel is released, it is considered "stable."
+Any bug fixes for a stable kernel are backported from the mainline tree
+and applied by a designated stable kernel maintainer. There are usually
+only a few bugfix kernel releases until next mainline kernel becomes
+available -- unless it is designated a "longterm maintenance kernel."
+Stable kernel updates are released on as-needed basis, usually once a
+week.</p></li>
+<li><p>Longterm</p>
+<p>There are usually several "longterm maintenance" kernel releases
+provided for the purposes of backporting bugfixes for older kernel
+trees. Only important bugfixes are applied to such kernels and they
+don't usually see very frequent releases, especially for older
+trees.</p></li>
+</ul>
+<table>
+<colgroup>
+<col style="width: 11%" />
+<col style="width: 51%" />
+<col style="width: 16%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Version</th>
+<th>Maintainer</th>
+<th>Released</th>
+<th>Projected EOL</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>6.12</td>
+<td>Greg Kroah-Hartman &amp; Sasha Levin</td>
+<td>2024-11-17</td>
+<td>Dec, 2026</td>
+</tr>
+<tr class="even">
+<td>6.6</td>
+<td>Greg Kroah-Hartman &amp; Sasha Levin</td>
+<td>2023-10-29</td>
+<td>Dec, 2026</td>
+</tr>
+<tr class="odd">
+<td>6.1</td>
+<td>Greg Kroah-Hartman &amp; Sasha Levin</td>
+<td>2022-12-11</td>
+<td>Dec, 2027</td>
+</tr>
+<tr class="even">
+<td>5.15</td>
+<td>Greg Kroah-Hartman &amp; Sasha Levin</td>
+<td>2021-10-31</td>
+<td>Dec, 2026</td>
+</tr>
+<tr class="odd">
+<td>5.10</td>
+<td>Greg Kroah-Hartman &amp; Sasha Levin</td>
+<td>2020-12-13</td>
+<td>Dec, 2026</td>
+</tr>
+<tr class="even">
+<td>5.4</td>
+<td>Greg Kroah-Hartman &amp; Sasha Levin</td>
+<td>2019-11-24</td>
+<td>Dec, 2025</td>
+</tr>
+</tbody>
+</table>
+<p>Currently syzbot only support 5.15 and 6.1 LTS version</p>
+<h3 id="references">References</h3>
+<ul>
+<li>https://www.kernel.org/category/releases.html</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>Fuzzing</tag>
+        <tag>Syzkaller</tag>
+        <tag>Kernel</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>(Syzkaller)Reproduce bugs from syzkaller logs</title>
     <url>/2025/05/14/Reproduce%20bugs%20from%20syzkaller%20logs/</url>
     <content><![CDATA[<h1 id="Reproduce-bugs-from-syzkaller-logs"><a href="#Reproduce-bugs-from-syzkaller-logs" class="headerlink" title="Reproduce bugs from syzkaller logs"></a>Reproduce bugs from syzkaller logs</h1><p>Currently I just got some unreprodueced and unminimized crash logs from syzkaller, there are some scripts to get the key program ledding crash and reproduce it.</p>
