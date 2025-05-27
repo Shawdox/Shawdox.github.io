@@ -110,6 +110,35 @@ trees.</p></li>
       </tags>
   </entry>
   <entry>
+    <title>(Paper)KernelGPT- Enhanced Kernel Fuzzing via Large Language Models</title>
+    <url>/2025/05/26/2025526-(Syzkaller)Reproduce-bugs-from-syzkaller-logs/</url>
+    <content><![CDATA[<h1
+id="kernelgpt-enhanced-kernel-fuzzing-via-large-language-models">KernelGPT:
+Enhanced Kernel Fuzzing via Large Language Models</h1>
+<blockquote>
+<p>ASPLOS'25</p>
+<p>Chenyuan Yang, UIUC</p>
+</blockquote>
+<span id="more"></span>
+<h3 id="background">BACKGROUND</h3>
+<p>Generating <strong>syscall specifications</strong> is non-trival and
+hard to be automated by traditional methods. Existing syzkaller
+specifications only cover a small portion of syscalls.</p>
+<h3 id="method">METHOD</h3>
+<p>KernelGPT focus more on drivers and sockets.</p>
+<p><img src="figures/image-20250526105923084.png" /></p>
+<h3 id="evaluation">EVALUATION</h3>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>Fuzzing</tag>
+        <tag>Syzkaller</tag>
+        <tag>Kernel</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>(Syzkaller)Reproduce bugs from syzkaller logs</title>
     <url>/2025/05/14/Reproduce%20bugs%20from%20syzkaller%20logs/</url>
     <content><![CDATA[<h1 id="Reproduce-bugs-from-syzkaller-logs"><a href="#Reproduce-bugs-from-syzkaller-logs" class="headerlink" title="Reproduce bugs from syzkaller logs"></a>Reproduce bugs from syzkaller logs</h1><p>Currently I just got some unreprodueced and unminimized crash logs from syzkaller, there are some scripts to get the key program ledding crash and reproduce it.</p>

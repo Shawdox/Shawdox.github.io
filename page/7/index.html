@@ -112,6 +112,89 @@
         
           <section id="main">
   
+    <article id="post-【论文复现】How Machine Learning Is Solving the Binary Function Similarity Problem"  class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" itemprop="name">
+      <a class="article-title" href="/2023/02/12/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91How%20Machine%20Learning%20Is%20Solving%20the%20Binary%20Function%20Similarity%20Problem/">(论文复现)How Machine Learning Is Solving the Binary Function Similarity Problem</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2023/02/12/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91How%20Machine%20Learning%20Is%20Solving%20the%20Binary%20Function%20Similarity%20Problem/" class="article-date">
+	  <time datetime="2023-02-12T02:04:09.000Z" itemprop="datePublished">二月 12, 2023</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Reproduce/">Reproduce</a>
+ 
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+
+          
+            <div class="entry-thumbnail">
+              <a href="/2023/02/12/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91How%20Machine%20Learning%20Is%20Solving%20the%20Binary%20Function%20Similarity%20Problem/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+            </div>
+          
+          <div class="entry-summary">
+          【论文复现】How Machine Learning Is Solving the Binary Function Similarity Problem一、模糊哈希（Fuzzy Hashing）1. Bytes fuzzy hashing——Catalog1
+出处：
+​    1. xorpd | FCatalog
+​    2. binary_function_similarity/Models/Catalog1 at main · Cisco-Talos/binary_function_similarity (github.com)
+“FCatalog allows you to keep a database of all your named functions, and find similarities from this database efficiently.”
+
+前置知识：
+binary blob：一串bytes；
+
+S(a)：字节串a的四字截取集合，例如:
+
+\mathbf{S(a)}= \{123x,23xy,3xy1\},a=123xy1 \\
+\mathbf{S(b)}= \{1111\},b=111111111 \\
+Jaccard Similarity：计算两个集合相似性：
+
+J（S(a),S(b)）=\frac {S(a)\cap S(b)}{S(a)\cup S(b)}
+minhash：文本相似度比较算法，用于快速估算两个集合的相似度。
+
+
+​    Catalog1算法利用minhash，使用哈希近似替代两个S集合，以此来估算其Jaccard系数，从而达到高效率地比较两个集合。
+
+        
+          <p class="article-more-link">
+            <a href="/2023/02/12/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91How%20Machine%20Learning%20Is%20Solving%20the%20Binary%20Function%20Similarity%20Problem/#more">阅读全文</a>
+          </p>
+        </div>
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Reproduce/">Reproduce</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Binary/" rel="tag">Binary</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ML/" rel="tag">ML</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+</article>
+
+<!-- Table of Contents -->
+
+  
     <article id="post-Comparing-One-with-Many-—-Solving-Binary2source-Function-Matching-Under-Function-Inlining"  class="article article-type-post" itemscope itemprop="blogPost" >
   <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
     
@@ -144,7 +227,7 @@
 
           
             <div class="entry-thumbnail">
-              <a href="/2023/01/10/Comparing-One-with-Many-%E2%80%94-Solving-Binary2source-Function-Matching-Under-Function-Inlining/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2023/01/10/Comparing-One-with-Many-%E2%80%94-Solving-Binary2source-Function-Matching-Under-Function-Inlining/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -211,7 +294,7 @@
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/12/08/How-Machine-Learning-Is-Solving-the-Binary-Function-Similarity-Problem/"><img src="http://lorempixel.com/750/450/city/3" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/12/08/How-Machine-Learning-Is-Solving-the-Binary-Function-Similarity-Problem/"><img src="http://lorempixel.com/750/450/city/8" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -286,7 +369,7 @@ ABSTRACT人们会期望到现在为止，对于二进制相似性问题的研究
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/12/01/Connect%20X/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/12/01/Connect%20X/"><img src="http://lorempixel.com/750/450/city/3" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -359,7 +442,7 @@ ConnectX Getting Started | Kaggle
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/11/14/Facial%20Keypoints%20Detection/"><img src="http://lorempixel.com/750/450/city/5" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/11/14/Facial%20Keypoints%20Detection/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -430,7 +513,7 @@ Facial Keypoints Detection | Kaggle
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/10/02/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91IFAttn%20Binary%20code%20similarity%20analysis%20based%20on%20interpretable%20features%20with%20attention/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/10/02/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91IFAttn%20Binary%20code%20similarity%20analysis%20based%20on%20interpretable%20features%20with%20attention/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -503,7 +586,7 @@ Facial Keypoints Detection | Kaggle
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/10/01/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Function-level%20obfuscation%20detection%20method%20based%20on%20Graph%20Convolutional%20Networks/"><img src="http://lorempixel.com/750/450/city/4" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/10/01/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Function-level%20obfuscation%20detection%20method%20based%20on%20Graph%20Convolutional%20Networks/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -577,7 +660,7 @@ Facial Keypoints Detection | Kaggle
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/07/21/%E5%86%B3%E7%AD%96%E6%97%B6%E8%A7%84%E5%88%92/"><img src="http://lorempixel.com/750/450/city/7" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/07/21/%E5%86%B3%E7%AD%96%E6%97%B6%E8%A7%84%E5%88%92/"><img src="http://lorempixel.com/750/450/city/10" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -661,7 +744,7 @@ Decision-time Planning，(决策时规划）在不需要快速反应的应用场
 
           
             <div class="entry-thumbnail">
-              <a href="/2022/03/04/A%20Survey%20of%20Defense%20Mechanisms%20Against%20Distributed%20Denial%20of%20Service%20(DDoS)%20Flooding%20Attacks/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2022/03/04/A%20Survey%20of%20Defense%20Mechanisms%20Against%20Distributed%20Denial%20of%20Service%20(DDoS)%20Flooding%20Attacks/"><img src="http://lorempixel.com/750/450/city/2" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -733,7 +816,7 @@ ABSTRACT​    DDoS攻击是安全专业人员最关心的问题之一，其通�
 
           
             <div class="entry-thumbnail">
-              <a href="/2021/11/14/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/"><img src="http://lorempixel.com/750/450/city/6" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
+              <a href="/2021/11/14/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/"><img src="http://lorempixel.com/750/450/city/9" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
             </div>
           
           <div class="entry-summary">
@@ -750,77 +833,6 @@ ABSTRACT​    文字(text)（word-level）对抗样本黑盒攻击。在这项�
         
           <p class="article-more-link">
             <a href="/2021/11/14/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91HydraText%20Multi-objective%20Optimization%20for%20Adversarial%20Textual%20Attack/#more">阅读全文</a>
-          </p>
-        </div>
-      
-    </div>
-    <footer class="entry-meta entry-footer">
-      
-	<span class="ico-folder"></span>
-    <a class="article-category-link" href="/categories/Paper/">Paper</a>
-
-      
-  <span class="ico-tags"></span>
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AD/" rel="tag">AD</a></li></ul>
-
-      
-    </footer>
-    <hr class="entry-footer-hr">
-  </div>
-  
-</article>
-
-<!-- Table of Contents -->
-
-  
-    <article id="post-【论文阅读】Semantic Host-free Trojan Attack"  class="article article-type-post" itemscope itemprop="blogPost" >
-  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 class="thumb" itemprop="name">
-      <a class="article-title" href="/2021/11/06/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Semantic%20Host-free%20Trojan%20Attack/">Semantic Host-free Trojan Attack</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-meta">
-      
-	<a href="/2021/11/06/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Semantic%20Host-free%20Trojan%20Attack/" class="article-date">
-	  <time datetime="2021-11-06T07:56:09.000Z" itemprop="datePublished">十一月 6, 2021</time>
-	</a>
-
-      
-	<span class="ico-folder"></span>
-    <a class="article-category-link" href="/categories/Paper/">Paper</a>
- 
-      
-    </div>
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-
-          
-            <div class="entry-thumbnail">
-              <a href="/2021/11/06/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Semantic%20Host-free%20Trojan%20Attack/"><img src="http://lorempixel.com/750/450/city/1" class="attachment-thumb-featured size-thumb-featured wp-post-image" alt=""></a>
-            </div>
-          
-          <div class="entry-summary">
-          Semantic Host-free Trojan Attack
-作者：Haripriya Harikumar , Kien Do, Santu Rana , Sunil Gupta , Svetha Venkatesh（迪肯大学.澳大利亚）
-时间：2021.10.27
-
-ABSTRACT​    在本文中，我们提出了一种新颖的host-free木马攻击，其触发器(trigger)固定在语义空间(semantic)，但不一定在像素空间(pixel)。
-​    与现有的木马攻击使用干净的输入图像作为宿主来携带小的、没有意义的trigger不同，我们的攻击将trigger看作是属于语义上有意义的对象类的整个图像。
-​    由于在我们的攻击中，与任何特定的固定模式相比，分类器被鼓励记忆触发图像的抽象语义。因此它可以在以后由语义相似但看起来不同的图像触发。这使得我们的攻击更实际地被应用于现实世界中，更难以防御。广泛的实验结果表明，仅用少量的特洛伊木马模式进行训练，我们的攻击能很好地推广到同一特洛伊木马类的新模式，并且可以绕过目前的防御方法。
-
-
-        
-          <p class="article-more-link">
-            <a href="/2021/11/06/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Semantic%20Host-free%20Trojan%20Attack/#more">阅读全文</a>
           </p>
         </div>
       
@@ -965,6 +977,18 @@ ABSTRACT​    在本文中，我们提出了一种新颖的host-free木马攻�
               <div class="widget-entry-summary" style="margin: 0;">
             
 
+              <h6 style="margin: 0;"><a href="/2025/05/26/2025526-(Syzkaller)Reproduce-bugs-from-syzkaller-logs/">(Paper)KernelGPT- Enhanced Kernel Fuzzing via Large Language Models</a></h6>
+              <span>五月 26, 2025</span>
+            </div>
+
+          </li>
+        
+          <li class="clearfix">
+
+            
+              <div class="widget-entry-summary" style="margin: 0;">
+            
+
               <h6 style="margin: 0;"><a href="/2025/05/14/Reproduce%20bugs%20from%20syzkaller%20logs/">(Syzkaller)Reproduce bugs from syzkaller logs</a></h6>
               <span>五月 14, 2025</span>
             </div>
@@ -1007,18 +1031,6 @@ ABSTRACT​    在本文中，我们提出了一种新颖的host-free木马攻�
 
           </li>
         
-          <li class="clearfix">
-
-            
-              <div class="widget-entry-summary" style="margin: 0;">
-            
-
-              <h6 style="margin: 0;"><a href="/2024/05/20/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Finding-the-Dwarf---Recovering-Precise-Types-from-WebAssembly-Binaries/">(论文阅读)Finding the Dwarf - Recovering Precise Types from WebAssembly Binaries</a></h6>
-              <span>五月 20, 2024</span>
-            </div>
-
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -1028,7 +1040,7 @@ ABSTRACT​    在本文中，我们提出了一种新颖的host-free木马攻�
   <div class="widget-wrap">
     <h3 class="widget-title">分类</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Book/">Book</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Code/">Code</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kaggle/">Kaggle</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Paper/">Paper</a><span class="category-list-count">72</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Project/">Project</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Reproduce/">Reproduce</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Something/">Something</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/paper/">paper</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Book/">Book</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Code/">Code</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Kaggle/">Kaggle</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Paper/">Paper</a><span class="category-list-count">73</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Project/">Project</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Reproduce/">Reproduce</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Something/">Something</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/paper/">paper</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1038,7 +1050,7 @@ ABSTRACT​    在本文中，我们提出了一种新颖的host-free木马攻�
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD/" rel="tag">AD</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD-training/" rel="tag">AD training</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AEG/" rel="tag">AEG</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BCSA/" rel="tag">BCSA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary/" rel="tag">Binary</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Botnet/" rel="tag">Botnet</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CV/" rel="tag">CV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cloud/" rel="tag">Cloud</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Configuration/" rel="tag">Configuration</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNN/" rel="tag">DNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Differential-fuzzing/" rel="tag">Differential fuzzing</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a><span class="tag-list-count">22</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDS/" rel="tag">IDS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kernel/" rel="tag">Kernel</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Klee/" rel="tag">Klee</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LLM/" rel="tag">LLM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LLVM/" rel="tag">LLVM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Latex/" rel="tag">Latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ML/" rel="tag">ML</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Malware-Classifiers/" rel="tag">Malware Classifiers</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Math/" rel="tag">Math</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mutiagent/" rel="tag">Mutiagent</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/" rel="tag">NLP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDF/" rel="tag">PDF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RL/" rel="tag">RL</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RNN/" rel="tag">RNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rust/" rel="tag">Rust</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sanitizer/" rel="tag">Sanitizer</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Software-Testing/" rel="tag">Software Testing</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Symbolic-Execution/" rel="tag">Symbolic Execution</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Syzkaller/" rel="tag">Syzkaller</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UAF/" rel="tag">UAF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vulnerability/" rel="tag">Vulnerability</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WASI/" rel="tag">WASI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WASM/" rel="tag">WASM</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WebAssembly/" rel="tag">WebAssembly</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WebAssembly/" rel="tag">WebAssembly"</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/" rel="tag">Windows</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/obfuscation/" rel="tag">obfuscation</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pwn/" rel="tag">pwn</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD/" rel="tag">AD</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AD-training/" rel="tag">AD training</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AEG/" rel="tag">AEG</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/BCSA/" rel="tag">BCSA</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary/" rel="tag">Binary</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Botnet/" rel="tag">Botnet</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CV/" rel="tag">CV</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cloud/" rel="tag">Cloud</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Configuration/" rel="tag">Configuration</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DDoS/" rel="tag">DDoS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNN/" rel="tag">DNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Differential-fuzzing/" rel="tag">Differential fuzzing</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Fuzzing/" rel="tag">Fuzzing</a><span class="tag-list-count">23</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/IDS/" rel="tag">IDS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Kernel/" rel="tag">Kernel</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Klee/" rel="tag">Klee</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LLM/" rel="tag">LLM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LLVM/" rel="tag">LLVM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Latex/" rel="tag">Latex</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ML/" rel="tag">ML</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Machine-Learning/" rel="tag">Machine Learning</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Malware-Classifiers/" rel="tag">Malware Classifiers</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Math/" rel="tag">Math</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mutiagent/" rel="tag">Mutiagent</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NLP/" rel="tag">NLP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PDF/" rel="tag">PDF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pytorch/" rel="tag">Pytorch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RL/" rel="tag">RL</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RNN/" rel="tag">RNN</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Rust/" rel="tag">Rust</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Sanitizer/" rel="tag">Sanitizer</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Software-Testing/" rel="tag">Software Testing</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Symbolic-Execution/" rel="tag">Symbolic Execution</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Syzkaller/" rel="tag">Syzkaller</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UAF/" rel="tag">UAF</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Vulnerability/" rel="tag">Vulnerability</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WASI/" rel="tag">WASI</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WASM/" rel="tag">WASM</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WebAssembly/" rel="tag">WebAssembly</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WebAssembly/" rel="tag">WebAssembly"</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/" rel="tag">Windows</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/obfuscation/" rel="tag">obfuscation</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pwn/" rel="tag">pwn</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -1048,7 +1060,7 @@ ABSTRACT​    在本文中，我们提出了一种新颖的host-free木马攻�
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/AD/" style="font-size: 17.78px;">AD</a> <a href="/tags/AD-training/" style="font-size: 10px;">AD training</a> <a href="/tags/AEG/" style="font-size: 15.56px;">AEG</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/BCSA/" style="font-size: 10px;">BCSA</a> <a href="/tags/Binary/" style="font-size: 13.33px;">Binary</a> <a href="/tags/Botnet/" style="font-size: 10px;">Botnet</a> <a href="/tags/CV/" style="font-size: 10px;">CV</a> <a href="/tags/Cloud/" style="font-size: 10px;">Cloud</a> <a href="/tags/Configuration/" style="font-size: 10px;">Configuration</a> <a href="/tags/DDoS/" style="font-size: 10px;">DDoS</a> <a href="/tags/DNN/" style="font-size: 10px;">DNN</a> <a href="/tags/Differential-fuzzing/" style="font-size: 10px;">Differential fuzzing</a> <a href="/tags/Fuzzing/" style="font-size: 20px;">Fuzzing</a> <a href="/tags/IDS/" style="font-size: 11.11px;">IDS</a> <a href="/tags/Kernel/" style="font-size: 14.44px;">Kernel</a> <a href="/tags/Klee/" style="font-size: 10px;">Klee</a> <a href="/tags/LLM/" style="font-size: 10px;">LLM</a> <a href="/tags/LLVM/" style="font-size: 10px;">LLVM</a> <a href="/tags/Latex/" style="font-size: 10px;">Latex</a> <a href="/tags/ML/" style="font-size: 12.22px;">ML</a> <a href="/tags/Machine-Learning/" style="font-size: 11.11px;">Machine Learning</a> <a href="/tags/Malware-Classifiers/" style="font-size: 15.56px;">Malware Classifiers</a> <a href="/tags/Math/" style="font-size: 10px;">Math</a> <a href="/tags/Mutiagent/" style="font-size: 10px;">Mutiagent</a> <a href="/tags/NLP/" style="font-size: 12.22px;">NLP</a> <a href="/tags/PDF/" style="font-size: 10px;">PDF</a> <a href="/tags/Pytorch/" style="font-size: 11.11px;">Pytorch</a> <a href="/tags/RL/" style="font-size: 14.44px;">RL</a> <a href="/tags/RNN/" style="font-size: 10px;">RNN</a> <a href="/tags/Rust/" style="font-size: 10px;">Rust</a> <a href="/tags/Sanitizer/" style="font-size: 12.22px;">Sanitizer</a> <a href="/tags/Software-Testing/" style="font-size: 12.22px;">Software Testing</a> <a href="/tags/Symbolic-Execution/" style="font-size: 14.44px;">Symbolic Execution</a> <a href="/tags/Syzkaller/" style="font-size: 14.44px;">Syzkaller</a> <a href="/tags/UAF/" style="font-size: 10px;">UAF</a> <a href="/tags/Vulnerability/" style="font-size: 16.67px;">Vulnerability</a> <a href="/tags/WASI/" style="font-size: 10px;">WASI</a> <a href="/tags/WASM/" style="font-size: 18.89px;">WASM</a> <a href="/tags/WebAssembly/" style="font-size: 12.22px;">WebAssembly</a> <a href="/tags/WebAssembly/" style="font-size: 11.11px;">WebAssembly"</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/obfuscation/" style="font-size: 10px;">obfuscation</a> <a href="/tags/pwn/" style="font-size: 10px;">pwn</a>
+      <a href="/tags/AD/" style="font-size: 18px;">AD</a> <a href="/tags/AD-training/" style="font-size: 10px;">AD training</a> <a href="/tags/AEG/" style="font-size: 16px;">AEG</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/BCSA/" style="font-size: 10px;">BCSA</a> <a href="/tags/Binary/" style="font-size: 13px;">Binary</a> <a href="/tags/Botnet/" style="font-size: 10px;">Botnet</a> <a href="/tags/CV/" style="font-size: 10px;">CV</a> <a href="/tags/Cloud/" style="font-size: 10px;">Cloud</a> <a href="/tags/Configuration/" style="font-size: 10px;">Configuration</a> <a href="/tags/DDoS/" style="font-size: 10px;">DDoS</a> <a href="/tags/DNN/" style="font-size: 10px;">DNN</a> <a href="/tags/Differential-fuzzing/" style="font-size: 10px;">Differential fuzzing</a> <a href="/tags/Fuzzing/" style="font-size: 20px;">Fuzzing</a> <a href="/tags/IDS/" style="font-size: 11px;">IDS</a> <a href="/tags/Kernel/" style="font-size: 15px;">Kernel</a> <a href="/tags/Klee/" style="font-size: 10px;">Klee</a> <a href="/tags/LLM/" style="font-size: 10px;">LLM</a> <a href="/tags/LLVM/" style="font-size: 10px;">LLVM</a> <a href="/tags/Latex/" style="font-size: 10px;">Latex</a> <a href="/tags/ML/" style="font-size: 12px;">ML</a> <a href="/tags/Machine-Learning/" style="font-size: 11px;">Machine Learning</a> <a href="/tags/Malware-Classifiers/" style="font-size: 16px;">Malware Classifiers</a> <a href="/tags/Math/" style="font-size: 10px;">Math</a> <a href="/tags/Mutiagent/" style="font-size: 10px;">Mutiagent</a> <a href="/tags/NLP/" style="font-size: 12px;">NLP</a> <a href="/tags/PDF/" style="font-size: 10px;">PDF</a> <a href="/tags/Pytorch/" style="font-size: 11px;">Pytorch</a> <a href="/tags/RL/" style="font-size: 14px;">RL</a> <a href="/tags/RNN/" style="font-size: 10px;">RNN</a> <a href="/tags/Rust/" style="font-size: 10px;">Rust</a> <a href="/tags/Sanitizer/" style="font-size: 12px;">Sanitizer</a> <a href="/tags/Software-Testing/" style="font-size: 12px;">Software Testing</a> <a href="/tags/Symbolic-Execution/" style="font-size: 14px;">Symbolic Execution</a> <a href="/tags/Syzkaller/" style="font-size: 15px;">Syzkaller</a> <a href="/tags/UAF/" style="font-size: 10px;">UAF</a> <a href="/tags/Vulnerability/" style="font-size: 17px;">Vulnerability</a> <a href="/tags/WASI/" style="font-size: 10px;">WASI</a> <a href="/tags/WASM/" style="font-size: 19px;">WASM</a> <a href="/tags/WebAssembly/" style="font-size: 12px;">WebAssembly</a> <a href="/tags/WebAssembly/" style="font-size: 11px;">WebAssembly"</a> <a href="/tags/Windows/" style="font-size: 10px;">Windows</a> <a href="/tags/obfuscation/" style="font-size: 10px;">obfuscation</a> <a href="/tags/pwn/" style="font-size: 10px;">pwn</a>
     </div>
   </div>
 
@@ -1058,7 +1070,7 @@ ABSTRACT​    在本文中，我们提出了一种新颖的host-free木马攻�
     <h3 class="widget-title">归档</h3>
 
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">十月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/09/">九月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/07/">七月 2023</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">14</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/05/">五月 2025</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/04/">四月 2025</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2025/03/">三月 2025</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/05/">五月 2024</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/04/">四月 2024</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">二月 2024</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">一月 2024</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">十二月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">十月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/09/">九月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">八月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/07/">七月 2023</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">六月 2023</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/05/">五月 2023</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/04/">四月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/03/">三月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/02/">二月 2023</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/01/">一月 2023</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/12/">十二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/11/">十一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/09/">九月 2021</a><span class="archive-list-count">14</span></li></ul>
     </div>
   </div>
 
@@ -1254,20 +1266,5 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>
