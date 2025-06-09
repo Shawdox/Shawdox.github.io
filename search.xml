@@ -7,48 +7,101 @@
 ]]></content>
   </entry>
   <entry>
+    <title>Library Pydantic</title>
+    <url>/2025/06/09/202569-Library-Pydantic/</url>
+    <content><![CDATA[<h1 id="Pydantic"><a href="#Pydantic" class="headerlink" title="Pydantic"></a>Pydantic</h1><p>Pydantic is the most widely used data validation library for Python. Pydantic’s core validation logic is implemented in a separate package <a href="https://github.com/pydantic/pydantic-core"><code>pydantic-core</code></a>, where validation for most types is implemented in Rust. So Pydantic is among the fastest data validation libraries for Python.</p>
+<span id="more"></span>
+<p>A simple example of Pydantic:</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> datetime <span class="token keyword">import</span> datetime
+
+<span class="token keyword">from</span> pydantic <span class="token keyword">import</span> BaseModel<span class="token punctuation">,</span> PositiveInt
+
+
+<span class="token keyword">class</span> <span class="token class-name">User</span><span class="token punctuation">(</span>BaseModel<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token comment"># id is an integer, and parameter can not be transferred to int will raise an error.</span>
+    <span class="token builtin">id</span><span class="token punctuation">:</span> <span class="token builtin">int</span> 
+    name<span class="token punctuation">:</span> <span class="token builtin">str</span> <span class="token operator">=</span> <span class="token string">'John Doe'</span>  
+    signup_ts<span class="token punctuation">:</span> datetime <span class="token operator">|</span> <span class="token boolean">None</span>  
+    tastes<span class="token punctuation">:</span> <span class="token builtin">dict</span><span class="token punctuation">[</span><span class="token builtin">str</span><span class="token punctuation">,</span> PositiveInt<span class="token punctuation">]</span>  
+
+
+external_data <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+    <span class="token string">'id'</span><span class="token punctuation">:</span> <span class="token number">123</span><span class="token punctuation">,</span>
+    <span class="token string">'signup_ts'</span><span class="token punctuation">:</span> <span class="token string">'2019-06-01 12:22'</span><span class="token punctuation">,</span>  
+    <span class="token string">'tastes'</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span>
+        <span class="token string">'wine'</span><span class="token punctuation">:</span> <span class="token number">9</span><span class="token punctuation">,</span>
+        <span class="token string">b'cheese'</span><span class="token punctuation">:</span> <span class="token number">7</span><span class="token punctuation">,</span>  
+        <span class="token string">'cabbage'</span><span class="token punctuation">:</span> <span class="token string">'1'</span><span class="token punctuation">,</span>  
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span>
+
+user <span class="token operator">=</span> User<span class="token punctuation">(</span><span class="token operator">**</span>external_data<span class="token punctuation">)</span>  <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>In Python, the <code>**</code> operator is used to unpack a <u>dictionary</u> into keyword arguments. In the given code, <code>User(**external_data)</code> unpacks the <code>external_data</code> dictionary and passes its key-value pairs as keyword arguments to the <code>User</code> class constructor, which is equivalent to:</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">User<span class="token punctuation">(</span>
+    <span class="token builtin">id</span><span class="token operator">=</span><span class="token number">123</span><span class="token punctuation">,</span>
+    signup_ts<span class="token operator">=</span><span class="token string">'2019-06-01 12:22'</span><span class="token punctuation">,</span>
+    tastes<span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token string">'wine'</span><span class="token punctuation">:</span> <span class="token number">9</span><span class="token punctuation">,</span> <span class="token string">'cheese'</span><span class="token punctuation">:</span> <span class="token number">7</span><span class="token punctuation">,</span> <span class="token string">'cabbage'</span><span class="token punctuation">:</span> <span class="token string">'1'</span><span class="token punctuation">&#125;</span>
+<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>With out <code>**</code>, paras need to be passed through:</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">user <span class="token operator">=</span> User<span class="token punctuation">(</span>
+    <span class="token builtin">id</span><span class="token operator">=</span>external_data<span class="token punctuation">[</span><span class="token string">'id'</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    signup_ts<span class="token operator">=</span>external_data<span class="token punctuation">[</span><span class="token string">'signup_ts'</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    tastes<span class="token operator">=</span>external_data<span class="token punctuation">[</span><span class="token string">'tastes'</span><span class="token punctuation">]</span>
+<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>The class <code>user</code> can be used normally:</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">
+<span class="token keyword">print</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span><span class="token builtin">id</span><span class="token punctuation">)</span>  
+<span class="token comment">#> 123</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>user<span class="token punctuation">.</span>model_dump<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>  
+<span class="token triple-quoted-string string">"""
+&#123;
+    'id': 123,
+    'name': 'John Doe',
+    'signup_ts': datetime.datetime(2019, 6, 1, 12, 22),
+    'tastes': &#123;'wine': 9, 'cheese': 7, 'cabbage': 1&#125;,
+&#125;
+"""</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="BasicModel"><a href="#BasicModel" class="headerlink" title="BasicModel"></a>BasicModel</h3><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> pydantic <span class="token keyword">import</span> BaseModel
+
+<span class="token keyword">class</span> <span class="token class-name">User</span><span class="token punctuation">(</span>BaseModel<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token builtin">id</span><span class="token punctuation">:</span> <span class="token builtin">int</span>
+    name<span class="token punctuation">:</span> <span class="token builtin">str</span> <span class="token operator">=</span> <span class="token string">'Jane Doe'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>Without pydantic:</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">User</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> <span class="token builtin">id</span><span class="token punctuation">:</span> <span class="token builtin">int</span><span class="token punctuation">,</span> name<span class="token punctuation">:</span> <span class="token builtin">str</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span><span class="token builtin">id</span> <span class="token operator">=</span> <span class="token builtin">id</span>
+        self<span class="token punctuation">.</span>name <span class="token operator">=</span> name<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+]]></content>
+      <categories>
+        <category>Paper</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Different categories of kernel</title>
     <url>/2025/05/27/2025527-Different-kinds-of-kernel/</url>
-    <content><![CDATA[<h1 id="different-categories-of-kernel">Different categories of
-kernel</h1>
-<p>Stable, LTS, SLTS, rt, ...</p>
+    <content><![CDATA[<h1 id="Different-categories-of-kernel"><a href="#Different-categories-of-kernel" class="headerlink" title="Different categories of kernel"></a>Different categories of kernel</h1><p>Stable, LTS, SLTS, rt, …</p>
 <span id="more"></span>
-<ul>
+<h3 id="Kernel-categories"><a href="#Kernel-categories" class="headerlink" title="Kernel categories"></a>Kernel categories</h3><ul>
 <li><p>Prepatch (rc)</p>
-<p>Prepatch or "RC" kernels are mainline kernel pre-releases that are
-mostly aimed at other kernel developers and Linux enthusiasts. They must
-be compiled from source and usually contain new features that must be
-tested before they can be put into a stable release. Prepatch kernels
-are maintained and released by Linus Torvalds.</p></li>
+<p>Prepatch or “RC” kernels are mainline kernel pre-releases that are mostly aimed at other kernel developers and Linux enthusiasts. They must be compiled from source and usually contain new features that must be tested before they can be put into a stable release. Prepatch kernels are maintained and released by Linus Torvalds.</p>
+</li>
 <li><p>Mainline</p>
-<p>Mainline tree is maintained by Linus Torvalds. It's the tree where
-all new features are introduced and where all the exciting new
-development happens. New mainline kernels are released every 9-10
-weeks.</p></li>
+<p>Mainline tree is maintained by Linus Torvalds. It’s the tree where all new features are introduced and where all the exciting new development happens. New mainline kernels are released every 9-10 weeks.</p>
+</li>
 <li><p>Stable</p>
-<p>After each mainline kernel is released, it is considered "stable."
-Any bug fixes for a stable kernel are backported from the mainline tree
-and applied by a designated stable kernel maintainer. There are usually
-only a few bugfix kernel releases until next mainline kernel becomes
-available -- unless it is designated a "longterm maintenance kernel."
-Stable kernel updates are released on as-needed basis, usually once a
-week.</p></li>
+<p>After each mainline kernel is released, it is considered “stable.” Any bug fixes for a stable kernel are backported from the mainline tree and applied by a designated stable kernel maintainer. There are usually only a few bugfix kernel releases until next mainline kernel becomes available — unless it is designated a “longterm maintenance kernel.” Stable kernel updates are released on as-needed basis, usually once a week.</p>
+</li>
 <li><p>Longterm</p>
-<p>There are usually several "longterm maintenance" kernel releases
-provided for the purposes of backporting bugfixes for older kernel
-trees. Only important bugfixes are applied to such kernels and they
-don't usually see very frequent releases, especially for older
-trees.</p></li>
+<p>There are usually several “longterm maintenance” kernel releases provided for the purposes of backporting bugfixes for older kernel trees. Only important bugfixes are applied to such kernels and they don’t usually see very frequent releases, especially for older trees.</p>
+</li>
 </ul>
+<div class="table-container">
 <table>
-<colgroup>
-<col style="width: 11%" />
-<col style="width: 51%" />
-<col style="width: 16%" />
-<col style="width: 20%" />
-</colgroup>
 <thead>
-<tr class="header">
+<tr>
 <th>Version</th>
 <th>Maintainer</th>
 <th>Released</th>
@@ -56,37 +109,37 @@ trees.</p></li>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>6.12</td>
 <td>Greg Kroah-Hartman &amp; Sasha Levin</td>
 <td>2024-11-17</td>
 <td>Dec, 2026</td>
 </tr>
-<tr class="even">
+<tr>
 <td>6.6</td>
 <td>Greg Kroah-Hartman &amp; Sasha Levin</td>
 <td>2023-10-29</td>
 <td>Dec, 2026</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>6.1</td>
 <td>Greg Kroah-Hartman &amp; Sasha Levin</td>
 <td>2022-12-11</td>
 <td>Dec, 2027</td>
 </tr>
-<tr class="even">
+<tr>
 <td>5.15</td>
 <td>Greg Kroah-Hartman &amp; Sasha Levin</td>
 <td>2021-10-31</td>
 <td>Dec, 2026</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>5.10</td>
 <td>Greg Kroah-Hartman &amp; Sasha Levin</td>
 <td>2020-12-13</td>
 <td>Dec, 2026</td>
 </tr>
-<tr class="even">
+<tr>
 <td>5.4</td>
 <td>Greg Kroah-Hartman &amp; Sasha Levin</td>
 <td>2019-11-24</td>
@@ -94,10 +147,11 @@ trees.</p></li>
 </tr>
 </tbody>
 </table>
+</div>
 <p>Currently syzbot only support 5.15 and 6.1 LTS version</p>
-<h3 id="references">References</h3>
-<ul>
-<li>https://www.kernel.org/category/releases.html</li>
+<h3 id="Upsteam-amp-Downstream-Kernel"><a href="#Upsteam-amp-Downstream-Kernel" class="headerlink" title="Upsteam &amp; Downstream Kernel"></a>Upsteam &amp; Downstream Kernel</h3><h3 id="References"><a href="#References" class="headerlink" title="References"></a>References</h3><ul>
+<li><a href="https://www.kernel.org/category/releases.html">https://www.kernel.org/category/releases.html</a></li>
+<li><a href="https://www.linuxquestions.org/questions/linux-kernel-70/what-is-an-upstream-kernel-894097/">https://www.linuxquestions.org/questions/linux-kernel-70/what-is-an-upstream-kernel-894097/</a></li>
 </ul>
 ]]></content>
       <categories>

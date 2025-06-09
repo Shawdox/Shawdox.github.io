@@ -13,15 +13,15 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="Different categories of kernel Stable, LTS, SLTS, rt, ...">
+  <meta name="description" content="Different categories of kernelStable, LTS, SLTS, rt, …">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Different categories of kernel">
 <meta property="og:url" content="http://example.com/2025/05/27/2025527-Different-kinds-of-kernel/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="Different categories of kernel Stable, LTS, SLTS, rt, ...">
+<meta property="og:description" content="Different categories of kernelStable, LTS, SLTS, rt, …">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-05-26T16:00:00.000Z">
-<meta property="article:modified_time" content="2025-05-27T14:51:26.980Z">
+<meta property="article:modified_time" content="2025-05-27T15:12:51.346Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="Fuzzing">
 <meta property="article:tag" content="Syzkaller">
@@ -151,46 +151,26 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="different-categories-of-kernel">Different categories of
-kernel</h1>
-<p>Stable, LTS, SLTS, rt, ...</p>
+        <h1 id="Different-categories-of-kernel"><a href="#Different-categories-of-kernel" class="headerlink" title="Different categories of kernel"></a>Different categories of kernel</h1><p>Stable, LTS, SLTS, rt, …</p>
 <span id="more"></span>
-<ul>
+<h3 id="Kernel-categories"><a href="#Kernel-categories" class="headerlink" title="Kernel categories"></a>Kernel categories</h3><ul>
 <li><p>Prepatch (rc)</p>
-<p>Prepatch or "RC" kernels are mainline kernel pre-releases that are
-mostly aimed at other kernel developers and Linux enthusiasts. They must
-be compiled from source and usually contain new features that must be
-tested before they can be put into a stable release. Prepatch kernels
-are maintained and released by Linus Torvalds.</p></li>
+<p>Prepatch or “RC” kernels are mainline kernel pre-releases that are mostly aimed at other kernel developers and Linux enthusiasts. They must be compiled from source and usually contain new features that must be tested before they can be put into a stable release. Prepatch kernels are maintained and released by Linus Torvalds.</p>
+</li>
 <li><p>Mainline</p>
-<p>Mainline tree is maintained by Linus Torvalds. It's the tree where
-all new features are introduced and where all the exciting new
-development happens. New mainline kernels are released every 9-10
-weeks.</p></li>
+<p>Mainline tree is maintained by Linus Torvalds. It’s the tree where all new features are introduced and where all the exciting new development happens. New mainline kernels are released every 9-10 weeks.</p>
+</li>
 <li><p>Stable</p>
-<p>After each mainline kernel is released, it is considered "stable."
-Any bug fixes for a stable kernel are backported from the mainline tree
-and applied by a designated stable kernel maintainer. There are usually
-only a few bugfix kernel releases until next mainline kernel becomes
-available -- unless it is designated a "longterm maintenance kernel."
-Stable kernel updates are released on as-needed basis, usually once a
-week.</p></li>
+<p>After each mainline kernel is released, it is considered “stable.” Any bug fixes for a stable kernel are backported from the mainline tree and applied by a designated stable kernel maintainer. There are usually only a few bugfix kernel releases until next mainline kernel becomes available — unless it is designated a “longterm maintenance kernel.” Stable kernel updates are released on as-needed basis, usually once a week.</p>
+</li>
 <li><p>Longterm</p>
-<p>There are usually several "longterm maintenance" kernel releases
-provided for the purposes of backporting bugfixes for older kernel
-trees. Only important bugfixes are applied to such kernels and they
-don't usually see very frequent releases, especially for older
-trees.</p></li>
+<p>There are usually several “longterm maintenance” kernel releases provided for the purposes of backporting bugfixes for older kernel trees. Only important bugfixes are applied to such kernels and they don’t usually see very frequent releases, especially for older trees.</p>
+</li>
 </ul>
+<div class="table-container">
 <table>
-<colgroup>
-<col style="width: 11%" />
-<col style="width: 51%" />
-<col style="width: 16%" />
-<col style="width: 20%" />
-</colgroup>
 <thead>
-<tr class="header">
+<tr>
 <th>Version</th>
 <th>Maintainer</th>
 <th>Released</th>
@@ -198,37 +178,37 @@ trees.</p></li>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>6.12</td>
 <td>Greg Kroah-Hartman &amp; Sasha Levin</td>
 <td>2024-11-17</td>
 <td>Dec, 2026</td>
 </tr>
-<tr class="even">
+<tr>
 <td>6.6</td>
 <td>Greg Kroah-Hartman &amp; Sasha Levin</td>
 <td>2023-10-29</td>
 <td>Dec, 2026</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>6.1</td>
 <td>Greg Kroah-Hartman &amp; Sasha Levin</td>
 <td>2022-12-11</td>
 <td>Dec, 2027</td>
 </tr>
-<tr class="even">
+<tr>
 <td>5.15</td>
 <td>Greg Kroah-Hartman &amp; Sasha Levin</td>
 <td>2021-10-31</td>
 <td>Dec, 2026</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>5.10</td>
 <td>Greg Kroah-Hartman &amp; Sasha Levin</td>
 <td>2020-12-13</td>
 <td>Dec, 2026</td>
 </tr>
-<tr class="even">
+<tr>
 <td>5.4</td>
 <td>Greg Kroah-Hartman &amp; Sasha Levin</td>
 <td>2019-11-24</td>
@@ -236,10 +216,11 @@ trees.</p></li>
 </tr>
 </tbody>
 </table>
+</div>
 <p>Currently syzbot only support 5.15 and 6.1 LTS version</p>
-<h3 id="references">References</h3>
-<ul>
-<li>https://www.kernel.org/category/releases.html</li>
+<h3 id="Upsteam-amp-Downstream-Kernel"><a href="#Upsteam-amp-Downstream-Kernel" class="headerlink" title="Upsteam &amp; Downstream Kernel"></a>Upsteam &amp; Downstream Kernel</h3><h3 id="References"><a href="#References" class="headerlink" title="References"></a>References</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://www.kernel.org/category/releases.html">https://www.kernel.org/category/releases.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.linuxquestions.org/questions/linux-kernel-70/what-is-an-upstream-kernel-894097/">https://www.linuxquestions.org/questions/linux-kernel-70/what-is-an-upstream-kernel-894097/</a></li>
 </ul>
 
       
@@ -261,6 +242,15 @@ trees.</p></li>
     
 <nav id="article-nav">
   
+    <a href="/2025/06/09/202569-Library-Pydantic/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">上一篇</strong>
+      <div class="article-nav-title">
+        
+          Library Pydantic
+        
+      </div>
+    </a>
+  
   
     <a href="/2025/05/26/2025526-(Syzkaller)Reproduce-bugs-from-syzkaller-logs/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">下一篇</strong>
@@ -278,8 +268,7 @@ trees.</p></li>
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#different-categories-of-kernel"><span class="nav-number">1.</span> <span class="nav-text">Different categories of
-kernel</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#references"><span class="nav-number">1.0.1.</span> <span class="nav-text">References</span></a></li></ol></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Different-categories-of-kernel"><span class="nav-number">1.</span> <span class="nav-text">Different categories of kernel</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Kernel-categories"><span class="nav-number">1.0.1.</span> <span class="nav-text">Kernel categories</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Upsteam-amp-Downstream-Kernel"><span class="nav-number">1.0.2.</span> <span class="nav-text">Upsteam &amp; Downstream Kernel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#References"><span class="nav-number">1.0.3.</span> <span class="nav-text">References</span></a></li></ol></li></ol></li></ol>
     
     </div>
   </aside>
@@ -473,5 +462,20 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>
