@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>LLM ranking/reranking | Shaw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="LLM" />
+  
+  
+  
+    <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
+  
+  
+  <meta name="description" content="LLM ranking&#x2F;reranking Ranking&#x2F;reranking methods with LLMs.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LLM ranking&#x2F;reranking">
+<meta property="og:url" content="http://example.com/2025/10/08/20251008-LLM-rankingreranking/index.html">
+<meta property="og:site_name" content="Shaw">
+<meta property="og:description" content="LLM ranking&#x2F;reranking Ranking&#x2F;reranking methods with LLMs.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2025/10/08/figures/image-20251013192822662.png">
+<meta property="og:image" content="http://example.com/2025/10/08/figures/image-20251010184256480.png">
+<meta property="og:image" content="http://example.com/2025/10/08/figures/image-20251012154804917.png">
+<meta property="article:published_time" content="2025-10-07T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-10-15T08:57:06.615Z">
+<meta property="article:author" content="Shaw">
+<meta property="article:tag" content="LLM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2025/10/08/figures/image-20251013192822662.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/ytre.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+    
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Yanone+Kaffeesatz%3A200%2C300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+
+  <link rel="stylesheet" id="athemes-headings-fonts-css" href="//fonts.googleapis.com/css?family=Oswald%3A300%2C400%2C700&amp;ver=4.6.1" type="text/css" media="all">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+  <link rel="stylesheet" href="/css/fashion.css" >
+  <link rel="stylesheet" href="/css/glyphs.css" >
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head>
+
+
+
+  <body data-spy="scroll" data-target="#toc" data-offset="50">
+
+
+  
+
+
+<header id="allheader" class="site-header" role="banner" 
+   >
+  <div class="clearfix container">
+      <div class="site-branding">
+
+          <h1 class="site-title">
+            
+              <a href="/" rel="home" >
+                <img style="margin-bottom: 10px;"  width="124px" height="124px" alt="Hike News" src=" /css/images/ytre.jpg">
+              </a>
+            
+          </h1>
+          
+          
+            
+          <nav id="main-navigation" class="main-navigation" role="navigation">
+            <a class="nav-open">Menu</a>
+            <a class="nav-close">Close</a>
+
+            <div class="clearfix sf-menu">
+              <ul id="main-nav" class="menu sf-js-enabled sf-arrows"  style="touch-action: pan-y;">
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="/"> <a class="" href="/">首页</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="archives"> <a class="" href="/archives">归档</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="categories"> <a class="" href="/categories">分类</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="tags"> <a class="" href="/tags">标签</a> </li>
+                    
+                      <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-1663" linktext="about"> <a class="" href="/about">关于</a> </li>
+                    
+              </ul>
+            </div>
+          </nav>
+
+      </div>
+  </div>
+</header>
+
+
+  <div id="container">
+    <div id="wrap">
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-20251008-LLM-rankingreranking" style="width: 66%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="clearfix post-1016 post type-post status-publish format-standard has-post-thumbnail hentry category-template-2 category-uncategorized tag-codex tag-edge-case tag-featured-image tag-image tag-template">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      LLM ranking/reranking
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2025/10/08/20251008-LLM-rankingreranking/" class="article-date">
+	  <time datetime="2025-10-07T16:00:00.000Z" itemprop="datePublished">十月 8, 2025</time>
+	</a>
+
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+ 
+      
+	<span id="busuanzi_container_page_pv">
+	  本文总阅读量<span id="busuanzi_value_page_pv"></span>次
+	</span>
+
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="llm-rankingreranking">LLM ranking/reranking</h1>
+<p>Ranking/reranking methods with LLMs.</p>
+<span id="more"></span>
+<h2 id="llm-learning-to-rank-ltr">LLM Learning-To-Rank (LTR)</h2>
+<p>Under recommendation scenariom, the concept of learning-to-rank (LTR) means given the query <span class="math inline">\(Q\)</span>, and passages <span class="math inline">\(P\)</span>, output the top k most related passages with the query by using LLM. Funciton <span class="math inline">\(R(Q, P_i)\)</span> is the scoring function that evaluates the relevance of the query <span class="math inline">\(Q\)</span> and passage(or document) <span class="math inline">\(P_i\)</span>. <span class="math display">\[
+P^{rank} = \operatorname{TopK}_{i\in P} R(Q,P_i) \quad\quad (k\leq len(P))
+\]</span> There three main methods of LTR based on the current literature, <strong>Pointwise</strong> (<em>give each passage a score</em>), <strong>Pairwise</strong> (<em>compare two passages each time</em>) and <strong>Listwise</strong> (<em>compare all the passages at once</em>) <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/3626772.3657813">[2]</a> <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/abs/10.1145/3726302.3730323">[3]</a>. Pointwise faces issues with less relavance analysis between passages. Pairwise's weakness is huge time complexity even with optimized sorted method, such as heap sort or quick sort (<span class="math inline">\(O(k\cdot \log_{2}{N})\)</span>​). The downside of Listwise is limited context window of LLMs <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/abs/10.1145/3726302.3730323">[3]</a>.</p>
+<p><img src="../figures/image-20251013192822662.png" /></p>
+<p>The evaluation metric is usually <span class="math inline">\(NDCG@k\)</span>, and <span class="math inline">\(rel_i\)</span> means <u>the real relavance score</u> of the i-th item in ranked list. <span class="math inline">\(IDCG@k\)</span> is the maximum possible DCG with ideal ranking. The range of <span class="math inline">\(NDCG@k\)</span> is [0, 1], higher values indicate better ranking quality. $$ NDCG@k =  \</p>
+<p>DCG@k = _{i=1}^{k}  </p>
+<p>IDCG@k = _{i=1}^{k}  \ $$</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/3626772.3657813">Setwise [2]</a> enables ranking by evaluating small groups of documents in a singe LLM inference. Instead of comparing each document pair independently (Pairwise) or attempting to rank them at once (Listwise).</li>
+<li><a target="_blank" rel="noopener" href="https://dl.acm.org/doi/abs/10.1145/3726302.3730323">Setwise Insertion [3]</a> extend the Setwise with previous ranking infomation, saving the query time and prompt usage.</li>
+</ul>
+<h2 id="re-ranking">Re-ranking</h2>
+<p>LLM in recommendation scenario are used for reranking the recommender ranking results for better scalability, personalization of the results.</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://dl.acm.org/doi/10.1145/3696410.3714922">LLM4Rerank [1]</a> constructs a finite-state machine composed of different function nodes, and a reranking process is a complete iteration of this machine.</li>
+</ul>
+<p><img src="../figures/image-20251010184256480.png" style="zoom:80%;" /></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/3701716.3717575">RankFlow [4]</a> utilizes LLMs to rewrite the query and summarize the passages, and rerank them.</li>
+</ul>
+<p><img src="../figures/image-20251012154804917.png" style="zoom: 50%;" /></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://dl.acm.org/doi/abs/10.1145/3726302.3730119">Movin et al. [5]</a> do a empirical study about the zero-shot reranking with LLM for structed data. The authors find that zero‑shot LLMs like GPT‑4 can act as rerankers on datasets with many precomputed features, but overall they still underperform traditional supervised methods such as LambdaMART. However, on difficult queries where the baseline fails, LLM reranking can surpass it, though results remain brittle and highly sensitive to prompt design.</li>
+</ul>
+<h2 id="references">References</h2>
+<ul>
+<li>Recommendation:
+<ul>
+<li><p>[1] WWW'25 <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/10.1145/3696410.3714922">LLM4Rerank: LLM-based Auto-Reranking Framework for Recommendations | Proceedings of the ACM on Web Conference 2025</a></p></li>
+<li><p>[2] SIGIR'24: <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/3626772.3657813">A Setwise Approach for Effective and Highly Efficient Zero-shot Ranking with Large Language Models</a></p></li>
+<li><p>[3] SIGIR'25: <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/abs/10.1145/3726302.3730323">Beyond Reproducibility: Advancing Zero-shot LLM Reranking Efficiency with Setwise Insertion | Proceedings of the 48th International ACM SIGIR Conference on Research and Development in Information Retrieval</a></p></li>
+<li><p>[4] WWW'25: <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/3701716.3717575">RankFlow: A Multi-Role Collaborative Reranking Workflow Utilizing Large Language Models</a></p></li>
+<li><p>[5] SIGIR'25:<a target="_blank" rel="noopener" href="https://dl.acm.org/doi/abs/10.1145/3726302.3730119">Zero-Shot Reranking with Large Language Models and Precomputed Ranking Features: Opportunities and Limitations | Proceedings of the 48th International ACM SIGIR Conference on Research and Development in Information Retrieval</a></p></li>
+</ul></li>
+</ul>
+
+      
+    </div>
+    <footer class="entry-meta entry-footer">
+      
+	<span class="ico-folder"></span>
+    <a class="article-category-link" href="/categories/Paper/">Paper</a>
+
+      
+  <span class="ico-tags"></span>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LLM/" rel="tag">LLM</a></li></ul>
+
+      
+    </footer>
+    <hr class="entry-footer-hr">
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2025/06/09/202569-Library-Pydantic/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">下一篇</strong>
+      <div class="article-nav-title">Library Pydantic</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#llm-rankingreranking"><span class="nav-number">1.</span> <span class="nav-text">LLM ranking&#x2F;reranking</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#llm-learning-to-rank-ltr"><span class="nav-number">1.1.</span> <span class="nav-text">LLM Learning-To-Rank (LTR)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#re-ranking"><span class="nav-number">1.2.</span> <span class="nav-text">Re-ranking</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#references"><span class="nav-number">1.3.</span> <span class="nav-text">References</span></a></li></ol></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+    <a href="/about" class="mobile-nav-link">About</a>
+  
+</nav> -->
+    
+<footer id="footer" class="site-footer">
+  
+
+  <div class="clearfix container">
+      <div class="site-info">
+	      &copy; 2025 Shaw All Rights Reserved.
+        
+          <span id="busuanzi_container_site_pv">
+            本站总访问量<span id="busuanzi_value_site_pv"></span>次
+          </span>
+          <span class="post-meta-divider">|</span>
+          <span id="busuanzi_container_site_uv" style='display:none'>
+            本站访客数<span id="busuanzi_value_site_uv"></span>人
+          </span>
+          <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+          
+      </div>
+      <div class="site-credit">
+        Theme by <a href="https://github.com/iTimeTraveler/hexo-theme-hipaper" target="_blank">hipaper</a>
+      </div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("allheader").offsetHeight - document.getElementById("footer").offsetHeight + "px";
+
+
+    <!-- headerblur min height -->
+    
+    
+</script>
+
+  
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'true', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+<!-- Gaug.es Analytics -->
+<script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', 'true');
+    t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+    t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+<!-- End Gaug.es Analytics -->
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+
+	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+	</script>
+
+
+
+	<script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2439014eb270056ee1808a49956fe114";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<!-- Tencent Analytics -->
+	<script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId={{ theme.tencent_analytics }}";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+<!-- End Tencent Analytics -->
+
+
+  </div>
+
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js" async=""></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</body>
+</html>
