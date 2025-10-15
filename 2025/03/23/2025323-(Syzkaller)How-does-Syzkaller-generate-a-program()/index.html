@@ -6,7 +6,7 @@
   <title>(Syzkaller)How does Syzkaller generate a program (syscall sequences)? | Shaw</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="FuzzingSyzkallerKernel" />
+  <meta name="keywords" content="SyzkallerFuzzingKernel" />
   
   
   
@@ -22,10 +22,10 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/2025/03/23/figures/image-20250331125757944.png">
 <meta property="article:published_time" content="2025-03-22T16:00:00.000Z">
-<meta property="article:modified_time" content="2025-03-31T05:09:36.981Z">
+<meta property="article:modified_time" content="2025-03-31T05:09:38.000Z">
 <meta property="article:author" content="Shaw">
-<meta property="article:tag" content="Fuzzing">
 <meta property="article:tag" content="Syzkaller">
+<meta property="article:tag" content="Fuzzing">
 <meta property="article:tag" content="Kernel">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/2025/03/23/figures/image-20250331125757944.png">
@@ -158,12 +158,15 @@
 <p>2025.3.23<br>Xiao</p>
 </blockquote>
 <span id="more"></span>
+
 <h2 id="Generating-a-Program"><a href="#Generating-a-Program" class="headerlink" title="Generating a Program"></a>Generating a Program</h2><p>Syzkaller uses a <code>ChoiceTable</code> to guide the random selection process of syscalls while ensuring the rationality of the related constraints. For example, for a syscall <code>accept()</code>:</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">accept</span><span class="token punctuation">(</span><span class="token keyword">int</span> sockfd<span class="token punctuation">,</span> <span class="token keyword">struct</span> <span class="token class-name">sockaddr</span> <span class="token operator">*</span>addr<span class="token punctuation">,</span> <span class="token class-name">socklen_t</span> <span class="token operator">*</span>addrlen<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
 <p>It needs to accept a socket file handler (<code>sockfd</code>), an address (<code>addr</code>) and a number representing the length of the address (<code>addrlen</code>). Apparently, <code>int sockfd</code> should be return value of some functions like <code>socket()</code>. A random integer would most likely not trigger any meaningful behavior. </p>
-<p>There comes the problem, <em>the actual range represented by the type of a parameter (<code>int</code>) in function signatures is often larger than the range of values practically meaningful (<code>sockfd</code>).</em> Function signatures are not suitable guidance. To this end, Syzkaller uses <a target="_blank" rel="noopener" href="https://github.com/google/syzkaller/blob/master/docs/syscall_descriptions_syntax.md">syz-lang</a> (Syscall description language) to specifically describe the source type, read/write direction and other attributes of the parameters of syscalls.</p>
+<p>There comes the problem, <em>the actual range represented by the type of a parameter (<code>int</code>) in function signatures is often larger than the range of values practically meaningful (<code>sockfd</code>).</em> Function signatures are not suitable guidance. To this end, Syzkaller uses <a target="_blank" rel="noopener" href="https://github.com/google/syzkaller/blob/master/docs/syscall_descriptions_syntax.md">syz-lang</a> (Syscall description language) to specifically describe the source type, read&#x2F;write direction and other attributes of the parameters of syscalls.</p>
 <pre class="line-numbers language-syz-lang" data-language="syz-lang"><code class="language-syz-lang">accept$inet(fd sock_in, peer ptr[out, sockaddr_in, opt],
             peerlen ptr[inout, len[peer, int32]]) sock_in<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
 <hr>
 <p>I’m not going to be a syz-lang expert here so let’s dive into the code. Syzkaller use <code>Generate()</code> to generate specific length, randomly chosen syscall sequences(<code>Prog</code>):</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// prog/generation.go</span>
@@ -193,7 +196,8 @@
 	p<span class="token punctuation">.</span><span class="token function">debugValidate</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 	<span class="token keyword">return</span> p
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>The logic is simple. It continually generate one or more <code>Calls</code> and add it/them to the end of sequence until it meets the length. <code>ChoiceTable</code> is the key struct to direct the syscall selection:</p>
+
+<p>The logic is simple. It continually generate one or more <code>Calls</code> and add it&#x2F;them to the end of sequence until it meets the length. <code>ChoiceTable</code> is the key struct to direct the syscall selection:</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// ChooseTable allows to do a weighted choice of a syscall for a given syscall</span>
 <span class="token comment">// based on call-to-call priorities and a set of enabled and generatable syscalls.</span>
 <span class="token keyword">type</span> ChoiceTable <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
@@ -202,6 +206,7 @@
 	calls           <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">*</span>Syscall
 	noGenerateCalls <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">int</span><span class="token punctuation">]</span><span class="token builtin">bool</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p><code>ct.runs</code> maintaions an integer two-dimensional array, where each value represents the probability of achieving new coverage by appending syscall Y to a syscall sequence containing X. When choosing a new syscall, Syzkaller needs to determine a <em>biasCall</em> within the existing sequence to select which row in the choice table:</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>r <span class="token operator">*</span>randGen<span class="token punctuation">)</span> <span class="token function">generateCall</span><span class="token punctuation">(</span>s <span class="token operator">*</span>state<span class="token punctuation">,</span> p <span class="token operator">*</span>Prog<span class="token punctuation">,</span> insertionPoint <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">*</span>Call <span class="token punctuation">&#123;</span>
 	biasCall <span class="token operator">:=</span> <span class="token operator">-</span><span class="token number">1</span>
@@ -218,10 +223,11 @@
 	meta <span class="token operator">:=</span> r<span class="token punctuation">.</span>target<span class="token punctuation">.</span>Syscalls<span class="token punctuation">[</span>idx<span class="token punctuation">]</span>
 	<span class="token keyword">return</span> r<span class="token punctuation">.</span><span class="token function">generateParticularCall</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> meta<span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p><code>generateCall</code> gets <code>biasCall</code> from args. If <code>biasCall</code> is -1 Syzkaller will choose a random bias call from existing sequence. </p>
-<p><img src="../figures/image-20250331125757944.png" style="zoom: 50%;" /></p>
+<img src="../figures/image-20250331125757944.png" style="zoom: 50%;" />
+
 <p>Syzkaller continuously selects new calls from the choice table and generates arguments for them. Due to argument dependency constraints, the generated arguments may include additional calls (green one in fig). Syzkaller then incorporates these calls into the sequence to produce valid arguments. All types and the second return value of <code>generate(r,s,dir)</code>:</p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -230,11 +236,10 @@
 <th>Return2</th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td><strong><em>ResourceType</em></strong></td>
+<tbody><tr>
+<td><em><strong>ResourceType</strong></em></td>
 <td>Return value from socket, mmap, fork,…</td>
-<td><strong>nil/calls</strong></td>
+<td><strong>nil&#x2F;calls</strong></td>
 </tr>
 <tr>
 <td><em>BufferType</em></td>
@@ -243,7 +248,7 @@
 </tr>
 <tr>
 <td><u><em>VmaType</em></u></td>
-<td>Virtual memory address, like <code>addr</code> in  <code>mmap(addr, size, ...)</code></td>
+<td>Virtual memory address, like <code>addr</code> in  <code>mmap(addr, size, ...) </code></td>
 <td>nil</td>
 </tr>
 <tr>
@@ -267,24 +272,24 @@
 <td>nil</td>
 </tr>
 <tr>
-<td><strong><em>ArrayType</em></strong></td>
+<td><em><strong>ArrayType</strong></em></td>
 <td>Array, must refer other type resources</td>
-<td><strong>nil/calls</strong></td>
+<td><strong>nil&#x2F;calls</strong></td>
 </tr>
 <tr>
-<td><strong><em>StructType</em></strong></td>
+<td><em><strong>StructType</strong></em></td>
 <td>Struct</td>
-<td><strong>nil/calls</strong></td>
+<td><strong>nil&#x2F;calls</strong></td>
 </tr>
 <tr>
-<td><strong><em>UnionType</em></strong></td>
+<td><em><strong>UnionType</strong></em></td>
 <td>Union</td>
-<td><strong>nil/calls</strong></td>
+<td><strong>nil&#x2F;calls</strong></td>
 </tr>
 <tr>
-<td><strong><em>PtrType</em></strong></td>
+<td><em><strong>PtrType</strong></em></td>
 <td>Pointer</td>
-<td><strong>nil/calls</strong></td>
+<td><strong>nil&#x2F;calls</strong></td>
 </tr>
 <tr>
 <td><em>LenType</em></td>
@@ -296,9 +301,7 @@
 <td>Checksum type, usually used in network function</td>
 <td>nil</td>
 </tr>
-</tbody>
-</table>
-</div>
+</tbody></table>
 <h2 id="Generating-Arguments-for-a-Call"><a href="#Generating-Arguments-for-a-Call" class="headerlink" title="Generating Arguments for a Call"></a>Generating Arguments for a Call</h2><p>There are five ways to generate args for a given syscall: </p>
 <h3 id="target-SpecialTypes"><a href="#target-SpecialTypes" class="headerlink" title="target.SpecialTypes"></a>target.SpecialTypes</h3><p>generateArgImpl:</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>r <span class="token operator">*</span>randGen<span class="token punctuation">)</span> <span class="token function">generateArgImpl</span><span class="token punctuation">(</span>s <span class="token operator">*</span>state<span class="token punctuation">,</span> typ Type<span class="token punctuation">,</span> dir Dir<span class="token punctuation">,</span> ignoreSpecial <span class="token builtin">bool</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>arg Arg<span class="token punctuation">,</span> calls <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">*</span>Call<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -351,8 +354,10 @@
 
 	<span class="token keyword">return</span> typ<span class="token punctuation">.</span><span class="token function">generate</span><span class="token punctuation">(</span>r<span class="token punctuation">,</span> s<span class="token punctuation">,</span> dir<span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>This function has five returns, three of which return <code>nil</code> calls, while the other two may not. </p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">return</span> <span class="token function">gen</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>Gen<span class="token punctuation">&#123;</span>r<span class="token punctuation">,</span> s<span class="token punctuation">&#125;</span><span class="token punctuation">,</span> typ<span class="token punctuation">,</span> dir<span class="token punctuation">,</span> <span class="token boolean">nil</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
 <p><code>gen</code> from <code>r.target.SpecialTypes[typ.Name()]</code> is one of special generating functions provided by specific target system (linux, etc.). In <code>sys/linux/init.go</code>, there definitions show as follows: </p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// sys/linux/init.go:57</span>
 target<span class="token punctuation">.</span>SpecialTypes <span class="token operator">=</span> <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token keyword">func</span><span class="token punctuation">(</span>g <span class="token operator">*</span>prog<span class="token punctuation">.</span>Gen<span class="token punctuation">,</span> typ prog<span class="token punctuation">.</span>Type<span class="token punctuation">,</span> dir prog<span class="token punctuation">.</span>Dir<span class="token punctuation">,</span> old prog<span class="token punctuation">.</span>Arg<span class="token punctuation">)</span> <span class="token punctuation">(</span>
@@ -371,8 +376,8 @@ target<span class="token punctuation">.</span>SpecialTypes <span class="token op
 		<span class="token string">"usb_device_descriptor"</span><span class="token punctuation">:</span>     arch<span class="token punctuation">.</span>generateUsbDeviceDescriptor<span class="token punctuation">,</span>
 		<span class="token string">"usb_device_descriptor_hid"</span><span class="token punctuation">:</span> arch<span class="token punctuation">.</span>generateUsbHidDeviceDescriptor<span class="token punctuation">,</span>
 	<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>If the args of a syscall is a special value type like timespec, ip tables, etc., these generator functions can help produce more reasonable parameters.</p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -381,8 +386,7 @@ target<span class="token punctuation">.</span>SpecialTypes <span class="token op
 <th>Return2</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td><em>generateTimespec</em></td>
 <td><code>struct timespec &#123; time_t tv_sec = 0;     long tv_nsec = 10_000_000; // 10ms &#125;;</code></td>
 <td>calls</td>
@@ -390,7 +394,7 @@ target<span class="token punctuation">.</span>SpecialTypes <span class="token op
 <tr>
 <td><em>generateSockaddrAlg</em></td>
 <td></td>
-<td>nil/calls</td>
+<td>nil&#x2F;calls</td>
 </tr>
 <tr>
 <td><em>generateAlgName</em></td>
@@ -415,31 +419,29 @@ target<span class="token punctuation">.</span>SpecialTypes <span class="token op
 <tr>
 <td><em>generateIptables</em></td>
 <td></td>
-<td>nil/calls</td>
+<td>nil&#x2F;calls</td>
 </tr>
 <tr>
 <td><em>generateArptables</em></td>
 <td></td>
-<td>nil/calls</td>
+<td>nil&#x2F;calls</td>
 </tr>
 <tr>
 <td><em>generateEbtables</em></td>
 <td></td>
-<td>nil/calls</td>
+<td>nil&#x2F;calls</td>
 </tr>
 <tr>
 <td>generateUsbDeviceDescriptor</td>
 <td></td>
-<td>nil/calls</td>
+<td>nil&#x2F;calls</td>
 </tr>
 <tr>
 <td>generateUsbHidDeviceDescriptor</td>
 <td></td>
-<td>nil/calls</td>
+<td>nil&#x2F;calls</td>
 </tr>
-</tbody>
-</table>
-</div>
+</tbody></table>
 <p>PtrType.generate:</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>a <span class="token operator">*</span>PtrType<span class="token punctuation">)</span> <span class="token function">generate</span><span class="token punctuation">(</span>r <span class="token operator">*</span>randGen<span class="token punctuation">,</span> s <span class="token operator">*</span>state<span class="token punctuation">,</span> dir Dir<span class="token punctuation">)</span> <span class="token punctuation">(</span>arg Arg<span class="token punctuation">,</span> calls <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">*</span>Call<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
 	<span class="token comment">// The resource we are trying to generate may be in the pointer,</span>
@@ -452,6 +454,11 @@ target<span class="token punctuation">.</span>SpecialTypes <span class="token op
 	arg <span class="token operator">=</span> r<span class="token punctuation">.</span><span class="token function">allocAddr</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> a<span class="token punctuation">,</span> dir<span class="token punctuation">,</span> inner<span class="token punctuation">.</span><span class="token function">Size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> inner<span class="token punctuation">)</span>
 	<span class="token keyword">return</span> arg<span class="token punctuation">,</span> calls
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+
+
 <h3 id="References"><a href="#References" class="headerlink" title="References"></a>References</h3><p>- </p>
 
       
@@ -693,20 +700,5 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </body>
 </html>

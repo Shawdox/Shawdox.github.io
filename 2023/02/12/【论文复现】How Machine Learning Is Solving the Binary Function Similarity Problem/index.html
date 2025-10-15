@@ -13,12 +13,12 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="【论文复现】How Machine Learning Is Solving the Binary Function Similarity Problem一、模糊哈希（Fuzzy Hashing）1. Bytes fuzzy hashing——Catalog1 出处： ​    1. xorpd | FCatalog ​    2. binary_function_similarity&#x2F;Models">
+  <meta name="description" content="【论文复现】How Machine Learning Is Solving the Binary Function Similarity Problem一、模糊哈希（Fuzzy Hashing）1. Bytes fuzzy hashing——Catalog1 出处： ​	1. xorpd | FCatalog ​	2. binary_function_similarity&#x2F;Models&amp;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="(论文复现)How Machine Learning Is Solving the Binary Function Similarity Problem">
 <meta property="og:url" content="http://example.com/2023/02/12/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91How%20Machine%20Learning%20Is%20Solving%20the%20Binary%20Function%20Similarity%20Problem/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="【论文复现】How Machine Learning Is Solving the Binary Function Similarity Problem一、模糊哈希（Fuzzy Hashing）1. Bytes fuzzy hashing——Catalog1 出处： ​    1. xorpd | FCatalog ​    2. binary_function_similarity&#x2F;Models">
+<meta property="og:description" content="【论文复现】How Machine Learning Is Solving the Binary Function Similarity Problem一、模糊哈希（Fuzzy Hashing）1. Bytes fuzzy hashing——Catalog1 出处： ​	1. xorpd | FCatalog ​	2. binary_function_similarity&#x2F;Models&amp;">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230213123532.png">
 <meta property="article:published_time" content="2023-02-12T02:04:09.000Z">
@@ -154,27 +154,25 @@
       
         <h1 id="【论文复现】How-Machine-Learning-Is-Solving-the-Binary-Function-Similarity-Problem"><a href="#【论文复现】How-Machine-Learning-Is-Solving-the-Binary-Function-Similarity-Problem" class="headerlink" title="【论文复现】How Machine Learning Is Solving the Binary Function Similarity Problem"></a>【论文复现】How Machine Learning Is Solving the Binary Function Similarity Problem</h1><h2 id="一、模糊哈希（Fuzzy-Hashing）"><a href="#一、模糊哈希（Fuzzy-Hashing）" class="headerlink" title="一、模糊哈希（Fuzzy Hashing）"></a>一、模糊哈希（Fuzzy Hashing）</h2><h3 id="1-Bytes-fuzzy-hashing——Catalog1"><a href="#1-Bytes-fuzzy-hashing——Catalog1" class="headerlink" title="1. Bytes fuzzy hashing——Catalog1"></a>1. Bytes fuzzy hashing——Catalog1</h3><blockquote>
 <p><strong>出处：</strong></p>
-<p>​    1. <a target="_blank" rel="noopener" href="https://www.xorpd.net/pages/fcatalog.html">xorpd | FCatalog</a></p>
-<p>​    2. <a target="_blank" rel="noopener" href="https://github.com/Cisco-Talos/binary_function_similarity/tree/main/Models/Catalog1">binary_function_similarity/Models/Catalog1 at main · Cisco-Talos/binary_function_similarity (github.com)</a></p>
+<p>​	1. <a target="_blank" rel="noopener" href="https://www.xorpd.net/pages/fcatalog.html">xorpd | FCatalog</a></p>
+<p>​	2. <a target="_blank" rel="noopener" href="https://github.com/Cisco-Talos/binary_function_similarity/tree/main/Models/Catalog1">binary_function_similarity&#x2F;Models&#x2F;Catalog1 at main · Cisco-Talos&#x2F;binary_function_similarity (github.com)</a></p>
 <p>“FCatalog allows you to keep a database of all your named functions, and find similarities from this database efficiently.”</p>
 </blockquote>
 <h4 id="前置知识："><a href="#前置知识：" class="headerlink" title="前置知识："></a>前置知识：</h4><ul>
 <li><p><strong>binary blob</strong>：一串bytes；</p>
 </li>
-<li><p><strong>S(a)</strong>：字节串a的四字截取集合，例如:</p>
-<script type="math/tex; mode=display">
-\mathbf{S(a)}= \{123x,23xy,3xy1\},a=123xy1 \\
-\mathbf{S(b)}= \{1111\},b=111111111 \\</script></li>
-<li><p><strong>Jaccard Similarity</strong>：计算两个集合相似性：</p>
-<script type="math/tex; mode=display">
-J（S(a),S(b)）=\frac {S(a)\cap S(b)}{S(a)\cup S(b)}</script></li>
+<li><p><strong>S(a)</strong>：字节串a的四字截取集合，例如:<br>$$<br>\mathbf{S(a)}&#x3D; {123x,23xy,3xy1},a&#x3D;123xy1 \<br>\mathbf{S(b)}&#x3D; {1111},b&#x3D;111111111 \<br>$$</p>
+</li>
+<li><p><strong>Jaccard Similarity</strong>：计算两个集合相似性：<br>$$<br>J（S(a),S(b)）&#x3D;\frac {S(a)\cap S(b)}{S(a)\cup S(b)}<br>$$</p>
+</li>
 <li><p><strong>minhash</strong>：文本相似度比较算法，用于快速<strong>估算</strong>两个集合的相似度。</p>
 </li>
 </ul>
-<p>​    Catalog1算法利用minhash，使用哈希近似替代两个S集合，以此来估算其Jaccard系数，从而达到高效率地比较两个集合。</p>
+<p>​	Catalog1算法利用minhash，使用哈希近似替代两个S集合，以此来估算其Jaccard系数，从而达到高效率地比较两个集合。</p>
 <span id="more"></span>
-<h4 id="代码结构分析："><a href="#代码结构分析：" class="headerlink" title="代码结构分析："></a>代码结构分析：</h4><p>​    Catalog1算法需要将二进制文件截取分割后，由于每个二进制文件的长度不定，故其分割计算出的S(a)也不定长。为了对每个二进制文件都得到一个定长的特征签名，就需要对S(a)进行特征提取。</p>
-<p>​    使用哈希函数将集合中的每个DWORD映射到DWORD，这里的哈希采用类似密码学中置换的方法（permutation）：</p>
+
+<h4 id="代码结构分析："><a href="#代码结构分析：" class="headerlink" title="代码结构分析："></a>代码结构分析：</h4><p>​	Catalog1算法需要将二进制文件截取分割后，由于每个二进制文件的长度不定，故其分割计算出的S(a)也不定长。为了对每个二进制文件都得到一个定长的特征签名，就需要对S(a)进行特征提取。</p>
+<p>​	使用哈希函数将集合中的每个DWORD映射到DWORD，这里的哈希采用类似密码学中置换的方法（permutation）：</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">WORD_SIZE</span> <span class="token expression"><span class="token number">32</span>      	</span><span class="token comment">// 32 bits</span></span>
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">MAX_WORD</span> <span class="token expression"><span class="token number">0xffffffff</span>     </span><span class="token comment">// Maximum size of a dword.</span></span>
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">BYTE_SIZE</span> <span class="token expression"><span class="token number">8</span>             </span><span class="token comment">// Amount of bits in a byte.</span></span>
@@ -213,11 +211,8 @@ J（S(a),S(b)）=\frac {S(a)\cap S(b)}{S(a)\cup S(b)}</script></li>
     <span class="token punctuation">&#125;</span>
     <span class="token keyword">return</span> x<span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    由上可知，<strong>perm(i，x)就是第i个哈希函数h~i~(x)</strong>。计算完k个哈希函数后，我们得到了k个集合：</p>
-<script type="math/tex; mode=display">
-h_{1}(x),h_{2}(x),h_{3}(x)\cdots h_{k}(x)</script><p>​    然后每个集合中最小的数，就是我们所需的定长特征：</p>
-<script type="math/tex; mode=display">
-sig(T) = \{min_{t\in T}h_{1}(T),min_{t\in T}h_{2}(T),min_{t\in T}h_{3}(T)\cdots min_{t\in T}h_{k}(T)\}</script><p>​    故用$J(sig(A),sig(B))$代替$J(A,B)$即可大大简化计算，k的数量可以自己选定。对于完整的二进制文件，以下代码可以生成其对应特征：</p>
+
+<p>​	由上可知，<strong>perm(i，x)就是第i个哈希函数h<del>i</del>(x)</strong>。计算完k个哈希函数后，我们得到了k个集合：<br>$$<br>h_{1}(x),h_{2}(x),h_{3}(x)\cdots h_{k}(x)<br>$$<br>​	然后每个集合中最小的数，就是我们所需的定长特征：<br>$$<br>sig(T) &#x3D; {min_{t\in T}h_{1}(T),min_{t\in T}h_{2}(T),min_{t\in T}h_{3}(T)\cdots min_{t\in T}h_{k}(T)}<br>$$<br>​	故用$J(sig(A),sig(B))$代替$J(A,B)$即可大大简化计算，k的数量可以自己选定。对于完整的二进制文件，以下代码可以生成其对应特征：</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">sign</span><span class="token punctuation">(</span>
     <span class="token keyword">unsigned</span> <span class="token keyword">char</span><span class="token operator">*</span> data<span class="token punctuation">,</span>
     <span class="token keyword">unsigned</span> <span class="token keyword">int</span> len<span class="token punctuation">,</span>
@@ -263,12 +258,15 @@ sig(T) = \{min_{t\in T}h_{1}(T),min_{t\in T}h_{2}(T),min_{t\in T}h_{3}(T)\cdots 
     <span class="token comment">// Result should be stored at &lt;result></span>
     <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>​    </p>
-<p>​    </p>
-<h4 id="运行测试："><a href="#运行测试：" class="headerlink" title="运行测试："></a>运行测试：</h4><p>​    Catalog1共分为server和client两部分，client客户端作为IDA的一个插件，server服务器可以使用官方提供的testfcatalog.xorpd.net:1337，也可以自行搭建<a target="_blank" rel="noopener" href="https://github.com/xorpd/fcatalog_server。">https://github.com/xorpd/fcatalog_server。</a></p>
-<p>​    为了计算速度更快，这里使用C语言编写catalog相关计算操作，首先编译catalog1 ：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230213123532.png" alt=""></p>
-<p>​    </p>
+
+
+
+<p>​	</p>
+<p>​	</p>
+<h4 id="运行测试："><a href="#运行测试：" class="headerlink" title="运行测试："></a>运行测试：</h4><p>​	Catalog1共分为server和client两部分，client客户端作为IDA的一个插件，server服务器可以使用官方提供的testfcatalog.xorpd.net:1337，也可以自行搭建<a target="_blank" rel="noopener" href="https://github.com/xorpd/fcatalog_server%E3%80%82">https://github.com/xorpd/fcatalog_server。</a></p>
+<p>​	为了计算速度更快，这里使用C语言编写catalog相关计算操作，首先编译catalog1 ：</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20230213123532.png"></p>
+<p>​	</p>
 <p>【更新中】</p>
 
       
@@ -510,20 +508,5 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </body>
 </html>

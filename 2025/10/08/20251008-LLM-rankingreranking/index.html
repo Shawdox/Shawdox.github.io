@@ -13,22 +13,22 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="LLM ranking&#x2F;reranking Ranking&#x2F;reranking methods with LLMs.">
+  <meta name="description" content="LLM ranking&#x2F;rerankingRanking&#x2F;reranking methods with LLMs.">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LLM ranking&#x2F;reranking">
 <meta property="og:url" content="http://example.com/2025/10/08/20251008-LLM-rankingreranking/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="LLM ranking&#x2F;reranking Ranking&#x2F;reranking methods with LLMs.">
+<meta property="og:description" content="LLM ranking&#x2F;rerankingRanking&#x2F;reranking methods with LLMs.">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2025/10/08/figures/image-20251013192822662.png">
-<meta property="og:image" content="http://example.com/2025/10/08/figures/image-20251010184256480.png">
-<meta property="og:image" content="http://example.com/2025/10/08/figures/image-20251012154804917.png">
+<meta property="og:image" content="http://example.com/figures/image-20251013192822662.png">
+<meta property="og:image" content="http://example.com/figures/image-20251010184256480.png">
+<meta property="og:image" content="http://example.com/figures/image-20251012154804917.png">
 <meta property="article:published_time" content="2025-10-07T16:00:00.000Z">
-<meta property="article:modified_time" content="2025-10-15T08:57:06.615Z">
+<meta property="article:modified_time" content="2025-10-15T11:41:14.327Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="LLM">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2025/10/08/figures/image-20251013192822662.png">
+<meta name="twitter:image" content="http://example.com/figures/image-20251013192822662.png">
   
     <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
   
@@ -153,44 +153,47 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="llm-rankingreranking">LLM ranking/reranking</h1>
-<p>Ranking/reranking methods with LLMs.</p>
+        <h1 id="LLM-ranking-reranking"><a href="#LLM-ranking-reranking" class="headerlink" title="LLM ranking&#x2F;reranking"></a>LLM ranking&#x2F;reranking</h1><p>Ranking&#x2F;reranking methods with LLMs.</p>
 <span id="more"></span>
-<h2 id="llm-learning-to-rank-ltr">LLM Learning-To-Rank (LTR)</h2>
-<p>Under recommendation scenariom, the concept of learning-to-rank (LTR) means given the query <span class="math inline">\(Q\)</span>, and passages <span class="math inline">\(P\)</span>, output the top k most related passages with the query by using LLM. Funciton <span class="math inline">\(R(Q, P_i)\)</span> is the scoring function that evaluates the relevance of the query <span class="math inline">\(Q\)</span> and passage(or document) <span class="math inline">\(P_i\)</span>. <span class="math display">\[
-P^{rank} = \operatorname{TopK}_{i\in P} R(Q,P_i) \quad\quad (k\leq len(P))
-\]</span> There three main methods of LTR based on the current literature, <strong>Pointwise</strong> (<em>give each passage a score</em>), <strong>Pairwise</strong> (<em>compare two passages each time</em>) and <strong>Listwise</strong> (<em>compare all the passages at once</em>) <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/3626772.3657813">[2]</a> <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/abs/10.1145/3726302.3730323">[3]</a>. Pointwise faces issues with less relavance analysis between passages. Pairwise's weakness is huge time complexity even with optimized sorted method, such as heap sort or quick sort (<span class="math inline">\(O(k\cdot \log_{2}{N})\)</span>​). The downside of Listwise is limited context window of LLMs <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/abs/10.1145/3726302.3730323">[3]</a>.</p>
-<p><img src="../figures/image-20251013192822662.png" /></p>
-<p>The evaluation metric is usually <span class="math inline">\(NDCG@k\)</span>, and <span class="math inline">\(rel_i\)</span> means <u>the real relavance score</u> of the i-th item in ranked list. <span class="math inline">\(IDCG@k\)</span> is the maximum possible DCG with ideal ranking. The range of <span class="math inline">\(NDCG@k\)</span> is [0, 1], higher values indicate better ranking quality. $$ NDCG@k =  \</p>
-<p>DCG@k = _{i=1}^{k}  </p>
-<p>IDCG@k = _{i=1}^{k}  \ $$</p>
+
+<h2 id="LLM-Learning-To-Rank-LTR"><a href="#LLM-Learning-To-Rank-LTR" class="headerlink" title="LLM Learning-To-Rank (LTR)"></a>LLM Learning-To-Rank (LTR)</h2><p>Under recommendation scenariom, the concept of learning-to-rank (LTR) means given the query $Q$, and passages $P$, output the top k most related passages with the query by using LLM. Funciton $R(Q, P_i)$ is the scoring function that evaluates the relevance of the query $Q$ and passage(or document) $P_i$. </p>
+<p>$$P^{rank} &#x3D; \operatorname{TopK}_{i\in P} R(Q,P_i) \quad\quad (k\leq len(P))$$</p>
+<p>There three main methods of LTR based on the current literature, <strong>Pointwise</strong> (<em>give each passage a score</em>), <strong>Pairwise</strong> (<em>compare two passages each time</em>) and <strong>Listwise</strong> (<em>compare all the passages at once</em>) <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/3626772.3657813">[2]</a> <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/abs/10.1145/3726302.3730323">[3]</a>. Pointwise faces issues with less relavance analysis between passages. Pairwise’s weakness is huge time complexity even with optimized sorted method, such as heap sort or quick sort ($O(k\cdot \log_{2}{N})$​). The downside of Listwise is limited context window of LLMs <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/abs/10.1145/3726302.3730323">[3]</a>.</p>
+<p><img src="/figures/image-20251013192822662.png"></p>
+<p>The evaluation metric is usually $NDCG@k$, and $rel_i$ means <u>the real relavance score</u> of the i-th item in ranked list. $IDCG@k$ is the maximum possible DCG with ideal ranking. The range of $NDCG@k$ is [0, 1], higher values indicate better ranking quality. </p>
+<p>$$NDCG@k &#x3D; \frac{DCG@k}{IDCG@k} \ DCG@k &#x3D; \sum_{i&#x3D;1}^{k} \frac{rel_i}{\log_2(i+1)} \quad IDCG@k &#x3D; \sum_{i&#x3D;1}^{k} \frac{rel_{\pi(i)}}{\log_2(i+1)} \<br>$$ </p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/3626772.3657813">Setwise [2]</a> enables ranking by evaluating small groups of documents in a singe LLM inference. Instead of comparing each document pair independently (Pairwise) or attempting to rank them at once (Listwise).</li>
 <li><a target="_blank" rel="noopener" href="https://dl.acm.org/doi/abs/10.1145/3726302.3730323">Setwise Insertion [3]</a> extend the Setwise with previous ranking infomation, saving the query time and prompt usage.</li>
 </ul>
-<h2 id="re-ranking">Re-ranking</h2>
-<p>LLM in recommendation scenario are used for reranking the recommender ranking results for better scalability, personalization of the results.</p>
+<h2 id="Re-ranking"><a href="#Re-ranking" class="headerlink" title="Re-ranking"></a>Re-ranking</h2><p>LLM in recommendation scenario are used for reranking the recommender ranking results for better scalability, personalization of the results.</p>
 <ul>
-<li><a target="_blank" rel="noopener" href="https://dl.acm.org/doi/10.1145/3696410.3714922">LLM4Rerank [1]</a> constructs a finite-state machine composed of different function nodes, and a reranking process is a complete iteration of this machine.</li>
+<li><a target="_blank" rel="noopener" href="https://dl.acm.org/doi/10.1145/3696410.3714922">LLM4Rerank [1]</a>  constructs a finite-state machine composed of different function nodes, and a reranking process is a complete iteration of this machine.</li>
 </ul>
-<p><img src="../figures/image-20251010184256480.png" style="zoom:80%;" /></p>
+<img src="/figures/image-20251010184256480.png" style="zoom:80%;" />
+
 <ul>
 <li><a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/3701716.3717575">RankFlow [4]</a> utilizes LLMs to rewrite the query and summarize the passages, and rerank them.</li>
 </ul>
-<p><img src="../figures/image-20251012154804917.png" style="zoom: 50%;" /></p>
+<img src="/figures/image-20251012154804917.png" style="zoom: 50%;" />
+
 <ul>
 <li><a target="_blank" rel="noopener" href="https://dl.acm.org/doi/abs/10.1145/3726302.3730119">Movin et al. [5]</a> do a empirical study about the zero-shot reranking with LLM for structed data. The authors find that zero‑shot LLMs like GPT‑4 can act as rerankers on datasets with many precomputed features, but overall they still underperform traditional supervised methods such as LambdaMART. However, on difficult queries where the baseline fails, LLM reranking can surpass it, though results remain brittle and highly sensitive to prompt design.</li>
 </ul>
-<h2 id="references">References</h2>
-<ul>
-<li>Recommendation:
-<ul>
-<li><p>[1] WWW'25 <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/10.1145/3696410.3714922">LLM4Rerank: LLM-based Auto-Reranking Framework for Recommendations | Proceedings of the ACM on Web Conference 2025</a></p></li>
-<li><p>[2] SIGIR'24: <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/3626772.3657813">A Setwise Approach for Effective and Highly Efficient Zero-shot Ranking with Large Language Models</a></p></li>
-<li><p>[3] SIGIR'25: <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/abs/10.1145/3726302.3730323">Beyond Reproducibility: Advancing Zero-shot LLM Reranking Efficiency with Setwise Insertion | Proceedings of the 48th International ACM SIGIR Conference on Research and Development in Information Retrieval</a></p></li>
-<li><p>[4] WWW'25: <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/3701716.3717575">RankFlow: A Multi-Role Collaborative Reranking Workflow Utilizing Large Language Models</a></p></li>
-<li><p>[5] SIGIR'25:<a target="_blank" rel="noopener" href="https://dl.acm.org/doi/abs/10.1145/3726302.3730119">Zero-Shot Reranking with Large Language Models and Precomputed Ranking Features: Opportunities and Limitations | Proceedings of the 48th International ACM SIGIR Conference on Research and Development in Information Retrieval</a></p></li>
-</ul></li>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><ul>
+<li>Recommendation:<ul>
+<li><p>[1] WWW’25 <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/10.1145/3696410.3714922">LLM4Rerank: LLM-based Auto-Reranking Framework for Recommendations | Proceedings of the ACM on Web Conference 2025</a></p>
+</li>
+<li><p>[2] SIGIR’24: <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/3626772.3657813">A Setwise Approach for Effective and Highly Efficient Zero-shot Ranking with Large Language Models</a></p>
+</li>
+<li><p>[3] SIGIR’25: <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/abs/10.1145/3726302.3730323">Beyond Reproducibility: Advancing Zero-shot LLM Reranking Efficiency with Setwise Insertion | Proceedings of the 48th International ACM SIGIR Conference on Research and Development in Information Retrieval</a></p>
+</li>
+<li><p>[4] WWW’25: <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/3701716.3717575">RankFlow: A Multi-Role Collaborative Reranking Workflow Utilizing Large Language Models</a></p>
+</li>
+<li><p>[5] SIGIR’25:<a target="_blank" rel="noopener" href="https://dl.acm.org/doi/abs/10.1145/3726302.3730119">Zero-Shot Reranking with Large Language Models and Precomputed Ranking Features: Opportunities and Limitations | Proceedings of the 48th International ACM SIGIR Conference on Research and Development in Information Retrieval</a></p>
+</li>
+</ul>
+</li>
 </ul>
 
       
@@ -229,7 +232,7 @@ P^{rank} = \operatorname{TopK}_{i\in P} R(Q,P_i) \quad\quad (k\leq len(P))
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#llm-rankingreranking"><span class="nav-number">1.</span> <span class="nav-text">LLM ranking&#x2F;reranking</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#llm-learning-to-rank-ltr"><span class="nav-number">1.1.</span> <span class="nav-text">LLM Learning-To-Rank (LTR)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#re-ranking"><span class="nav-number">1.2.</span> <span class="nav-text">Re-ranking</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#references"><span class="nav-number">1.3.</span> <span class="nav-text">References</span></a></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#LLM-ranking-reranking"><span class="nav-number">1.</span> <span class="nav-text">LLM ranking&#x2F;reranking</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#LLM-Learning-To-Rank-LTR"><span class="nav-number">1.1.</span> <span class="nav-text">LLM Learning-To-Rank (LTR)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Re-ranking"><span class="nav-number">1.2.</span> <span class="nav-text">Re-ranking</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#References"><span class="nav-number">1.3.</span> <span class="nav-text">References</span></a></li></ol></li></ol>
     
     </div>
   </aside>
@@ -423,20 +426,5 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </body>
 </html>

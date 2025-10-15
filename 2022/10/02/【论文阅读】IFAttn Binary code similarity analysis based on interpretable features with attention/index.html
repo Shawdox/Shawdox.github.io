@@ -171,6 +171,9 @@
 <p>另外，我们还发现注意机制在功能语义表达方面具有突出的优势。</p>
 <p>评估表明我们的方法可以显著提升FST在cross-architecture, cross-optimization, cross-obfuscation and cross-compiler binaries上的表现。</p>
 <span id="more"></span>
+
+
+
 <p>为了提高开发效率，开发者通常会使用开源代码来开发新软件。如果一个开发者使用了一个存在漏洞的函数，则这个漏洞就会被继承且很难被发现。代码克隆这种现象对软件的安全可靠性造成了很大影响。</p>
 <p>不幸的是，直接对二进制代码使用同源性分析并不够直接明了，二进制代码缺乏语义抽象，很难从函数中提取语义信息来做同源性分析。另外，分割函数的边界也是个问题。</p>
 <p>所以在代码克隆、恶意样本追踪、库函数发掘和漏洞发掘领域对二进制代码做同源性分析一直是个重要的方向。</p>
@@ -202,32 +205,32 @@
 </ol>
 <p><strong>注意力机制的优点：</strong></p>
 <p>下图是同一个函数在同一个编译选项（X86_32_00）下通过混淆技术BCF前后的CFG图：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003195749.png" alt=""></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003195749.png"></p>
 <p>   下图是TIKNIB和IFAttn两个模型在对同一个函数混淆前后抓取的特征向量值：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003195945.png" alt=""></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003195945.png"></p>
 <p>   <strong>可以看到，在混淆前后basic features有明显不同，而semantic features则总体上更为稳定。</strong></p>
-<p>​    下图表明了TIKNIB和IFAttn在对不同函数，一个混淆一个不混淆的前提下提取到的特征向量值：</p>
-<p>​    <img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003200537.png" alt=""></p>
+<p>​	下图表明了TIKNIB和IFAttn在对不同函数，一个混淆一个不混淆的前提下提取到的特征向量值：</p>
+<p>​	<img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003200537.png"></p>
 <p>   <strong>可以看到，与之前相反，在混淆前后basic features较为稳定，而semantic features变化更大。</strong></p>
-<p>​    semantic features更能体现函数本身语义，而不受混淆技术的影响。</p>
+<p>​	semantic features更能体现函数本身语义，而不受混淆技术的影响。</p>
 <p><strong>一些定义：</strong></p>
 <ul>
-<li><strong>Presemantic features：</strong>直接或间接从代码语法和结构分析出的特征；</li>
+<li>**Presemantic features：**直接或间接从代码语法和结构分析出的特征；</li>
 </ul>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003204439.png" alt=""></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003204439.png"></p>
 <ul>
-<li><strong>Semantic features：</strong>本文通过注意机制分析了base feature形成的内在关联，并将base feature融合生成语义嵌入</li>
+<li>**Semantic features：**本文通过注意机制分析了base feature形成的内在关联，并将base feature融合生成语义嵌入</li>
 <li><strong>KFM scaled dot-product attention:</strong><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003205006.png" style="zoom: 67%;" /></li>
-<li><strong>Multi-head attention:</strong>Transformer的一种注意力机制。</li>
+<li>**Multi-head attention:**Transformer的一种注意力机制。</li>
 </ul>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003205126.png" alt=""></p>
-<p><strong>系统结构：</strong>IFAttn (Interpretable Features with Attention)</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003205326.png" alt=""></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003205126.png"></p>
+<p>**系统结构：**IFAttn (Interpretable Features with Attention)</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003205326.png"></p>
 <p><strong>测试结果：</strong></p>
 <p>数据集：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003205708.png" alt=""></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003205708.png"></p>
 <p>测试结果：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003205759.png" alt=""></p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/20221003205759.png"></p>
 
       
     </div>
@@ -468,20 +471,5 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </body>
 </html>

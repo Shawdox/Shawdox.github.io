@@ -13,26 +13,31 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="Wasabi: A Framework for Dynamically Analyzing WebAssembly  作者：Daniel Lehmann，Michael Pradel 会议：ASPLOS&#39;19 开源：http:&#x2F;&#x2F;wasabi.software-lab.org  ABSTRACT 这篇文章提出了第一个Wasm动态分析框架，Wasabi。其基于binary inst">
+  <meta name="description" content="Wasabi: A Framework for Dynamically Analyzing WebAssembly **作者：**Daniel Lehmann，Michael Pradel **会议：**ASPLOS’19 **开源：**http:&#x2F;&#x2F;wasabi.software-lab.org  ABSTRACT这篇文章提出了第一个Wasm动态分析框架，Wasabi。其基于binary ins">
 <meta property="og:type" content="article">
 <meta property="og:title" content="(论文阅读) Wasabi-A Framework for Dynamically Analyzing WebAssembly">
 <meta property="og:url" content="http://example.com/2024/01/10/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Wasabi-A-Framework-for-Dynamically-Analyzing-WebAssembly/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="Wasabi: A Framework for Dynamically Analyzing WebAssembly  作者：Daniel Lehmann，Michael Pradel 会议：ASPLOS&#39;19 开源：http:&#x2F;&#x2F;wasabi.software-lab.org  ABSTRACT 这篇文章提出了第一个Wasm动态分析框架，Wasabi。其基于binary inst">
+<meta property="og:description" content="Wasabi: A Framework for Dynamically Analyzing WebAssembly **作者：**Daniel Lehmann，Michael Pradel **会议：**ASPLOS’19 **开源：**http:&#x2F;&#x2F;wasabi.software-lab.org  ABSTRACT这篇文章提出了第一个Wasm动态分析框架，Wasabi。其基于binary ins">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110145225572.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110145600999.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110150916332.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110152807532.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110154221761.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110155625238.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110160402036.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110203745690.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110205106471.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110205723610.png">
+<meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110212553323.png">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110213751912.png">
 <meta property="article:published_time" content="2024-01-09T16:00:00.000Z">
-<meta property="article:modified_time" content="2024-01-10T13:37:59.032Z">
+<meta property="article:modified_time" content="2024-01-10T13:38:00.000Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="WASM">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110145600999.png">
+<meta name="twitter:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110145225572.png">
   
     <link rel="alternate" href="/atom.xml" title="Shaw" type="application/atom+xml">
   
@@ -157,235 +162,109 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1
-id="wasabi-a-framework-for-dynamically-analyzing-webassembly">Wasabi: A
-Framework for Dynamically Analyzing WebAssembly</h1>
-<blockquote>
-<p><strong>作者：</strong>Daniel Lehmann，Michael Pradel</p>
-<p><strong>会议：</strong>ASPLOS'19</p>
-<p><strong>开源：</strong>http://wasabi.software-lab.org</p>
+        <h1 id="Wasabi-A-Framework-for-Dynamically-Analyzing-WebAssembly"><a href="#Wasabi-A-Framework-for-Dynamically-Analyzing-WebAssembly" class="headerlink" title="Wasabi: A Framework for Dynamically Analyzing WebAssembly"></a>Wasabi: A Framework for Dynamically Analyzing WebAssembly</h1><blockquote>
+<p>**作者：**Daniel Lehmann，Michael Pradel</p>
+<p>**会议：**ASPLOS’19</p>
+<p>**开源：**<a target="_blank" rel="noopener" href="http://wasabi.software-lab.org/">http://wasabi.software-lab.org</a></p>
 </blockquote>
-<h2 id="abstract">ABSTRACT</h2>
-<p>这篇文章提出了第一个Wasm动态分析框架，Wasabi。其基于binary
-instrumentation，通过将用JavaScript写成的测试函数插桩进Wasm
-binary中来实现分析。对 WebAssembly
-进行动态分析会面临一些独特的挑战，例如使用具有固定类型的分析函数跟踪类型多态指令的问题，我们通过按需单态化（on-demand
-monomorphization）来解决这个问题。</p>
-<p>我们在计算密集型的benchmarks和实际应用上对Wasabi的评估表明，Wasabi
-(i) 忠实地保留了原始程序行为，(ii)
-为重量级动态分析带来了合理的开销，(iii)
-使各种动态分析（包括指令计数、调用图提取、内存访问跟踪和污点分析）的实施变得简单易行。</p>
+<h2 id="ABSTRACT"><a href="#ABSTRACT" class="headerlink" title="ABSTRACT"></a>ABSTRACT</h2><p>这篇文章提出了第一个Wasm动态分析框架，Wasabi。其基于binary instrumentation，通过将用JavaScript写成的测试函数插桩进Wasm binary中来实现分析。对 WebAssembly 进行动态分析会面临一些独特的挑战，例如使用具有固定类型的分析函数跟踪类型多态指令的问题，我们通过按需单态化（on-demand monomorphization）来解决这个问题。</p>
+<p>我们在计算密集型的benchmarks和实际应用上对Wasabi的评估表明，Wasabi (i) 忠实地保留了原始程序行为，(ii) 为重量级动态分析带来了合理的开销，(iii) 使各种动态分析（包括指令计数、调用图提取、内存访问跟踪和污点分析）的实施变得简单易行。</p>
 <span id="more"></span>
-<h2 id="background">Background</h2>
-<p>动态分析的创建者通常有两种选择。一种是从头开始实施分析，常见的策略是在程序中插桩，但这需要对指令集和操作工具有深入的了解。另一种策略是修改程序的runtime，如虚拟机，遗憾的是，这种修改需要详细了解虚拟机的实现，而且会将分析与特定版本的运行环境联系在一起。由于
-WebAssembly 是其他语言的compliation
-target，对这些语言进行源代码级检测似乎是另一种可行的策略。然而，典型的网络应用程序在很大程度上依赖于第三方代码，而这些代码的源代码在客户端是不可用的。</p>
+
+<h2 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h2><p>动态分析的创建者通常有两种选择。一种是从头开始实施分析，常见的策略是在程序中插桩，但这需要对指令集和操作工具有深入的了解。另一种策略是修改程序的runtime，如虚拟机，遗憾的是，这种修改需要详细了解虚拟机的实现，而且会将分析与特定版本的运行环境联系在一起。由于 WebAssembly 是其他语言的compliation target，对这些语言进行源代码级检测似乎是另一种可行的策略。然而，典型的网络应用程序在很大程度上依赖于第三方代码，而这些代码的源代码在客户端是不可用的。</p>
 <blockquote>
 <p>PS: 实际上由于Inconsistency的存在，直接对源代码检测也不一定合理。</p>
 </blockquote>
-<p>上述第二种方案是利用通用动态分析框架，而不是从头开始实施动态分析。在现有框架的基础上构建分析，可以减少构建分析所需的总体工作量，使分析作者能够专注于分析本身的设计。遗憾的是，目前还没有适用于
-WebAssembly 的通用动态分析框架。</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110145225572.png" /></p>
-<p>作为基于 Wasabi 分析的一个简单示例，图 1
-显示了我们对加密挖掘检测器[47]剖析部分的重新实现。通过监控 WebAssembly
-程序并收集典型挖掘算法所独有的指令签名，可以检测到未经授权使用计算资源的情况。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110145600999.png" style="zoom:67%;" /></p>
-<p>在 Wasabi 中实现这一分析需要十行
-JavaScript，使用框架的二进制钩子来跟踪所有已执行的二进制操作。与此相反，最初的实现是基于
-WebAssembly 的专用工具，而 [47]
-的作者则是从头开始实现的。这一分析和更复杂的分析（第 4.2
-节）表明，Wasabi 只需很少的努力就能实现该分析。</p>
-<h2 id="challenges">Challenges</h2>
-<p>除了是 WebAssembly 的首个动态分析框架外，Wasabi
-还解决了几个独特的技术难题:</p>
-<ol type="1">
-<li>首先，为了提供跟踪底层行为的高级API，该方法抽象了WebAssembly
-指令集的各种细节。例如，Wasabi
-将一组相关指令捆绑到一个分析钩子中，将分支指令的相对目标标签解析为绝对指令位置，并将间接调用目标解析为实际函数;</li>
-<li>其次，Wasabi 可以透明地处理要分析的 WebAssembly 代码与实现分析的
-JavaScript 代码之间的交互。一个特殊的挑战是，WebAssembly
-函数必须静态声明固定的参数类型，而某些 WebAssembly
-指令是多态的，即可以使用不同数量和类型的参数来执行。要为多态指令插入钩子调用，必须为每种参数类型的具体组合生成不同的钩子单态变体。Wasabi
-使用按需单态化（on-demand
-monomorphization）技术自动创建此类单态钩子，但只针对给定 WebAssembly
-代码中实际存在的类型变体;</li>
-<li>第三，Wasabi
-能忠实地执行原始程序，甚至保留其内存行为，这对实现内存剖析器非常有用。为此，插入的指令都不需要访问或修改程序的原始内存。相反，分析程序可以在
-JavaScript 中跟踪内存操作，即在不干扰 WebAssembly
-堆的独立堆中跟踪内存操作。</li>
+<p>上述第二种方案是利用通用动态分析框架，而不是从头开始实施动态分析。在现有框架的基础上构建分析，可以减少构建分析所需的总体工作量，使分析作者能够专注于分析本身的设计。遗憾的是，目前还没有适用于 WebAssembly 的通用动态分析框架。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110145225572.png"></p>
+<p>作为基于 Wasabi 分析的一个简单示例，图 1 显示了我们对加密挖掘检测器[47]剖析部分的重新实现。通过监控 WebAssembly 程序并收集典型挖掘算法所独有的指令签名，可以检测到未经授权使用计算资源的情况。</p>
+<img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110145600999.png" style="zoom:67%;" />
+
+<p>在 Wasabi 中实现这一分析需要十行 JavaScript，使用框架的二进制钩子来跟踪所有已执行的二进制操作。与此相反，最初的实现是基于 WebAssembly 的专用工具，而 [47] 的作者则是从头开始实现的。这一分析和更复杂的分析（第 4.2 节）表明，Wasabi 只需很少的努力就能实现该分析。</p>
+<h2 id="Challenges"><a href="#Challenges" class="headerlink" title="Challenges"></a>Challenges</h2><p>除了是 WebAssembly 的首个动态分析框架外，Wasabi 还解决了几个独特的技术难题:</p>
+<ol>
+<li>首先，为了提供跟踪底层行为的高级API，该方法抽象了WebAssembly 指令集的各种细节。例如，Wasabi 将一组相关指令捆绑到一个分析钩子中，将分支指令的相对目标标签解析为绝对指令位置，并将间接调用目标解析为实际函数;</li>
+<li>其次，Wasabi 可以透明地处理要分析的 WebAssembly 代码与实现分析的 JavaScript 代码之间的交互。一个特殊的挑战是，WebAssembly 函数必须静态声明固定的参数类型，而某些 WebAssembly 指令是多态的，即可以使用不同数量和类型的参数来执行。要为多态指令插入钩子调用，必须为每种参数类型的具体组合生成不同的钩子单态变体。Wasabi 使用按需单态化（on-demand monomorphization）技术自动创建此类单态钩子，但只针对给定 WebAssembly 代码中实际存在的类型变体;</li>
+<li>第三，Wasabi 能忠实地执行原始程序，甚至保留其内存行为，这对实现内存剖析器非常有用。为此，插入的指令都不需要访问或修改程序的原始内存。相反，分析程序可以在 JavaScript 中跟踪内存操作，即在不干扰 WebAssembly 堆的独立堆中跟踪内存操作。</li>
 </ol>
-<h2 id="contributions">Contributions</h2>
-<ol type="1">
-<li>我们提出了第一个用于动态分析 WebAssembly 代码的通用框架，WebAssembly
-是一种指令格式，正在成为未来网络应用程序的基石;</li>
+<h2 id="Contributions"><a href="#Contributions" class="headerlink" title="Contributions"></a>Contributions</h2><ol>
+<li>我们提出了第一个用于动态分析 WebAssembly 代码的通用框架，WebAssembly 是一种指令格式，正在成为未来网络应用程序的基石;</li>
 <li>我们提出了解决现有动态分析框架所不具备的独特技术难题的技术，包括分析钩子的按需单态化和相对分支目标的静态解析;</li>
-<li>我们的研究表明，Wasabi
-可以作为各种分析的基础，实施分析只需极少的工作量，而且该框架的开销对于重量级动态分析而言是合理的;</li>
-<li>开源： http://wasabi.software-lab.org</li>
+<li>我们的研究表明，Wasabi 可以作为各种分析的基础，实施分析只需极少的工作量，而且该框架的开销对于重量级动态分析而言是合理的;</li>
+<li>开源： <a target="_blank" rel="noopener" href="http://wasabi.software-lab.org/">http://wasabi.software-lab.org</a></li>
 </ol>
-<h2 id="approach">Approach</h2>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110150916332.png" style="zoom:80%;" /></p>
+<h2 id="Approach"><a href="#Approach" class="headerlink" title="Approach"></a>Approach</h2><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110150916332.png" style="zoom:80%;" />
+
 <blockquote>
 <p>WebAssembly Binary（左上角）：待测试Wasm binary</p>
 <p>User Analysis in JS（左下角）：用户提供的测试JS代码</p>
-<p>Static
-Instrumentation（上半部）：插桩Binary，使其可以跳转到分析流程</p>
-<p>Analysis ar Runtime（下半部）：运行时通过Low-level
-Hooks跳转到用户定义的High-level Hooks</p>
+<p>Static Instrumentation（上半部）：插桩Binary，使其可以跳转到分析流程</p>
+<p>Analysis ar Runtime（下半部）：运行时通过Low-level Hooks跳转到用户定义的High-level Hooks</p>
 </blockquote>
 <p>提前静态插桩（Static Instrumentation）的好处：</p>
-<ol type="1">
+<ol>
 <li>它独立于 WebAssembly 的执行平台，并能适应当前平台的变化；</li>
-<li>二进制插桩使 Wasabi 能够支持所有编译为 WebAssembly 的语言，目前包括
-C/C++、Rust、Go和 TypeScript；</li>
+<li>二进制插桩使 Wasabi 能够支持所有编译为 WebAssembly 的语言，目前包括 C&#x2F;C++、Rust、Go和 TypeScript；</li>
 <li>第三，与在执行过程中检测代码相比，提前插桩可避免运行时的开销。</li>
 </ol>
-<h3 id="control-flow-of-wasm">1. Control-flow of Wasm</h3>
-<p>与 JVM 或本地代码不同，WebAssembly
-将指令结构化为嵌套良好的隐式标记块。分支指令不能无限制地直接跳转到指令偏移量，而只能跳转到其所包围的区块。目标数据块由一个非负整数标签引用，其中
-0 表示紧邻的外层数据块。</p>
-<p>根据程序块类型的不同，下一条执行的指令要么是程序块内的第一条指令（循环程序块，分支为后向跳转），要么是程序块匹配结束指令后的下一条指令（简单程序块、if
-和 else 程序块，分支为前向跳转）。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110152807532.png" style="zoom:80%;" /></p>
-<h3 id="type">2. Type</h3>
-<p>许多 WebAssembly
-指令都具有多态性（polymorphic），即输入和结果类型会因执行指令的上下文而不同。例如，根据被调用函数和当前函数的函数类型不同，<code>call</code>和<code>return</code>的弹出和推入类型也不同。同样，访问局部和全局变量的指令类型也取决于引用的局部和全局变量。</p>
+<h3 id="1-Control-flow-of-Wasm"><a href="#1-Control-flow-of-Wasm" class="headerlink" title="1. Control-flow of Wasm"></a>1. Control-flow of Wasm</h3><p>与 JVM 或本地代码不同，WebAssembly 将指令结构化为嵌套良好的隐式标记块。分支指令不能无限制地直接跳转到指令偏移量，而只能跳转到其所包围的区块。目标数据块由一个非负整数标签引用，其中 0 表示紧邻的外层数据块。</p>
+<p>根据程序块类型的不同，下一条执行的指令要么是程序块内的第一条指令（循环程序块，分支为后向跳转），要么是程序块匹配结束指令后的下一条指令（简单程序块、if 和 else 程序块，分支为前向跳转）。</p>
+<img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110152807532.png" style="zoom:80%;" />
+
+<h3 id="2-Type"><a href="#2-Type" class="headerlink" title="2. Type"></a>2. Type</h3><p>许多 WebAssembly 指令都具有多态性（polymorphic），即输入和结果类型会因执行指令的上下文而不同。例如，根据被调用函数和当前函数的函数类型不同，<code>call</code>和<code>return</code>的弹出和推入类型也不同。同样，访问局部和全局变量的指令类型也取决于引用的局部和全局变量。</p>
 <p>对于<code>drop</code>指令，其会移除当前栈顶元素；<code>select</code>，会根据条件从两个值中选择一个push；这些类型不能简单地在模块中查找，而是取决于之前执行的代码。</p>
-<p>许多可能的指令类型给 Wasabi 钩子的生成带来了挑战，我们将在第 2.4
-节对此进行解释并给出解决方案。</p>
-<h3 id="hooks">3. Hooks</h3>
-<p>Wasabi提供了一组hooks，其可以被分析者根据不同的分析目标补充完整：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110154221761.png" style="zoom:80%;" /></p>
-<p>这些钩子可大致分为六组：
-与堆栈操作（const、drop、select）、操作（unary、binary）、变量和内存的访问和管理（local、global、load、store、memory_grow）、函数调用（call_pre、call_post、return）、控制流（br、br_if、br_table）和块（begin、end）有关的指令。</p>
-<p>该API将相关的 WebAssembly
-指令组合成一个钩子，从而大大减少了分析必须实现的钩子数量。如果为每条指令提供一个钩子，分析就需要大量钩子（例如，仅数字指令就有
-123 条），而 Wasabi 的应用程序接口只提供 23 个钩子。</p>
-<p>必要时，为了区分不同指令，钩子会接收详细信息作为参数。例如，binary
-hook会接收一个op参数，用于指定执行哪种二元操作。</p>
-<p>为了向用户隐藏多态指令的各种变体，Wasabi
-还将同类指令的所有变体映射到一个钩子中。例如，<code>call</code>指令可以根据被调用函数的不同而使用不同数量和类型的参数，这些参数在钩子中表示为不同长度的数组。</p>
-<p>Wasabi
-在提供某些钩子的同时还提供了预计算信息，因为runtime值本身的信息量不足以进行分析。例如，有三个与分支相关的钩子接收<code>target</code>对象，这些<code>target</code>对象包含静态解析的下一条指令的绝对位置（如果分支被执行），以及底层相对分支标签。同样，对于间接调用，Wasabi
-会解析实际调用函数的运行时表索引，使其指向具体被调用函数。</p>
+<p>许多可能的指令类型给 Wasabi 钩子的生成带来了挑战，我们将在第 2.4 节对此进行解释并给出解决方案。</p>
+<h3 id="3-Hooks"><a href="#3-Hooks" class="headerlink" title="3. Hooks"></a>3. Hooks</h3><p>Wasabi提供了一组hooks，其可以被分析者根据不同的分析目标补充完整：</p>
+<img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110154221761.png" style="zoom:80%;" />
+
+<p>这些钩子可大致分为六组： 与堆栈操作（const、drop、select）、操作（unary、binary）、变量和内存的访问和管理（local、global、load、store、memory_grow）、函数调用（call_pre、call_post、return）、控制流（br、br_if、br_table）和块（begin、end）有关的指令。</p>
+<p>该API将相关的 WebAssembly 指令组合成一个钩子，从而大大减少了分析必须实现的钩子数量。如果为每条指令提供一个钩子，分析就需要大量钩子（例如，仅数字指令就有 123 条），而 Wasabi 的应用程序接口只提供 23 个钩子。</p>
+<p>必要时，为了区分不同指令，钩子会接收详细信息作为参数。例如，binary hook会接收一个op参数，用于指定执行哪种二元操作。</p>
+<p>为了向用户隐藏多态指令的各种变体，Wasabi 还将同类指令的所有变体映射到一个钩子中。例如，<code>call</code>指令可以根据被调用函数的不同而使用不同数量和类型的参数，这些参数在钩子中表示为不同长度的数组。</p>
+<p>Wasabi 在提供某些钩子的同时还提供了预计算信息，因为runtime值本身的信息量不足以进行分析。例如，有三个与分支相关的钩子接收<code>target</code>对象，这些<code>target</code>对象包含静态解析的下一条指令的绝对位置（如果分支被执行），以及底层相对分支标签。同样，对于间接调用，Wasabi 会解析实际调用函数的运行时表索引，使其指向具体被调用函数。</p>
 <p>API忠实地将Wasm的type映射到了JS，下图是映射方式：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110155625238.png" style="zoom: 80%;" /></p>
-<p>由于 JavaScript 本身不支持 64 位整数，因此 Wasabi 会将其映射为
-long.js4 对象。条件判断在 WebAssembly 中是值为 0 或 1 的 i32值，而在
-Wasabi 中则被映射为 JavaScript 的boolean。</p>
-<p>API可以直接实现影子内存[34,
-53]，这一功能对于跟踪不需要的值的来源或进行污点分析等非常有用。要将metadata与内存值关联起来，分析程序只需维护内存位置到metadata的映射，并在与内存相关的指令上更新metadata。我们的一个分析示例（第
-4.2 节）就是以这种方式实现影子内存的污点分析。</p>
-<h3 id="binary-instrumentation">4. Binary Instrumentation</h3>
-<h4 id="instrumentation-of-instructions">4.1 Instrumentation of
-Instructions</h4>
-<p>为了跟踪执行过程中出现的所有指令，Wasabi
-会为每条指令插入一个hook调用。</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110160402036.png" /></p>
+<img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110155625238.png" style="zoom: 80%;" />
+
+<p>由于 JavaScript 本身不支持 64 位整数，因此 Wasabi 会将其映射为 long.js4 对象。条件判断在 WebAssembly 中是值为 0 或 1 的 i32值，而在 Wasabi 中则被映射为 JavaScript 的boolean。</p>
+<p>API可以直接实现影子内存[34, 53]，这一功能对于跟踪不需要的值的来源或进行污点分析等非常有用。要将metadata与内存值关联起来，分析程序只需维护内存位置到metadata的映射，并在与内存相关的指令上更新metadata。我们的一个分析示例（第 4.2 节）就是以这种方式实现影子内存的污点分析。</p>
+<h3 id="4-Binary-Instrumentation"><a href="#4-Binary-Instrumentation" class="headerlink" title="4. Binary Instrumentation"></a>4. Binary Instrumentation</h3><h4 id="4-1-Instrumentation-of-Instructions"><a href="#4-1-Instrumentation-of-Instructions" class="headerlink" title="4.1 Instrumentation of Instructions"></a>4.1 Instrumentation of Instructions</h4><p>为了跟踪执行过程中出现的所有指令，Wasabi 会为每条指令插入一个hook调用。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110160402036.png"></p>
 <p>所有插入的调用都指向import进Wasm binary的JavaScript函数。</p>
-<p>这些导入的函数还不是第 2.3 节中的高级钩子，而是由 Wasabi
-自动生成的低级钩子。采用这种间接方式有几个原因。首先，它允许 Wasabi
-将类型化的 WebAssembly 指令无缝映射到非类型化的 JavaScript 挂钩（第
-2.4.3
-节）。其次，它有助于提供在高级钩子中有用但在当前指令中不可用的信息（第
-2.4.4 节）。第三，第 2.4.5 节说明了 Wasabi
-有时也会在运行时调用其他钩子，因为只有在运行时才能获得调用哪些钩子的必要信息。最后，低级钩子可以先转换值，然后再将其传递给高级钩子（第
-2.4.6
-节）。所有这些问题都可以通过自动生成的低级钩子来解决，这些钩子对分析作者是隐藏的。</p>
-<h4 id="selective-instrumentation">4.2 Selective Instrumentation</h4>
-<p>并非每项分析都会使用第 2.3 节所述 API
-提供的所有钩子。为了减少二进制文件的代码量和运行时开销，Wasabi
-支持选择性插桩。也就是说，只有那些在给定的分析中具有匹配的高级钩子的指令才会被插桩。</p>
-<p>Wasabi
-确保不同种类指令的插桩是相互独立的，因此只对某些指令进行插桩仍能正确反映其行为。第
-4.5 节和第 4.6 节显示，选择性插桩大大减少了代码量和运行时开销。</p>
-<h4 id="on-demand-monomorphization">4.3 On-demand Monomorphization</h4>
-<p>WebAssembly
-中的静态类型给插桩带来了一个有趣的挑战：虽然有多态指令，但 WebAssembly
-函数（包括我们的钩子）必须始终声明为固定的单态类型。</p>
-<p>例如，对于<code>drop</code>指令，其多态性表示为[α] -&gt;
-[]（pop一个类型为α的参数，不push任何参数）。由于参数type类型不确定，在每一个<code>drop</code>后都插入同一个hook函数是不可能的。</p>
-<p><u>所以，Wasabi会对具有多态的钩子生成多个单态的变体，并插入相对应合适的单态低级钩子的调用。</u>（这个策略跟Rust中的generic
-functions的编译和C++中function templates的初始化类似）</p>
+<p>这些导入的函数还不是第 2.3 节中的高级钩子，而是由 Wasabi 自动生成的低级钩子。采用这种间接方式有几个原因。首先，它允许 Wasabi 将类型化的 WebAssembly 指令无缝映射到非类型化的 JavaScript 挂钩（第 2.4.3 节）。其次，它有助于提供在高级钩子中有用但在当前指令中不可用的信息（第 2.4.4 节）。第三，第 2.4.5 节说明了 Wasabi 有时也会在运行时调用其他钩子，因为只有在运行时才能获得调用哪些钩子的必要信息。最后，低级钩子可以先转换值，然后再将其传递给高级钩子（第 2.4.6 节）。所有这些问题都可以通过自动生成的低级钩子来解决，这些钩子对分析作者是隐藏的。</p>
+<h4 id="4-2-Selective-Instrumentation"><a href="#4-2-Selective-Instrumentation" class="headerlink" title="4.2 Selective Instrumentation"></a>4.2 Selective Instrumentation</h4><p>并非每项分析都会使用第 2.3 节所述 API 提供的所有钩子。为了减少二进制文件的代码量和运行时开销，Wasabi 支持选择性插桩。也就是说，只有那些在给定的分析中具有匹配的高级钩子的指令才会被插桩。</p>
+<p>Wasabi 确保不同种类指令的插桩是相互独立的，因此只对某些指令进行插桩仍能正确反映其行为。第 4.5 节和第 4.6 节显示，选择性插桩大大减少了代码量和运行时开销。</p>
+<h4 id="4-3-On-demand-Monomorphization"><a href="#4-3-On-demand-Monomorphization" class="headerlink" title="4.3 On-demand Monomorphization"></a>4.3 On-demand Monomorphization</h4><p>WebAssembly 中的静态类型给插桩带来了一个有趣的挑战：虽然有多态指令，但 WebAssembly 函数（包括我们的钩子）必须始终声明为固定的单态类型。</p>
+<p>例如，对于<code>drop</code>指令，其多态性表示为[α] -&gt; []（pop一个类型为α的参数，不push任何参数）。由于参数type类型不确定，在每一个<code>drop</code>后都插入同一个hook函数是不可能的。</p>
+<p><u>所以，Wasabi会对具有多态的钩子生成多个单态的变体，并插入相对应合适的单态低级钩子的调用。</u>（这个策略跟Rust中的generic functions的编译和C++中function templates的初始化类似）</p>
 <p>对于像<code>set_global</code>这样的指令来说，可以直接根据其引用的变量的类型生成对应的钩子函数；</p>
-<p>但对于<code>drop</code>，<code>select</code>这样更为复杂的指令来说，其参数类型有前面已运行的指令的结果决定。因此，Wasabi会在插桩的时候进行<strong><em>full
-type
-checking</em></strong>，其会追踪栈上所有值的类型。Wasabi维护一个抽象栈（abstract
-stack），当遇到<code>drop</code>指令时，它的输入就是当前抽象栈最顶部的值类型。</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110203745690.png" /></p>
-<p>由于函数可以有任意数量的参数和返回值
-，<code>call</code>和<code>return</code>指令的单态钩子的数量甚至是无限的。解决这一问题的一种方法是设置一个启发式限制，例如为最多
-10 个参数的调用生成钩子。然而，由此产生的 4^10= 1, 048, 576
-个与调用相关的钩子会造成不必要的二进制臃肿，而且可能仍然无法支持所有调用。</p>
-<p>相反，Wasabi
-只针对给定二进制文件中实际存在的指令和类型组合，按需生成单态钩子。我们将这种方法称为钩子的<strong><em>on-demand
-monomorphization</em></strong>。在插桩的过程中，Wasabi维护一个已经生成的low-level
-hooks的map，当需要一个hook的时候，其会直接返回map已经存在的hook，或生成新的hook并更新map。</p>
-<h4 id="resolving-branch-labels">4.4 Resolving Branch Labels</h4>
-<p>这里的一个挑战是如何/何时定位分支跳转的目标？</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110205106471.png" /></p>
-<p>例如上图中的<code>br 1</code>指令会跳转到标号为1的basic
-block，但直接将label
-<code>1</code>传递给更高级的分析API的作用十分有限，因为如果不知道其周围块的信息，分析就没办法定位到这个label具体指向代码的哪里。</p>
-<p>Wasabi在插桩的过程中就解决了这个问题，并将指令的绝对位置信息告诉了更高级的API，其维护了一个抽象控制栈(abstract
-control stack)：</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110205723610.png" style="zoom:67%;" /></p>
-<p>每当插桩的过程中遇到一个新的block，control
-stack中就会被push一个新元素，其包含了type(function,block,loop,if/else)，block的起始位置以及结束位置。当遇到block的结束时，control
-stack最上面的元素就会被pop。</p>
-<p>有了abstract control stack，Wasabi
-就能在插桩过程中确定一条分支指令（如果被执行）会指向哪个代码位置。在每次分支到标签
-n 时，Wasabi 都会查询control stack从顶部开始的第 n + 1
-个条目，以确定目标代码块，然后计算代码块类型中下一条指令的位置，以及开始和结束指令的位置。如上上图所示，该绝对指令位置将作为分支钩子的参数。</p>
-<h4 id="dynamic-block-nesting">4.5 Dynamic Block Nesting</h4>
-<p>另一个与控制流相关的挑战是观察程序块执行的结束时间，有些分析可能希望在运行时观察程序块嵌套，<u>即在程序块进入和离开时执行某些操作</u>。因此，Wasabi提供了<code>begin</code>和<code>end</code>钩子函数。</p>
+<p>但对于<code>drop</code>，<code>select</code>这样更为复杂的指令来说，其参数类型有前面已运行的指令的结果决定。因此，Wasabi会在插桩的时候进行<em><strong>full type checking</strong></em>，其会追踪栈上所有值的类型。Wasabi维护一个抽象栈（abstract stack），当遇到<code>drop</code>指令时，它的输入就是当前抽象栈最顶部的值类型。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110203745690.png"></p>
+<p>由于函数可以有任意数量的参数和返回值 ，<code>call</code>和<code>return</code>指令的单态钩子的数量甚至是无限的。解决这一问题的一种方法是设置一个启发式限制，例如为最多 10 个参数的调用生成钩子。然而，由此产生的 4^10&#x3D; 1, 048, 576 个与调用相关的钩子会造成不必要的二进制臃肿，而且可能仍然无法支持所有调用。</p>
+<p>相反，Wasabi 只针对给定二进制文件中实际存在的指令和类型组合，按需生成单态钩子。我们将这种方法称为钩子的<em><strong>on-demand monomorphization</strong></em>。在插桩的过程中，Wasabi维护一个已经生成的low-level hooks的map，当需要一个hook的时候，其会直接返回map已经存在的hook，或生成新的hook并更新map。</p>
+<h4 id="4-4-Resolving-Branch-Labels"><a href="#4-4-Resolving-Branch-Labels" class="headerlink" title="4.4 Resolving Branch Labels"></a>4.4 Resolving Branch Labels</h4><p>这里的一个挑战是如何&#x2F;何时定位分支跳转的目标？</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110205106471.png"></p>
+<p>例如上图中的<code>br 1</code>指令会跳转到标号为1的basic block，但直接将label <code>1</code>传递给更高级的分析API的作用十分有限，因为如果不知道其周围块的信息，分析就没办法定位到这个label具体指向代码的哪里。</p>
+<p>Wasabi在插桩的过程中就解决了这个问题，并将指令的绝对位置信息告诉了更高级的API，其维护了一个抽象控制栈(abstract control stack)：</p>
+<img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110205723610.png" style="zoom:67%;" />
+
+<p>每当插桩的过程中遇到一个新的block，control stack中就会被push一个新元素，其包含了type(function,block,loop,if&#x2F;else)，block的起始位置以及结束位置。当遇到block的结束时，control stack最上面的元素就会被pop。</p>
+<p>有了abstract control stack，Wasabi 就能在插桩过程中确定一条分支指令（如果被执行）会指向哪个代码位置。在每次分支到标签 n 时，Wasabi 都会查询control stack从顶部开始的第 n + 1 个条目，以确定目标代码块，然后计算代码块类型中下一条指令的位置，以及开始和结束指令的位置。如上上图所示，该绝对指令位置将作为分支钩子的参数。</p>
+<h4 id="4-5-Dynamic-Block-Nesting"><a href="#4-5-Dynamic-Block-Nesting" class="headerlink" title="4.5 Dynamic Block Nesting"></a>4.5 Dynamic Block Nesting</h4><p>另一个与控制流相关的挑战是观察程序块执行的结束时间，有些分析可能希望在运行时观察程序块嵌套，<u>即在程序块进入和离开时执行某些操作</u>。因此，Wasabi提供了<code>begin</code>和<code>end</code>钩子函数。</p>
 <p>遗憾的是，<code>branch</code>或<code>return</code>会跳出程序块，越过插入block末端钩子，例如上图中的<code>call idx_hooks.end_loop</code>和<code>call idx_hooks.end_block</code>就不会被调用，因为这时已经跳转走了。</p>
-<p>为此，Wasabi
-在每次<code>branch</code>或<code>return</code>之前都会提前添加额外的调用，以调用在跳转过程中
-"遍历 "的每个程序块的末端钩子。也就是说，如示例所示，Wasabi
-在<code>br 1</code>
-指令之前插入了对两个外层代码块的结束钩子的调用。同样，abstract control
-stack可以告诉我们需要调用哪些结束钩子，<u>即当前代码块（包含栈顶）和branch目标代码块之间的所有结束钩子</u>。例如，在图
-6
-中，插桩代码调用了循环和块的结束钩子。如果是返回，则需要调用块堆栈中包括function在内的所有block。</p>
-<p>对于条件分支
-(br_if)，只有当分支被实际执行时，我们才会调用遍历块的结束钩子。同样，对于多向分支
-(br_table)，只有在运行时才能知道采取了哪条分支（因此还剩下哪些区块）。因此，插桩会静态提取每个分支表项的结束块列表，并存储这些信息。然后，在运行时调用相应的<code>end</code>钩子之前，会在
-br_table 的底层钩子中选择一个已存储的分支表项。</p>
-<h4 id="handling-i64-values">4.6 Handling i64 Values</h4>
-<p>i64 值无法传递给 JavaScript 函数（因此也无法传递给我们的钩子），因为
-JavaScript 只有双精度浮点数。不过，为了使动态分析能够忠实地观察包括 i64
-值在内的所有运行时值，Wasabi 会将一个 64 位整数拆分成两个 32
-位整数，然后将它们传递给 JavaScript。因此，对于每一个 i64
-堆栈值（由常数或任何其他指令产生），我们都会插入表 3 第 6
-行所示的插桩。插入的代码将 i64 值复制两次，第一次只提取低 32
-位，第二次移位后得到高 32 位。然后，这两个 i32
-值都可以传递给相关钩子。在 JavaScript 方面，低级钩子会将两个 32
-位值合并为一个 long.js 对象，从而使分析能够推理 64 位整数。</p>
-<p><img
-src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110212553323.png" /></p>
-<h2 id="implementation">Implementation</h2>
-<p>Wasabi的instrumenter是用5000行左右的Rust编写的。</p>
-<p>Rust 程序本身可以编译成 WebAssembly，这样我们就可以选择在浏览器中运行
-Wasabi，并在将来加载时对 WebAssembly
-程序进行插桩检测。为了减少对大型二进制文件进行插桩所需的时间，Wasabi
-可以并行对多个 WebAssembly
-函数进行插桩。唯一的同步点是按需单态化过程中创建的低级钩子映射，该映射由可升级的多读写器锁保护。</p>
-<h2 id="evaluation">Evaluation</h2>
-<ul>
+<p>为此，Wasabi 在每次<code>branch</code>或<code>return</code>之前都会提前添加额外的调用，以调用在跳转过程中 “遍历 “的每个程序块的末端钩子。也就是说，如示例所示，Wasabi 在<code> br 1</code> 指令之前插入了对两个外层代码块的结束钩子的调用。同样，abstract control stack可以告诉我们需要调用哪些结束钩子，<u>即当前代码块（包含栈顶）和branch目标代码块之间的所有结束钩子</u>。例如，在图 6 中，插桩代码调用了循环和块的结束钩子。如果是返回，则需要调用块堆栈中包括function在内的所有block。</p>
+<p>对于条件分支 (br_if)，只有当分支被实际执行时，我们才会调用遍历块的结束钩子。同样，对于多向分支 (br_table)，只有在运行时才能知道采取了哪条分支（因此还剩下哪些区块）。因此，插桩会静态提取每个分支表项的结束块列表，并存储这些信息。然后，在运行时调用相应的<code>end</code>钩子之前，会在 br_table 的底层钩子中选择一个已存储的分支表项。</p>
+<h4 id="4-6-Handling-i64-Values"><a href="#4-6-Handling-i64-Values" class="headerlink" title="4.6 Handling i64 Values"></a>4.6 Handling i64 Values</h4><p>i64 值无法传递给 JavaScript 函数（因此也无法传递给我们的钩子），因为 JavaScript 只有双精度浮点数。不过，为了使动态分析能够忠实地观察包括 i64 值在内的所有运行时值，Wasabi 会将一个 64 位整数拆分成两个 32 位整数，然后将它们传递给 JavaScript。因此，对于每一个 i64 堆栈值（由常数或任何其他指令产生），我们都会插入表 3 第 6 行所示的插桩。插入的代码将 i64 值复制两次，第一次只提取低 32 位，第二次移位后得到高 32 位。然后，这两个 i32 值都可以传递给相关钩子。在 JavaScript 方面，低级钩子会将两个 32 位值合并为一个 long.js 对象，从而使分析能够推理 64 位整数。</p>
+<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110212553323.png"></p>
+<h2 id="Implementation"><a href="#Implementation" class="headerlink" title="Implementation"></a>Implementation</h2><p>Wasabi的instrumenter是用5000行左右的Rust编写的。</p>
+<p>Rust 程序本身可以编译成 WebAssembly，这样我们就可以选择在浏览器中运行 Wasabi，并在将来加载时对 WebAssembly 程序进行插桩检测。为了减少对大型二进制文件进行插桩所需的时间，Wasabi 可以并行对多个 WebAssembly 函数进行插桩。唯一的同步点是按需单态化过程中创建的低级钩子映射，该映射由可升级的多读写器锁保护。</p>
+<h2 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h2><ul>
 <li>RQ1: How easy is it to write dynamic analyses with Wasabi?</li>
-<li>RQ2: Do the instrumented WebAssembly programs remain faithful to the
-original execution?</li>
+<li>RQ2: Do the instrumented WebAssembly programs remain faithful to the original execution?</li>
 <li>RQ3: How long does it take to instrument programs?</li>
 <li>RQ4: How much does the code size increase?</li>
 <li>RQ5: What is the runtime overhead due to instrumentation?</li>
 </ul>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110213751912.png" style="zoom:67%;" /></p>
-
+<img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20240110213751912.png" style="zoom:67%;" />
       
     </div>
     <footer class="entry-meta entry-footer">
@@ -405,11 +284,11 @@ original execution?</li>
     
 <nav id="article-nav">
   
-    <a href="/2024/01/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91Creating-your-first-Wasm-module/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2024/01/13/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91How%20dose%20Wasm%20module%20interact%20with%20JavaScript%20in%20browser/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption">上一篇</strong>
       <div class="article-nav-title">
         
-          (技术积累)Creating your first Wasm module
+          (技术积累)(Part 1)How does Wasm module interact with JavaScripte in browser?
         
       </div>
     </a>
@@ -431,9 +310,7 @@ original execution?</li>
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#wasabi-a-framework-for-dynamically-analyzing-webassembly"><span class="nav-number">1.</span> <span class="nav-text">Wasabi: A
-Framework for Dynamically Analyzing WebAssembly</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#abstract"><span class="nav-number">1.1.</span> <span class="nav-text">ABSTRACT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#background"><span class="nav-number">1.2.</span> <span class="nav-text">Background</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#challenges"><span class="nav-number">1.3.</span> <span class="nav-text">Challenges</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#contributions"><span class="nav-number">1.4.</span> <span class="nav-text">Contributions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#approach"><span class="nav-number">1.5.</span> <span class="nav-text">Approach</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#control-flow-of-wasm"><span class="nav-number">1.5.1.</span> <span class="nav-text">1. Control-flow of Wasm</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#type"><span class="nav-number">1.5.2.</span> <span class="nav-text">2. Type</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hooks"><span class="nav-number">1.5.3.</span> <span class="nav-text">3. Hooks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#binary-instrumentation"><span class="nav-number">1.5.4.</span> <span class="nav-text">4. Binary Instrumentation</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#instrumentation-of-instructions"><span class="nav-number">1.5.4.1.</span> <span class="nav-text">4.1 Instrumentation of
-Instructions</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#selective-instrumentation"><span class="nav-number">1.5.4.2.</span> <span class="nav-text">4.2 Selective Instrumentation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#on-demand-monomorphization"><span class="nav-number">1.5.4.3.</span> <span class="nav-text">4.3 On-demand Monomorphization</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#resolving-branch-labels"><span class="nav-number">1.5.4.4.</span> <span class="nav-text">4.4 Resolving Branch Labels</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#dynamic-block-nesting"><span class="nav-number">1.5.4.5.</span> <span class="nav-text">4.5 Dynamic Block Nesting</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#handling-i64-values"><span class="nav-number">1.5.4.6.</span> <span class="nav-text">4.6 Handling i64 Values</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#implementation"><span class="nav-number">1.6.</span> <span class="nav-text">Implementation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#evaluation"><span class="nav-number">1.7.</span> <span class="nav-text">Evaluation</span></a></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Wasabi-A-Framework-for-Dynamically-Analyzing-WebAssembly"><span class="nav-number">1.</span> <span class="nav-text">Wasabi: A Framework for Dynamically Analyzing WebAssembly</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ABSTRACT"><span class="nav-number">1.1.</span> <span class="nav-text">ABSTRACT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Background"><span class="nav-number">1.2.</span> <span class="nav-text">Background</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Challenges"><span class="nav-number">1.3.</span> <span class="nav-text">Challenges</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Contributions"><span class="nav-number">1.4.</span> <span class="nav-text">Contributions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Approach"><span class="nav-number">1.5.</span> <span class="nav-text">Approach</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Control-flow-of-Wasm"><span class="nav-number">1.5.1.</span> <span class="nav-text">1. Control-flow of Wasm</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Type"><span class="nav-number">1.5.2.</span> <span class="nav-text">2. Type</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Hooks"><span class="nav-number">1.5.3.</span> <span class="nav-text">3. Hooks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Binary-Instrumentation"><span class="nav-number">1.5.4.</span> <span class="nav-text">4. Binary Instrumentation</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-Instrumentation-of-Instructions"><span class="nav-number">1.5.4.1.</span> <span class="nav-text">4.1 Instrumentation of Instructions</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-Selective-Instrumentation"><span class="nav-number">1.5.4.2.</span> <span class="nav-text">4.2 Selective Instrumentation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-On-demand-Monomorphization"><span class="nav-number">1.5.4.3.</span> <span class="nav-text">4.3 On-demand Monomorphization</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-4-Resolving-Branch-Labels"><span class="nav-number">1.5.4.4.</span> <span class="nav-text">4.4 Resolving Branch Labels</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-5-Dynamic-Block-Nesting"><span class="nav-number">1.5.4.5.</span> <span class="nav-text">4.5 Dynamic Block Nesting</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-6-Handling-i64-Values"><span class="nav-number">1.5.4.6.</span> <span class="nav-text">4.6 Handling i64 Values</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Implementation"><span class="nav-number">1.6.</span> <span class="nav-text">Implementation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Evaluation"><span class="nav-number">1.7.</span> <span class="nav-text">Evaluation</span></a></li></ol></li></ol>
     
     </div>
   </aside>
@@ -627,20 +504,5 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </body>
 </html>

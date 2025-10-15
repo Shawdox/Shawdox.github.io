@@ -22,7 +22,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20231219183841322.png">
 <meta property="article:published_time" content="2023-12-18T16:00:00.000Z">
-<meta property="article:modified_time" content="2023-12-19T11:44:54.045Z">
+<meta property="article:modified_time" content="2023-12-19T11:44:56.000Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="Software Testing">
 <meta name="twitter:card" content="summary">
@@ -168,11 +168,12 @@
 </blockquote>
 <p>每一部分都由该技术领域的世界知名研究人员撰写，简要介绍了该方法的基本思想、技术现状、未决研究问题讨论以及该方法的未来发展前景。总体而言，本文旨在对自动生成测试用例的研究做一个介绍性的、最新的和（相对）简短的概述，同时确保处理的全面性和权威性。</p>
 <span id="more"></span>
+
 <blockquote>
 <p>值得注意的是，还有许多其他自动或半自动测试用例生成技术本文没有涉及，例如mutation-based testing、fuzzing和data mutation testing、specification-based testing和metamorphic testing。为了使本文篇幅适中，我们只选取了以上五种最著名的方法；未来的工作可以通过更多的评论来补充这套方法：事实上，协调的调查可以很容易地增加更多的部分。</p>
 </blockquote>
 <h2 id="Technique-1-Test-data-generation-by-symbolic-execution"><a href="#Technique-1-Test-data-generation-by-symbolic-execution" class="headerlink" title="Technique 1: Test data generation by symbolic execution"></a>Technique 1: Test data generation by symbolic execution</h2><blockquote>
-<p>By <strong><em>Saswat Anand</em></strong> and <strong><em>Mary Jean Harrold</em></strong></p>
+<p>By <em><strong>Saswat Anand</strong></em> and <em><strong>Mary Jean Harrold</strong></em></p>
 </blockquote>
 <p>已有大量工作证明了Symbolic Execution在广泛的软件工程问题（包括test data generation）中的实用性。然而，该技术至少存在三个基本问题，限制了其在现实世界软件中的有效性。本节将简要介绍符号执行，描述三个基本问题，并总结解决这些问题的现有知名技术。</p>
 <h3 id="1-Symbolic-Execution"><a href="#1-Symbolic-Execution" class="headerlink" title="1. Symbolic Execution"></a>1. Symbolic Execution</h3><p>略，见符号执行blog。</p>
@@ -199,9 +200,9 @@
 <p>By Wolfgang Grieskamp</p>
 </blockquote>
 <p>Model-based testing（MBT）是一种轻量级的形式化方法，它使用软件系统的模型来推导测试套件。与旨在根据形式模型验证程序的传统形式方法不同，MBT 的目的是利用通常不完整的测试方法收集程序正确性方面的见解。大约从 2000 年初开始，这项技术就在实践中得到了应用。在 2011 年撰写本文时，已经有了大量的行业应用和商业级工具，并有许多文章提交给各种会议和研讨会。这一领域多种多样，难以驾驭。</p>
-<p>本节试图概述 MBT 的基础、工具和应用。其目的是为读者提供进一步阅读的灵感。本节的重点是行为测试（behavioral），有时也称为功能测试、黑盒测试，即根据可观察到的输入/输出行为对程序进行测试。虽然还有许多其他方法可称为 MBT（随机、结构/架构、白盒等），但包括这些方法不在本调查范围之内。我们尽量保留历史背景：即使存在较新的研究成果，我们也会首先引用较早的研究成果。</p>
+<p>本节试图概述 MBT 的基础、工具和应用。其目的是为读者提供进一步阅读的灵感。本节的重点是行为测试（behavioral），有时也称为功能测试、黑盒测试，即根据可观察到的输入&#x2F;输出行为对程序进行测试。虽然还有许多其他方法可称为 MBT（随机、结构&#x2F;架构、白盒等），但包括这些方法不在本调查范围之内。我们尽量保留历史背景：即使存在较新的研究成果，我们也会首先引用较早的研究成果。</p>
 <h3 id="1-Introduction-to-model-based-testing"><a href="#1-Introduction-to-model-based-testing" class="headerlink" title="1.  Introduction to model-based testing"></a>1.  Introduction to model-based testing</h3><p>我们可以确定 MBT 的三大流派：公理化方法、有限状态机（FSM）方法和标记转换系统（LTS）方法。在深入探讨这些方法之前，先介绍一些一般的独立概念。</p>
-<p>在行为 MBT 中，被测系统（SUT）是一个接受输入并产生输出的black-box。SUT有一个内部状态，在处理输入和产生输出时会发生变化。这里的Model描述了所选抽象层次上可能的输入/输出序列，并通过”<em>conformance relation</em>“与实现相联系。<u>Test selection</u>算法通过从模型指定的可能是无限的序列集合中选择有限的子集，并使用基于<u>test hypothesis</u>的<u>testing criterion</u>来证明选择的适当性，从而从模型中获取test cases。</p>
+<p>在行为 MBT 中，被测系统（SUT）是一个接受输入并产生输出的black-box。SUT有一个内部状态，在处理输入和产生输出时会发生变化。这里的Model描述了所选抽象层次上可能的输入&#x2F;输出序列，并通过”<em>conformance relation</em>“与实现相联系。<u>Test selection</u>算法通过从模型指定的可能是无限的序列集合中选择有限的子集，并使用基于<u>test hypothesis</u>的<u>testing criterion</u>来证明选择的适当性，从而从模型中获取test cases。</p>
 <p><u>Test selection</u>可以在测试执行之前用合适的语言生成测试套件（称为offline test selection），也可以在测试执行时进行干预（称为online test selection）。</p>
 <blockquote>
 <p>这一章目前不完全懂，参考：</p>
@@ -209,17 +210,17 @@
 <li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/2069155">高效率、重覆盖的测试用例自动生成之法 - Model Based Testing-腾讯云开发者社区-腾讯云 (tencent.com)</a></li>
 </ul>
 </blockquote>
-<p>2011 年 10 月在柏林举行的 ETSI MBT 用户大会13 上，来自 40 家不同公司的 100 多名与会者齐聚一堂，讨论应用经验和工具支持。许多发表一般测试自动化工作的学术会议（如 ICST、ICTSS（前身为 TestCom/FATES）、ASE、ISSTA、ISSRE、AST 等）都会定期发表大量有关 MBT 的论文。自 2004 年以来，围绕该主题已举办了两届达格施图尔研讨会（Brinksma 等人，2005 年；Grieskamp 等人，2011 年）；上一届研讨会的报告列出了该领域的一些未决问题。所有这些都记录了一个活跃的研究团体和极具前景的应用领域。</p>
+<p>2011 年 10 月在柏林举行的 ETSI MBT 用户大会13 上，来自 40 家不同公司的 100 多名与会者齐聚一堂，讨论应用经验和工具支持。许多发表一般测试自动化工作的学术会议（如 ICST、ICTSS（前身为 TestCom&#x2F;FATES）、ASE、ISSTA、ISSRE、AST 等）都会定期发表大量有关 MBT 的论文。自 2004 年以来，围绕该主题已举办了两届达格施图尔研讨会（Brinksma 等人，2005 年；Grieskamp 等人，2011 年）；上一届研讨会的报告列出了该领域的一些未决问题。所有这些都记录了一个活跃的研究团体和极具前景的应用领域。</p>
 <h2 id="Technique-3-Test-data-generation-in-combinatorial-testing"><a href="#Technique-3-Test-data-generation-in-combinatorial-testing" class="headerlink" title="Technique 3: Test data generation in combinatorial testing"></a>Technique 3: Test data generation in combinatorial testing</h2><blockquote>
 <p>By Myra B. Cohen</p>
 </blockquote>
-<p>组合测试已成为软件测试人员工具箱中的一项常用技术。在组合测试中，重点是选择输入参数（或配置设置）的样本，这些参数涵盖了待测元素组合的规定子集。这种抽样最常见的表现形式是组合交互测试（CIT），样本中包含参数值（或配置设置）的所有 t 路组合。在过去几年中，有关这一测试领域的文献显著增加，包括生成 CIT 样本的新技术和在新领域中的应用。在本节中，我们将从组合测试的起源讲起，概述组合测试，并总结组合测试研究的两个主要方向—样本生成及其在软件系统不同领域的应用。</p>
+<p>组合测试已成为软件测试人员工具箱中的一项常用技术。在组合测试中，重点是选择输入参数（或配置设置）的样本，这些参数涵盖了待测元素组合的规定子集。这种抽样最常见的表现形式是组合交互测试（CIT），样本中包含参数值（或配置设置）的所有 t 路组合。在过去几年中，有关这一测试领域的文献显著增加，包括生成 CIT 样本的新技术和在新领域中的应用。在本节中，我们将从组合测试的起源讲起，概述组合测试，并总结组合测试研究的两个主要方向–样本生成及其在软件系统不同领域的应用。</p>
 <blockquote>
 <p>目前也看不太懂，参考：</p>
 <ul>
-<li><p><a target="_blank" rel="noopener" href="https://jiangliheng.github.io/2020/10/21/Pairwise-OATS/">组合测试术语：Pairwise/All-Pairs、OATS（Orthogonal Array Testing Strategy） (jiangliheng.github.io)</a></p>
+<li><p><a target="_blank" rel="noopener" href="https://jiangliheng.github.io/2020/10/21/Pairwise-OATS/">组合测试术语：Pairwise&#x2F;All-Pairs、OATS（Orthogonal Array Testing Strategy） (jiangliheng.github.io)</a></p>
 </li>
-<li><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_30430169/article/details/95738501">组合测试(Combinatorial Test)/配对测试 (pairwise)-CSDN博客</a></p>
+<li><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_30430169/article/details/95738501">组合测试(Combinatorial Test)&#x2F;配对测试 (pairwise)-CSDN博客</a></p>
 </li>
 <li><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/leeboke/p/5035892.html">组合测试方法：配对测试实践 - leo博客 - 博客园 (cnblogs.com)</a></p>
 </li>
@@ -233,7 +234,8 @@
 <p>为便于讨论，首先有必要定义一些术语。所谓<strong>failure rate</strong>，是指导致故障的输入的数量（或大小）与所有可能输入集合（以下简称输入域）的数量（或大小）之比。<strong>Failure patterns</strong>是指导致故障的输入的分布和几何形状。所谓<strong>efficiency</strong>，是指所需的计算时间，计算时间越短，效率越高。严格来说，efficiency还应包括内存，但由于篇幅有限，且缺乏实施细节（如使用的数据结构），本节将不考虑内存。我们所说的efficiency指的是故障检测能力，可以用有效性指标来衡量，包括 P-measure、E-measure、F-measure 等。<strong>F-measure</strong> 定义为检测到第一个故障所需的预期测试用例数；<strong>P-measure</strong> 定义为检测到至少一个故障的概率；<strong>E-measure</strong> 定义为检测到的预期故障数。使用 P-measure 或 E-measure 时，假定有一组测试用例。</p>
 <p>RT 是一种流行的测试方法，而 ART 最初是作为 RT 的增强型替代方法提出的。本节将从以 RT 为基线的角度重点介绍 ART 的最新技术。我们只将 ART 与 RT 进行比较，而不将 ART 与其他测试方法进行比较。我们感兴趣的问题是，当 RT 已被选为一种可行的系统测试方法时，是否值得使用 ART 来替代？</p>
 <p>为避免混淆和误解，本节中的<strong>cost-effectiveness</strong>指的是所花费的资源达到的故障检测能力。一些研究人员（如 Arcuri 和 Briand，2011 年）使用了 “effective”一词，而我们使用的是 “cost-effectiveness”，因此，在比较不同论文时，应注意含义上的差异。我们决定在本节中将effectiveness和efficiency分开处理，因为这样做可以让我们更好地了解应从哪个方面或哪个方向进行改进。</p>
-<p><img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20231219183841322.png" style="zoom: 50%;" /></p>
+<img src="https://shaw-typora.oss-cn-beijing.aliyuncs.com/image-20231219183841322.png" style="zoom: 50%;" />
+
 <blockquote>
 <p>参考：</p>
 <ul>
@@ -262,6 +264,8 @@
 <li>这里有篇最新的关于LLM与SBST结合的工作，其使用LLM来帮助SBST调整搜索方向：<a target="_blank" rel="noopener" href="https://www.carolemieux.com/codamosa_icse23.pdf">codamosa_icse23.pdf (carolemieux.com)</a></li>
 <li>STBT近几年的工作还蛮多的</li>
 </ul>
+</blockquote>
+<blockquote>
 <p>参考：</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/588636165">鉴源论坛 · 观模丨基于搜索的测试生成 - 知乎 (zhihu.com)</a></li>
@@ -273,16 +277,16 @@
 <p>幸运的是，SBST 范式可以自然而然地推广到多目标优化公式中，从而使我们能够开发出平衡成本和收益等多重目标的技术。如果我们能测量oracle成本，那么我们就能在 SBST 测试数据生成方法中将其作为最小化目标。这将意味着，所有测试数据生成方法都将是自然的多目标方法（Harman 等人，2007 年），因为它们需要平衡成本和收益。这对于 SBST 来说是自然而然的进步，因为测试就是平衡成本与收益。我们知道不可能进行详尽无遗的测试，因此我们希望以最小的成本（最终是货币成本，通过精力和时间等代用指标来衡量）获得最大的效益（最终找到故障）。</p>
 <h3 id="3-Opportunities-for-co-evolution"><a href="#3-Opportunities-for-co-evolution" class="headerlink" title="3. Opportunities for co-evolution"></a>3. Opportunities for co-evolution</h3><p>在共同进化计算中，两个或多个种群同时进化，可能使用不同的fitness函数。竞争性共同进化的理念是捕捉捕食者-猎物的进化模型，在该模型中，两个进化种群都会受到刺激，进化出更好的解决方案。在合作式共同进化中，我们的想法是让多个种群共生共同进化，每个种群作为包含它们的更大系统的一部分，依靠另一个种群协同工作。</p>
 <p>Adamopoulos 等人（2004 年）首先建议将共同进化应用于 SBST，认为这可以用于进化突变体集和测试用例集，其中测试用例作为捕食者，突变体作为猎物。对于测试来说，竞争模型迄今为止被证明是最合适的，因为测试用例是天然的捕食者。</p>
-<h3 id="4-Hyper-Heuristic-Software-Engineering"><a href="#4-Hyper-Heuristic-Software-Engineering" class="headerlink" title="4. Hyper-Heuristic Software Engineering"></a>4. Hyper-Heuristic Software Engineering</h3><p>SBSE/SBST 研究议程的一个关键问题是：”我们能否通过将 SBST 与其他形式的 SBSE 相结合，从根本上提高自动化程度？</p>
+<h3 id="4-Hyper-Heuristic-Software-Engineering"><a href="#4-Hyper-Heuristic-Software-Engineering" class="headerlink" title="4. Hyper-Heuristic Software Engineering"></a>4. Hyper-Heuristic Software Engineering</h3><p>SBSE&#x2F;SBST 研究议程的一个关键问题是：”我们能否通过将 SBST 与其他形式的 SBSE 相结合，从根本上提高自动化程度？</p>
 <h3 id="5-Optimising-and-understanding-failures"><a href="#5-Optimising-and-understanding-failures" class="headerlink" title="5. Optimising and understanding failures"></a>5. Optimising and understanding failures</h3><p>有些故障是由异常冗长和复杂的动作和事件序列造成的。因此，从理论上讲，很难（有时甚至实际上不可能）找到导致故障的一个或多个故障。因此，一个自然而又具有挑战性的重要问题是：我们能否简化故障，使其更容易调试？</p>
-<p>在某些方面，这个问题与第 7.3 节中描述的oracle成本问题有关。也就是说，如果我们能降低理解测试输出的成本，那么我们就能降低人工oracle成本。另一方面，理解测试的输入也需要人工付出代价。如果在开发人员的现场复制故障需要一长串（和/或复杂的）操作，工程师可能会发现这太复杂了，无法理解故障的原因，因此也就很难找到导致故障的故障点。</p>
+<p>在某些方面，这个问题与第 7.3 节中描述的oracle成本问题有关。也就是说，如果我们能降低理解测试输出的成本，那么我们就能降低人工oracle成本。另一方面，理解测试的输入也需要人工付出代价。如果在开发人员的现场复制故障需要一长串（和&#x2F;或复杂的）操作，工程师可能会发现这太复杂了，无法理解故障的原因，因此也就很难找到导致故障的故障点。</p>
 <p>假设我们可以用断言（或类似机制）来捕捉失败行为。现在，我们可以有一个fitness函数来衡量测试用例在多大程度上导致了失败的发生。这就是一个潜在的fitenss函数。如果我们还能测量测试用例的复杂性，那么我们就能设法将复杂性降至最低，同时最大限度地提高与所关注故障的相似度；这是测试数据生成的另一种多目标表述。</p>
 <p>故障的一个自然起点是 “变量中的错误值”，因为这很容易在现有的 SBST 框架中捕获：适配性计算与分支覆盖的计算并无不同。我们可以使用简单的可测试性转换（Harman，2008 年；McMinn 等人，2009 年）来插入一个能捕捉失败行为的分支，并设法覆盖该分支。测试复杂性的起点是揭示故障所需的输入序列长度。我们面临的挑战将是如何找到支持性的适配函数和方法，以平滑原本相当 “尖锐 “的图形，从而为更短的测试输入提供指导，以显示所需的故障。</p>
 <h3 id="6-Conclusion"><a href="#6-Conclusion" class="headerlink" title="6. Conclusion"></a>6. Conclusion</h3><p>基于搜索的软件测试（SBST）是基于搜索的软件工程（SBSE）的一个分支，它将测试目标重新表述为fitness函数，以指导自动搜索程序。这为许多不同形式的测试提供了一种自动生成测试的方法。这种方法具有极强的通用性和惊人的广泛适用性，因为任何可以测量的测试目标都可以转化为fitness函数。肯定还有许多令人兴奋、重要和富有成效的测试目标尚未使用这种 SBSE 重构方法来解决，从而为未来的工作提供了许多富有成果的途径。</p>
 <blockquote>
 <p>参考：</p>
 <ul>
-<li>SBST与fuzzing的关系：<a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/3573074.3573102#:~:text=In reality%2C what differs Fuzzing,terms adopted by both communities.">https://dl.acm.org/doi/pdf/10.1145/3573074.3573102</a></li>
+<li>SBST与fuzzing的关系：[<a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/3573074.3573102]">https://dl.acm.org/doi/pdf/10.1145/3573074.3573102]</a>(<a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/3573074.3573102#:~:text=In">https://dl.acm.org/doi/pdf/10.1145/3573074.3573102#:~:text=In</a> reality%2C what differs Fuzzing,terms adopted by both communities.)</li>
 </ul>
 </blockquote>
 
@@ -525,20 +529,5 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </body>
 </html>

@@ -6,32 +6,33 @@
   <title>(Syzkaller)New version of syz-manager | Shaw</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta name="keywords" content="FuzzingSyzkallerKernel" />
+  <meta name="keywords" content="SyzkallerFuzzingKernel" />
   
   
   
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="(Syzkaller)New version of syz-manager  Some new features compared to old version of syzkaller.">
+  <meta name="description" content="(Syzkaller)New version of syz-manager Some new features compared to old version of syzkaller.">
 <meta property="og:type" content="article">
 <meta property="og:title" content="(Syzkaller)New version of syz-manager">
 <meta property="og:url" content="http://example.com/2025/04/04/202544-(Syzkaller)New-version-of-syz-manager/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="(Syzkaller)New version of syz-manager  Some new features compared to old version of syzkaller.">
+<meta property="og:description" content="(Syzkaller)New version of syz-manager Some new features compared to old version of syzkaller.">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/figures/image-20250404103227476.png">
 <meta property="og:image" content="http://example.com/figures/process_structure.png">
 <meta property="og:image" content="http://example.com/figures/image-20250405145942098.png">
+<meta property="og:image" content="http://example.com/figures/image-20250411145124279.png">
 <meta property="og:image" content="http://example.com/figures/image-20250413130046163.png">
 <meta property="og:image" content="http://example.com/figures/image-20250413130253233.png">
 <meta property="og:image" content="http://example.com/figures/image-20250413130404201.png">
 <meta property="og:image" content="http://example.com/figures/image-20250413125503076.png">
 <meta property="article:published_time" content="2025-04-03T16:00:00.000Z">
-<meta property="article:modified_time" content="2025-05-14T09:59:53.785Z">
+<meta property="article:modified_time" content="2025-05-14T10:02:20.000Z">
 <meta property="article:author" content="Shaw">
-<meta property="article:tag" content="Fuzzing">
 <meta property="article:tag" content="Syzkaller">
+<meta property="article:tag" content="Fuzzing">
 <meta property="article:tag" content="Kernel">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/figures/image-20250404103227476.png">
@@ -159,22 +160,19 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="syzkallernew-version-of-syz-manager">(Syzkaller)New version of
-syz-manager</h1>
-<blockquote>
+        <h1 id="Syzkaller-New-version-of-syz-manager"><a href="#Syzkaller-New-version-of-syz-manager" class="headerlink" title="(Syzkaller)New version of syz-manager"></a>(Syzkaller)New version of syz-manager</h1><blockquote>
 <p>Some new features compared to old version of syzkaller.</p>
 </blockquote>
 <span id="more"></span>
+
 <p>Old syzkaller:</p>
-<p><img src="/figures/image-20250404103227476.png" alt="Old Syzkaller" style="zoom: 67%;" /></p>
+<img src="/figures/image-20250404103227476.png" alt="Old Syzkaller" style="zoom: 67%;" />
+
 <p>New syzkaller:</p>
-<p><img src="/figures/process_structure.png" alt="New Syzkalelr" style="zoom:80%;" /></p>
-<p>Syzkaller moved all syz-fuzzer logic into syz-executor and removed
-syz-fuzzer in commit
-<code>e16e2c9a4cb6937323e861b646792a6c4c978a3c</code> (Jun 4th 2024).
-Changes in syz-manager logic are as follows.</p>
-<h3 id="mode">Mode</h3>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Mode <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+<img src="/figures/process_structure.png" alt="New Syzkalelr" style="zoom:80%;" />
+
+<p>Syzkaller moved all syz-fuzzer logic into syz-executor and removed syz-fuzzer in commit <code>e16e2c9a4cb6937323e861b646792a6c4c978a3c</code> (Jun 4th 2024). Changes in syz-manager logic are as follows.</p>
+<h3 id="Mode"><a href="#Mode" class="headerlink" title="Mode"></a>Mode</h3><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Mode <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
 	Name                  <span class="token builtin">string</span>
 	Description           <span class="token builtin">string</span>
 	UseDashboard          <span class="token builtin">bool</span> <span class="token comment">// the mode connects to dashboard/hub</span>
@@ -184,6 +182,7 @@ Changes in syz-manager logic are as follows.</p>
 	FailOnCrashes <span class="token builtin">bool</span>
 	CheckConfig   <span class="token keyword">func</span><span class="token punctuation">(</span>cfg <span class="token operator">*</span>mgrconfig<span class="token punctuation">.</span>Config<span class="token punctuation">)</span> <span class="token builtin">error</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <pre class="line-numbers language-go" data-language="go"><code class="language-go">modes <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">*</span>Mode<span class="token punctuation">&#123;</span>
 		ModeFuzzing<span class="token punctuation">,</span>
 		ModeSmokeTest<span class="token punctuation">,</span>
@@ -192,8 +191,8 @@ Changes in syz-manager logic are as follows.</p>
 		ModeRunTests<span class="token punctuation">,</span>
 		ModeIfaceProbe<span class="token punctuation">,</span>
 	<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><code>modes</code> defines the startup modes of the manager, which
-include:</p>
+
+<p><code>modes</code> defines the startup modes of the manager, which include:</p>
 <ul>
 <li>ModeFuzzing:</li>
 </ul>
@@ -203,6 +202,7 @@ include:</p>
 		UseDashboard<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
 		LoadCorpus<span class="token punctuation">:</span>   <span class="token boolean">true</span><span class="token punctuation">,</span>
 	<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <ul>
 <li>ModeSmokeTest:</li>
 </ul>
@@ -216,9 +216,8 @@ include:</p>
 		ExitAfterMachineCheck<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
 		FailOnCrashes<span class="token punctuation">:</span>         <span class="token boolean">true</span><span class="token punctuation">,</span>
 	<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>Smoke testing is a preliminary software testing method that
-determines whether the employed build is stable enough to proceed with
-further testing.</p>
+
+<p>Smoke testing is a preliminary software testing method that determines whether the employed build is stable enough to proceed with further testing.</p>
 <ul>
 <li>ModeCorpusTriage:</li>
 </ul>
@@ -228,6 +227,7 @@ further testing.</p>
 	This is useful mostly for benchmarking with testbed.`</span><span class="token punctuation">,</span>
 		LoadCorpus<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
 	<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <ul>
 <li>ModeCorpusRun:</li>
 </ul>
@@ -236,6 +236,7 @@ further testing.</p>
 		Description<span class="token punctuation">:</span> <span class="token string">`continuously run the corpus programs`</span><span class="token punctuation">,</span>
 		LoadCorpus<span class="token punctuation">:</span>  <span class="token boolean">true</span><span class="token punctuation">,</span>
 	<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <ul>
 <li>ModeRunTests:</li>
 </ul>
@@ -244,6 +245,7 @@ further testing.</p>
 		Description<span class="token punctuation">:</span> <span class="token string">`run unit tests
 	Run sys/os/test/* tests in various modes and print results.`</span><span class="token punctuation">,</span>
 	<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <ul>
 <li>ModeIfaceProbe:</li>
 </ul>
@@ -264,8 +266,8 @@ further testing.</p>
 			<span class="token keyword">return</span> <span class="token boolean">nil</span>
 		<span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
 	<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="pool-instance">Pool &amp; Instance</h3>
-<p>Syzkaller uses vm pool to manage the VM execution:</p>
+
+<h3 id="Pool-Instance"><a href="#Pool-Instance" class="headerlink" title="Pool &amp; Instance"></a>Pool &amp; Instance</h3><p>Syzkaller uses vm pool to manage the VM execution:</p>
 <pre class="line-numbers language-none"><code class="language-none">vm.Pool (高级抽象)
     |
     ├── vm.Dispatcher (基于 Pool 的调度器)
@@ -279,6 +281,7 @@ further testing.</p>
     |           ├── Runner[Instance] (执行逻辑)
     |
     └── 物理&#x2F;虚拟的机器资源<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// Pool[T] provides the functionality of a generic pool of instances.</span>
 <span class="token comment">// The instance is assumed to boot, be controlled by one Runner and then be re-created.</span>
 <span class="token comment">// The pool is assumed to have one default Runner (e.g. to be used for fuzzing), while a</span>
@@ -297,9 +300,10 @@ further testing.</p>
 	instances <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">*</span>poolInstance<span class="token punctuation">[</span>T<span class="token punctuation">]</span>
 	paused    <span class="token builtin">bool</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h4 id="vm.instance">1. vm.Instance</h4>
-<p>Package <code>vm</code> defines the type representing VM
-<code>Instance</code> and corresponding methods:</p>
+
+
+
+<h4 id="1-vm-Instance"><a href="#1-vm-Instance" class="headerlink" title="1. vm.Instance"></a>1. vm.Instance</h4><p>Package <code>vm</code> defines the type representing VM <code>Instance</code> and corresponding methods:</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Instance <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
     pool          <span class="token operator">*</span>Pool
     impl          vmimpl<span class="token punctuation">.</span>Instance
@@ -308,31 +312,35 @@ further testing.</p>
     snapshotSetup <span class="token builtin">bool</span>
     onClose       <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <ul>
 <li>Copy files into VM:</li>
 </ul>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>inst <span class="token operator">*</span>Instance<span class="token punctuation">)</span> <span class="token function">Copy</span><span class="token punctuation">(</span>hostSrc <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token builtin">string</span><span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
 	<span class="token keyword">return</span> inst<span class="token punctuation">.</span>impl<span class="token punctuation">.</span><span class="token function">Copy</span><span class="token punctuation">(</span>hostSrc<span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
 <ul>
 <li>Set TCP port (for RPC):</li>
 </ul>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>inst <span class="token operator">*</span>Instance<span class="token punctuation">)</span> <span class="token function">Forward</span><span class="token punctuation">(</span>port <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token builtin">string</span><span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
 	<span class="token keyword">return</span> inst<span class="token punctuation">.</span>impl<span class="token punctuation">.</span><span class="token function">Forward</span><span class="token punctuation">(</span>port<span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
 <ul>
-<li>Run runs cmd inside of the VM and monitors command execution and the
-kernel console output:</li>
+<li>Run runs cmd inside of the VM and monitors command execution and the kernel console output:</li>
 </ul>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>inst <span class="token operator">*</span>Instance<span class="token punctuation">)</span> <span class="token function">Run</span><span class="token punctuation">(</span>timeout time<span class="token punctuation">.</span>Duration<span class="token punctuation">,</span> reporter <span class="token operator">*</span>report<span class="token punctuation">.</span>Reporter<span class="token punctuation">,</span> command <span class="token builtin">string</span><span class="token punctuation">,</span> opts <span class="token operator">...</span>any<span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> <span class="token operator">*</span>report<span class="token punctuation">.</span>Report<span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
 <span class="token comment">//...</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
 <ul>
 <li>Get the index of the instance:</li>
 </ul>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>inst <span class="token operator">*</span>Instance<span class="token punctuation">)</span> <span class="token function">Index</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">int</span> <span class="token punctuation">&#123;</span>
 	<span class="token keyword">return</span> inst<span class="token punctuation">.</span>index
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
 <ul>
 <li>Close the instance:</li>
 </ul>
@@ -344,6 +352,7 @@ kernel console output:</li>
 	inst<span class="token punctuation">.</span><span class="token function">onClose</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 	<span class="token keyword">return</span> err
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <ul>
 <li>Snapshot:</li>
 </ul>
@@ -377,8 +386,8 @@ kernel console output:</li>
 	timeout <span class="token operator">:=</span> inst<span class="token punctuation">.</span>pool<span class="token punctuation">.</span>timeouts<span class="token punctuation">.</span>Program <span class="token operator">/</span> <span class="token number">5</span> <span class="token operator">*</span> <span class="token number">7</span>
 	<span class="token keyword">return</span> impl<span class="token punctuation">.</span><span class="token function">RunSnapshot</span><span class="token punctuation">(</span>timeout<span class="token punctuation">,</span> input<span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h4 id="dispatcher.poolinstance">2. dispatcher.poolInstance</h4>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// poolInstance is not thread safe.</span>
+
+<h4 id="2-dispatcher-poolInstance"><a href="#2-dispatcher-poolInstance" class="headerlink" title="2. dispatcher.poolInstance"></a>2. dispatcher.poolInstance</h4><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// poolInstance is not thread safe.</span>
 <span class="token keyword">type</span> poolInstance<span class="token punctuation">[</span>T Instance<span class="token punctuation">]</span> <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
 	mu   sync<span class="token punctuation">.</span>Mutex
 	info Info
@@ -390,11 +399,8 @@ kernel console output:</li>
 	switchToJob <span class="token keyword">chan</span> Runner<span class="token punctuation">[</span>T<span class="token punctuation">]</span>
 	stop        <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="fuzzer.queue">fuzzer.Queue</h3>
-<p>Package <code>queue</code> defines a series of queue functions and
-methods used for executing programs and managing the process. Fuzzer
-maintains five kinds of <code>execQueue</code> for different
-scenarios：</p>
+
+<h3 id="fuzzer-Queue"><a href="#fuzzer-Queue" class="headerlink" title="fuzzer.Queue"></a>fuzzer.Queue</h3><p>Package <code>queue</code> defines a series of queue functions and methods used for executing programs and managing the process. Fuzzer maintains five kinds of <code>execQueue</code> for different scenarios：</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> execQueues <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
 	triageCandidateQueue <span class="token operator">*</span>queue<span class="token punctuation">.</span>DynamicOrderer
 	candidateQueue       <span class="token operator">*</span>queue<span class="token punctuation">.</span>PlainQueue
@@ -402,22 +408,22 @@ scenarios：</p>
 	smashQueue           <span class="token operator">*</span>queue<span class="token punctuation">.</span>PlainQueue
 	source               queue<span class="token punctuation">.</span>Source
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>The queue are either <code>*queue.DynamicOrderer</code> which can
-change the priority dynamically:</p>
+
+<p>The queue are either <code>*queue.DynamicOrderer</code> which can change the priority dynamically:</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> DynamicOrderer <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
 	mu       sync<span class="token punctuation">.</span>Mutex
 	currPrio <span class="token builtin">int</span>
 	ops      <span class="token operator">*</span>priorityQueueOps<span class="token punctuation">[</span><span class="token operator">*</span>Request<span class="token punctuation">]</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>Or <code>*queue.PlainQueue</code> which is a straighforward
-thread-safe Request queue implementation.:</p>
+
+<p>Or <code>*queue.PlainQueue</code> which is a straighforward thread-safe Request queue implementation.:</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> PlainQueue <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
 	mu    sync<span class="token punctuation">.</span>Mutex
 	queue <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">*</span>Request
 	pos   <span class="token builtin">int</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><code>execQueues</code> is initialized in
-<code>NewFuzzer():newExecQueues()</code>:</p>
+
+<p><code>execQueues</code> is initialized in <code>NewFuzzer():newExecQueues()</code>:</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">newExecQueues</span><span class="token punctuation">(</span>fuzzer <span class="token operator">*</span>Fuzzer<span class="token punctuation">)</span> execQueues <span class="token punctuation">&#123;</span>
 	ret <span class="token operator">:=</span> execQueues<span class="token punctuation">&#123;</span>
 		triageCandidateQueue<span class="token punctuation">:</span> queue<span class="token punctuation">.</span><span class="token function">DynamicOrder</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
@@ -443,10 +449,10 @@ thread-safe Request queue implementation.:</p>
 	<span class="token punctuation">)</span>
 	<span class="token keyword">return</span> ret
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="runmanagermode-mode-cfg-mgrconfig.config">RunManager(mode
-<em>Mode, cfg </em>mgrconfig.Config)</h3>
-<p>New manager uses <code>mgr.corpusPreload</code> to store the
-candidates which was <code>mgr.candidates</code> in old manager:</p>
+
+
+
+<h3 id="RunManager-mode-Mode-cfg-mgrconfig-Config"><a href="#RunManager-mode-Mode-cfg-mgrconfig-Config" class="headerlink" title="RunManager(mode *Mode, cfg *mgrconfig.Config)"></a>RunManager(mode *Mode, cfg *mgrconfig.Config)</h3><p>New manager uses <code>mgr.corpusPreload</code> to store the candidates which was <code>mgr.candidates</code> in old manager:</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go">mgr <span class="token operator">:=</span> <span class="token operator">&amp;</span>Manager<span class="token punctuation">&#123;</span>
 		cfg<span class="token punctuation">:</span>                cfg<span class="token punctuation">,</span>
 		mode<span class="token punctuation">:</span>               mode<span class="token punctuation">,</span>
@@ -454,20 +460,21 @@ candidates which was <code>mgr.candidates</code> in old manager:</p>
 		corpusPreload<span class="token punctuation">:</span>      <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>fuzzer<span class="token punctuation">.</span>Candidate<span class="token punctuation">)</span><span class="token punctuation">,</span>
 		<span class="token comment">//...</span>
 	<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// packge fuzzer</span>
 <span class="token keyword">type</span> Candidate <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
 	Prog  <span class="token operator">*</span>prog<span class="token punctuation">.</span>Prog
 	Flags ProgFlags
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>After initializing the <code>mgr</code> and building the HTTPServer,
-manager decides whether to load corpus based on parameter
-<code>mgr.mode.LoadCorpus</code>.</p>
+
+<p>After initializing the <code>mgr</code> and building the HTTPServer, manager decides whether to load corpus based on parameter <code>mgr.mode.LoadCorpus</code>.</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">if</span> mgr<span class="token punctuation">.</span>mode<span class="token punctuation">.</span>LoadCorpus <span class="token punctuation">&#123;</span>
     <span class="token keyword">go</span> mgr<span class="token punctuation">.</span><span class="token function">preloadCorpus</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
     <span class="token comment">// close the chan []fuzzer.Candidate</span>
     <span class="token function">close</span><span class="token punctuation">(</span>mgr<span class="token punctuation">.</span>corpusPreload<span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>The old logging function in manager was:</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// old_manager</span>
 <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -496,8 +503,8 @@ manager decides whether to load corpus based on parameter
                  numFuzzing<span class="token punctuation">,</span> executed<span class="token punctuation">,</span> corpusCover<span class="token punctuation">,</span> corpusSignal<span class="token punctuation">,</span> maxSignal<span class="token punctuation">,</span> crashes<span class="token punctuation">,</span> numReproducing<span class="token punctuation">,</span> triageQLen<span class="token punctuation">)</span>
     <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>This one was wrapped into <code>mgr.heartbeatLoop()</code> in new
-manager:</p>
+
+<p>This one was wrapped into <code>mgr.heartbeatLoop()</code> in new manager:</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>mgr <span class="token operator">*</span>Manager<span class="token punctuation">)</span> <span class="token function">heartbeatLoop</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
 	lastTime <span class="token operator">:=</span> time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 	<span class="token keyword">for</span> now <span class="token operator">:=</span> <span class="token keyword">range</span> time<span class="token punctuation">.</span><span class="token function">NewTicker</span><span class="token punctuation">(</span><span class="token number">10</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span><span class="token punctuation">.</span>C <span class="token punctuation">&#123;</span>
@@ -518,8 +525,8 @@ manager:</p>
 		log<span class="token punctuation">.</span><span class="token function">Logf</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token string">"%s"</span><span class="token punctuation">,</span> buf<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 	<span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>New manager add function <code>mgr.processFuzzingResults()</code>
-which was part of old <code>mgr.vmLoop()</code>:</p>
+
+<p>New manager add function <code>mgr.processFuzzingResults()</code> which was part of old <code>mgr.vmLoop()</code>:</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>mgr <span class="token operator">*</span>Manager<span class="token punctuation">)</span> <span class="token function">processFuzzingResults</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
 	<span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
 		<span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
@@ -542,10 +549,8 @@ which was part of old <code>mgr.vmLoop()</code>:</p>
 		<span class="token punctuation">&#125;</span>
 	<span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="mgr.vmloop----mgr.pool.loopctx-context.context">mgr.vmLoop()
---&gt; mgr.pool.Loop(ctx context.Context)</h3>
-<p>Old function <code>mgr.vmLoop()</code> was substituted for
-<code>mgr.pool.Loop(ctx context.Context)</code>.</p>
+
+<h3 id="mgr-vmLoop-–-mgr-pool-Loop-ctx-context-Context"><a href="#mgr-vmLoop-–-mgr-pool-Loop-ctx-context-Context" class="headerlink" title="mgr.vmLoop() –&gt; mgr.pool.Loop(ctx context.Context)"></a>mgr.vmLoop() –&gt; mgr.pool.Loop(ctx context.Context)</h3><p>Old function <code>mgr.vmLoop()</code> was substituted for <code>mgr.pool.Loop(ctx context.Context)</code>.</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>p <span class="token operator">*</span>Pool<span class="token punctuation">[</span>T<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token function">Loop</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
 	<span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
 	wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token function">len</span><span class="token punctuation">(</span>p<span class="token punctuation">.</span>instances<span class="token punctuation">)</span><span class="token punctuation">)</span>
@@ -559,8 +564,8 @@ which was part of old <code>mgr.vmLoop()</code>:</p>
 	<span class="token punctuation">&#125;</span>
 	wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="poolt.runinstance">Pool[T].runInstance()</h3>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>p <span class="token operator">*</span>Pool<span class="token punctuation">[</span>T<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token function">runInstance</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> inst <span class="token operator">*</span>poolInstance<span class="token punctuation">[</span>T<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+
+<h3 id="Pool-T-runInstance"><a href="#Pool-T-runInstance" class="headerlink" title="Pool[T].runInstance()"></a>Pool[T].runInstance()</h3><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>p <span class="token operator">*</span>Pool<span class="token punctuation">[</span>T<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token function">runInstance</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> inst <span class="token operator">*</span>poolInstance<span class="token punctuation">[</span>T<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     <span class="token comment">// 如果p为paused状态则阻塞等待唤醒</span>
 	p<span class="token punctuation">.</span><span class="token function">waitUnpaused</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 	ctx<span class="token punctuation">,</span> cancel <span class="token operator">:=</span> context<span class="token punctuation">.</span><span class="token function">WithCancel</span><span class="token punctuation">(</span>ctx<span class="token punctuation">)</span>
@@ -602,11 +607,8 @@ which was part of old <code>mgr.vmLoop()</code>:</p>
 	inst<span class="token punctuation">.</span><span class="token function">status</span><span class="token punctuation">(</span>StateRunning<span class="token punctuation">)</span>
 	<span class="token function">job</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span> obj<span class="token punctuation">,</span> inst<span class="token punctuation">.</span>updateInfo<span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h4 id="how-does-new-manager-run-vms"><strong>1. How does new manager
-run VMs?</strong></h4>
-<h5 id="vm.pool-dispatcher.pool">1.1 vm.Pool &amp; dispatcher.Pool</h5>
-<p><code>vm.Pool</code> is used for managing and scheduling VMs,
-containing basic information of VMs, including:</p>
+
+<h4 id="1-How-does-new-manager-run-VMs"><a href="#1-How-does-new-manager-run-VMs" class="headerlink" title="1. How does new manager run VMs?"></a><strong>1. How does new manager run VMs?</strong></h4><h5 id="1-1-vm-Pool-dispatcher-Pool"><a href="#1-1-vm-Pool-dispatcher-Pool" class="headerlink" title="1.1 vm.Pool &amp;  dispatcher.Pool"></a>1.1 vm.Pool &amp;  dispatcher.Pool</h5><p><code>vm.Pool</code> is used for managing and scheduling VMs, containing basic information of VMs, including: </p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Pool <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
     <span class="token comment">// 具体虚拟机实现（QEMU/GCE 等）</span>
 	impl               vmimpl<span class="token punctuation">.</span>Pool
@@ -623,15 +625,14 @@ containing basic information of VMs, including:</p>
 	hostFuzzer         <span class="token builtin">bool</span>
 	statOutputReceived <span class="token operator">*</span>stat<span class="token punctuation">.</span>Val
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>There are three methods implemented for <code>vm.Pool</code>:</p>
 <ul>
 <li><code>Count()</code>: return pool.count</li>
-<li><code>Create(index int)(*Instance, error)</code>: Create
-<code>Instance</code> and boot the VMs</li>
+<li><code>Create(index int)(*Instance, error)</code>: Create <code>Instance</code> and boot the VMs</li>
 <li><code>Close() error</code>: Close the VMs</li>
 </ul>
-<p><code>dispatcher.Pool</code> is used for managing the fuzzing
-process:</p>
+<p><code>dispatcher.Pool</code> is used for managing the fuzzing process:</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// Pool[T] provides the functionality of a generic pool of instances.</span>
 <span class="token comment">// The instance is assumed to boot, be controlled by one Runner and then be re-created.</span>
 <span class="token comment">// The pool is assumed to have one default Runner (e.g. to be used for fuzzing), while a</span>
@@ -652,41 +653,28 @@ process:</p>
 	instances <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">*</span>poolInstance<span class="token punctuation">[</span>T<span class="token punctuation">]</span>
 	paused    <span class="token builtin">bool</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>There are 10 methods implemented for <code>dispatcher.Pool</code>,
-some of them are:</p>
+
+<p>There are 10 methods implemented for <code>dispatcher.Pool</code>, some of them are:</p>
 <ul>
-<li><p><code>waitUnpaused()</code>: If Pool is paused, wait until wake
-up.</p></li>
-<li><p><code>Loop(ctx context.Context)</code>: Run each instance in
-Pool.</p></li>
-<li><p><code>runInstance(ctx context.Context, inst *poolInstance[T])</code>:
-Create and boot the VM, update the status, and run the job of the
-instance.</p></li>
-<li><p><code>ReserveForRun(count int)</code>: Reserve instances for
-special tasks.</p></li>
-<li><p><code>Run(job Runner[T])</code>: Run the job</p></li>
-<li><p><code>Total() int</code>: return len(p.instances)</p></li>
-<li><p><code>State() []Info</code>: Return all informantion of
-instances.</p></li>
+<li><p><code>waitUnpaused()</code>: If Pool is paused, wait until wake up.</p>
+</li>
+<li><p><code>Loop(ctx context.Context)</code>: Run each instance in Pool.</p>
+</li>
+<li><p><code>runInstance(ctx context.Context, inst *poolInstance[T])</code>: Create and boot the VM, update the status, and run the job of the instance.</p>
+</li>
+<li><p><code>ReserveForRun(count int)</code>: Reserve instances for special tasks.</p>
+</li>
+<li><p><code>Run(job Runner[T])</code>: Run the job</p>
+</li>
+<li><p><code>Total() int</code>: return len(p.instances)</p>
+</li>
+<li><p><code>State() []Info</code>: Return all informantion of instances.</p>
+</li>
 </ul>
-<p>The connection between these two kinds of <code>Pool</code> is using
-<code>vmpool.count</code> and <code>vmpool.Create()</code>as the length
-of instances and the default job of instance when manager create the
-dispatcher:</p>
-<figure>
-<img src="/figures/image-20250405145942098.png"
-alt="How does new manager run VMs?" />
-<figcaption aria-hidden="true">How does new manager run
-VMs?</figcaption>
-</figure>
-<p>The VM is created and boot this way: <img
-src="/figures/image-20250411145124279.png" /></p>
-<h4 id="how-does-new-manager-start-fuzzing"><strong>2. How does new
-manager start fuzzing?</strong></h4>
-<h5 id="rpcserver.server.serve">2.1 rpcserver.server.Serve()</h5>
-<p>Function <code>Serve()</code> starts two go routines, one is for
-handshake with executor and the other is for machine check after
-handshaking.</p>
+<p>The connection between these two kinds of <code>Pool</code> is using <code>vmpool.count</code> and <code>vmpool.Create()</code>as the length of instances and the default job of instance when manager create the dispatcher:</p>
+<p><img src="/figures/image-20250405145942098.png" alt="How does new manager run VMs?"></p>
+<p>The VM is created and boot this way:<br><img src="/figures/image-20250411145124279.png"></p>
+<h4 id="2-How-does-new-manager-start-fuzzing"><a href="#2-How-does-new-manager-start-fuzzing" class="headerlink" title="2. How does new manager start fuzzing?"></a><strong>2. How does new manager start fuzzing?</strong></h4><h5 id="2-1-rpcserver-server-Serve"><a href="#2-1-rpcserver-server-Serve" class="headerlink" title="2.1 rpcserver.server.Serve()"></a>2.1 rpcserver.server.Serve()</h5><p>Function <code>Serve()</code> starts two go routines, one is for handshake with executor and the other is for machine check after handshaking.</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>serv <span class="token operator">*</span>server<span class="token punctuation">)</span> <span class="token function">Serve</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
 	g<span class="token punctuation">,</span> ctx <span class="token operator">:=</span> errgroup<span class="token punctuation">.</span><span class="token function">WithContext</span><span class="token punctuation">(</span>ctx<span class="token punctuation">)</span>
     <span class="token comment">// 第一个go routine</span>
@@ -716,24 +704,18 @@ handshaking.</p>
 	<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
 	<span class="token keyword">return</span> g<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <ul>
 <li>The first go routine, wait and handshake with executor:</li>
 </ul>
-<p><img src="/figures/image-20250413130046163.png" /></p>
+<p><img src="/figures/image-20250413130046163.png"></p>
 <ul>
-<li>The second go routine, wait until the handshake finished, create
-fuzzer and update the runner source:</li>
+<li>The second go routine, wait until the handshake finished, create fuzzer and update the runner source:</li>
 </ul>
-<p><img src="/figures/image-20250413130253233.png" /></p>
-<p>The function <code>mgr.MachineChecked</code> builds the
-<code>fuzzerObj</code>, loads the corpus into
-<code>fuzzer.candidateQueue</code>, and update the source of runner. The
-whole process of <code>Serv()</code>:</p>
-<p><img src="/figures/image-20250413130404201.png" /></p>
-<h5 id="runner">2.2 Runner</h5>
-<h5 id="distributor">2.3 Distributor</h5>
-<p>Distributor distributes requests to different VMs during input
-triage:</p>
+<p><img src="/figures/image-20250413130253233.png"></p>
+<p>The function <code>mgr.MachineChecked</code> builds the <code>fuzzerObj</code>, loads the corpus into <code>fuzzer.candidateQueue</code>, and update the source of runner. The whole process of <code>Serv()</code>:</p>
+<p><img src="/figures/image-20250413130404201.png"></p>
+<h5 id="2-2-Runner"><a href="#2-2-Runner" class="headerlink" title="2.2 Runner"></a>2.2 Runner</h5><h5 id="2-3-Distributor"><a href="#2-3-Distributor" class="headerlink" title="2.3 Distributor"></a>2.3 Distributor</h5><p>Distributor distributes requests to different VMs during input triage:</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// Distributor distributes requests to different VMs during input triage</span>
 <span class="token comment">// (allows to avoid already used VMs).</span>
 <span class="token keyword">type</span> Distributor <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
@@ -747,32 +729,24 @@ triage:</p>
 	statUndelayed <span class="token operator">*</span>stat<span class="token punctuation">.</span>Val
 	statViolated  <span class="token operator">*</span>stat<span class="token punctuation">.</span>Val
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h5 id="fuzzer.iob">2.4 fuzzer.iob</h5>
-<p><code>job.go</code> from pkg fuzzer defines a series of</p>
+
+<h5 id="2-4-fuzzer-iob"><a href="#2-4-fuzzer-iob" class="headerlink" title="2.4 fuzzer.iob"></a>2.4 fuzzer.iob</h5><p><code>job.go</code> from pkg fuzzer defines a series of </p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> job <span class="token keyword">interface</span> <span class="token punctuation">&#123;</span>
 	<span class="token function">run</span><span class="token punctuation">(</span>fuzzer <span class="token operator">*</span>Fuzzer<span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<figure>
-<img src="/figures/image-20250413125503076.png"
-alt="Two go routines in server.Serv()" />
-<figcaption aria-hidden="true">Two go routines in
-server.Serv()</figcaption>
-</figure>
-<h2 id="references">References</h2>
-<ul>
-<li>Golang:
-<ul>
-<li>Golang generic type:
-https://www.cnblogs.com/insipid/p/17772581.html</li>
-<li>Cond: https://zhuanlan.zhihu.com/p/630887340</li>
-<li>Contex:
-https://www.cnblogs.com/asong2020/articles/13662174.html</li>
-<li>Atomic: https://www.cnblogs.com/ExMan/p/12397054.html</li>
-<li>Embedding types/fields:
-https://www.cnblogs.com/apocelipes/p/14090671.html</li>
-<li>Errorgroup: https://zhuanlan.zhihu.com/p/338999914</li>
-<li>Closure: https://zhuanlan.zhihu.com/p/92634505</li>
-</ul></li>
+
+<p><img src="/figures/image-20250413125503076.png" alt="Two go routines in server.Serv()"></p>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><ul>
+<li>Golang:<ul>
+<li>Golang generic type: <a target="_blank" rel="noopener" href="https://www.cnblogs.com/insipid/p/17772581.html">https://www.cnblogs.com/insipid/p/17772581.html</a></li>
+<li>Cond: <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/630887340">https://zhuanlan.zhihu.com/p/630887340</a></li>
+<li>Contex: <a target="_blank" rel="noopener" href="https://www.cnblogs.com/asong2020/articles/13662174.html">https://www.cnblogs.com/asong2020/articles/13662174.html</a></li>
+<li>Atomic: <a target="_blank" rel="noopener" href="https://www.cnblogs.com/ExMan/p/12397054.html">https://www.cnblogs.com/ExMan/p/12397054.html</a></li>
+<li>Embedding types&#x2F;fields: <a target="_blank" rel="noopener" href="https://www.cnblogs.com/apocelipes/p/14090671.html">https://www.cnblogs.com/apocelipes/p/14090671.html</a></li>
+<li>Errorgroup: <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/338999914">https://zhuanlan.zhihu.com/p/338999914</a></li>
+<li>Closure: <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/92634505">https://zhuanlan.zhihu.com/p/92634505</a></li>
+</ul>
+</li>
 </ul>
 
       
@@ -820,12 +794,7 @@ https://www.cnblogs.com/apocelipes/p/14090671.html</li>
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#syzkallernew-version-of-syz-manager"><span class="nav-number">1.</span> <span class="nav-text">(Syzkaller)New version of
-syz-manager</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mode"><span class="nav-number">1.0.1.</span> <span class="nav-text">Mode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pool-instance"><span class="nav-number">1.0.2.</span> <span class="nav-text">Pool &amp; Instance</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#vm.instance"><span class="nav-number">1.0.2.1.</span> <span class="nav-text">1. vm.Instance</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#dispatcher.poolinstance"><span class="nav-number">1.0.2.2.</span> <span class="nav-text">2. dispatcher.poolInstance</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fuzzer.queue"><span class="nav-number">1.0.3.</span> <span class="nav-text">fuzzer.Queue</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#runmanagermode-mode-cfg-mgrconfig.config"><span class="nav-number">1.0.4.</span> <span class="nav-text">RunManager(mode
-Mode, cfg mgrconfig.Config)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mgr.vmloop----mgr.pool.loopctx-context.context"><span class="nav-number">1.0.5.</span> <span class="nav-text">mgr.vmLoop()
---&gt; mgr.pool.Loop(ctx context.Context)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#poolt.runinstance"><span class="nav-number">1.0.6.</span> <span class="nav-text">Pool[T].runInstance()</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#how-does-new-manager-run-vms"><span class="nav-number">1.0.6.1.</span> <span class="nav-text">1. How does new manager
-run VMs?</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#vm.pool-dispatcher.pool"><span class="nav-number">1.0.6.1.1.</span> <span class="nav-text">1.1 vm.Pool &amp; dispatcher.Pool</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#how-does-new-manager-start-fuzzing"><span class="nav-number">1.0.6.2.</span> <span class="nav-text">2. How does new
-manager start fuzzing?</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#rpcserver.server.serve"><span class="nav-number">1.0.6.2.1.</span> <span class="nav-text">2.1 rpcserver.server.Serve()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#runner"><span class="nav-number">1.0.6.2.2.</span> <span class="nav-text">2.2 Runner</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#distributor"><span class="nav-number">1.0.6.2.3.</span> <span class="nav-text">2.3 Distributor</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#fuzzer.iob"><span class="nav-number">1.0.6.2.4.</span> <span class="nav-text">2.4 fuzzer.iob</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#references"><span class="nav-number">1.1.</span> <span class="nav-text">References</span></a></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Syzkaller-New-version-of-syz-manager"><span class="nav-number">1.</span> <span class="nav-text">(Syzkaller)New version of syz-manager</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Mode"><span class="nav-number">1.0.1.</span> <span class="nav-text">Mode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pool-Instance"><span class="nav-number">1.0.2.</span> <span class="nav-text">Pool &amp; Instance</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-vm-Instance"><span class="nav-number">1.0.2.1.</span> <span class="nav-text">1. vm.Instance</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-dispatcher-poolInstance"><span class="nav-number">1.0.2.2.</span> <span class="nav-text">2. dispatcher.poolInstance</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fuzzer-Queue"><span class="nav-number">1.0.3.</span> <span class="nav-text">fuzzer.Queue</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RunManager-mode-Mode-cfg-mgrconfig-Config"><span class="nav-number">1.0.4.</span> <span class="nav-text">RunManager(mode *Mode, cfg *mgrconfig.Config)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mgr-vmLoop-%E2%80%93-mgr-pool-Loop-ctx-context-Context"><span class="nav-number">1.0.5.</span> <span class="nav-text">mgr.vmLoop() –&gt; mgr.pool.Loop(ctx context.Context)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pool-T-runInstance"><span class="nav-number">1.0.6.</span> <span class="nav-text">Pool[T].runInstance()</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-How-does-new-manager-run-VMs"><span class="nav-number">1.0.6.1.</span> <span class="nav-text">1. How does new manager run VMs?</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-1-vm-Pool-dispatcher-Pool"><span class="nav-number">1.0.6.1.1.</span> <span class="nav-text">1.1 vm.Pool &amp;  dispatcher.Pool</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-How-does-new-manager-start-fuzzing"><span class="nav-number">1.0.6.2.</span> <span class="nav-text">2. How does new manager start fuzzing?</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-1-rpcserver-server-Serve"><span class="nav-number">1.0.6.2.1.</span> <span class="nav-text">2.1 rpcserver.server.Serve()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-2-Runner"><span class="nav-number">1.0.6.2.2.</span> <span class="nav-text">2.2 Runner</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-3-Distributor"><span class="nav-number">1.0.6.2.3.</span> <span class="nav-text">2.3 Distributor</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-4-fuzzer-iob"><span class="nav-number">1.0.6.2.4.</span> <span class="nav-text">2.4 fuzzer.iob</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#References"><span class="nav-number">1.1.</span> <span class="nav-text">References</span></a></li></ol></li></ol>
     
     </div>
   </aside>
@@ -1019,20 +988,5 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </body>
 </html>

@@ -13,15 +13,15 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="Go or No Go: Differential Fuzzing of Native and C Libraries 时间：2023.5 作者：Alessandro Sorniotti（IBM）、Michael Weissbacher、Anil Kurmus 会议：S&amp;P‘2023  Abstract​    十多年来，Go 已经成为当今最流行的编程语言之一。Go 是一种静态类型的编译语">
+  <meta name="description" content="Go or No Go: Differential Fuzzing of Native and C Libraries **时间：**2023.5 **作者：**Alessandro Sorniotti（IBM）、Michael Weissbacher、Anil Kurmus **会议：**S&amp;P‘2023  Abstract​	十多年来，Go 已经成为当今最流行的编程语言之一。Go 是一">
 <meta property="og:type" content="article">
 <meta property="og:title" content="(论文阅读)Go or No Go-Differential Fuzzing of Native and C Libraries">
 <meta property="og:url" content="http://example.com/2023/10/07/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Go%20or%20No%20Go%20Differential%20Fuzzing%20of%20Native%20and%20C%20Libraries/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="Go or No Go: Differential Fuzzing of Native and C Libraries 时间：2023.5 作者：Alessandro Sorniotti（IBM）、Michael Weissbacher、Anil Kurmus 会议：S&amp;P‘2023  Abstract​    十多年来，Go 已经成为当今最流行的编程语言之一。Go 是一种静态类型的编译语">
+<meta property="og:description" content="Go or No Go: Differential Fuzzing of Native and C Libraries **时间：**2023.5 **作者：**Alessandro Sorniotti（IBM）、Michael Weissbacher、Anil Kurmus **会议：**S&amp;P‘2023  Abstract​	十多年来，Go 已经成为当今最流行的编程语言之一。Go 是一">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-10-07T08:19:00.000Z">
-<meta property="article:modified_time" content="2023-10-13T12:12:07.773Z">
+<meta property="article:modified_time" content="2023-10-13T12:12:08.000Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="Differential fuzzing">
 <meta name="twitter:card" content="summary">
@@ -150,30 +150,31 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="Go-or-No-Go-Differential-Fuzzing-of-Native-and-C-Libraries"><a href="#Go-or-No-Go-Differential-Fuzzing-of-Native-and-C-Libraries" class="headerlink" title="Go or No Go: Differential Fuzzing of Native and C Libraries"></a>Go or No Go: Differential Fuzzing of Native and C Libraries</h1><blockquote>
-<p><strong>时间：</strong>2023.5</p>
-<p><strong>作者：</strong>Alessandro Sorniotti（IBM）、Michael Weissbacher、Anil Kurmus</p>
-<p><strong>会议：</strong>S&amp;P‘2023</p>
+<p>**时间：**2023.5</p>
+<p>**作者：**Alessandro Sorniotti（IBM）、Michael Weissbacher、Anil Kurmus</p>
+<p>**会议：**S&amp;P‘2023</p>
 </blockquote>
-<h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>​    十多年来，Go 已经成为当今最流行的编程语言之一。Go 是一种静态类型的编译语言，通过强类型、自动插入的边界检查和标记-清扫垃圾收集器，实现了空间和时间上的内存安全性。Go 开发人员可以即时使用大量的本地库，这些库可以作为运行时的一部分提供，也可以从社区代码中导入；或者，Go 开发人员可以直接链接到 C/C++ 库，这些库可以通过cgo功能从GO源码中调用。做出支持以上功能的这一决定的原因包括稳定性、性能和可用性。因此，<strong><u>开发人员可以在 Go 本地库或非本地代码之间做出选择</u></strong>。然而，如今人们对如何在这一决策中考虑安全问题还知之甚少。</p>
+<h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>​	十多年来，Go 已经成为当今最流行的编程语言之一。Go 是一种静态类型的编译语言，通过强类型、自动插入的边界检查和标记-清扫垃圾收集器，实现了空间和时间上的内存安全性。Go 开发人员可以即时使用大量的本地库，这些库可以作为运行时的一部分提供，也可以从社区代码中导入；或者，Go 开发人员可以直接链接到 C&#x2F;C++ 库，这些库可以通过cgo功能从GO源码中调用。做出支持以上功能的这一决定的原因包括稳定性、性能和可用性。因此，<strong><u>开发人员可以在 Go 本地库或非本地代码之间做出选择</u></strong>。然而，如今人们对如何在这一决策中考虑安全问题还知之甚少。</p>
 <span id="more"></span>
-<p>​    <u>我们的研究首次探讨了 Go 程序在本地库和非本地库之间做出选择的安全影响。</u>我们首先调查了流行的 GitHub 项目在多大程度上使用了 cgo，结果发现这种选择实际上相当流行。然后，我们设计并构建了一个differential fuzzer，它可以比较相同功能的本地和 C/C++ 实现。我们实现了该fuzzer，并在四个流行软件包（libcrypto、libpng、libssl 和 libz）上测试了其有效性，描述了结果并强调了它们的安全影响。最后，我们介绍了两个真实世界的案例研究（anti-virus evasion，包括 Gmail 中包含的反病毒扫描仪和证书透明度案例研究），并讨论了我们的differential fuzzer是如何发现具有安全影响的实现差异的。我们的工作促使 Golang zlib 发生了变化，这些变化已经发布。</p>
-<h2 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h2><p>​    Go 是一种编程语言，因其安全优势和并发性而广受赞誉。该语言默认情况下是内存安全的，并克服了 C/C++ 等语言数十年来的安全问题。然而，在使用库来利用常用功能时，开发人员面临着一个艰难的选择： 使用本地 Go 库或非本地 C/C++（使用编译器/运行时的 cgo 功能）。目前，影响这一决定的因素包括可用性、性能和稳定性。</p>
-<p>​    尽管 Go 提供了大量库，但并非所有库都能在 Go 中使用，开发人员可能需要按照规范重新实现功能。这不仅成本高昂，而且容易出错。在决定使用本地库还是非本地库时，性能也是一个考虑因素，因为使用 C/C++ 库可以为大量使用此类功能的程序带来性能优势。稳定性是另一个因素，因为库的成熟度各不相同。Go 库是从零开始实现的，但可能缺少大量的测试，而 C/C++ 库可能有陈旧的代码，但经过了数十年的测试。</p>
-<p>​    除了可用性、性能、稳定性等因素外，在做出这一决定时还应考虑安全问题，因为无论哪种方案都会涉及安全问题。如果开发人员重用现有的 C 代码，就有可能引入 C 库中可能存在的内存安全问题。如果重新实现 Go，则可能在规范或实现层面引入 C 库版本中不存在的新缺陷。更广义地说，不同设计和实现的库可能会在输出结果上产生偏差。从语言理论的角度来看，我们可以将其视为解析树差异攻击的一个实例[38]、[30]、[37]：相同协议/语言存在两种不同的解析器，它们之间的差异可能会导致安全问题。遗憾的是，对于无上下文语言来说，正式验证两个解析器是否等价是无法判定的[29]，这就促使人们采用灰盒模糊（greybox fuzzing）等实用但不完整的方法。</p>
-<h2 id="Contribution"><a href="#Contribution" class="headerlink" title="Contribution"></a>Contribution</h2><p>​    在本文中，我们提出并实现了一种方法，用于研究在 Go 编程语言中使用本地库与非本地库所产生的问题。特别是，我们通过使用差分模糊（differential fuzzing）来寻找这两类库之间的差异，重点关注差异可能导致广泛安全影响的常用库。</p>
-<p>​    我们采用了一种有效的差异模糊方法，利用现有的fuzzer，针对两个库版本中的任何一个生成输入语料库和harness。对于每个输入，我们都会比较两个库的输出（可能还有其他副作用）。例如，就解析库而言，如果相同的输入导致两种不同的解析输出，则可能存在潜在缺陷。仅根据解析结果，并不能立即看出两个解析器中哪个偏离了规范（如果有的话）。具体来说，安全漏洞可能仅仅来自于差异，而不是一个解析器误解了输入。</p>
-<p>​    我们还介绍了两个案例研究：在第一个案例研究中，我们展示了如何破坏 libz 压缩数据的标头，从而导致 19 种反病毒（AV）产品和 Gmail 中包含的 AV 扫描仪出现漏洞。在附录提供的第二部分中，我们展示了解析器错配如何影响证书透明度基础设施。对于所有受影响的产品，我们都启动了负责任的披露程序。</p>
-<p>​    我们的研究结果表明<strong>(i)</strong> 从安全角度来看，Go 开发人员在 Go 实现库和 C/C++ 库之间的选择并不简单；<strong>(ii)</strong> 差异模糊是发现库实现之间解析器差异的有效方法，应在 C 库的 Go 再实现中系统地使用；<strong>(iii)</strong> 解析器差异可能导致重要的安全问题。</p>
-<p>​    <strong>我们的主要贡献有：</strong></p>
+
+<p>​	<u>我们的研究首次探讨了 Go 程序在本地库和非本地库之间做出选择的安全影响。</u>我们首先调查了流行的 GitHub 项目在多大程度上使用了 cgo，结果发现这种选择实际上相当流行。然后，我们设计并构建了一个differential fuzzer，它可以比较相同功能的本地和 C&#x2F;C++ 实现。我们实现了该fuzzer，并在四个流行软件包（libcrypto、libpng、libssl 和 libz）上测试了其有效性，描述了结果并强调了它们的安全影响。最后，我们介绍了两个真实世界的案例研究（anti-virus evasion，包括 Gmail 中包含的反病毒扫描仪和证书透明度案例研究），并讨论了我们的differential fuzzer是如何发现具有安全影响的实现差异的。我们的工作促使 Golang zlib 发生了变化，这些变化已经发布。</p>
+<h2 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h2><p>​	Go 是一种编程语言，因其安全优势和并发性而广受赞誉。该语言默认情况下是内存安全的，并克服了 C&#x2F;C++ 等语言数十年来的安全问题。然而，在使用库来利用常用功能时，开发人员面临着一个艰难的选择： 使用本地 Go 库或非本地 C&#x2F;C++（使用编译器&#x2F;运行时的 cgo 功能）。目前，影响这一决定的因素包括可用性、性能和稳定性。</p>
+<p>​	尽管 Go 提供了大量库，但并非所有库都能在 Go 中使用，开发人员可能需要按照规范重新实现功能。这不仅成本高昂，而且容易出错。在决定使用本地库还是非本地库时，性能也是一个考虑因素，因为使用 C&#x2F;C++ 库可以为大量使用此类功能的程序带来性能优势。稳定性是另一个因素，因为库的成熟度各不相同。Go 库是从零开始实现的，但可能缺少大量的测试，而 C&#x2F;C++ 库可能有陈旧的代码，但经过了数十年的测试。</p>
+<p>​	除了可用性、性能、稳定性等因素外，在做出这一决定时还应考虑安全问题，因为无论哪种方案都会涉及安全问题。如果开发人员重用现有的 C 代码，就有可能引入 C 库中可能存在的内存安全问题。如果重新实现 Go，则可能在规范或实现层面引入 C 库版本中不存在的新缺陷。更广义地说，不同设计和实现的库可能会在输出结果上产生偏差。从语言理论的角度来看，我们可以将其视为解析树差异攻击的一个实例[38]、[30]、[37]：相同协议&#x2F;语言存在两种不同的解析器，它们之间的差异可能会导致安全问题。遗憾的是，对于无上下文语言来说，正式验证两个解析器是否等价是无法判定的[29]，这就促使人们采用灰盒模糊（greybox fuzzing）等实用但不完整的方法。</p>
+<h2 id="Contribution"><a href="#Contribution" class="headerlink" title="Contribution"></a>Contribution</h2><p>​	在本文中，我们提出并实现了一种方法，用于研究在 Go 编程语言中使用本地库与非本地库所产生的问题。特别是，我们通过使用差分模糊（differential fuzzing）来寻找这两类库之间的差异，重点关注差异可能导致广泛安全影响的常用库。</p>
+<p>​	我们采用了一种有效的差异模糊方法，利用现有的fuzzer，针对两个库版本中的任何一个生成输入语料库和harness。对于每个输入，我们都会比较两个库的输出（可能还有其他副作用）。例如，就解析库而言，如果相同的输入导致两种不同的解析输出，则可能存在潜在缺陷。仅根据解析结果，并不能立即看出两个解析器中哪个偏离了规范（如果有的话）。具体来说，安全漏洞可能仅仅来自于差异，而不是一个解析器误解了输入。</p>
+<p>​	我们还介绍了两个案例研究：在第一个案例研究中，我们展示了如何破坏 libz 压缩数据的标头，从而导致 19 种反病毒（AV）产品和 Gmail 中包含的 AV 扫描仪出现漏洞。在附录提供的第二部分中，我们展示了解析器错配如何影响证书透明度基础设施。对于所有受影响的产品，我们都启动了负责任的披露程序。</p>
+<p>​	我们的研究结果表明**(i)** 从安全角度来看，Go 开发人员在 Go 实现库和 C&#x2F;C++ 库之间的选择并不简单；<strong>(ii)</strong> 差异模糊是发现库实现之间解析器差异的有效方法，应在 C 库的 Go 再实现中系统地使用；<strong>(iii)</strong> 解析器差异可能导致重要的安全问题。</p>
+<p>​	<strong>我们的主要贡献有：</strong></p>
 <ol>
 <li>我们设计了一种定制的differential fuzzer，以发现 Go 程序所用库中与安全相关的解析差异；</li>
 <li>我们实现了设计原型，支持广泛使用的 libcrypto、libpng、libssl 和 libz 库；</li>
 <li>我们对fuzzer的独特差异进行了广泛评估，并分析了根本原因和其潜在影响；</li>
 <li>我们介绍了两个case-study，其中发现的解析器差异导致了安全问题。一项研究影响了证书透明度，一项研究绕过了在 Virus Total 和 Gmail 上测试的 19 个防病毒系统。</li>
 </ol>
-<p>​    </p>
-<h2 id="Some-Questions"><a href="#Some-Questions" class="headerlink" title="Some Questions"></a>Some Questions</h2><h3 id="1-How-to-choose-generate-Fuzz-target-for-C-C-library"><a href="#1-How-to-choose-generate-Fuzz-target-for-C-C-library" class="headerlink" title="1. How to choose/generate Fuzz target for C/C++ library?"></a>1. How to choose/generate Fuzz target for C/C++ library?</h3><p>​    作者选用的待测试库（asn1,libpng,libcrypto,libzip）在go中都有现成的fuzz harness，然后将其转化为等价的C/C++ api，生成C的fuzz harness.</p>
-<h3 id="2-How-to-locate-the-root-cause-of-discrepancy"><a href="#2-How-to-locate-the-root-cause-of-discrepancy" class="headerlink" title="2. How to locate the root cause of discrepancy?"></a>2. How to locate the root cause of discrepancy?</h3><p>​    没说，大概率是手动分析。</p>
+<p>​	</p>
+<h2 id="Some-Questions"><a href="#Some-Questions" class="headerlink" title="Some Questions"></a>Some Questions</h2><h3 id="1-How-to-choose-generate-Fuzz-target-for-C-C-library"><a href="#1-How-to-choose-generate-Fuzz-target-for-C-C-library" class="headerlink" title="1. How to choose&#x2F;generate Fuzz target for C&#x2F;C++ library?"></a>1. How to choose&#x2F;generate Fuzz target for C&#x2F;C++ library?</h3><p>​	作者选用的待测试库（asn1,libpng,libcrypto,libzip）在go中都有现成的fuzz harness，然后将其转化为等价的C&#x2F;C++ api，生成C的fuzz harness.</p>
+<h3 id="2-How-to-locate-the-root-cause-of-discrepancy"><a href="#2-How-to-locate-the-root-cause-of-discrepancy" class="headerlink" title="2. How to locate the root cause of discrepancy?"></a>2. How to locate the root cause of discrepancy?</h3><p>​	没说，大概率是手动分析。</p>
 
       
     </div>
@@ -194,19 +195,19 @@
     
 <nav id="article-nav">
   
-    <a href="/2023/10/11/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91How%20to%20debug%20wasm%20compiled%20by%20wasi-sdk/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2023/10/08/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Security-Risks-of-Porting-C-Programs-to-WebAssembly/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption">上一篇</strong>
       <div class="article-nav-title">
         
-          (技术积累)How to debug wasm compiled by wasi-sdk?
+          (论文阅读)Security Risks of Porting C Programs to WebAssembly
         
       </div>
     </a>
   
   
-    <a href="/2023/09/04/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Security-Risks-of-Porting-C-Programs-to-WebAssembly/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2023/08/15/%E3%80%90%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0%E3%80%91FuzzBuilder%E5%A4%8D%E7%8E%B0/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">下一篇</strong>
-      <div class="article-nav-title">(论文阅读)Security Risks of Porting C Programs to WebAssembly</div>
+      <div class="article-nav-title">(技术积累)FuzzBuilder复现</div>
     </a>
   
 </nav>
@@ -414,20 +415,5 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </body>
 </html>

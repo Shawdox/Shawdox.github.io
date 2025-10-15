@@ -13,12 +13,12 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="【论文阅读】AD nlp Survey 作者：Wei Emma Zhang（阿德莱德大学，澳大利亚） ​             QUAN Z. SHENG（麦考瑞大学，澳大利亚） ​             AHOUD ALHAZMI（麦考瑞大学，澳大利亚） ​             李晨亮（武汉大学，中国）  1. 关键词：DNN，对抗样本，文本数据（textual data），NLP2.">
+  <meta name="description" content="【论文阅读】AD nlp Survey 作者：Wei Emma Zhang（阿德莱德大学，澳大利亚） ​             QUAN Z. SHENG（麦考瑞大学，澳大利亚） ​             AHOUD ALHAZMI（麦考瑞大学，澳大利亚） ​	     	李晨亮（武汉大学，中国）  1. 关键词：DNN，对抗样本，文本数据（textual data），NLP2. 摘要：  传">
 <meta property="og:type" content="article">
 <meta property="og:title" content="AD nlp Survey">
 <meta property="og:url" content="http://example.com/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91AD%20nlp%20Survey/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="【论文阅读】AD nlp Survey 作者：Wei Emma Zhang（阿德莱德大学，澳大利亚） ​             QUAN Z. SHENG（麦考瑞大学，澳大利亚） ​             AHOUD ALHAZMI（麦考瑞大学，澳大利亚） ​             李晨亮（武汉大学，中国）  1. 关键词：DNN，对抗样本，文本数据（textual data），NLP2.">
+<meta property="og:description" content="【论文阅读】AD nlp Survey 作者：Wei Emma Zhang（阿德莱德大学，澳大利亚） ​             QUAN Z. SHENG（麦考瑞大学，澳大利亚） ​             AHOUD ALHAZMI（麦考瑞大学，澳大利亚） ​	     	李晨亮（武汉大学，中国）  1. 关键词：DNN，对抗样本，文本数据（textual data），NLP2. 摘要：  传">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210715215755.png">
 <meta property="og:image" content="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210715215851.png">
@@ -160,7 +160,7 @@
 <p><strong>作者：Wei Emma Zhang（阿德莱德大学，澳大利亚）</strong></p>
 <p>​             <strong>QUAN Z. SHENG（麦考瑞大学，澳大利亚）</strong></p>
 <p>​             <strong>AHOUD ALHAZMI（麦考瑞大学，澳大利亚）</strong></p>
-<p>​             <strong>李晨亮（武汉大学，中国）</strong></p>
+<p>​	     	<strong>李晨亮（武汉大学，中国）</strong></p>
 </blockquote>
 <h3 id="1-关键词：DNN，对抗样本，文本数据（textual-data），NLP"><a href="#1-关键词：DNN，对抗样本，文本数据（textual-data），NLP" class="headerlink" title="1. 关键词：DNN，对抗样本，文本数据（textual data），NLP"></a>1. 关键词：DNN，对抗样本，文本数据（textual data），NLP</h3><h3 id="2-摘要："><a href="#2-摘要：" class="headerlink" title="2. 摘要："></a>2. 摘要：</h3><blockquote>
 <ol>
@@ -168,31 +168,34 @@
 <li>本调查提供针对基于DNNs的NLP对抗样本攻击；</li>
 <li>由于CV与NLP本身不同，方法不能直接移植；</li>
 <li>集成了截止2017年所有的相关成果，综合性地总结，分析，讨论了40个代表性工作；</li>
-<li><p>简单介绍了CV和NLP相关知识。</p>
+<li>简单介绍了CV和NLP相关知识。</li>
+</ol>
+</blockquote>
 <span id="more"></span>
-<h3 id="3-Introduction"><a href="#3-Introduction" class="headerlink" title="3.Introduction:"></a>3.Introduction:</h3></li>
+<h3 id="3-Introduction"><a href="#3-Introduction" class="headerlink" title="3.Introduction:"></a>3.Introduction:</h3><blockquote>
+<ol>
 <li><p><strong>简单介绍了对抗样本</strong>；</p>
 </li>
 <li><p><strong>关于对抗样本的研究可以简单分为三类</strong>：</p>
-<p>① 通过使用微小扰动来欺骗DNN，以此来评估它；</p>
-<p>② 刻意改变DNN的输出；</p>
-<p>③ 检测DNN中过敏感和过迟钝的点，寻找防御攻击的方法。</p>
+</li>
+</ol>
+<p>  ① 通过使用微小扰动来欺骗DNN，以此来评估它；</p>
+<p>  ② 刻意改变DNN的输出；</p>
+<p>  ③ 检测DNN中过敏感和过迟钝的点，寻找防御攻击的方法。</p>
 <ol>
-<li><p>==<strong>不能直接使用基于CV的对抗样本生成方法的原因：</strong>==</p>
+<li><p>&#x3D;&#x3D;<strong>不能直接使用基于CV的对抗样本生成方法的原因：</strong>&#x3D;&#x3D;</p>
 <p>直接将对图像攻击的对抗样本生成方法应用到文本上，将得到毫无意义的词语和句子片段。这是因为在对图像的对抗样本生成中，即使略微改变每个像素的灰度，肉眼也可以识别原来的图像；但是对于文本串来说，即使改变一个字母，语句的语义也将完全不同或出错。</p>
 </li>
-</ol>
-</li>
-<li><p>==<strong>相关研究：</strong>==</p>
-<p><u><strong>Reference [i] = 【i】</strong></u></p>
-<p>​    ① 【9】：对<strong>针对不同类别的机器学习系统的攻击与防御</strong>做了综合性概述，提出了一种用于辨识和分析这些攻击的分类方法，并将将这些攻击应用到基于机器学习的应用上来证明这些攻击或者防御手段的有效性。例如，一个统计垃圾邮件过滤器。</p>
-<p>​    ② 【13】：作者俯瞰了近十年（2008-2018）对抗样本攻击的<strong>发展史</strong>，聚焦点在于CV和网络空间安全。对非深度学习算法和深度学习算法都做了介绍，也从安全的角度仔细分析了这些攻击和防御手段的影响。</p>
-<p>​    ③ 【79】：与【13】阐述的问题类似，从数据驱动的角度。</p>
-<p>​    ④ 【154】：聚焦于对抗样本在深度学习模型上的使用。介绍了最近的几种不同的在应用上对DNN的攻击，同时全面调查了防御方法。但是，其只讨论了对抗样本在图像分类和物品识别上的攻击。</p>
-<p>​    ⑤ 【2】：详细阐述了对抗样本在CV上的应用，是一篇应用程序主导的调查。</p>
-<p>​    ⑥ 【35】：从安全的角度阐述了对抗样本的防御手段。（<strong>不仅从机器学习算法或者神经模型上，从所有与安全相关的应用上阐述对抗样本防御</strong>）作者发现现有的与防御相关的安全工作缺乏清晰的<strong>对攻击如何与真实安全问题相关联</strong>的动机和解释，以及这些攻击和防御如何被有意义地衡量，故提出了一种分类方法用于衡量这些。</p>
+<li><p>&#x3D;&#x3D;<strong>相关研究：</strong>&#x3D;&#x3D;</p>
 </li>
 </ol>
+<p>  <u><strong>Reference [i] &#x3D; 【i】</strong></u></p>
+<p>  ​	① 【9】：对<strong>针对不同类别的机器学习系统的攻击与防御</strong>做了综合性概述，提出了一种用于辨识和分析这些攻击的分类方法，并将将这些攻击应用到基于机器学习的应用上来证明这些攻击或者防御手段的有效性。例如，一个统计垃圾邮件过滤器。</p>
+<p>  ​    ② 【13】：作者俯瞰了近十年（2008-2018）对抗样本攻击的<strong>发展史</strong>，聚焦点在于CV和网络空间安全。对非深度学习算法和深度学习算法都做了介绍，也从安全的角度仔细分析了这些攻击和防御手段的影响。</p>
+<p>  ​	③ 【79】：与【13】阐述的问题类似，从数据驱动的角度。</p>
+<p>  ​	④ 【154】：聚焦于对抗样本在深度学习模型上的使用。介绍了最近的几种不同的在应用上对DNN的攻击，同时全面调查了防御方法。但是，其只讨论了对抗样本在图像分类和物品识别上的攻击。</p>
+<p>  ​	⑤ 【2】：详细阐述了对抗样本在CV上的应用，是一篇应用程序主导的调查。</p>
+<p>  ​	⑥ 【35】：从安全的角度阐述了对抗样本的防御手段。（<strong>不仅从机器学习算法或者神经模型上，从所有与安全相关的应用上阐述对抗样本防御</strong>）作者发现现有的与防御相关的安全工作缺乏清晰的<strong>对攻击如何与真实安全问题相关联</strong>的动机和解释，以及这些攻击和防御如何被有意义地衡量，故提出了一种分类方法用于衡量这些。</p>
 </blockquote>
 <h3 id="4-Overview-（对抗样本攻击-and-深度学习在NLP中的应用）"><a href="#4-Overview-（对抗样本攻击-and-深度学习在NLP中的应用）" class="headerlink" title="4. Overview （对抗样本攻击 and 深度学习在NLP中的应用）:"></a>4. Overview （对抗样本攻击 and 深度学习在NLP中的应用）:</h3><blockquote>
 <ol>
@@ -204,39 +207,39 @@
 </li>
 <li><p>介绍了<strong>Measurements</strong>（评价<u>adversarial attack</u>的方法）：</p>
 <p>3.1 控制扰动（<em>Perturbation Constraint</em>）：</p>
-<p>​    根据前面所述，扰动 <em>η</em> 应该不影响样本原来的真实分类，<u>故如果一个分类器是理想的，那么扰动后的样本应不影响其分类结果</u>； <em>η</em> 同时也不能太小，以避免对目标DNN没有影响。在理想情况下，有效扰动是在一定范围内最有效果的噪声。</p>
-<p>​    【132】首次在图像对抗样本攻击中约束了(x + <em>η</em>) ∈ [0, 1]^n^ 的范围，以保证对抗样本与原始数据有着相同的像素等级。</p>
-<p>​    【40】简化了问题的解决方法，并使用了无穷范数来限制扰动，==这受到直觉的启发，即一个不改变任何特定像素的扰动量超过一定量 ϵ 就不能改变输出类。==（PS:WHY？）无穷范数在图像/物品分类识别任务中是足够有效的，其他的范数，例如L0和L2范数，过去被用于在对CV的DNN攻击中限制扰动。在文本对抗样本攻击中，这有所不同，第3.3节会给出更多细节。</p>
-<p>3.2 评估攻击的有效性（<em>Attack Evaluation</em>）：</p>
-<p>​     对抗样本攻击旨在降低DNNs的性能，因此，评估攻击的有效性是基于不同任务的性能指标。例如，分类任务中有评价指标准确度，F1-score，AUC-score。在本文中，我们将针对不同NLP的评价标准作为超范围内容，并建议读者参考特定的信息。</p>
-<p>​    ==<strong><em>以上是总体分类与信息</em></strong>==</p>
 </li>
 </ol>
+<p>  ​	根据前面所述，扰动 <em>η</em> 应该不影响样本原来的真实分类，<u>故如果一个分类器是理想的，那么扰动后的样本应不影响其分类结果</u>； <em>η</em> 同时也不能太小，以避免对目标DNN没有影响。在理想情况下，有效扰动是在一定范围内最有效果的噪声。</p>
+<p>  ​	【132】首次在图像对抗样本攻击中约束了(x + <em>η</em>) ∈ [0, 1]^n^ 的范围，以保证对抗样本与原始数据有着相同的像素等级。</p>
+<p>  ​	【40】简化了问题的解决方法，并使用了无穷范数来限制扰动，&#x3D;&#x3D;这受到直觉的启发，即一个不改变任何特定像素的扰动量超过一定量 ϵ 就不能改变输出类。&#x3D;&#x3D;（PS:WHY？）无穷范数在图像&#x2F;物品分类识别任务中是足够有效的，其他的范数，例如L0和L2范数，过去被用于在对CV的DNN攻击中限制扰动。在文本对抗样本攻击中，这有所不同，第3.3节会给出更多细节。</p>
+<p>   3.2 评估攻击的有效性（<em>Attack Evaluation</em>）：</p>
+<p>  ​	 对抗样本攻击旨在降低DNNs的性能，因此，评估攻击的有效性是基于不同任务的性能指标。例如，分类任务中有评价指标准确度，F1-score，AUC-score。在本文中，我们将针对不同NLP的评价标准作为超范围内容，并建议读者参考特定的信息。</p>
+<p>  ​	&#x3D;&#x3D;<em><strong>以上是总体分类与信息</strong></em>&#x3D;&#x3D;</p>
 <hr>
-<p>  ​    ==<strong><em>以下是深度学习在NLP中的应用</em></strong>==</p>
-<p>  ​    除了向前传播的神经网络和CNN，RNN及其变式由于其天然的处理序列的能力，也被用于NLP中。</p>
+<p>  ​	&#x3D;&#x3D;<em><strong>以下是深度学习在NLP中的应用</strong></em>&#x3D;&#x3D;</p>
+<p>  ​	除了向前传播的神经网络和CNN，RNN及其变式由于其天然的处理序列的能力，也被用于NLP中。</p>
 <ol>
 <li><p><strong>近几年深度学习对NLP的重大影响</strong>：</p>
 <p>1.1 序列学习（<em>sequence-to-sequence learning</em>）</p>
 <p>1.2 注意力机制（<em>attention mechanism</em>）</p>
 <p>1.3 强化学习（reinforcement learning）和生成模型（generative models）</p>
 <p>具体详细的神经网络在NLP中的应用见【100】，【152】</p>
-<ol>
+<ol start="2">
 <li><strong>Feed-Forward Networks:</strong></li>
 </ol>
-<p><strong>缺点：</strong>不能很好地处理对于词语顺序很重要的文本序列，因为其并不记录元素的顺序。为了评价其健壮性，往往针对专门设计的前馈网络生成对抗实例，【3】，【43】，【44】作者研究了指定的恶意软件检测模型。</p>
-<ol>
+<p>**缺点：**不能很好地处理对于词语顺序很重要的文本序列，因为其并不记录元素的顺序。为了评价其健壮性，往往针对专门设计的前馈网络生成对抗实例，【3】，【43】，【44】作者研究了指定的恶意软件检测模型。</p>
+<ol start="3">
 <li><strong>CNN：</strong></li>
 </ol>
 <p>​    CNN识别本地预测因子并将它们组合在一起，为输入生成一个固定大小的向量，该向量包含数据中最重要或最重要的信息方面。</p>
 <p>​    CNN对顺序敏感，因此，它擅长做计算机视觉，随后被广泛用于NLP应用。</p>
 <p>​    卷积操作被简直在词的序列方向上，而不是词的嵌入。</p>
-<p>​    <strong>两个经典工作：</strong>1. 【59】使用CNN和Word2Vec进行句子分类 2.【156】使用CNN和热独编码进行文本分类。</p>
-<ol>
+<p>​    **两个经典工作：**1. 【59】使用CNN和Word2Vec进行句子分类 2.【156】使用CNN和热独编码进行文本分类。</p>
+<ol start="4">
 <li><strong>RNN：</strong></li>
 </ol>
 <p>​    主要介绍RNN及其变式（LSTM，GRU）</p>
-<ol>
+<ol start="5">
 <li><strong>Seq2Seq（<em>sequence-to-sequence learning</em>）：</strong></li>
 </ol>
 <p>​    Seq2Seq模型具有优越的能力，能够为具有编码器-解码器结构的给定序列信息生成另一个序列信息.</p>
@@ -244,18 +247,18 @@
 <p>​    【24】是最初的使用Seq2seq模型的神经机器翻译模型（NMT）之一；</p>
 <p>​    【63】是一个最近提出的 seq2seq NMT模型，是此领域的benchmark；</p>
 <p>​    【22,30,98,127】有对其的攻击。</p>
-<ol>
+<ol start="6">
 <li><strong>Attention Models：</strong></li>
 </ol>
 <p>​    注意力机制最初被设计用来克服seq2seq模型中对长序列编码的问题。</p>
 <p>​    注意力允许解码器回溯源序列的隐藏状态，然后，隐藏状态提供一个加权平均作为解码器的额外输入。</p>
-<ol>
+<ol start="7">
 <li><strong>Reinforcement Learning Models：</strong></li>
 </ol>
 <p>​    强化学习通过在代理执行离散动作后给予奖励来训练代理，在NLP中，强化学习框架通常由一个代理（DNN），一个策略部分（用于指导动作）和奖励组成。</p>
 <p>​    代理基于策略做出一个动作（例如预测序列中下一个单词的位置），然后相应地更新其内部状态，直到到达序列的末尾，在这里奖励已经被计算完成。</p>
 <p>​    强化学习需要正确处理每一步的动作和状态，这可能会限制模型的表现力和学习规模。但它在面向任务的对话系统中获得了很多好处，因为它们在决策过程共享着同一根本原则。</p>
-<ol>
+<ol start="8">
 <li><strong>Deep Generative Models（深层生成模型）：</strong></li>
 </ol>
 <p>​    近些年，两种深层生成模型获得了很多关注：<strong>Generative Adversarial Networks (GANs) 【39】 and Variational Auto-Encoders (VAEs)</strong> </p>
@@ -274,45 +277,44 @@
 <ol>
 <li><strong>、L-BFGS:</strong></li>
 </ol>
-<p>​    Szegedy【132】等人首次证明了可以通过对图像添加小量的人类察觉不到的扰动误导深度神经网络图像分类器做出错误的分类。他们首先尝试求解让神经网络做出误分类的最小扰动的方程。作者认为，深度神经网络所具有的强大的非线性表达能力和模型的过拟合是可能产生对抗性样本原因之一。</p>
-<ol>
+<p>​	Szegedy【132】等人首次证明了可以通过对图像添加小量的人类察觉不到的扰动误导深度神经网络图像分类器做出错误的分类。他们首先尝试求解让神经网络做出误分类的最小扰动的方程。作者认为，深度神经网络所具有的强大的非线性表达能力和模型的过拟合是可能产生对抗性样本原因之一。</p>
+<ol start="2">
 <li><strong>FGSM（Fast Gradient Sign Method）：</strong></li>
 </ol>
-<p>​    L-BFGS很有效但成本高昂，这使Goodfellow【40】等人找到一个简化问题的方法。</p>
-<ol>
+<p>​	L-BFGS很有效但成本高昂，这使Goodfellow【40】等人找到一个简化问题的方法。</p>
+<ol start="3">
 <li><strong>JSMA（Jacobian Saliency Map Adversary）：</strong></li>
 </ol>
-<p>​    与FGSM利用梯度攻击不同，Papernot【105】等人使用<strong>forward derivatives</strong>（远期衍生物？）生成对抗样本。这个方法通过使用其雅克比矩阵来评估神经模型对每个输入部分的输出敏感性。</p>
-<ol>
+<p>​	与FGSM利用梯度攻击不同，Papernot【105】等人使用<strong>forward derivatives</strong>（远期衍生物？）生成对抗样本。这个方法通过使用其雅克比矩阵来评估神经模型对每个输入部分的输出敏感性。</p>
+<ol start="4">
 <li><strong>DeepFool：</strong></li>
 </ol>
-<p>​    DeepFool是一种迭代的L2正则化算法，作者先假设神经网络是线性的，因此可以使用一个超平面来分离类。作者简化了问题并且基于以上假设找到了问题最优解，并构建了对抗样本、</p>
-<p>​    为了解决神经网络是非线性的事实，作者重复他们的步骤直到一个真正的对抗样本被生成了。</p>
-<p>PS：正则化：<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/20924039">(23 封私信 / 54 条消息) 机器学习中常常提到的正则化到底是什么意思？ - 知乎 (zhihu.com)</a></p>
-<ol>
+<p>​	DeepFool是一种迭代的L2正则化算法，作者先假设神经网络是线性的，因此可以使用一个超平面来分离类。作者简化了问题并且基于以上假设找到了问题最优解，并构建了对抗样本、</p>
+<p>​	为了解决神经网络是非线性的事实，作者重复他们的步骤直到一个真正的对抗样本被生成了。</p>
+<p>PS：正则化：<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/20924039">(23 封私信 &#x2F; 54 条消息) 机器学习中常常提到的正则化到底是什么意思？ - 知乎 (zhihu.com)</a></p>
+<ol start="5">
 <li><strong>Subsititute Attack：</strong></li>
 </ol>
-<p>​    前面四中攻击方式都是<strong>白盒攻击</strong>， Papernot【104】等人提出了黑盒攻击策略，他们训练了一个与目标模型决策边界相似的替代模型，对此替代模型进行白盒攻击，生成相应对抗样本。</p>
-<p>​    在生成对抗样本的过程中，他们使用了FSGM和JSMA。</p>
-<ol>
-<li><p><strong>GAN-like Attack：</strong></p>
-<p>​    这是一种通过深度生成模型的黑盒攻击方法，Zhao【157】等人首先基于数据集 X 训练了一个生成模型WGAN，WGAN可以生成与X分布相同的数据点。</p>
-</li>
+<p>​	前面四中攻击方式都是<strong>白盒攻击</strong>， Papernot【104】等人提出了黑盒攻击策略，他们训练了一个与目标模型决策边界相似的替代模型，对此替代模型进行白盒攻击，生成相应对抗样本。</p>
+<p>​	在生成对抗样本的过程中，他们使用了FSGM和JSMA。</p>
+<ol start="6">
+<li><strong>GAN-like Attack：</strong></li>
 </ol>
+<p>  ​	这是一种通过深度生成模型的黑盒攻击方法，Zhao【157】等人首先基于数据集 X 训练了一个生成模型WGAN，WGAN可以生成与X分布相同的数据点。</p>
 <p><strong>二. 对图像DNN攻击与对文本DNN攻击的对比：</strong></p>
-<p>​    <strong>1. 二者的主要不同：</strong></p>
-<p>​        1.1 离散与连续输入：</p>
-<p>​            图像输入是连续的而文本输入是离散的，在图像输入中，通常使用L~p~来衡量原始数据点和扰动点的距离，但是由于文本输入是离散的，很难定义文本上的扰动大小（==为什么？==）。这就需要构造对文本扰动的衡量方法。还有一种方式是将文本输入当做连续值，然后应用CV方法，在3.3节上将会详细讨论。</p>
-<p>​        1.2 可察觉与不可察觉：</p>
-<p>​            与图像相比，文本数据即使更改一个字母也会造成很大变化，故即使做很小的扰动，也可以被很明显的察觉到。</p>
-<p>​        1.3 有语义和无语义：</p>
-<p>​            原理同上，在文本中做很小的改动往往会极大地影响到文本的语法和语义信息。</p>
-<p>​    基于以上不同，目前主流对文本DNN的攻击有两种：1. 调整图像DNN的攻击方法，添加额外限制；2. 使用新技术提出一个新方法。</p>
+<p>​	<strong>1. 二者的主要不同：</strong></p>
+<p>​		1.1 离散与连续输入：</p>
+<p>​			图像输入是连续的而文本输入是离散的，在图像输入中，通常使用L<del>p</del>来衡量原始数据点和扰动点的距离，但是由于文本输入是离散的，很难定义文本上的扰动大小（&#x3D;&#x3D;为什么？&#x3D;&#x3D;）。这就需要构造对文本扰动的衡量方法。还有一种方式是将文本输入当做连续值，然后应用CV方法，在3.3节上将会详细讨论。</p>
+<p>​		1.2 可察觉与不可察觉：</p>
+<p>​			与图像相比，文本数据即使更改一个字母也会造成很大变化，故即使做很小的扰动，也可以被很明显的察觉到。</p>
+<p>​		1.3 有语义和无语义：</p>
+<p>​			原理同上，在文本中做很小的改动往往会极大地影响到文本的语法和语义信息。</p>
+<p>​	基于以上不同，目前主流对文本DNN的攻击有两种：1. 调整图像DNN的攻击方法，添加额外限制；2. 使用新技术提出一个新方法。</p>
 <p><strong>三. 向量化文本输入 and 扰动的衡量方法</strong></p>
 <ol>
 <li><p><strong>三种向量化文本输入的方法：</strong></p>
 <p>1.1 <strong>基于计数的编码（<em>Word-Count-based Encoding</em>）</strong>：</p>
-<p>​    ① <strong>BOW（Bag-of-words）</strong>方法，将一个文档中出现的词语编号为向量的0,1,2…..i维度，每个维度的值代表词语出现的次数。（缺点：不能记住词语顺序）</p>
+<p>​    ① **BOW（Bag-of-words）**方法，将一个文档中出现的词语编号为向量的0,1,2…..i维度，每个维度的值代表词语出现的次数。（缺点：不能记住词语顺序）</p>
 <p>​    ②  <strong>Term frequency-inverse document frequency (TF-IDF)</strong> ，具体见：</p>
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/asialee_bird/article/details/81486700">TF-IDF算法介绍及实现_Asia-Lee-CSDN博客_tf-idf</a></p>
 <p>​    1.2 <strong>热独编码（<em>One-hot Encoding</em>）</strong>:</p>
@@ -320,10 +322,8 @@
 <p>​    由于普通顺序编码的值存在大小关系，当模型得到输入后会将其当做实际值来处理，这就使得原本平行的数据有了大小关系，独热编码巧妙地解决了这个问题，使得所有单词或者字母低位平等。</p>
 <p>​    1.3 <strong>稠密编码：</strong></p>
 <p>​    Word2Vec使用连续BOW模型和skip-gram 模型来做代码嵌入。</p>
-<p>​    <strong>一个潜在的假设是，出现在相似语境下的词语有着相似的含义。</strong> 词嵌入在一定程度上缓解了文本数据向量化的离散性和数据稀疏性问题【36】，词嵌入的扩展如doc2vec和paragraph2vec【69】将句子/段落编码为稠密向量。</p>
+<p>​    <strong>一个潜在的假设是，出现在相似语境下的词语有着相似的含义。</strong> 词嵌入在一定程度上缓解了文本数据向量化的离散性和数据稀疏性问题【36】，词嵌入的扩展如doc2vec和paragraph2vec【69】将句子&#x2F;段落编码为稠密向量。</p>
 </li>
-</ol>
-<ol>
 <li><p><strong>扰动的衡量方法：</strong></p>
 <p>2.1 <strong>基于范数的方法（<em>Norm-based measurement</em>）</strong>：</p>
 <p>​    直接使用范数需要输入数据是连续的。一个解决方法是使用连续且稠密的表示方法（如嵌入），但这通常会得到无意义的文本。</p>
@@ -332,9 +332,9 @@
 <p>​    可以使用<strong>Perplexity</strong>【91】，<strong>Paraphrase</strong>（4.3.3）确保对抗样本的有效性。</p>
 <p>2.3 <strong>基于语义保持的方法（<em>Semantic-preserving measurement</em>）：</strong></p>
 <p>​    ① 计算欧拉距离:</p>
-<p><img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210715215755.png" alt=""></p>
+<p><img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210715215755.png"></p>
 <p>​    ② 计算<strong>Cosine Similarity</strong>（余弦相似度）：</p>
-<p><img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210715215851.png" alt=""></p>
+<p><img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210715215851.png"></p>
 <p>​    </p>
 <p>2.4 <strong>基于编辑距离的方法：</strong></p>
 <p>​    <strong>编辑距离（Edit Distance）</strong>，又称Levenshtein距离，是指两个字串之间，由一个转成另一个所需的最少编辑操作次数。许可的编辑操作包括将一个字符替换成另一个字符，插入一个字符，删除一个字符。一般来说，编辑距离越小，两个串的相似度越大。</p>
@@ -342,19 +342,19 @@
 <p>2.5 <strong>基于Jaccard相似系数的方法：</strong></p>
 <p>​    Jaccard相似系数定义见百度百科。</p>
 <p>​    就是把两个集合的交集除以两个集合的并集，简单地看集合中的元素是不是大量相同。</p>
-<p><img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210715220447.png" alt=""></p>
+<p><img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210715220447.png"></p>
 </li>
 </ol>
 </blockquote>
 <h3 id="6-Attacking-Neural-Models-in-NLP"><a href="#6-Attacking-Neural-Models-in-NLP" class="headerlink" title="6. Attacking Neural Models in NLP:"></a>6. Attacking Neural Models in NLP:</h3><blockquote>
 <ol>
-<li><p><strong>常见攻击方法：</strong></p>
-<p>白盒，黑盒……</p>
-<p><img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210715221355.png" alt=""></p>
-<p>​    </p>
-</li>
-<li><p>提供了数据集来源，<strong>但没有提供生成对抗样本的数据集，所提供的的数据集仅用于评估攻击效果。</strong></p>
-</li>
+<li><strong>常见攻击方法：</strong></li>
+</ol>
+<p>  白盒，黑盒……</p>
+<p>  <img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210715221355.png"></p>
+<p>  ​	</p>
+<ol start="2">
+<li>提供了数据集来源，<strong>但没有提供生成对抗样本的数据集，所提供的的数据集仅用于评估攻击效果。</strong></li>
 </ol>
 </blockquote>
 <h3 id="7-Defense"><a href="#7-Defense" class="headerlink" title="7. Defense:"></a>7. Defense:</h3><blockquote>
@@ -364,55 +364,58 @@
 </ul>
 <p><strong>一. 对抗训练</strong></p>
 <ol>
-<li><p><strong>数据增强（<em>Data Augmentation</em>）：</strong></p>
-<p>​    数据增强将原始数据集加上对抗样本一起，在训练的过程中让模型见到更多数据，数据增强常被用来对抗黑盒攻击，实现的方式是通过在被攻击的DNN上使用对抗样本增加额外的epoch。</p>
-<p>​    【54】证明了这种方法是有效的，但仅仅对同一对抗样本有效（数据增强中的样本与测试对抗样本）</p>
-<p><img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210716100311.png" alt=""></p>
-<p>​    【142】也提出了类似的观点</p>
-<p>​    【56】作者提出了3种生成更多具有不同特征的数据的方法</p>
-<p>​    【12】<strong>作者提出了一种新的数据增强的方法</strong>，它将平均字符嵌入作为一个词表示，并将其纳入输入。这种方法本质上对字符的置乱不敏感，例如交换、mid和Rand，因此可以抵抗这些置乱攻击引起的噪声。但是，这种防御方法对不是针对字符顺序的扰乱不起作用。</p>
-</li>
+<li><strong>数据增强（<em>Data Augmentation</em>）：</strong></li>
+</ol>
+<p> ​	数据增强将原始数据集加上对抗样本一起，在训练的过程中让模型见到更多数据，数据增强常被用来对抗黑盒攻击，实现的方式是通过在被攻击的DNN上使用对抗样本增加额外的epoch。</p>
+<p> ​	【54】证明了这种方法是有效的，但仅仅对同一对抗样本有效（数据增强中的样本与测试对抗样本）</p>
+<p> <img src="http://shaw-typora.oss-cn-beijing.aliyuncs.com/20210716100311.png"></p>
+<p> ​	【142】也提出了类似的观点</p>
+<p> ​	【56】作者提出了3种生成更多具有不同特征的数据的方法</p>
+<p> ​	【12】<strong>作者提出了一种新的数据增强的方法</strong>，它将平均字符嵌入作为一个词表示，并将其纳入输入。这种方法本质上对字符的置乱不敏感，例如交换、mid和Rand，因此可以抵抗这些置乱攻击引起的噪声。但是，这种防御方法对不是针对字符顺序的扰乱不起作用。</p>
+<ol start="2">
 <li><p><strong>模型正则化（<em>Model Regularization</em>）：</strong></p>
 <p>模型正则化将生成的对抗样本实例作为正则化器：</p>
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_41503009/article/details/104594972">模型正则化_少年吉的博客-CSDN博客_模型正则化</a></p>
 <p>正则化( Regularization)的目的在于提高模型在未知测试数据上的泛化力,避免参数过拟合。</p>
-<ol>
-<li><strong>健壮性最优化方法（<em>Robust Optimization</em>）：</strong></li>
-</ol>
+</li>
+<li><p><strong>健壮性最优化方法（<em>Robust Optimization</em>）：</strong></p>
 <p>Madry【84】等人将DNN学习问题转化为了一个包含内非凹最大化问题(攻击)和外非凸最小化问题(防御)的健壮性优化问题。</p>
 </li>
 </ol>
 <p><strong>二. 知识蒸馏</strong></p>
-<p>​    详见论文和博客。</p>
+<p>​	详见论文和博客。</p>
 </blockquote>
 <h3 id="8-Discuss-and-Open-issues"><a href="#8-Discuss-and-Open-issues" class="headerlink" title="8.Discuss and Open issues"></a>8.Discuss and Open issues</h3><blockquote>
 <ol>
-<li><p><strong>可察觉性（<em>Perceivability</em>）</strong>：</p>
-<p>见前文</p>
-</li>
-<li><p><strong>可转移性（<em>Transferability</em>）</strong>：</p>
-<p>no-tatgeted攻击的可转移性更强。</p>
-<p>可转移性可以在三个地方体现：</p>
-<p>​    2.1 同样的架构，不同的数据；</p>
-<p>​    2.2 同样的应用场景，不同的架构；</p>
-<p>​    2.3 不同的架构，不同的数据。</p>
-<p><u><strong>尽管现有的工作囊括了以上三种情况，但对抗样本攻击的可移植性效果仍不好，需要更多的工作。</strong></u></p>
-</li>
-<li><p><strong>自动化（<em>Automation</em>）</strong>：</p>
-<p>​    一些工作可以做到对抗样本的自动生成，而另一些则不行。</p>
-<p>​    在白盒攻击中，利用DNN的损失函数可以自动识别文本中受影响最大的点(如字符、词)，以此做到在文本中自动化。</p>
-<p>​    在黑盒攻击中，一些攻击例如替代训练（substitution train）可以训练出一个替代用模型，对其进行白盒攻击，也可以实现自动化。但是大多数对抗样本的生成都是人工生成。【54】会关联人工选择的无意义的文本段落来欺骗阅读理解系统，以此来发现DNN的脆弱性。很多研究工作跟随【54】，其目的不是实际攻击，而是更多的在检测目标网络的健壮性上，这些人工工作是耗时且不切实际的。我们相信在未来更多的努力会用来克服这个困难。</p>
-</li>
-<li><p><strong>新架构（<em>New Architectures</em>）</strong>：</p>
-<p>​    尽管大多数普通的文本DNN都注意到了对抗样本攻击，但是很多DNN并没有被攻击过。例如GANS与VAES，它们被用作生成文本。深度生成模型需要更复杂的技巧去训练，这就可以解释为什么这些技术忽略了对抗样本攻击。未来的工作可能考虑对这些DNN进行对抗样本攻击。</p>
-<p>​    注意力机制（Attention Mechanism）目前是大多数序列模型的标准组成部分，但是没有工作去检验注意力机制本身。故可能的攻击工作要么攻击包含注意的整体系统，要么利用注意分数来识别干扰词【14】。</p>
-</li>
-<li><p><strong>迭代 VS 一次性（<em>Iterative versus One-of</em>）</strong>：</p>
-<p>​    <strong>迭代攻击</strong>：效果好，耗时长；</p>
-<p>​    <strong>一次性攻击</strong>：效果略差，耗时短。</p>
-<p>​    在设计攻击方法时，攻击者需要仔细考虑效果与效率的平衡。</p>
-</li>
+<li><strong>可察觉性（<em>Perceivability</em>）</strong>：</li>
 </ol>
+<p>  见前文</p>
+<ol start="2">
+<li><strong>可转移性（<em>Transferability</em>）</strong>：</li>
+</ol>
+<p>  no-tatgeted攻击的可转移性更强。</p>
+<p>  可转移性可以在三个地方体现：</p>
+<p>  ​	2.1 同样的架构，不同的数据；</p>
+<p>  ​	2.2 同样的应用场景，不同的架构；</p>
+<p>  ​	2.3 不同的架构，不同的数据。</p>
+<p>  <u><strong>尽管现有的工作囊括了以上三种情况，但对抗样本攻击的可移植性效果仍不好，需要更多的工作。</strong></u></p>
+<ol start="3">
+<li><strong>自动化（<em>Automation</em>）</strong>：</li>
+</ol>
+<p>  ​	一些工作可以做到对抗样本的自动生成，而另一些则不行。</p>
+<p>  ​	在白盒攻击中，利用DNN的损失函数可以自动识别文本中受影响最大的点(如字符、词)，以此做到在文本中自动化。</p>
+<p>  ​	在黑盒攻击中，一些攻击例如替代训练（substitution train）可以训练出一个替代用模型，对其进行白盒攻击，也可以实现自动化。但是大多数对抗样本的生成都是人工生成。【54】会关联人工选择的无意义的文本段落来欺骗阅读理解系统，以此来发现DNN的脆弱性。很多研究工作跟随【54】，其目的不是实际攻击，而是更多的在检测目标网络的健壮性上，这些人工工作是耗时且不切实际的。我们相信在未来更多的努力会用来克服这个困难。</p>
+<ol start="4">
+<li><strong>新架构（<em>New Architectures</em>）</strong>：</li>
+</ol>
+<p>  ​	尽管大多数普通的文本DNN都注意到了对抗样本攻击，但是很多DNN并没有被攻击过。例如GANS与VAES，它们被用作生成文本。深度生成模型需要更复杂的技巧去训练，这就可以解释为什么这些技术忽略了对抗样本攻击。未来的工作可能考虑对这些DNN进行对抗样本攻击。</p>
+<p>  ​	注意力机制（Attention Mechanism）目前是大多数序列模型的标准组成部分，但是没有工作去检验注意力机制本身。故可能的攻击工作要么攻击包含注意的整体系统，要么利用注意分数来识别干扰词【14】。</p>
+<ol start="5">
+<li><strong>迭代 VS 一次性（<em>Iterative versus One-of</em>）</strong>：</li>
+</ol>
+<p>  ​	<strong>迭代攻击</strong>：效果好，耗时长；</p>
+<p>  ​	<strong>一次性攻击</strong>：效果略差，耗时短。</p>
+<p>  ​	在设计攻击方法时，攻击者需要仔细考虑效果与效率的平衡。</p>
 </blockquote>
 
       
@@ -434,19 +437,19 @@
     
 <nav id="article-nav">
   
-    <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91Generic%20Black-Box%20End-to-End%20Attack%20Against%20State%20of%20the%20art%20API%20Call%20Based%20Malware%20Classifiers/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2021/09/03/%E3%80%90%E4%B9%A6%E7%B1%8D%E9%98%85%E8%AF%BB%E3%80%91%E3%80%8A%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95%E3%80%8B/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption">上一篇</strong>
       <div class="article-nav-title">
         
-          Generic Black-Box End-to-End Attack Against State of the art API Call Based Malware Classifiers
+          《统计学习方法》
         
       </div>
     </a>
   
   
-    <a href="/2021/09/03/Welcome/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2021/09/03/%E3%80%90%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB%E3%80%91A%20Benchmark%20API%20Call%20Dataset%20For%20Windows%20PE%20Malware%20Classification/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">下一篇</strong>
-      <div class="article-nav-title">Shaw&#39;s blog</div>
+      <div class="article-nav-title">A Benchmark API Call Dataset For Windows PE Malware Classification</div>
     </a>
   
 </nav>
@@ -654,20 +657,5 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </body>
 </html>

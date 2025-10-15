@@ -13,15 +13,15 @@
     <meta name="baidu-site-verification" content="63656ec0c686f8aaeeaad1b7243ba233" />
   
   
-  <meta name="description" content="(Part 2)How does Wasm module interact with JavaScripte in browser?  Reference:  WebAssembly in Action. Chapter 4.2   Part1中为了使得JS代码可以直接调用Wasm函数，并传递内存，使用了Emscripten提供的ccall，UTF8ToString,_malloc">
+  <meta name="description" content="(Part 2)How does Wasm module interact with JavaScripte in browser? Reference:  WebAssembly in Action. Chapter 4.2   Part1中为了使得JS代码可以直接调用Wasm函数，并传递内存，使用了Emscripten提供的ccall，UTF8ToString,_malloc和 _free函数">
 <meta property="og:type" content="article">
 <meta property="og:title" content="(技术积累)(Part 2)How does Wasm module interact with JavaScripte in browser?">
 <meta property="og:url" content="http://example.com/2024/01/17/%E3%80%90%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF%E3%80%91(Part-2)How-does-Wasm-module-interact-with-JavaScripte-in-browser/index.html">
 <meta property="og:site_name" content="Shaw">
-<meta property="og:description" content="(Part 2)How does Wasm module interact with JavaScripte in browser?  Reference:  WebAssembly in Action. Chapter 4.2   Part1中为了使得JS代码可以直接调用Wasm函数，并传递内存，使用了Emscripten提供的ccall，UTF8ToString,_malloc">
+<meta property="og:description" content="(Part 2)How does Wasm module interact with JavaScripte in browser? Reference:  WebAssembly in Action. Chapter 4.2   Part1中为了使得JS代码可以直接调用Wasm函数，并传递内存，使用了Emscripten提供的ccall，UTF8ToString,_malloc和 _free函数">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-01-16T16:00:00.000Z">
-<meta property="article:modified_time" content="2024-02-27T02:55:12.788Z">
+<meta property="article:modified_time" content="2024-02-27T02:55:14.000Z">
 <meta property="article:author" content="Shaw">
 <meta property="article:tag" content="WASM">
 <meta name="twitter:card" content="summary">
@@ -149,25 +149,16 @@
     </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1
-id="part-2how-does-wasm-module-interact-with-javascripte-in-browser">(Part
-2)How does Wasm module interact with JavaScripte in browser?</h1>
-<blockquote>
+        <h1 id="Part-2-How-does-Wasm-module-interact-with-JavaScripte-in-browser"><a href="#Part-2-How-does-Wasm-module-interact-with-JavaScripte-in-browser" class="headerlink" title="(Part 2)How does Wasm module interact with JavaScripte in browser?"></a>(Part 2)How does Wasm module interact with JavaScripte in browser?</h1><blockquote>
 <p>Reference:</p>
 <ul>
-<li><strong><em>WebAssembly in Action</em></strong>. Chapter 4.2</li>
+<li><em><strong>WebAssembly in Action</strong></em>. Chapter 4.2</li>
 </ul>
 </blockquote>
-<p>Part1中为了使得JS代码可以直接调用Wasm函数，并传递内存，使用了Emscripten提供的<code>ccall</code>，<code>UTF8ToString</code>,<code>_malloc</code>和
-<code>_free</code>函数，这些helper functions提供了对标准JavaScripte
-WebAssembly API的封装。若Emscripten不生成JS plumbing
-code，即没有这些help functions时，使用下面的方式来使JS和Wasm
-Module交互：</p>
+<p>Part1中为了使得JS代码可以直接调用Wasm函数，并传递内存，使用了Emscripten提供的<code>ccall</code>，<code>UTF8ToString</code>,<code>_malloc</code>和 <code>_free</code>函数，这些helper functions提供了对标准JavaScripte WebAssembly API的封装。若Emscripten不生成JS plumbing code，即没有这些help functions时，使用下面的方式来使JS和Wasm Module交互：</p>
 <span id="more"></span>
-<h3 id="修改代码">1. 修改代码</h3>
-<p>因为原始的validate.cpp代码中使用了一些例如<code>strlen</code>的C/C++标准库函数，当让Emscripten生成side
-module时其并不会生成相应的函数，并且，此时并没有相应的<code>_malloc</code>和
-<code>_free</code>函数了，我们需要自己实现。</p>
+
+<h3 id="1-修改代码"><a href="#1-修改代码" class="headerlink" title="1. 修改代码"></a>1. 修改代码</h3><p>因为原始的validate.cpp代码中使用了一些例如<code>strlen</code>的C&#x2F;C++标准库函数，当让Emscripten生成side module时其并不会生成相应的函数，并且，此时并没有相应的<code>_malloc</code>和 <code>_free</code>函数了，我们需要自己实现。</p>
 <p>下面首先实现自己的库函数，创建一个<code>side_module_system_functions.h</code>：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">#pragma once
 #ifndef
@@ -181,6 +172,7 @@ char* strcpy(char* destination, const char* source);
 size_t strlen(const char* value); 
 int atoi(const char* value); 
 #endif &#x2F;&#x2F; SIDE_MODULE_SYSTEM_FUNCTIONS_H_<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>创建<code>side_module_system_functions.cpp</code>：</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;emscripten.h></span></span>
@@ -197,6 +189,7 @@ int atoi(const char* value);
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">ifdef</span> <span class="token expression">__cplusplus</span></span>
 <span class="token punctuation">&#125;</span>
 <span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>接着添加对应malloc和free的实现，定义内存分配的结构：</p>
 <pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token keyword">struct</span> <span class="token class-name">MemoryAllocated</span> 
 <span class="token punctuation">&#123;</span>
@@ -206,6 +199,7 @@ int atoi(const char* value);
 
 <span class="token comment">// The array that will hold details about each memory allocation</span>
 <span class="token keyword">struct</span> <span class="token class-name">MemoryAllocated</span> AllocatedMemoryChunks<span class="token punctuation">[</span>MAXIMUM_ALLOCATED_CHUNKS<span class="token punctuation">]</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>定义函数<code>InsertIntoAllocatedArray</code>，其功能是向<code>AllocatedMemoryChunks</code>中插入已分配的内存块：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">void InsertIntoAllocatedArray(int new_item_index, int offset_start, int size_needed)
 &#123;
@@ -222,6 +216,7 @@ int atoi(const char* value);
     &#x2F;&#x2F; Increment the count of blocks allocated
     current_allocated_count++;
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>定义对应malloc函数：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; Our version of malloc
 EMSCRIPTEN_KEEPALIVE
@@ -275,6 +270,7 @@ EMSCRIPTEN_KEEPALIVE
     &#x2F;&#x2F; Otherwise, tell the caller there was no room (NULL pointer)
     return 0;
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>定义free:</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; Our version of free (for our version of malloc)
 EMSCRIPTEN_KEEPALIVE
@@ -307,6 +303,7 @@ EMSCRIPTEN_KEEPALIVE
     &#x2F;&#x2F; If we shifted left that means we found the offset requested and removed it from the array. Adjust the count of items in the array
     current_allocated_count--;
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>定义strlen等：</p>
 <pre class="line-numbers language-c++" data-language="c++"><code class="language-c++">&#x2F;&#x2F; Our version of strcpy
 char* strcpy(char* destination, const char* source)
@@ -364,10 +361,19 @@ int atoi(const char* value)
 
     return result;
 &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>编译：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">emcc side_module_system_functions.cpp validate.cpp -s <span class="token assign-left variable">SIDE_MODULE</span><span class="token operator">=</span><span class="token number">2</span> -O1 -o validate.wasm<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">emcc side_module_system_functions.cpp validate.cpp <span class="token parameter variable">-s</span> <span class="token assign-left variable">SIDE_MODULE</span><span class="token operator">=</span><span class="token number">2</span> <span class="token parameter variable">-O1</span> <span class="token parameter variable">-o</span> validate.wasm<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
 <p>此时，由于没有<code>validate.js</code>，我们需要编写JS代码来初始化wasm模块，利用Part1中的<code>editproduct.js</code>和<code>editproduct.html</code>，删除<code>editproduct.html</code>中的这句：</p>
 <pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token operator">&lt;</span>script src<span class="token operator">=</span><span class="token string">"validate.js"</span><span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+
+
+
+
 
       
     </div>
@@ -414,8 +420,7 @@ int atoi(const char* value)
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
     
-      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#part-2how-does-wasm-module-interact-with-javascripte-in-browser"><span class="nav-number">1.</span> <span class="nav-text">(Part
-2)How does Wasm module interact with JavaScripte in browser?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E4%BB%A3%E7%A0%81"><span class="nav-number">1.0.1.</span> <span class="nav-text">1. 修改代码</span></a></li></ol></li></ol></li></ol>
+      <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Part-2-How-does-Wasm-module-interact-with-JavaScripte-in-browser"><span class="nav-number">1.</span> <span class="nav-text">(Part 2)How does Wasm module interact with JavaScripte in browser?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%BF%AE%E6%94%B9%E4%BB%A3%E7%A0%81"><span class="nav-number">1.0.1.</span> <span class="nav-text">1. 修改代码</span></a></li></ol></li></ol></li></ol>
     
     </div>
   </aside>
@@ -609,20 +614,5 @@ ga('send', 'pageview');
 
   <a id="rocket" href="#top" class=""></a>
   <script type="text/javascript" src="/js/totop.js" async=""></script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </body>
 </html>
