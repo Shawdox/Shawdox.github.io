@@ -1,0 +1,13 @@
+.visitor-count {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0.25rem 0 0;
+  color: var(--darkgray);
+  font-size: 0.9rem;
+}
+
+.visitor-count-number {
+  color: var(--secondary);
+  font-weight: 700;
+}

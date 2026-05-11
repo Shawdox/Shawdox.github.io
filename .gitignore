@@ -6,6 +6,9 @@ prof
 tsconfig.tsbuildinfo
 .obsidian
 .quartz-cache
+.npm-cache
+.staticrypt.json
+encrypted/
 private/
 .replit
 replit.nix

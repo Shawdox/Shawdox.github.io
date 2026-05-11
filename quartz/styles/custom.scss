@@ -1,3 +1,164 @@
 @use "./base.scss";
 
-// put your custom CSS here!
+@font-face {
+  font-family: "EB Garamond Local";
+  src: url("/static/fonts/eb-garamond-latin-400-normal.woff2") format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "EB Garamond Local";
+  src: url("/static/fonts/eb-garamond-latin-400-italic.woff2") format("woff2");
+  font-display: swap;
+  font-style: italic;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "EB Garamond Local";
+  src: url("/static/fonts/eb-garamond-latin-600-normal.woff2") format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: "EB Garamond Local";
+  src: url("/static/fonts/eb-garamond-latin-600-italic.woff2") format("woff2");
+  font-display: swap;
+  font-style: italic;
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: "EB Garamond Local";
+  src: url("/static/fonts/eb-garamond-latin-700-normal.woff2") format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 700;
+}
+
+$serif-stack: "EB Garamond Local", "Tsukushi Mincho", "筑紫明朝", "Songti SC", STSong, SimSun,
+  serif;
+
+body {
+  font-family: $serif-stack !important;
+  font-size: 0.84rem;
+  letter-spacing: 0.01em;
+}
+
+.page-title,
+.article-title,
+.page article h1,
+.page article h2,
+.page article h3,
+.page article h4,
+.page article h5,
+.page article h6,
+.breadcrumb-container,
+footer,
+.sidebar,
+.search,
+button {
+  font-family: $serif-stack !important;
+}
+
+.page article,
+.page article p,
+.page article li,
+.page article table,
+.page article blockquote {
+  font-family: $serif-stack !important;
+}
+
+code,
+pre,
+kbd,
+samp {
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace !important;
+}
+
+code {
+  font-size: 0.7rem !important;
+}
+
+pre,
+pre code,
+pre > code,
+figure[data-rehype-pretty-code-figure],
+figure[data-rehype-pretty-code-figure] code {
+  font-size: 0.7rem !important;
+  line-height: 1.5 !important;
+}
+
+pre > code {
+  padding: 0.45rem 0 !important;
+}
+
+figure[data-rehype-pretty-code-figure] > [data-rehype-pretty-code-title] {
+  font-size: 0.7rem !important;
+}
+
+.page article {
+  font-size: 0.84rem;
+  line-height: 1.75;
+}
+
+.page article > h1:first-child {
+  display: none;
+}
+
+.page article h1,
+.page article h2,
+.page article h3,
+.page article h4,
+.page article h5,
+.page article h6 {
+  font-family: $serif-stack !important;
+  font-weight: 700;
+}
+
+.page article h1 {
+  font-size: 1.55rem;
+}
+
+.page article h2 {
+  font-size: 1.25rem;
+}
+
+.page article h3 {
+  font-size: 1.08rem;
+}
+
+.page article p,
+.page article li,
+.page article table,
+.page article blockquote {
+  font-size: 0.84rem;
+}
+
+.explorer-content ul li > a,
+.explorer-content .folder-button,
+.explorer-content .folder-title {
+  font-size: 0.84rem !important;
+}
+
+.sidebar,
+footer,
+.content-meta,
+.breadcrumb-container,
+.tag-list,
+.visitor-count {
+  font-size: 0.82rem;
+}
+
+.page-title {
+  font-size: 1.45rem;
+}
+
+.page article img {
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(45, 36, 28, 0.12);
+}
