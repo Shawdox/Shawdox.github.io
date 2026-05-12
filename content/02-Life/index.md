@@ -1,5 +1,4 @@
 ---
 title: Life
 ---
-
-Life fragments.
+**Life fragments.**
