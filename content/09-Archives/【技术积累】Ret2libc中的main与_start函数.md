@@ -14,7 +14,7 @@ Ret2libc3练习([ret2libc3-CTF Wiki](https://github.com/ctf-wiki/ctf-challenges/
 
 
 
-<img src="../figures/image-20240416143243963.png" style="zoom: 80%;" />
+<img src="../figures/image-20240416143243963.png" style="zoom: 80%; display: block; margin: 0 auto;" />
 
 第一个payload:
 
