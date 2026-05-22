@@ -41,9 +41,6 @@ function getNodeDate(node: FileTrieNode, dateType: DateType): Date | undefined {
 
 function byDateAndAlphabeticalFolderFirst(dateType: DateType) {
   return (a: FileTrieNode, b: FileTrieNode) => {
-    if (a.isFolder && !b.isFolder) return -1
-    if (!a.isFolder && b.isFolder) return 1
-
     const aDate = getNodeDate(a, dateType)
     const bDate = getNodeDate(b, dateType)
     if (aDate && bDate) {
