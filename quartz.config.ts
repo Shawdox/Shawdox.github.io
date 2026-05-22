@@ -16,7 +16,7 @@ const config: QuartzConfig = {
     locale: "en-US",
     baseUrl: "Shawdox.github.io",
     ignorePatterns: ["private", "templates", ".obsidian"],
-    defaultDateType: "created",
+    defaultDateType: "published",
     theme: {
       fontOrigin: "local",
       cdnCaching: true,
