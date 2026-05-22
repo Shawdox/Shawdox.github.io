@@ -52,6 +52,16 @@ function getNodeDate(node: FileTrieNode): Date | undefined {
 
 function byDateAndAlphabeticalFolderFirst() {
   return (a: FileTrieNode, b: FileTrieNode) => {
+    if (a.isFolder && b.isFolder) {
+      return a.displayName.localeCompare(b.displayName, undefined, {
+        numeric: true,
+        sensitivity: "base",
+      })
+    }
+
+    if (a.isFolder && !b.isFolder) return -1
+    if (!a.isFolder && b.isFolder) return 1
+
     const aDate = getNodeDate(a)
     const bDate = getNodeDate(b)
     if (aDate && bDate) {
@@ -136,7 +146,7 @@ function createFileNode(currentSlug: FullSlug, node: FileTrieNode): HTMLLIElemen
   const a = li.querySelector("a") as HTMLAnchorElement
   a.href = resolveRelative(currentSlug, node.slug)
   a.dataset.for = node.slug
-  a.textContent = node.displayName
+  a.textContent = `- ${node.displayName}`
 
   if (currentSlug === node.slug) {
     a.classList.add("active")
