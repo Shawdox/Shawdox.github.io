@@ -4,6 +4,8 @@ import { ContentDetails } from "../../plugins/emitters/contentIndex"
 
 type MaybeHTMLElement = HTMLElement | undefined
 
+type DateType = "created" | "modified" | "published"
+
 interface ParsedOptions {
   folderClickBehavior: "collapse" | "link"
   folderDefaultState: "collapsed" | "open"
@@ -17,6 +19,46 @@ interface ParsedOptions {
 type FolderState = {
   path: string
   collapsed: boolean
+}
+
+function getNodeDate(node: FileTrieNode, dateType: DateType): Date | undefined {
+  const ownDate = node.data?.dates?.[dateType]
+  if (ownDate) {
+    return ownDate
+  }
+
+  let mostRecentDate: Date | undefined = undefined
+  for (const child of node.children) {
+    const childDate = getNodeDate(child, dateType)
+    if (!childDate) continue
+    if (!mostRecentDate || childDate.getTime() > mostRecentDate.getTime()) {
+      mostRecentDate = childDate
+    }
+  }
+
+  return mostRecentDate
+}
+
+function byDateAndAlphabeticalFolderFirst(dateType: DateType) {
+  return (a: FileTrieNode, b: FileTrieNode) => {
+    if (a.isFolder && !b.isFolder) return -1
+    if (!a.isFolder && b.isFolder) return 1
+
+    const aDate = getNodeDate(a, dateType)
+    const bDate = getNodeDate(b, dateType)
+    if (aDate && bDate) {
+      return bDate.getTime() - aDate.getTime()
+    } else if (aDate && !bDate) {
+      return -1
+    } else if (!aDate && bDate) {
+      return 1
+    }
+
+    return a.displayName.localeCompare(b.displayName, undefined, {
+      numeric: true,
+      sensitivity: "base",
+    })
+  }
 }
 
 let currentExplorerState: Array<FolderState>
@@ -159,12 +201,15 @@ async function setupExplorer(currentSlug: FullSlug) {
 
   for (const explorer of allExplorers) {
     const dataFns = JSON.parse(explorer.dataset.dataFns || "{}")
+    const defaultDateType = (explorer.dataset.defaultDateType || "published") as DateType
     const opts: ParsedOptions = {
       folderClickBehavior: (explorer.dataset.behavior || "collapse") as "collapse" | "link",
       folderDefaultState: (explorer.dataset.collapsed || "collapsed") as "collapsed" | "open",
       useSavedState: explorer.dataset.savestate === "true",
       order: dataFns.order || ["filter", "map", "sort"],
-      sortFn: new Function("return " + (dataFns.sortFn || "undefined"))(),
+      sortFn:
+        new Function("return " + (dataFns.sortFn || "undefined"))() ||
+        byDateAndAlphabeticalFolderFirst(defaultDateType),
       filterFn: new Function("return " + (dataFns.filterFn || "undefined"))(),
       mapFn: new Function("return " + (dataFns.mapFn || "undefined"))(),
     }
