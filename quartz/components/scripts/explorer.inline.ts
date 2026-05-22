@@ -52,11 +52,31 @@ function getNodeDate(node: FileTrieNode): Date | undefined {
 
 function byDateAndAlphabeticalFolderFirst() {
   return (a: FileTrieNode, b: FileTrieNode) => {
+    // Put About at the very top regardless of folder/file
+    const aSeg = (a.slugSegment || "").toLowerCase()
+    const bSeg = (b.slugSegment || "").toLowerCase()
+    if (aSeg === "about" && bSeg !== "about") return -1
+    if (bSeg === "about" && aSeg !== "about") return 1
+
     if (a.isFolder && b.isFolder) {
-      return a.displayName.localeCompare(b.displayName, undefined, {
-        numeric: true,
-        sensitivity: "base",
-      })
+      // Use slugSegment (which preserves numeric prefixes) for folder ordering
+      const aName = (a.slugSegment || "").trim()
+      const bName = (b.slugSegment || "").trim()
+
+      const numRe = /^(\d+)/
+      const ma = aName.match(numRe)
+      const mb = bName.match(numRe)
+      if (ma && mb) {
+        const na = parseInt(ma[1], 10)
+        const nb = parseInt(mb[1], 10)
+        if (!isNaN(na) && !isNaN(nb) && na !== nb) return na - nb
+      } else if (ma && !mb) {
+        return -1
+      } else if (!ma && mb) {
+        return 1
+      }
+
+      return aName.localeCompare(bName, undefined, { numeric: true, sensitivity: "base" })
     }
 
     if (a.isFolder && !b.isFolder) return -1
