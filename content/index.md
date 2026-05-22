@@ -8,6 +8,7 @@ title: Xiao Wu's Blog
 
 - Research Notes: [[01-Research|Research]]
 - Life fragments: [[02-Life|Life]]
+- Reading: [[03-Reading|Reading]]
 - Archive: [[09-Archives|Archive]]
 
 Some Info: https://xiaowu417.github.io/
