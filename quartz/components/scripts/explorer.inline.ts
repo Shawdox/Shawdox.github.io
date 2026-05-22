@@ -4,8 +4,6 @@ import { ContentDetails } from "../../plugins/emitters/contentIndex"
 
 type MaybeHTMLElement = HTMLElement | undefined
 
-type DateType = "created" | "modified" | "published"
-
 interface ParsedOptions {
   folderClickBehavior: "collapse" | "link"
   folderDefaultState: "collapsed" | "open"
@@ -21,28 +19,41 @@ type FolderState = {
   collapsed: boolean
 }
 
-function getNodeDate(node: FileTrieNode, dateType: DateType): Date | undefined {
-  const ownDate = node.data?.dates?.[dateType]
-  if (ownDate) {
-    return ownDate
+function coerceDate(value: unknown): Date | undefined {
+  if (!value) {
+    return undefined
   }
 
+  const date = value instanceof Date ? value : new Date(value as string | number)
+  return isNaN(date.getTime()) ? undefined : date
+}
+
+function getNodeDate(node: FileTrieNode): Date | undefined {
   let mostRecentDate: Date | undefined = undefined
   for (const child of node.children) {
-    const childDate = getNodeDate(child, dateType)
+    const childDate = getNodeDate(child)
     if (!childDate) continue
     if (!mostRecentDate || childDate.getTime() > mostRecentDate.getTime()) {
       mostRecentDate = childDate
     }
   }
 
-  return mostRecentDate
+  if (mostRecentDate) {
+    return mostRecentDate
+  }
+
+  const ownDate = coerceDate(node.data?.date)
+  if (ownDate) {
+    return ownDate
+  }
+
+  return undefined
 }
 
-function byDateAndAlphabeticalFolderFirst(dateType: DateType) {
+function byDateAndAlphabeticalFolderFirst() {
   return (a: FileTrieNode, b: FileTrieNode) => {
-    const aDate = getNodeDate(a, dateType)
-    const bDate = getNodeDate(b, dateType)
+    const aDate = getNodeDate(a)
+    const bDate = getNodeDate(b)
     if (aDate && bDate) {
       return bDate.getTime() - aDate.getTime()
     } else if (aDate && !bDate) {
@@ -198,15 +209,12 @@ async function setupExplorer(currentSlug: FullSlug) {
 
   for (const explorer of allExplorers) {
     const dataFns = JSON.parse(explorer.dataset.dataFns || "{}")
-    const defaultDateType = (explorer.dataset.defaultDateType || "published") as DateType
     const opts: ParsedOptions = {
       folderClickBehavior: (explorer.dataset.behavior || "collapse") as "collapse" | "link",
       folderDefaultState: (explorer.dataset.collapsed || "collapsed") as "collapsed" | "open",
       useSavedState: explorer.dataset.savestate === "true",
       order: dataFns.order || ["filter", "map", "sort"],
-      sortFn:
-        new Function("return " + (dataFns.sortFn || "undefined"))() ||
-        byDateAndAlphabeticalFolderFirst(defaultDateType),
+      sortFn: new Function("return " + (dataFns.sortFn || "undefined"))() || byDateAndAlphabeticalFolderFirst(),
       filterFn: new Function("return " + (dataFns.filterFn || "undefined"))(),
       mapFn: new Function("return " + (dataFns.mapFn || "undefined"))(),
     }
