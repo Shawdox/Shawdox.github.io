@@ -9,4 +9,6 @@ tags:
 ## Qwen 3.5
 
 
-
+## References
+- [1] https://transformers.run/c1/transformer/
+- 
