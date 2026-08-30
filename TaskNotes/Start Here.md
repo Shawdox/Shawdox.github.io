@@ -11,7 +11,7 @@ TaskNotes works best when three things feel connected:
 ## Before you start
 
 - [x] Enable the Obsidian **Bases** core plugin.
-- [ ] Confirm TaskNotes has created the default `.base` files in `TaskNotes/Views/`.
+- [x] Confirm TaskNotes has created the default `.base` files in `TaskNotes/Views/`.
 - [ ] Open the command palette and run **TaskNotes: Open tasks view**.
 
 TaskNotes creates missing default `.base` files automatically on startup when **Auto-create default files** is enabled. If the files are missing, use **Settings -> TaskNotes -> General -> Views & base files -> Create files**.
