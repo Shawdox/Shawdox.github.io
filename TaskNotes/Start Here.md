@@ -12,14 +12,14 @@ TaskNotes works best when three things feel connected:
 
 - [x] Enable the Obsidian **Bases** core plugin.
 - [x] Confirm TaskNotes has created the default `.base` files in `TaskNotes/Views/`.
-- [ ] Open the command palette and run **TaskNotes: Open tasks view**.
+- [x] Open the command palette and run **TaskNotes: Open tasks view**.
 
 TaskNotes creates missing default `.base` files automatically on startup when **Auto-create default files** is enabled. If the files are missing, use **Settings -> TaskNotes -> General -> Views & base files -> Create files**.
 
 ## 1. Create a task from the command palette
 
 Run **TaskNotes: Create new task** and create a real task you intend to do soon.
-
+Review my TaskNotes setup tomorrow #admin
 Try a title like:
 
 ```text
@@ -32,9 +32,9 @@ After saving, TaskNotes creates a Markdown note for that task. Open the task not
 
 The checkboxes below are ordinary Markdown tasks. Convert each one into a TaskNote from the line's inline action or the command palette.
 
-- [ ] Create a TaskNotes inbox task due tomorrow #admin
-- [ ] Schedule a 20 minute planning task for next Monday #planning
-- [ ] Make a task linked to an active project note
+- [[Create a TaskNotes inbox task]]
+- [[Schedule a planning task for]]
+- [[Make a task linked to an active project note]]
 
 After conversion, notice a few things:
 
